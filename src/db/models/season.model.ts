@@ -12,7 +12,6 @@ export interface ISeason extends IEntity {
     slug: string;
     id: string;
   };
-  leagueId?: string;
   numberOfRounds?: number;
   currentMatchRound?: number;
   currentGameRound?: number;
