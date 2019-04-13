@@ -16,9 +16,7 @@ export class LeagueConverter implements ILeagueConverter {
 
   from(data: any): Observable<ILeague> {
     return of({
-      name: data.name,
-      code: data.code,
-      slug: data.slug
+      ...data
     });
   }
 }

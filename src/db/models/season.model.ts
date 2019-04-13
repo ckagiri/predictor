@@ -4,15 +4,15 @@ import { Schema, model } from "mongoose";
 import { IEntity, IDocumentEntity } from "./base.model";
 
 export interface ISeason extends IEntity {
-  id?: string;
   name: string;
-  year: string;
-  slug?: string;
+  year: string | number;
+  slug: string;
   league?: {
     name: string;
     slug: string;
     id: string;
   };
+  leagueId?: string;
   numberOfRounds?: number;
   currentMatchRound?: number;
   currentGameRound?: number;

@@ -47,8 +47,7 @@ export class BaseProviderRepository<T extends IDocumentEntity>
       id = obj.id;
       return this.converter.from(obj).pipe(
         flatMap((entity: any) => {
-          const { externalReference } = entity;
-          delete entity[externalReference];
+          delete entity.externalReference;
           return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
         })
       );

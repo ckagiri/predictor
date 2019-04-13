@@ -1,4 +1,6 @@
-import { Model, Document, Types, Query } from "mongoose";
+import mongoose from "mongoose";
+mongoose.set("useFindAndModify", false);
+import { Model, Document } from "mongoose";
 
 import { IEntity } from "../models/base.model";
 

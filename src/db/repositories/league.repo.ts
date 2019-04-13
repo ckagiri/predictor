@@ -1,5 +1,3 @@
-import { Observable } from "rxjs";
-
 import { ILeagueDocument, League } from "../models/league.model";
 import {
   IBaseProviderRepository,
