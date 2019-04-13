@@ -1,4 +1,4 @@
-import { Schema, Model, model, Document } from "mongoose";
+import { Schema, model } from "mongoose";
 
 import { IEntity, IDocumentEntity } from "./base.model";
 
