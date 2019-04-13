@@ -1,23 +1,23 @@
 
-const mongoose = require('mongoose');
+import mongoose = require('mongoose');
 
 export const init = (mongoUri: string, cb?: any, options:any = {drop: false}) => {
-  cb = cb || function() { }
-  mongoose.connect(mongoUri, { useNewUrlParser: true }, function(err: any) {
+  cb = cb || (() => {/**/})
+  mongoose.connect(mongoUri, { useNewUrlParser: true }, (error: any) => {
     if(options.drop) {
-      mongoose.connection.db.dropDatabase(function (err: any) {
+      mongoose.connection.db.dropDatabase((err: any) => {
         cb(err);
       });
     } else {
-      cb(err);
+      cb(error);
     }
   });
 }
 
-export const drop = function() {
+export const drop = () => {
   return mongoose.connection.db.dropDatabase();
 }
 
-export const close = function() {
+export const close = () => {
   return mongoose.connection.close();
 }

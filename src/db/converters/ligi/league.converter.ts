@@ -5,11 +5,10 @@ import { ILeagueConverter } from '../league.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 export class LeagueConverter implements ILeagueConverter {
-  provider: ApiProvider;
-
   static getInstance(): ILeagueConverter {
     return new LeagueConverter();
   }
+  provider: ApiProvider;
 
   constructor() { this. provider = ApiProvider.API_FOOTBALL_DATA }
 

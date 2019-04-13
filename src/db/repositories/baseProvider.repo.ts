@@ -18,19 +18,19 @@ export interface IBaseProviderRepository<T extends IDocumentEntity> extends IBas
 }
 
 export class BaseProviderRepository<T extends IDocumentEntity> extends BaseRepository<T> implements IBaseProviderRepository<T> {
-  protected _converter: IConverter;
+  protected converter: IConverter;
 
-  constructor(schemaModel: Model<Document>, converter: IConverter) {
-    super(schemaModel);
-    this._converter = converter;
+  constructor(SchemaModel: Model<Document>, converter: IConverter) {
+    super(SchemaModel);
+    this.converter = converter;
   }
 
   get Provider() {
-    return this._converter.provider;
+    return this.converter.provider;
   }
 
   save$(obj: IEntity): Observable<T> {
-    return this._converter.from(obj).pipe(
+    return this.converter.from(obj).pipe(
       flatMap(entity => {
         return super.save$(entity)
       }));
@@ -41,7 +41,7 @@ export class BaseProviderRepository<T extends IDocumentEntity> extends BaseRepos
     if (obj === undefined){
       obj = id;
       id = obj.id;
-      return this._converter.from(obj).pipe(
+      return this.converter.from(obj).pipe(
         flatMap((entity: any) => {
           const { externalReference } = entity;
           delete entity[externalReference];

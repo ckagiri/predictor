@@ -12,8 +12,6 @@ export interface ILeagueEntity extends IDocumentEntity {
   id?: string;
  }
 
-const { String } = Schema.Types;
-
 export const leagueSchema = new Schema({
   name: { type: String, required: true },
   slug: { type: String, required: true },

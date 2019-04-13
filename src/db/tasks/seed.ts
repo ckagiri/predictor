@@ -9,15 +9,17 @@ function seed() {
   mongoose.connect(config.mongo.uri, { useNewUrlParser: true });
   mongoose.connection.on('open', () => {
     const seeder = mongooseSeeder(mongoose);
+    // tslint:disable-next-line:no-console
     console.log('seeding db..');
     seeder.seed(seedData, { dropDatabase: true, dropCollections: true })
-      .then(function(dbData: any) {
-        // The database objects are stored in dbData
-      }).catch(function(err: any) {
+      .then((dbData: any) => {/**/})
+      .catch((err: any) => {
+        // tslint:disable-next-line:no-console
         console.log(err);
       })
-      .then(function() {
+      .then(() => {
         mongoose.connection.close();
+        // tslint:disable-next-line:no-console
         console.log('seeding done');
       });
   });
