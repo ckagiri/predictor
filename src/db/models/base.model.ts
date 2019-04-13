@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document } from "mongoose";
 
 export interface IEntity {
   id?: string;
@@ -6,4 +6,4 @@ export interface IEntity {
 
 export interface IDocumentEntity extends IEntity, Document {
   id?: string;
- }
+}
