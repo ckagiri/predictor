@@ -1,4 +1,5 @@
 {
   "files.autoSaveDelay": 1500,
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "editor.snippetSuggestions": "top"
 }
