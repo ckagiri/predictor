@@ -1,0 +1,10 @@
+{
+  "leagues": {
+    "_model": "League",
+    "epl": {
+      "name": "English Premier League",
+      "code": "PL",
+      "slug": "premier-league"
+    }
+  }
+}

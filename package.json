@@ -6,7 +6,9 @@
   "scripts": {
     "test": "mocha --require ts-node/register test/**/*.spec.ts",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json"
+    "lint": "tslint -p tsconfig.json",
+    "compile": "tsc",
+    "drop:seed:test": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js"
   },
   "repository": {
     "type": "git",
