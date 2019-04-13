@@ -1,9 +1,11 @@
 import { config } from "../../config/environment/index";
-import seedData from "../tasks/seedData/seed-leagues.json";
+import seedData from "../tasks/seedData/seed-epl19.json";
 
 import mongooseSeeder = require("mais-mongoose-seeder");
 import mongoose = require("mongoose");
 import("../models/league.model");
+import("../models/season.model");
+import("../models/team.model");
 
 function seed() {
   mongoose.connect(config.mongo.uri, { useNewUrlParser: true });
