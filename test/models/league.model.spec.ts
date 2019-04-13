@@ -1,5 +1,5 @@
+import 'mocha';
 import { expect } from 'chai';
-
 import { League } from '../../src/db/models/league.model';
 
 describe('League', () => {
@@ -8,7 +8,7 @@ describe('League', () => {
     describe('an empty league', () => {
       const l = new League();
 
-      it('should have a mongoose schema', function(){
+      it('should have a mongoose schema', () => {
         expect(l.schema).to.not.be.undefined
       });
 
