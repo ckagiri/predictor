@@ -8,7 +8,7 @@ import { IEntity, IDocumentEntity } from '../models/base.model';
 import { IConverter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IBaseProviderRepository<T extends IDocumentEntity> {
+export interface IBaseProviderRepository<T extends IDocumentEntity> extends IBaseRepository<T>  {
   Provider: ApiProvider;
   save$(obj: IEntity): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
@@ -17,12 +17,11 @@ export interface IBaseProviderRepository<T extends IDocumentEntity> {
   findByExternalIds$(ids: Array<string|number>): Observable<T[]>;
 }
 
-export class BaseProviderRepository<T extends IDocumentEntity> implements IBaseProviderRepository<T> {
-  protected _baseRepo: IBaseRepository<T>;
+export class BaseProviderRepository<T extends IDocumentEntity> extends BaseRepository<T> implements IBaseProviderRepository<T> {
   protected _converter: IConverter;
 
   constructor(schemaModel: Model<Document>, converter: IConverter) {
-    this._baseRepo = new BaseRepository<T>(schemaModel);
+    super(schemaModel);
     this._converter = converter;
   }
 
@@ -33,23 +32,23 @@ export class BaseProviderRepository<T extends IDocumentEntity> implements IBaseP
   save$(obj: IEntity): Observable<T> {
     return this._converter.from(obj).pipe(
       flatMap(entity => {
-        return this._baseRepo.save$(entity)
+        return super.save$(entity)
       }));
   }
 
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
     const externalIdKey = `externalReference.${this.Provider}.id`;
-    if (obj == undefined){
+    if (obj === undefined){
       obj = id;
       id = obj.id;
       return this._converter.from(obj).pipe(
         flatMap((entity: any) => {
           const { externalReference } = entity;
-          delete entity.externalReference;
-          return this._baseRepo.findOneAndUpdate$({ [externalIdKey]: id }, entity);
+          delete entity[externalReference];
+          return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
       }))
     } else {
-      return this._baseRepo.findOneAndUpdate$({ [externalIdKey]: id }, obj);
+      return super.findOneAndUpdate$({ [externalIdKey]: id }, obj);
     }
   }
 
@@ -72,46 +71,14 @@ export class BaseProviderRepository<T extends IDocumentEntity> implements IBaseP
     return this.findAll$({ [externalIdKey]: { $in : ids } });
   }
 
-  saveMany$(objs: IEntity[]): Observable<T[]> {
-    return this._baseRepo.saveMany$(objs);
-  }
-
-  insert$(obj: IEntity): Observable<T> {
-    return this._baseRepo.insert$(obj);
-  }
-
-  insertMany$(objs: IEntity[]): Observable<T[]> {
-    return this._baseRepo.insertMany$(objs);
-  }
-
-  findByIdAndUpdate$(id: string, update: any): Observable<T> {
-    return this._baseRepo.findByIdAndUpdate$(id, update);
-  }
-
-  findOneAndUpdate$(conditions: any, update: any): Observable<T> {
-    return this._baseRepo.findOneAndUpdate$(conditions, update);
-  }
-
-  findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]> {
-    return this._baseRepo.findAll$(conditions, projection, options);
-  }
-
-  findById$(id: string) {
-    return this._baseRepo.findById$(id);
-  }
-
-  findOne$(conditions: any) {
-    return this._baseRepo.findOne$(conditions);
-  }
-
   protected _findOneAndUpsert$(conditions: any, obj: IEntity, externalReference: any): Observable<T> {
-    return this._baseRepo.findOneAndUpdate$(conditions, obj, { new: true, upsert: true }).pipe(
+    return super.findOneAndUpdate$(conditions, obj, { new: true, upsert: true }).pipe(
       flatMap((updatedObj: T) => {
         if(externalReference === undefined) {
           return of(updatedObj);
         }
         _.merge(updatedObj, { externalReference });
-        return this._baseRepo.save$(updatedObj);
+        return super.save$(updatedObj);
       }));
   }
 }
