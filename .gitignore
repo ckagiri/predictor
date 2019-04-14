@@ -1,3 +1,27 @@
+/*.zip
+/data
+/dist
+/logs
+/node_modules
+/sftp-config.json
+src/libs
+# Logs
+logs
+*.log
+
+# SSL certificates
+certs
+
+# Database
+data
+
+# Build results
+dist
+
+# node
+node_modules
+
+## From https://github.com/github/gitignore/blob/master/Node.gitignore
 # Logs
 logs
 *.log
@@ -20,23 +44,16 @@ coverage
 # nyc test coverage
 .nyc_output
 
-# Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
-
-# Bower dependency directory (https://bower.io/)
-bower_components
-
 # node-waf configuration
 .lock-wscript
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
+# Compiled binary addons (http://nodejs.org/api/addons.html)
 build/Release
 
 # Dependency directories
 node_modules/
-jspm_packages/
 
-# TypeScript v1 declaration files
+# Typescript v1 declaration files
 typings/
 
 # Optional npm cache directory
@@ -57,8 +74,24 @@ typings/
 # dotenv environment variables file
 .env
 
-# next.js build output
-.next
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history
 
-# Build results
-dist
+### Windows ###
+# Windows thumbnail cache files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Folder config file
+Desktop.ini
+
+# Windows shortcuts
+*.lnk
+
+config
