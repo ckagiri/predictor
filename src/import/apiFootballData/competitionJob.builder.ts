@@ -16,7 +16,7 @@ export default class Builder {
   }
 
   get ApiClient() {
-    return this.apiClient
+    return this.apiClient;
   }
 
   setApiClient(value: IFootballApiClient) {

@@ -1,5 +1,5 @@
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import ApiFootballDataClient from './apiFootballData/apiClient';
+import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
+import ApiFootballDataClient from "./apiFootballData/apiClient";
 
 export interface IFootballApiClient {
   getCompetitions(year: number): any;

@@ -4,7 +4,7 @@
   "description": "Predictor",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register test/**/*.spec.ts",
+    "test": "mocha --require ts-node/register 'test/**/*.spec.ts'",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "compile": "tsc",

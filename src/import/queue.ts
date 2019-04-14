@@ -1,4 +1,4 @@
-import { IJob } from './jobs/job';
+import { IJob } from "./jobs/job";
 
 export class Queue {
   tokensInInterval: number;
@@ -25,7 +25,7 @@ export class Queue {
     this.isActive = true;
     this.startTimer();
     this.processJobQueue();
-  }
+  };
 
   startTimer = () => {
     this.timer = setInterval(() => {
@@ -42,14 +42,14 @@ export class Queue {
         this.cleanUp();
       }
     }, this.timeInterval);
-  }
+  };
 
   addJob = (job: IJob) => {
     this.jobs.push(job);
     if (!this.isActive) {
       this.start();
     }
-  }
+  };
 
   processJobQueue = () => {
     if (this.jobs.length > 0) {
@@ -58,12 +58,12 @@ export class Queue {
     } else {
       this.cleanUp();
     }
-  }
+  };
 
   processLastJob = (job: IJob) => {
     const wrappedJob = this.wrapJob(job);
     wrappedJob();
-  }
+  };
 
   wrapJob = (job: IJob) => {
     const self = this;
@@ -74,16 +74,16 @@ export class Queue {
           await job.start(this);
           self.processJobQueue();
         } catch (error) {
-// tslint:disable-next-line: no-console
-          console.error(error)
+          // tslint:disable-next-line: no-console
+          console.error(error);
           self.cleanUp();
         }
       } else {
         const wrappedJob = self.wrapJob(job);
         self.pendingJobs.push(wrappedJob);
       }
-    }
-  }
+    };
+  };
 
   cleanUp = () => {
     if (this.isActive) {
@@ -91,5 +91,5 @@ export class Queue {
       this.timer = null;
       this.isActive = false;
     }
-  }
+  };
 }
