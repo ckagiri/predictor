@@ -33,29 +33,21 @@ export class FixtureConverter implements IFixtureConverter {
       this.teamRepo.findById$(data.awayTeamId),
       (season: any, homeTeam: any, awayTeam: any) => {
         return {
-          season: season._id,
-          date: new Date(data.date),
-          matchRound: data.matchRound,
-          gameRound: data.gameRound,
-          status: data.status,
+          ...data,
+          season: season.id,
           homeTeam: {
+            id: homeTeam.id!.toString(),
             slug: homeTeam.slug,
             name: homeTeam.name,
-            id: homeTeam._id,
-            crestUrl: homeTeam.crestUrl
+            crestUrl: homeTeam.crestUrl!.toString()
           },
           awayTeam: {
+            id: awayTeam.id!.toString(),
             slug: awayTeam.slug,
             name: awayTeam.name,
-            id: awayTeam._id,
-            crestUrl: awayTeam.crestUrl
+            crestUrl: awayTeam.crestUrl!.toString()
           },
-          slug: `${homeTeam.slug}-${awayTeam.slug}`,
-          result: {
-            goalsHomeTeam: data.result.goalsHomeTeam,
-            goalsAwayTeam: data.result.goalsAwayTeam
-          },
-          odds: data.odds
+          slug: `${homeTeam.slug}-${awayTeam.slug}`
         };
       }
     );
