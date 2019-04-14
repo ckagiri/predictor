@@ -17,7 +17,7 @@ export enum FixtureStatus {
 export interface IFixture extends IEntity {
   id?: string;
   season?: string;
-  slug?: string;
+  slug: string;
   date?: any;
   matchRound?: number;
   gameRound?: number;

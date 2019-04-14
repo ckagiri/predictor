@@ -4,7 +4,7 @@ import { IEntity, IDocumentEntity } from "./base.model";
 
 export interface ILeague extends IEntity {
   name: string;
-  slug?: string;
+  slug: string;
   code?: string;
 }
 

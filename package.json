@@ -54,6 +54,7 @@
     "@types/mocha": "^5.2.6",
     "@types/mongoose": "^5.3.26",
     "@types/node": "^11.13.4",
+    "@types/sinon": "^7.0.11",
     "@types/sinon-chai": "^3.2.2",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
