@@ -86,6 +86,7 @@ export class BaseProviderRepository<
       .pipe(
         flatMap((updatedObj: T) => {
           if (externalReference === undefined) {
+            // Todo: check if external ref exists in updated Object
             return of(updatedObj);
           }
           _.merge(updatedObj, { externalReference });

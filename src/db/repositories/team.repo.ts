@@ -37,8 +37,8 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
     if (partialUpdate) {
       return super.findOneAndUpdate$(query, obj);
     }
-    return this.converter.from(obj).pipe(
-      flatMap((data: any) => {
+    return (this.converter as ITeamConverter).from(obj).pipe(
+      flatMap(data => {
         const { externalReference } = data;
         delete obj.externalReference;
         return this._findOneAndUpsert$(query, obj, externalReference);

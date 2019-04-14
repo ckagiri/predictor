@@ -39,6 +39,7 @@ export interface IFixture extends IEntity {
   venue?: string;
   allPredictionsProcessed?: boolean;
   externalReference?: any;
+  [key: string]: any;
 }
 
 export interface IFixtureDocument extends IFixture, IDocumentEntity {}
