@@ -1,6 +1,4 @@
-import { Observable } from "rxjs";
-
-import { ISeasonDocument, Season } from "../models/season.model";
+import { ISeason, ISeasonDocument, Season } from "../models/season.model";
 import {
   IBaseProviderRepository,
   BaseProviderRepository
@@ -11,10 +9,10 @@ import {
 } from "../converters/season.converter";
 import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
 
-export interface ISeasonRepository
-  extends IBaseProviderRepository<ISeasonDocument> {}
+export interface ISeasonRepository extends IBaseProviderRepository<ISeason> {}
 
-export class SeasonRepository extends BaseProviderRepository<ISeasonDocument>
+export class SeasonRepository
+  extends BaseProviderRepository<ISeason, ISeasonDocument>
   implements ISeasonRepository {
   static getInstance(provider: ApiProvider): ISeasonRepository {
     return new SeasonRepository(SeasonConverter.getInstance(provider));

@@ -26,7 +26,7 @@ export class SeasonConverter implements ISeasonConverter {
         return of({
           ...data,
           league: {
-            id: league._id,
+            id: league.id,
             name: league.name,
             slug: league.slug
           }

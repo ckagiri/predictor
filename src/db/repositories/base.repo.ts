@@ -1,10 +1,9 @@
-import { Observable, Observer, Subscriber } from "rxjs";
-import { Model, Document, Query, SaveOptions, Types } from "mongoose";
+import { Observable, Subscriber } from "rxjs";
 
 import { DocumentDao } from "./document.dao";
 import { IEntity, IDocumentEntity } from "../models/base.model";
 
-export interface IBaseRepository<T extends IDocumentEntity> {
+export interface IBaseRepository<T extends IEntity> {
   save$(obj: IEntity): Observable<T>;
   insert$(obj: IEntity): Observable<T>;
   saveMany$(objs: IEntity[]): Observable<T[]>;
@@ -18,8 +17,10 @@ export interface IBaseRepository<T extends IDocumentEntity> {
   count$(conditions: any): Observable<number>;
 }
 
-export class BaseRepository<T extends IDocumentEntity> extends DocumentDao<T>
-  implements IBaseRepository<T> {
+export class BaseRepository<
+  T extends IEntity,
+  TDocument extends T & IDocumentEntity
+> extends DocumentDao<TDocument> implements IBaseRepository<T> {
   save$(obj: IEntity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(

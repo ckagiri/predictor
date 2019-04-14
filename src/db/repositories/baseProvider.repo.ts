@@ -8,7 +8,7 @@ import { IEntity, IDocumentEntity } from "../models/base.model";
 import { IConverter } from "../converters/converter";
 import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
 
-export interface IBaseProviderRepository<T extends IDocumentEntity>
+export interface IBaseProviderRepository<T extends IEntity>
   extends IBaseRepository<T> {
   Provider: ApiProvider;
   save$(obj: IEntity): Observable<T>;
@@ -18,9 +18,10 @@ export interface IBaseProviderRepository<T extends IDocumentEntity>
   findByExternalIds$(ids: Array<string | number>): Observable<T[]>;
 }
 
-export class BaseProviderRepository<T extends IDocumentEntity>
-  extends BaseRepository<T>
-  implements IBaseProviderRepository<T> {
+export class BaseProviderRepository<
+  T extends IEntity,
+  TDocument extends T & IDocumentEntity
+> extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
   protected converter: IConverter;
 
   constructor(SchemaModel: Model<Document>, converter: IConverter) {

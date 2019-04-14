@@ -1,6 +1,7 @@
 import "mocha";
 import { expect } from "chai";
 import { flatMap } from "rxjs/operators";
+
 import { config } from "../../src/config/environment/index";
 import * as db from "../../src/db/index";
 import { League, ILeagueDocument } from "../../src/db/models/league.model";
