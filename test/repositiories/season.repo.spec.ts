@@ -176,7 +176,7 @@ describe("seasonRepo", function() {
       .pipe(
         flatMap(s => {
           const update = { currentMatchRound: 21 };
-          return seasonRepo.findByIdAndUpdate$(s.id!.toString(), update);
+          return seasonRepo.findByIdAndUpdate$(s.id!, update);
         })
       )
       .subscribe(s => {

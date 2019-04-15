@@ -10,7 +10,7 @@ import { FootballApiProvider as ApiProvider } from "../../common/footballApiProv
 
 export interface ITeamRepository extends IBaseProviderRepository<ITeam> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<ITeam>;
-  findEachByNameAndUpsert$(objs: any[]): Observable<ITeam[]>;
+  findEachByNameAndUpsert$(teams: any[]): Observable<ITeam[]>;
   findByName$(name: string): Observable<ITeam>;
 }
 
@@ -46,11 +46,11 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
     );
   }
 
-  findEachByNameAndUpsert$(objs: any[]): Observable<ITeam[]> {
+  findEachByNameAndUpsert$(teams: any[]): Observable<ITeam[]> {
     const obs: any[] = [];
 
-    for (const obj of objs) {
-      obs.push(this.findByNameAndUpsert$(obj));
+    for (const team of teams) {
+      obs.push(this.findByNameAndUpsert$(team));
     }
     return forkJoin(obs);
   }

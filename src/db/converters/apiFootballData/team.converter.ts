@@ -16,7 +16,8 @@ export class TeamConverter implements ITeamConverter {
 
   from(data: any): Observable<ITeam> {
     return of({
-      ...data,
+      name: data.name,
+      crestUrl: data.crestUrl,
       externalReference: {
         [this.provider]: {
           id: data.id

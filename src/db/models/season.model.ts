@@ -6,7 +6,7 @@ import { IEntity, IDocumentEntity } from "./base.model";
 export interface ISeason extends IEntity {
   name: string;
   year: string | number;
-  slug: string;
+  slug?: string;
   league?: {
     name: string;
     slug: string;

@@ -8,6 +8,9 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "compile": "tsc",
+    "dsit": "npm run drop:seed:import:test",
+    "drop:seed:import:test": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js && node dist/import/start.js",
+    "import:test": "NODE_ENV=test&& npm run compile && node dist/import/start.js",
     "drop:seed:test": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js"
   },
   "repository": {

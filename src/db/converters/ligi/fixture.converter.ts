@@ -36,18 +36,23 @@ export class FixtureConverter implements IFixtureConverter {
           ...data,
           season: season.id,
           homeTeam: {
-            id: homeTeam.id!.toString(),
-            slug: homeTeam.slug,
+            id: homeTeam.id!,
             name: homeTeam.name,
-            crestUrl: homeTeam.crestUrl!.toString()
+            slug: homeTeam.slug!,
+            crestUrl: homeTeam.crestUrl!
           },
           awayTeam: {
-            id: awayTeam.id!.toString(),
-            slug: awayTeam.slug,
+            id: awayTeam.id!,
             name: awayTeam.name,
-            crestUrl: awayTeam.crestUrl!.toString()
+            slug: awayTeam.slug!,
+            crestUrl: awayTeam.crestUrl!
           },
-          slug: `${homeTeam.slug}-${awayTeam.slug}`
+          slug: `${homeTeam.slug}-${awayTeam.slug}`,
+          externalReference: {
+            [this.provider]: {
+              id: data.id
+            }
+          }
         };
       }
     );

@@ -5,7 +5,7 @@ import { IEntity, IDocumentEntity } from "./base.model";
 export interface ITeam extends IEntity {
   id?: string;
   name: string;
-  slug: string;
+  slug?: string;
   shortName?: string;
   code?: string;
   aliases?: string[];
