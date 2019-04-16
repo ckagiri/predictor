@@ -7,5 +7,8 @@ export const apiFootballDataImporter = {
     console.log("** starting ApiFootballData Importer");
     const q = new Queue(50, 1000 * 60);
     q.addJob(MainJob.getInstance());
+    q.onComplete = () => {
+      console.log("done baby!")
+    };
   }
 };

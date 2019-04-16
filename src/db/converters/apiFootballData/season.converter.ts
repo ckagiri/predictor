@@ -15,16 +15,15 @@ export class SeasonConverter implements ISeasonConverter {
   }
 
   from(data: any): Observable<ISeason> {
+    const { currentSeason } = data;
+    const { id, currentMatchday, startDate, endDate } = currentSeason;
     return of({
-      name: data.caption,
-      year: data.year,
-      currentMatchRound: data.currentMatchday,
-      numberOfRounds: data.numberOfMatchdays,
-      numberOfTeams: data.numberOfTeams,
-      numberOfGames: data.numberOfGames,
+      currentMatchRound: currentMatchday,
+      seasonStart: startDate,
+      seasonEnd: endDate,
       externalReference: {
         [this.provider]: {
-          id: data.id
+          id
         }
       }
     });

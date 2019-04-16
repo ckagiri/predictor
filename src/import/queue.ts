@@ -8,6 +8,7 @@ export class Queue {
   pendingJobs: any[];
   isActive: boolean;
   timer: any;
+  onComplete: () => void;
 
   constructor(limit: number, timeInterval: number) {
     this.tokensInInterval = limit;
@@ -16,6 +17,7 @@ export class Queue {
     this.isActive = false;
     this.jobs = [];
     this.pendingJobs = [];
+    this.onComplete = () => {/**/}
   }
 
   start = () => {
@@ -90,6 +92,7 @@ export class Queue {
       clearInterval(this.timer);
       this.timer = null;
       this.isActive = false;
+      this.onComplete();
     }
   };
 }

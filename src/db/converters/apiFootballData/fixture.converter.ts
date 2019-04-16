@@ -28,14 +28,18 @@ export class FixtureConverter implements IFixtureConverter {
   }
 
   from(data: any): Observable<IFixture> {
+  //  console.log('data', data);
     return zip(
-      this.seasonRepo.findByExternalId$(data.competitionId),
-      this.teamRepo.findByName$(data.homeTeamName),
-      this.teamRepo.findByName$(data.awayTeamName),
+      this.seasonRepo.findByExternalId$(data.season.id),
+      this.teamRepo.findByName$(data.homeTeam.name),
+      this.teamRepo.findByName$(data.awayTeam.name),
       (season: ISeason, homeTeam: ITeam, awayTeam: ITeam) => {
+        // console.log('ssn', season);
+        // console.log('at', awayTeam);
+        // console.log('ht', homeTeam);
         return {
           season: season.id,
-          date: data.date,
+          date: data.utcDate,
           matchRound: data.matchday,
           status: data.status,
           homeTeam: {
@@ -50,8 +54,11 @@ export class FixtureConverter implements IFixtureConverter {
             slug: awayTeam.slug!,
             crestUrl: awayTeam.crestUrl!
           },
-          slug: `${homeTeam.slug}-${awayTeam.slug}`,
-          result: { ...data.result },
+          slug: `${homeTeam.slug}-v-${awayTeam.slug}`,
+          result: {
+            goalsHomeTeam: data.score.fullTime.homeTeam,
+            goalsAwayTeam: data.score.fullTime.awayTeam
+          },
           odds: data.odds,
           externalReference: {
             [this.provider]: {

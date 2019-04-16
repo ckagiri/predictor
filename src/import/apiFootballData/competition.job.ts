@@ -34,9 +34,12 @@ export class CompetitionJob implements IJob {
     console.log("** starting ApiFootballData Competition job");
     return from(this.apiClient.getCompetition(this.competitionId))
       .pipe(
-        flatMap((competitionRes: any) => {
-          const competition = competitionRes.data;
-          return this.seasonRepo.findByExternalIdAndUpdate$(competition);
+        flatMap((response: any) => {
+          const competition = response.data;
+          delete competition.seasons;
+          const { currentSeason } = competition;
+          const season = { ...competition, id: currentSeason.id }
+          return this.seasonRepo.findByExternalIdAndUpdate$(season);
         }),
         map(_ => {
           const fixturesJob = FixturesJob.Builder.setApiClient(this.apiClient)

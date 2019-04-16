@@ -78,6 +78,7 @@ export class FixtureRepository
   findBySeasonAndTeamsAndUpsert$(obj: any) {
     return (this.converter as IFixtureConverter).from(obj).pipe(
       flatMap(data => {
+       // console.log('data', data)
         const { season, homeTeam, awayTeam, externalReference } = data;
         const query = {
           season,

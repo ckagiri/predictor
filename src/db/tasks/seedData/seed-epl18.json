@@ -29,7 +29,7 @@
       "aliases": []
     },
     "brighton": {
-      "name": "Brighton & Hove Albion",
+      "name": "Brighton & Hove Albion FC",
       "shortName": "Brighton",
       "code": "BRI",
       "slug": "brighton-&-hove-albion",
@@ -69,7 +69,7 @@
       "aliases": []
     },
     "huddersfield": {
-      "name": "Huddersfield Town",
+      "name": "Huddersfield Town AFC",
       "shortName": "Huddersfield",
       "code": "HDD",
       "slug": "huddersfield-town",
@@ -204,10 +204,10 @@
   },
   "seasons": {
     "_model": "Season",
-    "epl_17": {
+    "epl_18": {
       "externalReference": {
         "API_FOOTBALL_DATA": {
-          "id": 2021
+          "id": 151
         }
       },
       "league": {
@@ -463,14 +463,14 @@
         "->teams.man_united",
         "->teams.newcastle",
         "->teams.southampton",
-        "->teams.stoke_city",
-        "->teams.swansea_city",
         "->teams.tottenham",
         "->teams.watford",
-        "->teams.west_bromwich",
-        "->teams.west_ham"
+        "->teams.west_ham",
+        "->teams.cardiff",
+        "->teams.fulham",
+        "->teams.wolves"
       ],
-      "currentRound": 8,
+      "currentMatchRound": 1,
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
