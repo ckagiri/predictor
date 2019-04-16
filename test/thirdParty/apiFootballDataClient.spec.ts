@@ -74,7 +74,7 @@ describe("apifootballDataClient", () => {
     }).timeout(0);
 
     it("should get competition by id", async () => {
-      const competition = require("../fixtures/requests/apiFootballData.epl2018");
+      const competition = require("../fixtures/requests/apiFootballData.eplCompetitions");
       const response = {
         body: JSON.stringify(competition),
         headers: {

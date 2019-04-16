@@ -37,26 +37,31 @@ const epl16 = {
 };
 
 const afdEpl17 = {
-  id: 445,
-  caption: "Premier League 2017/18",
-  league: "PL",
-  year: "2017",
-  currentMatchday: 32,
-  numberOfMatchdays: 38,
-  numberOfTeams: 20,
-  numberOfGames: 380
+  id: 2021,
+  name: "Premier League",
+  code: "PL",
+  currentSeason: {
+    id: 445,
+    startDate: "2018-08-10",
+    endDate: "2019-05-12",
+    currentMatchday: 34,
+    winner: null
+  }
 };
 
 const afdEpl16 = {
-  id: 441,
-  caption: "Premier League 2016/17",
-  league: "PL",
-  year: "2016",
-  currentMatchday: 32,
-  numberOfMatchdays: 38,
-  numberOfTeams: 20,
-  numberOfGames: 380
+  id: 2021,
+  name: "Premier League",
+  code: "PL",
+  currentSeason: {
+    id: 441,
+    startDate: "2018-08-10",
+    endDate: "2019-05-12",
+    currentMatchday: 32,
+    winner: null
+  }
 };
+
 let aLeague: ILeagueDocument;
 
 describe("seasonRepo", function() {
@@ -203,7 +208,7 @@ describe("seasonRepo", function() {
       .insert$(theEpl17)
       .pipe(
         flatMap(s => {
-          afdEpl17.currentMatchday = 21;
+          afdEpl17.currentSeason.currentMatchday = 21;
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl17);
         })
       )
@@ -260,7 +265,7 @@ describe("seasonRepo", function() {
       .insert$(theEpl17)
       .pipe(
         flatMap(s => {
-          afdEpl17.currentMatchday = 21;
+          afdEpl17.currentSeason.currentMatchday = 21;
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl17);
         })
       )

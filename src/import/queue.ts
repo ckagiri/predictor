@@ -17,7 +17,9 @@ export class Queue {
     this.isActive = false;
     this.jobs = [];
     this.pendingJobs = [];
-    this.onComplete = () => {/**/}
+    this.onComplete = () => {
+      /**/
+    };
   }
 
   start = () => {

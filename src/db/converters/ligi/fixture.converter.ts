@@ -47,7 +47,7 @@ export class FixtureConverter implements IFixtureConverter {
             slug: awayTeam.slug!,
             crestUrl: awayTeam.crestUrl!
           },
-          slug: `${homeTeam.slug}-${awayTeam.slug}`,
+          slug: `${homeTeam.slug}-v-${awayTeam.slug}`,
           externalReference: {
             [this.provider]: {
               id: data.id

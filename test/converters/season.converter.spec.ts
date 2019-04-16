@@ -27,22 +27,25 @@ describe("Season Converter", () => {
   describe("Afd SeasonConverter", () => {
     const converter = new AfdSeasonConverter();
     const season = {
-      id: 445,
-      caption: "Premier League 2017/18",
-      league: "PL",
-      year: "2017",
-      currentMatchday: 32,
-      numberOfMatchdays: 38,
-      numberOfTeams: 20,
-      numberOfGames: 380,
-      lastUpdated: "2018-03-21T08:10:10Z"
+      id: 2021,
+      name: "Premier League",
+      code: "PL",
+      currentSeason: {
+        id: 151,
+        startDate: "2018-08-10",
+        endDate: "2019-05-12",
+        currentMatchday: 34,
+        winner: null
+      }
     };
     it("should convert correctly", done => {
       const conversion = converter.from(season);
       conversion.subscribe(s => {
-        expect(s.name).to.equal(season.caption);
+        expect(s.currentMatchRound).to.equal(
+          season.currentSeason.currentMatchday
+        );
         expect(s.externalReference).to.deep.equal({
-          API_FOOTBALL_DATA: { id: 445 }
+          API_FOOTBALL_DATA: { id: 151 }
         });
         done();
       });

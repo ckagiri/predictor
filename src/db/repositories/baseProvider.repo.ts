@@ -48,7 +48,6 @@ export class BaseProviderRepository<
       id = obj.id;
       return this.converter.from(obj).pipe(
         flatMap((entity: any) => {
-          console.log('season', entity, id)
           delete entity.externalReference;
           return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
         })

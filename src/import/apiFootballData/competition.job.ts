@@ -38,7 +38,7 @@ export class CompetitionJob implements IJob {
           const competition = response.data;
           delete competition.seasons;
           const { currentSeason } = competition;
-          const season = { ...competition, id: currentSeason.id }
+          const season = { ...competition, id: currentSeason.id };
           return this.seasonRepo.findByExternalIdAndUpdate$(season);
         }),
         map(_ => {

@@ -62,29 +62,37 @@ const manc = {
 
 const manuVmanc = {
   id: undefined,
+  season: {},
+  seasonId: undefined,
   date: "2017-09-10T11:30:00Z",
   status: "SCHEDULED",
   matchRound: 20,
   gameRound: 20,
-  seasonId: null,
   homeTeamId: null,
   awayTeamId: null,
   result: {}
 };
-
 const afdManuVmanc = {
-  id: 150809,
-  competitionId: 445,
-  date: "2017-09-10T11:30:00Z",
+  id: 233371,
+  season: {
+    id: 445
+  },
+  utcDate: "2019-04-20T14:00:00Z",
   status: "FINISHED",
-  matchday: 20,
-  homeTeamName: "Manchester United FC",
-  homeTeamId: 66,
-  awayTeamName: "Manchester City FC",
-  awayTeamId: 65,
-  result: {
-    goalsHomeTeam: 1,
-    goalsAwayTeam: 2
+  matchday: 35,
+  score: {
+    fullTime: {
+      homeTeam: 1,
+      awayTeam: 2
+    }
+  },
+  homeTeam: {
+    id: 66,
+    name: "Manchester United FC"
+  },
+  awayTeam: {
+    id: 65,
+    name: "Manchester City FC"
   },
   odds: {
     homeWin: 2.3,
@@ -96,7 +104,6 @@ const fixtureRepo = FixtureRepository.getInstance(
   ApiProvider.API_FOOTBALL_DATA
 );
 const ligiFixtureRepo = FixtureRepository.getInstance(ApiProvider.LIGI);
-let league: any;
 let season: any;
 let team1: any;
 let team2: any;
@@ -109,7 +116,6 @@ describe("FixtureRepo", function() {
   beforeEach(done => {
     League.create(epl)
       .then(l => {
-        league = l;
         const { name, slug, id } = l;
         const theEpl17 = {
           ...epl17,
@@ -147,7 +153,7 @@ describe("FixtureRepo", function() {
 
     ligiFixtureRepo.save$(manuVmanc).subscribe(fixture => {
       expect(fixture.season!.toString()).to.equal(season.id);
-      expect(fixture.slug).to.equal(`${team1.slug}-${team2.slug}`);
+      expect(fixture.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
       done();
     });
   });
@@ -157,7 +163,7 @@ describe("FixtureRepo", function() {
       .findBySeasonAndTeamsAndUpsert$(afdManuVmanc)
       .subscribe(fixture => {
         expect(fixture.season!.toString()).to.equal(season.id);
-        expect(fixture.slug).to.equal(`${team1.slug}-${team2.slug}`);
+        expect(fixture.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
         done();
       });
   });

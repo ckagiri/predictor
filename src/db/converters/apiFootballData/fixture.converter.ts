@@ -28,15 +28,11 @@ export class FixtureConverter implements IFixtureConverter {
   }
 
   from(data: any): Observable<IFixture> {
-  //  console.log('data', data);
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.name),
       this.teamRepo.findByName$(data.awayTeam.name),
       (season: ISeason, homeTeam: ITeam, awayTeam: ITeam) => {
-        // console.log('ssn', season);
-        // console.log('at', awayTeam);
-        // console.log('ht', homeTeam);
         return {
           season: season.id,
           date: data.utcDate,

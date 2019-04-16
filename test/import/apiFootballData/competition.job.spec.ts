@@ -10,7 +10,7 @@ import { CompetitionJob } from "../../../src/import/apiFootballData/competition.
 import { FixturesJob } from "../../../src/import/apiFootballData/fixtures.job";
 import { TeamsJob } from "../../../src/import/apiFootballData/teams.job";
 
-import competition from "../../../src/db/tasks/seedData/seed-epl18.json";
+import competition from "../../fixtures/requests/apiFootballData.eplCompetitions.json";
 import teams from "../../fixtures/requests/apiFootballData.epl2018Teams.json";
 
 const queueStub: any = {
@@ -42,7 +42,7 @@ const teamRepoStub: any = {
     return of(teams.teams);
   }
 };
-const competitionId = 445;
+const competitionId = 2021;
 const jobBuilder = CompetitionJob.Builder;
 const job = jobBuilder
   .setApiClient(clientStub)
