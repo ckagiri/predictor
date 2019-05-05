@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
-mongoose.set('useCreateIndex', true);
-import { Schema, model } from 'mongoose';
+import mongoose from "mongoose";
+mongoose.set("useCreateIndex", true);
+import { Schema, model } from "mongoose";
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { IEntity, IDocumentEntity } from "./base.model";
 
 export interface ILeaderboard extends IEntity {
   id?: string;
@@ -19,23 +19,23 @@ export interface ILeaderboard extends IEntity {
 export interface ILeaderboardDocument extends ILeaderboard, IDocumentEntity {}
 
 export enum BoardStatus {
-  UPDATING_SCORES = 'UPDATING_SCORES',
-  UPDATING_RANKINGS = 'UPDATING_RANKINGS',
-  REFRESHED = 'REFRESHED'
+  UPDATING_SCORES = "UPDATING_SCORES",
+  UPDATING_RANKINGS = "UPDATING_RANKINGS",
+  REFRESHED = "REFRESHED"
 }
 
 export enum BoardType {
-  GLOBAL_SEASON = 'GLOBAL_SEASON',
-  GLOBAL_ROUND = 'GLOBAL_ROUND',
-  GLOBAL_MONTH = 'GLOBAL_MONTH',
-  MINI_LEAGUE = 'MINI_LEAGUE'
+  GLOBAL_SEASON = "GLOBAL_SEASON",
+  GLOBAL_ROUND = "GLOBAL_ROUND",
+  GLOBAL_MONTH = "GLOBAL_MONTH",
+  MINI_LEAGUE = "MINI_LEAGUE"
 }
 
 const { ObjectId } = Schema.Types;
 const Status = BoardStatus;
 
 const leaderboardSchema = new Schema({
-  season: { type: ObjectId, ref: 'Season', index: true },
+  season: { type: ObjectId, ref: "Season", index: true },
   gameRound: { type: Number, index: true },
   year: { type: Number, index: true },
   month: { type: Number, index: true },
@@ -57,4 +57,7 @@ const leaderboardSchema = new Schema({
   lastStatusUpdate: { type: Schema.Types.Date }
 });
 
-export const Leaderboard = model<ILeaderboardDocument>('Leaderboard', leaderboardSchema);
+export const Leaderboard = model<ILeaderboardDocument>(
+  "Leaderboard",
+  leaderboardSchema
+);

@@ -1,18 +1,21 @@
-import { Observable, of, from, throwError } from 'rxjs';
-import { filter, first, flatMap, catchError } from 'rxjs/operators';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { Observable, of, from, throwError } from "rxjs";
+import { filter, first, flatMap, catchError } from "rxjs/operators";
+import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
 
 import {
   IPrediction,
   IPredictionDocument,
   Prediction,
   PredictionStatus
-} from '../models/prediction.model';
-import { IFixture } from '../models/fixture.model';
-import { FixtureStatus } from '../models/fixture.model';
-import { IFixtureRepository, FixtureRepository } from '../repositories/fixture.repo';
-import { Score } from '../../common/score';
-import { IBaseRepository, BaseRepository } from './base.repo';
+} from "../models/prediction.model";
+import { IFixture } from "../models/fixture.model";
+import { FixtureStatus } from "../models/fixture.model";
+import {
+  IFixtureRepository,
+  FixtureRepository
+} from "../repositories/fixture.repo";
+import { Score } from "../../common/score";
+import { IBaseRepository, BaseRepository } from "./base.repo";
 
 export interface IPredictionRepository extends IBaseRepository<IPrediction> {
   findOrCreateJoker$(
@@ -34,10 +37,13 @@ export interface IPredictionRepository extends IBaseRepository<IPrediction> {
   ): Observable<IPrediction>;
 }
 
-export class PredictionRepository extends BaseRepository<IPrediction, IPredictionDocument>
+export class PredictionRepository
+  extends BaseRepository<IPrediction, IPredictionDocument>
   implements IPredictionRepository {
   static getInstance() {
-    return new PredictionRepository(FixtureRepository.getInstance(ApiProvider.LIGI));
+    return new PredictionRepository(
+      FixtureRepository.getInstance(ApiProvider.LIGI)
+    );
   }
 
   private fixtureRepo: IFixtureRepository;
@@ -67,14 +73,27 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
             return of(currentJoker);
           } else {
             newJokerFixtureId = pick[Math.floor(Math.random() * pick.length)];
-            return this.pickJoker$(userId, currentJoker, newJokerFixtureId, true);
+            return this.pickJoker$(
+              userId,
+              currentJoker,
+              newJokerFixtureId,
+              true
+            );
           }
         } else {
           newJokerFixtureId = pick;
-          if (currentJoker && currentJoker.status === PredictionStatus.PROCESSED) {
-            return throwError(new Error('Joker prediction already processed'));
+          if (
+            currentJoker &&
+            currentJoker.status === PredictionStatus.PROCESSED
+          ) {
+            return throwError(new Error("Joker prediction already processed"));
           }
-          return this.pickJoker$(userId, currentJoker, newJokerFixtureId, false);
+          return this.pickJoker$(
+            userId,
+            currentJoker,
+            newJokerFixtureId,
+            false
+          );
         }
       })
     );
@@ -91,7 +110,13 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
     return super.findOne$(query);
   }
 
-  findOneOrCreate$({ userId, fixtureId }: { userId: string; fixtureId: string }) {
+  findOneOrCreate$({
+    userId,
+    fixtureId
+  }: {
+    userId: string;
+    fixtureId: string;
+  }) {
     const query = { user: userId, fixture: fixtureId };
     return this.findOne$(query).pipe(
       flatMap(prediction => {
@@ -118,8 +143,11 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
     );
   }
 
-  findOneAndUpsert$({ userId, fixtureId }: { userId: string; fixtureId: string }, choice: Score) {
-    return throwError(new Error('method not implemented'));
+  findOneAndUpsert$(
+    { userId, fixtureId }: { userId: string; fixtureId: string },
+    choice: Score
+  ) {
+    return throwError(new Error("method not implemented"));
   }
 
   private pickJoker$(
@@ -134,7 +162,7 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
       .pipe(
         flatMap(fixture => {
           if (!fixture) {
-            return throwError(new Error('Fixture does not exist'));
+            return throwError(new Error("Fixture does not exist"));
           }
           newJokerFixture = fixture;
           if (
@@ -144,7 +172,7 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
           ) {
             return this.findOne$({ user: userId, fixture: newJokerFixtureId });
           }
-          return throwError(new Error('Fixture not scheduled'));
+          return throwError(new Error("Fixture not scheduled"));
         })
       )
       .pipe(
@@ -154,7 +182,12 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
       )
       .pipe(
         flatMap((newJokerPrediction: IPrediction) => {
-          const { slug: fixtureSlug, season, gameRound, odds } = newJokerFixture;
+          const {
+            slug: fixtureSlug,
+            season,
+            gameRound,
+            odds
+          } = newJokerFixture;
           let newJoker: IPrediction;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();
@@ -201,33 +234,35 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
 
   private getRandomMatchScore() {
     const scoreList = [
-      '0-0',
-      '1-1',
-      '1-1',
-      '2-2',
-      '1-0',
-      '1-0',
-      '2-0',
-      '2-0',
-      '2-0',
-      '2-1',
-      '2-1',
-      '2-1',
-      '3-0',
-      '3-1',
-      '3-2',
-      '0-1',
-      '0-1',
-      '0-1',
-      '0-1',
-      '0-2',
-      '1-2',
-      '1-2',
-      '0-3',
-      '1-3',
-      '2-3'
+      "0-0",
+      "1-1",
+      "1-1",
+      "2-2",
+      "1-0",
+      "1-0",
+      "2-0",
+      "2-0",
+      "2-0",
+      "2-1",
+      "2-1",
+      "2-1",
+      "3-0",
+      "3-1",
+      "3-2",
+      "0-1",
+      "0-1",
+      "0-1",
+      "0-1",
+      "0-2",
+      "1-2",
+      "1-2",
+      "0-3",
+      "1-3",
+      "2-3"
     ];
-    const score = scoreList[Math.floor(Math.random() * scoreList.length)].split('-');
+    const score = scoreList[Math.floor(Math.random() * scoreList.length)].split(
+      "-"
+    );
     const goalsHomeTeam = Number(score[0]);
     const goalsAwayTeam = Number(score[1]);
     return {

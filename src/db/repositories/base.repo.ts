@@ -1,7 +1,7 @@
-import { Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber } from "rxjs";
 
-import { DocumentDao } from './document.dao';
-import { IEntity, IDocumentEntity } from '../models/base.model';
+import { DocumentDao } from "./document.dao";
+import { IEntity, IDocumentEntity } from "../models/base.model";
 
 export interface IBaseRepository<T extends IEntity> {
   save$(obj: IEntity): Observable<T>;
