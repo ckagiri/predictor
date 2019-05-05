@@ -114,7 +114,7 @@ const kagiri: IUser = {
   email: 'kagiri@example.com'
 };
 
-describe.only('Prediction repo', function() {
+describe('Prediction repo', function() {
   this.timeout(5000);
 
   before(done => {
