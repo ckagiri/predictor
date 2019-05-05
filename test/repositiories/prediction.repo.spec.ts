@@ -1,7 +1,6 @@
-import { Observable } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
+import { Document } from 'mongoose';
 import { expect } from 'chai';
-import { Types } from 'mongoose';
-const ObjectId = Types.ObjectId;
 
 import * as db from '../../src/db';
 import { config } from '../../src/config/environment';
@@ -10,7 +9,7 @@ import { League, ILeague } from '../../src/db/models/league.model';
 import { Season, ISeason } from '../../src/db/models/season.model';
 import { Team, ITeam } from '../../src/db/models/team.model';
 import { Fixture, IFixture, FixtureStatus } from '../../src/db/models/fixture.model';
-import { Prediction, IPrediction } from '../../src/db/models/prediction.model';
+import { Prediction, IPrediction, IPredictionDocument } from '../../src/db/models/prediction.model';
 
 import { ScorePoints } from '../../src/common/score';
 import { PredictionRepository } from '../../src/db/repositories/prediction.repo';
@@ -224,6 +223,61 @@ describe.only('Prediction repo', function() {
       })
       .then(p => {
         expect(p.id).to.equal(prediction.id);
+        done();
+      });
+  });
+
+  describe('findOneOrCreate prediction', () => {
+    it('should create prediction if it doesnt exist', done => {
+      predictionRepo.findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id }).subscribe(p => {
+        expect(p.user.toString()).to.equal(user1.id);
+        expect(p.fixture.toString()).to.equal(fixture1.id);
+        expect(p.fixtureSlug).to.equal(fixture1.slug);
+        expect(p).to.have.property('hasJoker', false);
+        expect(p).to.have.property('jokerAutoPicked', false);
+        done();
+      });
+    });
+    it('should return existing prediction', done => {
+      type Prd = IPrediction | Document;
+      let prediction: IPredictionDocument;
+      predictionRepo
+        .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })
+        .pipe(
+          flatMap(p => {
+            prediction = p as IPredictionDocument;
+            return predictionRepo.findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id });
+          })
+        )
+        .subscribe(p => {
+          expect((p as IPredictionDocument).toObject()).to.eql(prediction.toObject());
+          done();
+        });
+    });
+  });
+
+  it('should findById And update score', done => {
+    let scorePoints: ScorePoints;
+    predictionRepo
+      .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })
+      .pipe(
+        flatMap(p => {
+          scorePoints = {
+            points: 7,
+            APoints: 7,
+            BPoints: 0,
+            MatchOutcomePoints: 4,
+            TeamScorePlusPoints: 3,
+            GoalDifferencePoints: 0,
+            ExactScorePoints: 0,
+            TeamScoreMinusPoints: 0
+          };
+          return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
+        })
+      )
+      .subscribe(p => {
+        const pred = (p as IPredictionDocument).toObject() as IPrediction;
+        expect(pred.scorePoints).to.eql(scorePoints);
         done();
       });
   });

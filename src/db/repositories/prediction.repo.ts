@@ -11,7 +11,7 @@ import {
 import { IFixture } from '../models/fixture.model';
 import { FixtureStatus } from '../models/fixture.model';
 import { IFixtureRepository, FixtureRepository } from '../repositories/fixture.repo';
-
+import { Score } from '../../common/score';
 import { IBaseRepository, BaseRepository } from './base.repo';
 
 export interface IPredictionRepository extends IBaseRepository<IPrediction> {
@@ -20,6 +20,17 @@ export interface IPredictionRepository extends IBaseRepository<IPrediction> {
     seasonId: string,
     gameRound: number,
     pick: string | string[]
+  ): Observable<IPrediction>;
+  findOneOrCreate$({
+    userId,
+    fixtureId
+  }: {
+    userId: string;
+    fixtureId: string;
+  }): Observable<IPrediction>;
+  findOneAndUpsert$(
+    { userId, fixtureId }: { userId: string; fixtureId: string },
+    choice: Score
   ): Observable<IPrediction>;
 }
 
@@ -78,6 +89,37 @@ export class PredictionRepository extends BaseRepository<IPrediction, IPredictio
       delete query.fixtureId;
     }
     return super.findOne$(query);
+  }
+
+  findOneOrCreate$({ userId, fixtureId }: { userId: string; fixtureId: string }) {
+    const query = { user: userId, fixture: fixtureId };
+    return this.findOne$(query).pipe(
+      flatMap(prediction => {
+        if (prediction) {
+          return of(prediction);
+        }
+        return this.fixtureRepo.findById$(fixtureId).pipe(
+          flatMap(fixture => {
+            const { slug: fixtureSlug, season, gameRound, odds } = fixture;
+            const pred: IPrediction = {
+              user: userId,
+              fixture: fixtureId,
+              fixtureSlug,
+              season,
+              gameRound,
+              choice: {} as any
+            };
+            const randomMatchScore = this.getRandomMatchScore();
+            pred.choice = randomMatchScore;
+            return this.save$(pred);
+          })
+        );
+      })
+    );
+  }
+
+  findOneAndUpsert$({ userId, fixtureId }: { userId: string; fixtureId: string }, choice: Score) {
+    return throwError(new Error('method not implemented'));
   }
 
   private pickJoker$(
