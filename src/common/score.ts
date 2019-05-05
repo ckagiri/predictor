@@ -1,6 +1,7 @@
 export interface Score {
   goalsHomeTeam: number;
   goalsAwayTeam: number;
+  isComputerGenerated?: boolean;
 }
 
 export interface ScorePoints {
