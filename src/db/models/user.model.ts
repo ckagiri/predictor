@@ -1,9 +1,10 @@
-import mongoose from "mongoose";
-mongoose.set("useCreateIndex", true);
-import { Schema, model } from "mongoose";
-import * as bcrypt from "bcrypt-nodejs";
+import mongoose from 'mongoose';
+mongoose.set('useCreateIndex', true);
+import { Schema, model } from 'mongoose';
+import * as bcrypt from 'bcrypt-nodejs';
 
-import { IEntity, IDocumentEntity } from "./base.model";
+import { IEntity, IDocumentEntity } from './base.model';
+import { never } from 'rxjs';
 
 export interface IUser extends IEntity {
   id?: string;
@@ -85,29 +86,31 @@ const userSchema = new Schema({
   }
 });
 
-userSchema.pre("save", function(next) {
+userSchema.pre('save', function(next) {
   const user = this as IUserDocument;
-  if (!user.isModified("local.password")) {
+  if (!user.isModified('local.password')) {
     return next();
   }
   bcrypt.genSalt(10, (error, salt) => {
     if (error) {
       return next(error);
     }
-    bcrypt.hash(user.local!.password, salt, (err: any, hash: any) => {
-      if (err) {
-        return next(err);
+    bcrypt.hash(
+      user.local!.password,
+      salt,
+      () => undefined,
+      (err: any, hash: any) => {
+        if (err) {
+          return next(err);
+        }
+        user.local!.password = hash;
+        next();
       }
-      user.local!.password = hash;
-      next();
-    });
+    );
   });
 });
 
-userSchema.methods.comparePassword = function comparePassword(
-  candidatePassword: string,
-  cb: any
-) {
+userSchema.methods.comparePassword = function comparePassword(candidatePassword: string, cb: any) {
   const user = this;
   bcrypt.compare(candidatePassword, user.local.password, (err, isMatch) => {
     if (err) {
@@ -118,4 +121,4 @@ userSchema.methods.comparePassword = function comparePassword(
   });
 };
 
-export const User = model<IUserDocument>("User", userSchema);
+export const User = model<IUserDocument>('User', userSchema);
