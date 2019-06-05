@@ -17,8 +17,8 @@ import {
 
 const newFixture = (
   id: number,
-  homeTeamName: any,
-  awayTeamName: any,
+  homeTeamName: string,
+  awayTeamName: string,
   status: string = FixtureStatus.FINISHED
 ) => {
   return {
@@ -75,7 +75,7 @@ const predictionCalculatorStub: any = {
   }
 };
 let predictionProcessor: IPredictionProcessor;
-describe.only('Prediction Processor', () => {
+describe('Prediction Processor', () => {
   describe('getPredictions$', async () => {
     beforeEach(() => {
       predictionRepoStub.findOrCreateJoker$.withArgs(sinon.match(chalo.id)).returns(of(chaloJoker));

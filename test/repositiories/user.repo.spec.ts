@@ -7,7 +7,7 @@ import { config } from '../../src/config/environment/index';
 
 const userRepo = UserRepository.getInstance();
 
-describe.only('User Repo', function() {
+describe('User Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(config.testDb.uri, done, { drop: true });
