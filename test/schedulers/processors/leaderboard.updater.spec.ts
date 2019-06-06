@@ -8,10 +8,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../src/common/footballApiProvider';
-import {
-  ILeaderboardUpdater,
-  LeaderboardUpdater
-} from '../../../src/app/schedulers/leaderboard.updater';
+import { LeaderboardUpdater } from '../../../src/app/schedulers/leaderboard.updater';
 import { FixtureStatus, IFixture } from '../../../src/db/models/fixture.model';
 import { PredictionStatus } from '../../../src/db/models/prediction.model';
 import { BoardStatus } from '../../../src/db/models/leaderboard.model';
@@ -124,7 +121,7 @@ const leaderboardUpdater = new LeaderboardUpdater(
   userScoreRepoStub
 );
 
-describe.only('Leaderboard Updater', () => {
+describe('Leaderboard Updater', () => {
   describe('updateScores', () => {
     beforeEach(() => {
       leaderboardRepoStub.findSeasonBoardAndUpsert$.returns(of({ id: 1 }));
@@ -198,7 +195,6 @@ describe.only('Leaderboard Updater', () => {
       const spy = sinon.spy(userScoreRepoStub, 'findOneAndUpsert$');
 
       const count = await leaderboardUpdater.updateScores(finishedFixtures);
-
       expect(spy).to.have.been.called;
       expect(spy.getCall(0).args.length).to.equal(6);
     });

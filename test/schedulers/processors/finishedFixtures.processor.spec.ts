@@ -69,7 +69,7 @@ const fixtureRepoStub: any = {
 
 let finishedFixturesProcessor: IFinishedFixturesProcessor;
 
-describe.only('Finished Fixtures', () => {
+describe('Finished Fixtures', () => {
   describe('processPredictions', () => {
     beforeEach(() => {
       predictionProcessorStub.getPredictions$

@@ -3,7 +3,7 @@ import PredictionCalculator from '../../../src/app/schedulers/prediction.calcula
 
 const calculator = PredictionCalculator.getInstance();
 
-describe.only('PredictionCalculator', () => {
+describe('PredictionCalculator', () => {
   describe('calculateScore for result: 3 0', () => {
     it('should be correct for choice 2 1', () => {
       const scorePoints = calculator.calculateScore(
