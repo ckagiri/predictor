@@ -32,7 +32,7 @@ const apiSeasons = [apiSeason];
 let seasonRepoStub: any;
 let seasonUpdater: SeasonUpdater;
 
-describe.only('SeasonUpdater', () => {
+describe('SeasonUpdater', () => {
   beforeEach(() => {
     seasonRepoStub = {
       Provider: provider,

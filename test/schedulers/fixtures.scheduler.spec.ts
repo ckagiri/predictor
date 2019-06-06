@@ -57,7 +57,7 @@ const eventMediatorStub: any = {
   publish(event: string, ...args: any[]) {}
 };
 let fixturesScheduler: FixturesScheduler;
-describe.only('ApiFootballData: Fixtures scheduler', () => {
+describe('ApiFootballData: Fixtures scheduler', () => {
   beforeEach(() => {
     fixturesScheduler = new FixturesScheduler(
       taskRunnerStub,
