@@ -6,7 +6,7 @@ const expect = chai.expect;
 
 import { TaskRunner } from '../../src/app/schedulers/taskRunner';
 
-describe.only('TaskRunner', () => {
+describe('TaskRunner', () => {
   let taskRunner: TaskRunner;
 
   describe('run', () => {
