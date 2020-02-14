@@ -1,5 +1,7 @@
 {
   "files.autoSaveDelay": 1500,
   "editor.formatOnSave": true,
-  "editor.snippetSuggestions": "top"
+  "editor.snippetSuggestions": "top",
+  "editor.tabSize": 2,
+  "editor.detectIndentation": false,
 }
