@@ -18,11 +18,14 @@
       "type": "node",
       "request": "launch",
       "name": "Import AFD",
-      "program": "${workspaceFolder}/src/import/api-football-data/main.job.ts",
-      "preLaunchTask": "tsc: build - tsconfig.json",
+      "program": "${workspaceFolder}/src/import/start.ts",
+      "preLaunchTask": "tsc: build - tsconfig-debug.json",
       "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_ENV": "test"
+      },
       "outFiles": [
-        "${workspaceFolder}/src/import/api-football-data/main.job.js"
+        "${workspaceFolder}/debug/import/start.js"
       ],
       "sourceMaps": true
     },
