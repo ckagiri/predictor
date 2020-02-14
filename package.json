@@ -8,10 +8,11 @@
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "compile": "tsc",
-    "dsit": "npm run drop:seed:import:test",
-    "drop:seed:import:test": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js && node dist/import/start.js",
-    "import:test": "NODE_ENV=test&& npm run compile && node dist/import/start.js",
-    "drop:seed:test": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js"
+    "dsit": "npm run drop:seed:import:envt",
+    "dst": "npm run drop:seed:envt",
+    "drop:seed:import:envt": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js && node dist/import/start.js",
+    "import:envt": "NODE_ENV=test&& npm run compile && node dist/import/start.js",
+    "drop:seed:envt": "NODE_ENV=test&& npm run compile && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,7 @@
     "dotenv": "^7.0.0",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "mongoose": "^5.5.0",
     "morgan": "^1.9.1",

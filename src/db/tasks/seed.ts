@@ -1,5 +1,5 @@
 import { config } from "../../config/environment/index";
-import seedData from "../tasks/seedData/seed-epl18.json";
+import seedData from "../tasks/seedData/seed-epl19.json";
 
 import mongooseSeeder = require("mais-mongoose-seeder");
 import mongoose = require("mongoose");
