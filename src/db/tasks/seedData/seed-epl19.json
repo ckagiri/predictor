@@ -20,6 +20,14 @@
       "crestUrl": "http://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
       "aliases": []
     },
+    "aston_villa": {
+      "name": "Aston Villa FC",
+      "shortName": "Aston Villa",
+      "code": "AST",
+      "slug": "aston-villa",
+      "crestUrl": "https://upload.wikimedia.org/wikipedia/de/9/9f/Aston_Villa_logo.svg",
+      "aliases": []
+    },
     "bournemouth": {
       "name": "AFC Bournemouth",
       "shortName": "Bournemouth",
@@ -121,6 +129,22 @@
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/5/56/Newcastle_United_Logo.svg",
       "aliases": []
     },
+    "norwich": {
+      "name": "Norwich City FC",
+      "shortName": "Norwich",
+      "code": "NOR",
+      "slug": "norwich",
+      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/8/8c/Norwich_City.svg",
+      "aliases": []
+    },
+    "sheffield": {
+      "name": "Sheffield United FC",
+      "shortName": "Sheffield Utd",
+      "code": "SHE",
+      "slug": "sheffield",
+      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/9/9c/Sheffield_United_FC_logo.svg",
+      "aliases": []
+    },
     "southampton": {
       "name": "Southampton FC",
       "shortName": "Southampton",
@@ -204,10 +228,10 @@
   },
   "seasons": {
     "_model": "Season",
-    "epl_20": {
+    "epl_18": {
       "externalReference": {
         "API_FOOTBALL_DATA": {
-          "id": 151
+          "id": 468
         }
       },
       "league": {
@@ -215,236 +239,236 @@
         "name": "->leagues.epl.name",
         "slug": "->leagues.epl.slug"
       },
-      "name": "2019-2020",
-      "slug": "2019-20",
-      "year": "2020",
+      "name": "2018-2019",
+      "slug": "2018-19",
+      "year": "2018",
       "rounds": [
         {
           "name": "Round 1",
-          "startDate": "2019-08-11T20:45:00+0200",
-          "endDate": "2019-08-13T17:00:00+0200",
+          "startDate": "2018-08-11T20:45:00+0200",
+          "endDate": "2018-08-13T17:00:00+0200",
           "slug": "round-1"
         },
         {
           "name": "Round 2",
-          "startDate": "2019-08-19T13:30:00+0200",
-          "endDate": "2019-08-21T21:00:00+0200",
+          "startDate": "2018-08-19T13:30:00+0200",
+          "endDate": "2018-08-21T21:00:00+0200",
           "slug": "round-2"
         },
         {
           "name": "Round 3",
-          "startDate": "2019-08-26T13:30:00+0200",
-          "endDate": "2019-08-27T17:00:00+0200",
+          "startDate": "2018-08-26T13:30:00+0200",
+          "endDate": "2018-08-27T17:00:00+0200",
           "slug": "round-3"
         },
         {
           "name": "Round 4",
-          "startDate": "2019-09-09T13:30:00+0200",
-          "endDate": "2019-09-11T21:00:00+0200",
+          "startDate": "2018-09-09T13:30:00+0200",
+          "endDate": "2018-09-11T21:00:00+0200",
           "slug": "round-4"
         },
         {
           "name": "Round 5",
-          "startDate": "2019-09-15T21:00:00+0200",
-          "endDate": "2019-09-17T17:00:00+0200",
+          "startDate": "2018-09-15T21:00:00+0200",
+          "endDate": "2018-09-17T17:00:00+0200",
           "slug": "round-5"
         },
         {
           "name": "Round 6",
-          "startDate": "2019-09-23T13:30:00+0200",
-          "endDate": "2019-09-25T21:00:00+0200",
+          "startDate": "2018-09-23T13:30:00+0200",
+          "endDate": "2018-09-25T21:00:00+0200",
           "slug": "round-6"
         },
         {
           "name": "Round 7",
-          "startDate": "2019-09-30T13:30:00+0200",
-          "endDate": "2019-10-01T17:30:00+0200",
+          "startDate": "2018-09-30T13:30:00+0200",
+          "endDate": "2018-10-01T17:30:00+0200",
           "slug": "round-7"
         },
         {
           "name": "Round 8",
-          "startDate": "2019-10-14T13:30:00+0200",
-          "endDate": "2019-10-16T21:00:00+0200",
+          "startDate": "2018-10-14T13:30:00+0200",
+          "endDate": "2018-10-16T21:00:00+0200",
           "slug": "round-8"
         },
         {
           "name": "Round 9",
-          "startDate": "2019-10-20T21:00:00+0200",
-          "endDate": "2019-10-22T17:00:00+0200",
+          "startDate": "2018-10-20T21:00:00+0200",
+          "endDate": "2018-10-22T17:00:00+0200",
           "slug": "round-9"
         },
         {
           "name": "Round 10",
-          "startDate": "2019-10-28T13:30:00+0200",
-          "endDate": "2019-10-30T21:00:00+0100",
+          "startDate": "2018-10-28T13:30:00+0200",
+          "endDate": "2018-10-30T21:00:00+0100",
           "slug": "round-10"
         },
         {
           "name": "Round 11",
-          "startDate": "2019-11-04T13:30:00+0100",
-          "endDate": "2019-11-05T17:30:00+0100",
+          "startDate": "2018-11-04T13:30:00+0100",
+          "endDate": "2018-11-05T17:30:00+0100",
           "slug": "round-11"
         },
         {
           "name": "Round 12",
-          "startDate": "2019-11-18T13:30:00+0100",
-          "endDate": "2019-11-20T21:00:00+0100",
+          "startDate": "2018-11-18T13:30:00+0100",
+          "endDate": "2018-11-20T21:00:00+0100",
           "slug": "round-12"
         },
         {
           "name": "Round 13",
-          "startDate": "2019-11-24T21:00:00+0100",
-          "endDate": "2019-11-26T17:00:00+0100",
+          "startDate": "2018-11-24T21:00:00+0100",
+          "endDate": "2018-11-26T17:00:00+0100",
           "slug": "round-13"
         },
         {
           "name": "Round 14",
-          "startDate": "2019-11-28T20:45:00+0100",
-          "endDate": "2019-11-29T21:00:00+0100",
+          "startDate": "2018-11-28T20:45:00+0100",
+          "endDate": "2018-11-29T21:00:00+0100",
           "slug": "round-14"
         },
         {
           "name": "Round 15",
-          "startDate": "2019-12-02T16:00:00+0100",
-          "endDate": "2019-12-02T16:00:00+0100",
+          "startDate": "2018-12-02T16:00:00+0100",
+          "endDate": "2018-12-02T16:00:00+0100",
           "slug": "round-15"
         },
         {
           "name": "Round 16",
-          "startDate": "2019-12-09T16:00:00+0100",
-          "endDate": "2019-12-10T01:00:00+0100",
+          "startDate": "2018-12-09T16:00:00+0100",
+          "endDate": "2018-12-10T01:00:00+0100",
           "slug": "round-16"
         },
         {
           "name": "Round 17",
-          "startDate": "2019-12-12T20:45:00+0100",
-          "endDate": "2019-12-13T21:00:00+0100",
+          "startDate": "2018-12-12T20:45:00+0100",
+          "endDate": "2018-12-13T21:00:00+0100",
           "slug": "round-17"
         },
         {
           "name": "Round 18",
-          "startDate": "2019-12-16T16:00:00+0100",
-          "endDate": "2019-12-16T16:00:00+0100",
+          "startDate": "2018-12-16T16:00:00+0100",
+          "endDate": "2018-12-16T16:00:00+0100",
           "slug": "round-18"
         },
         {
           "name": "Round 19",
-          "startDate": "2019-12-23T16:00:00+0100",
-          "endDate": "2019-12-23T16:00:00+0100",
+          "startDate": "2018-12-23T16:00:00+0100",
+          "endDate": "2018-12-23T16:00:00+0100",
           "slug": "round-19"
         },
         {
           "name": "Round 20",
-          "startDate": "2019-12-26T16:00:00+0100",
-          "endDate": "2019-12-26T16:00:00+0100",
+          "startDate": "2018-12-26T16:00:00+0100",
+          "endDate": "2018-12-26T16:00:00+0100",
           "slug": "round-20"
         },
         {
           "name": "Round 21",
-          "startDate": "2019-12-30T16:00:00+0100",
-          "endDate": "2019-12-30T16:00:00+0100",
+          "startDate": "2018-12-30T16:00:00+0100",
+          "endDate": "2018-12-30T16:00:00+0100",
           "slug": "round-21"
         },
         {
           "name": "Round 22",
-          "startDate": "2020-01-01T16:00:00+0100",
-          "endDate": "2020-01-01T16:00:00+0100",
+          "startDate": "2019-01-01T16:00:00+0100",
+          "endDate": "2019-01-01T16:00:00+0100",
           "slug": "round-22"
         },
         {
           "name": "Round 23",
-          "startDate": "2020-01-13T16:00:00+0100",
-          "endDate": "2020-01-13T16:00:00+0100",
+          "startDate": "2019-01-13T16:00:00+0100",
+          "endDate": "2019-01-13T16:00:00+0100",
           "slug": "round-23"
         },
         {
           "name": "Round 24",
-          "startDate": "2020-01-20T16:00:00+0100",
-          "endDate": "2020-01-20T16:00:00+0100",
+          "startDate": "2019-01-20T16:00:00+0100",
+          "endDate": "2019-01-20T16:00:00+0100",
           "slug": "round-24"
         },
         {
           "name": "Round 25",
-          "startDate": "2020-01-30T20:45:00+0100",
-          "endDate": "2020-01-31T21:00:00+0100",
+          "startDate": "2019-01-30T20:45:00+0100",
+          "endDate": "2019-01-31T21:00:00+0100",
           "slug": "round-25"
         },
         {
           "name": "Round 26",
-          "startDate": "2020-02-03T16:00:00+0100",
-          "endDate": "2020-02-03T16:00:00+0100",
+          "startDate": "2019-02-03T16:00:00+0100",
+          "endDate": "2019-02-03T16:00:00+0100",
           "slug": "round-26"
         },
         {
           "name": "Round 27",
-          "startDate": "2020-02-10T16:00:00+0100",
-          "endDate": "2020-02-10T16:00:00+0100",
+          "startDate": "2019-02-10T16:00:00+0100",
+          "endDate": "2019-02-10T16:00:00+0100",
           "slug": "round-27"
         },
         {
           "name": "Round 28",
-          "startDate": "2020-02-24T16:00:00+0100",
-          "endDate": "2020-02-24T16:00:00+0100",
+          "startDate": "2019-02-24T16:00:00+0100",
+          "endDate": "2019-02-24T16:00:00+0100",
           "slug": "round-28"
         },
         {
           "name": "Round 29",
-          "startDate": "2020-03-03T16:00:00+0100",
-          "endDate": "2020-03-03T16:00:00+0100",
+          "startDate": "2019-03-03T16:00:00+0100",
+          "endDate": "2019-03-03T16:00:00+0100",
           "slug": "round-29"
         },
         {
           "name": "Round 30",
-          "startDate": "2020-03-10T16:00:00+0100",
-          "endDate": "2020-03-10T16:00:00+0100",
+          "startDate": "2019-03-10T16:00:00+0100",
+          "endDate": "2019-03-10T16:00:00+0100",
           "slug": "round-30"
         },
         {
           "name": "Round 31",
-          "startDate": "2020-03-17T16:00:00+0100",
-          "endDate": "2020-03-17T16:00:00+0100",
+          "startDate": "2019-03-17T16:00:00+0100",
+          "endDate": "2019-03-17T16:00:00+0100",
           "slug": "round-31"
         },
         {
           "name": "Round 32",
-          "startDate": "2020-03-31T16:00:00+0200",
-          "endDate": "2020-03-31T16:00:00+0200",
+          "startDate": "2019-03-31T16:00:00+0200",
+          "endDate": "2019-03-31T16:00:00+0200",
           "slug": "round-32"
         },
         {
           "name": "Round 33",
-          "startDate": "2020-04-07T16:00:00+0200",
-          "endDate": "2020-04-07T16:00:00+0200",
+          "startDate": "2019-04-07T16:00:00+0200",
+          "endDate": "2019-04-07T16:00:00+0200",
           "slug": "round-33"
         },
         {
           "name": "Round 34",
-          "startDate": "2020-04-14T16:00:00+0200",
-          "endDate": "2020-04-14T16:00:00+0200",
+          "startDate": "2019-04-14T16:00:00+0200",
+          "endDate": "2019-04-14T16:00:00+0200",
           "slug": "round-34"
         },
         {
           "name": "Round 35",
-          "startDate": "2020-04-21T16:00:00+0200",
-          "endDate": "2020-04-21T16:00:00+0200",
+          "startDate": "2019-04-21T16:00:00+0200",
+          "endDate": "2019-04-21T16:00:00+0200",
           "slug": "round-35"
         },
         {
           "name": "Round 36",
-          "startDate": "2020-04-28T16:00:00+0200",
-          "endDate": "2020-04-28T16:00:00+0200",
+          "startDate": "2019-04-28T16:00:00+0200",
+          "endDate": "2019-04-28T16:00:00+0200",
           "slug": "round-36"
         },
         {
           "name": "Round 37",
-          "startDate": "2020-05-05T16:00:00+0200",
-          "endDate": "2020-05-05T16:00:00+0200",
+          "startDate": "2019-05-05T16:00:00+0200",
+          "endDate": "2019-05-05T16:00:00+0200",
           "slug": "round-37"
         },
         {
           "name": "Round 38",
-          "startDate": "2020-05-13T16:00:00+0200",
-          "endDate": "2020-05-13T16:00:00+0200",
+          "startDate": "2019-05-13T16:00:00+0200",
+          "endDate": "2019-05-13T16:00:00+0200",
           "slug": "round-38"
         }
       ],
@@ -470,12 +494,12 @@
         "->teams.fulham",
         "->teams.wolves"
       ],
-      "currentMatchRound": 1,
+      "currentMatchRound": 26,
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
-      "seasonStart": "=new Date('2019-08-11T00:00:00+0200')",
-      "seasonEnd": "=new Date('2020-05-13T00:00:00+0200')"
+      "seasonStart": "=new Date('2018-08-09T00:00:00+0200')",
+      "seasonEnd": "=new Date('2020-05-17T00:00:00+0200')"
     }
   }
 }
