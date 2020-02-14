@@ -9,6 +9,9 @@ src/libs
 logs
 *.log
 
+# Debug
+/debug
+
 # SSL certificates
 certs
 
@@ -95,3 +98,9 @@ Desktop.ini
 *.lnk
 
 config
+
+# Cruft
+.DS_Store
+npm-debug.log
+.idea
+.awcache
