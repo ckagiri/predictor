@@ -10,10 +10,13 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [ "es2017","dom" ],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "resolveJsonModule": true
   },
   "include": [
-    "src/**/*.ts"
+    "backend/**/*.ts"
   ]
 }
