@@ -15,7 +15,7 @@ const ObjectId = Types.ObjectId;
 const taskRunnerStub: any = {
   run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
-  }
+  },
 };
 const fixturesProcessorStub: any = {
   processPredictions: (fixtures: any[]) => {
@@ -24,7 +24,7 @@ const fixturesProcessorStub: any = {
         resolve();
       }, 5);
     });
-  }
+  },
 };
 const eventMediator: IEventMediator = EventMediator.getInstance();
 let finishedFixturesScheduler: FinishedFixturesScheduler;
@@ -35,7 +35,7 @@ describe('ApiFootballData: FinishedFixtures scheduler', () => {
     finishedFixturesScheduler = new FinishedFixturesScheduler(
       taskRunnerStub,
       fixturesProcessorStub,
-      eventMediator
+      eventMediator,
     );
   });
   it('should set polling true/false when started/stopped respectively', done => {
@@ -51,14 +51,14 @@ describe('ApiFootballData: FinishedFixtures scheduler', () => {
     const newFixture = (
       homeTeamName: string,
       awayTeamName: string,
-      status: string = FixtureStatus.FINISHED
+      status: string = FixtureStatus.FINISHED,
     ) => {
       return {
         id: ObjectId().toHexString(),
         slug: `${homeTeamName}V${awayTeamName}`,
         homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
         awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
-        status
+        status,
       } as IFixture;
     };
     const arsVcheTd = newFixture('Arsenal', 'Chelsea');
@@ -72,17 +72,17 @@ describe('ApiFootballData: FinishedFixtures scheduler', () => {
       },
       getTodaysFixtures: () => {
         return Promise.resolve({ data: { fixtures: [arsVcheTd, livVsouTd] } });
-      }
+      },
     };
     const fixtureConverterStub: any = {
       map: (data: any[]) => {
         return data;
-      }
+      },
     };
     const fixturesUpdaterStub: any = {
       updateGameDetails: (fixtures: any[]) => {
         return Promise.resolve(fixtures);
-      }
+      },
     };
     let fixturesScheduler: any;
 
@@ -92,7 +92,7 @@ describe('ApiFootballData: FinishedFixtures scheduler', () => {
         apiClientStub,
         fixtureConverterStub,
         fixturesUpdaterStub,
-        eventMediator
+        eventMediator,
       );
     });
 

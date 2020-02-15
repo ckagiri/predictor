@@ -1,53 +1,53 @@
-import "mocha";
-import { expect } from "chai";
-import { flatMap } from "rxjs/operators";
+import 'mocha';
+import { expect } from 'chai';
+import { flatMap } from 'rxjs/operators';
 
-import { config } from "../../config/environment/index";
-import * as db from "../../db/index";
-import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
-import { TeamRepository } from "../../db/repositories/team.repo";
+import { config } from '../../config/environment/index';
+import * as db from '../../db/index';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { TeamRepository } from '../../db/repositories/team.repo';
 
 const manu = {
   id: undefined,
-  name: "Manchester United FC",
-  shortName: "Man United",
-  code: "MUN",
-  slug: "man_united",
+  name: 'Manchester United FC',
+  shortName: 'Man United',
+  code: 'MUN',
+  slug: 'man_united',
   crestUrl:
-    "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg",
-  aliases: ["ManU", "ManUtd"]
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
+  aliases: ['ManU', 'ManUtd'],
 };
 
 const manc = {
   id: undefined,
-  name: "Manchester City FC",
-  shortName: "Man City",
-  code: "MCI",
-  slug: "man_city",
+  name: 'Manchester City FC',
+  shortName: 'Man City',
+  code: 'MCI',
+  slug: 'man_city',
   crestUrl:
-    "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg",
-  aliases: ["ManCity"]
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
+  aliases: ['ManCity'],
 };
 
 const afdManu = {
   id: 66,
-  name: "Manchester United FC",
-  shortName: "ManU",
+  name: 'Manchester United FC',
+  shortName: 'ManU',
   squadMarketValue: null,
   crestUrl:
-    "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg"
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
 };
 
 const afdManc = {
   id: 67,
-  name: "Manchester City FC",
-  shortName: "ManCity",
+  name: 'Manchester City FC',
+  shortName: 'ManCity',
   squadMarketValue: null,
   crestUrl:
-    "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg"
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
 };
 
-describe("teamRepo", function () {
+describe('teamRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(config.testDb.uri, done, { drop: true });
@@ -63,24 +63,24 @@ describe("teamRepo", function () {
     });
   });
 
-  it("should save a new Team", done => {
+  it('should save a new Team', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.LIGI);
 
     teamRepo.save$(manu).subscribe(
       (t: any) => {
         expect(t.name).to.equal(manu.name);
         expect(t.slug).to.equal(manu.slug);
-        expect(t.aliases).to.contain("ManU", "ManUtd");
+        expect(t.aliases).to.contain('ManU', 'ManUtd');
         expect(t.aliases).to.have.length(2);
         done();
       },
       err => {
         done();
-      }
+      },
     );
   });
 
-  it("should findByName using name", done => {
+  it('should findByName using name', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
 
     teamRepo
@@ -88,7 +88,7 @@ describe("teamRepo", function () {
       .pipe(
         flatMap(_ => {
           return teamRepo.findByName$(manu.name);
-        })
+        }),
       )
       .subscribe(
         (t: any) => {
@@ -97,11 +97,11 @@ describe("teamRepo", function () {
         },
         err => {
           done();
-        }
+        },
       );
   });
 
-  it("should findByName using shortName", done => {
+  it('should findByName using shortName', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
 
     teamRepo
@@ -109,7 +109,7 @@ describe("teamRepo", function () {
       .pipe(
         flatMap(_ => {
           return teamRepo.findByName$(manu.shortName);
-        })
+        }),
       )
       .subscribe(
         (t: any) => {
@@ -119,11 +119,11 @@ describe("teamRepo", function () {
         },
         err => {
           done();
-        }
+        },
       );
   });
 
-  it("should findByName using alias", done => {
+  it('should findByName using alias', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
 
     teamRepo
@@ -131,7 +131,7 @@ describe("teamRepo", function () {
       .pipe(
         flatMap(_ => {
           return teamRepo.findByName$(manu.aliases[0]);
-        })
+        }),
       )
       .subscribe(
         (t: any) => {
@@ -141,11 +141,11 @@ describe("teamRepo", function () {
         },
         err => {
           done();
-        }
+        },
       );
   });
 
-  it("should findByNameAndUpsert", done => {
+  it('should findByNameAndUpsert', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
 
     teamRepo
@@ -153,52 +153,52 @@ describe("teamRepo", function () {
       .pipe(
         flatMap(_ => {
           return teamRepo.findByNameAndUpsert$(afdManu);
-        })
+        }),
       )
       .subscribe(
         (t: any) => {
           expect(t.name).to.equal(manu.name);
           expect(t.externalReference).to.have.ownProperty(
-            ApiProvider.API_FOOTBALL_DATA
+            ApiProvider.API_FOOTBALL_DATA,
           );
 
           done();
         },
         err => {
           done();
-        }
+        },
       );
   });
 
-  it("should retain external reference when doing findByNameAndUpsert", done => {
+  it('should retain external reference when doing findByNameAndUpsert', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
     const theManu = {
       ...manu,
-      externalReference: { SomeOtherApi: { id: "someExternalId" } }
+      externalReference: { SomeOtherApi: { id: 'someExternalId' } },
     };
     teamRepo
       .insert$(theManu)
       .pipe(
         flatMap(_ => {
           return teamRepo.findByNameAndUpsert$(afdManu);
-        })
+        }),
       )
       .subscribe(
         t => {
           expect(t.name).to.equal(theManu.name);
-          expect(t.externalReference).to.have.ownProperty("SomeOtherApi");
+          expect(t.externalReference).to.have.ownProperty('SomeOtherApi');
           expect(t.externalReference).to.have.ownProperty(
-            ApiProvider.API_FOOTBALL_DATA
+            ApiProvider.API_FOOTBALL_DATA,
           );
           done();
         },
         err => {
           done();
-        }
+        },
       );
   });
 
-  it("should findEachByNameAndUpert", done => {
+  it('should findEachByNameAndUpert', done => {
     const teamRepo = TeamRepository.getInstance(ApiProvider.LIGI);
 
     teamRepo
@@ -206,7 +206,7 @@ describe("teamRepo", function () {
       .pipe(
         flatMap(_ => {
           return teamRepo.findEachByNameAndUpsert$([afdManu, afdManc]);
-        })
+        }),
       )
       .subscribe(
         (ts: any) => {
@@ -217,7 +217,7 @@ describe("teamRepo", function () {
         },
         err => {
           done();
-        }
+        },
       );
   });
 });

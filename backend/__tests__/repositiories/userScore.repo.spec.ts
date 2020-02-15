@@ -34,7 +34,7 @@ let sBoard: any;
 const epl: ILeague = {
   name: 'English Premier League',
   slug: 'english_premier_league',
-  code: 'epl'
+  code: 'epl',
 };
 
 const epl18: ISeason = {
@@ -45,7 +45,7 @@ const epl18: ISeason = {
   seasonEnd: '2018-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: undefined
+  league: undefined,
 };
 
 const manu: ITeam = {
@@ -54,7 +54,7 @@ const manu: ITeam = {
   code: 'MUN',
   slug: 'man_united',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-  aliases: ['ManU', 'ManUtd']
+  aliases: ['ManU', 'ManUtd'],
 };
 
 const manc: ITeam = {
@@ -63,7 +63,7 @@ const manc: ITeam = {
   code: 'MCI',
   slug: 'man_city',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
-  aliases: ['ManCity']
+  aliases: ['ManCity'],
 };
 
 const che: ITeam = {
@@ -72,7 +72,7 @@ const che: ITeam = {
   code: 'CHE',
   slug: 'chelsea',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Chelsea_FC.svg',
-  aliases: ['Chelsea']
+  aliases: ['Chelsea'],
 };
 
 const ars: ITeam = {
@@ -81,7 +81,7 @@ const ars: ITeam = {
   code: 'ARS',
   slug: 'arsenal',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Arsenal_FC.svg',
-  aliases: ['Arsenal']
+  aliases: ['Arsenal'],
 };
 
 const manuVmanc: IFixture = {
@@ -93,7 +93,7 @@ const manuVmanc: IFixture = {
   homeTeam: undefined,
   awayTeam: undefined,
   slug: 'manu-v-manc',
-  result: undefined
+  result: undefined,
 };
 
 const cheVars: IFixture = {
@@ -105,20 +105,20 @@ const cheVars: IFixture = {
   homeTeam: undefined,
   awayTeam: undefined,
   slug: 'che-v-ars',
-  result: undefined
+  result: undefined,
 };
 
 const chalo = {
   username: 'chalo',
-  email: 'chalo@example.com'
+  email: 'chalo@example.com',
 };
 
 const kagiri = {
   username: 'kagiri',
-  email: 'kagiri@example.com'
+  email: 'kagiri@example.com',
 };
 
-describe('UserScore Repo', function () {
+describe('UserScore Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(config.testDb.uri, done, { drop: true });
@@ -151,26 +151,26 @@ describe('UserScore Repo', function () {
           name: team1.name,
           slug: team1.slug,
           id: team1._id,
-          crestUrl: team1.crestUrl
+          crestUrl: team1.crestUrl,
         };
         manuVmanc.awayTeam = {
           name: team2.name,
           slug: team2.slug,
           id: team2._id,
-          crestUrl: team2.crestUrl
+          crestUrl: team2.crestUrl,
         };
         manuVmanc.slug = `${team1.slug}-${team2.slug}`;
         cheVars.homeTeam = {
           name: team3.name,
           slug: team3.slug,
           id: team3._id,
-          crestUrl: team3.crestUrl
+          crestUrl: team3.crestUrl,
         };
         cheVars.awayTeam = {
           name: team4.name,
           slug: team4.slug,
           id: team4._id,
-          crestUrl: team4.crestUrl
+          crestUrl: team4.crestUrl,
         };
         cheVars.slug = `${team3.slug}-${team4.slug}`;
         return Fixture.create([manuVmanc, cheVars]);
@@ -187,8 +187,8 @@ describe('UserScore Repo', function () {
           choice: {
             goalsHomeTeam: 1,
             goalsAwayTeam: 0,
-            isComputerGenerated: true
-          }
+            isComputerGenerated: true,
+          },
         };
         const pred2: IPrediction = {
           user: user1.id,
@@ -199,8 +199,8 @@ describe('UserScore Repo', function () {
           choice: {
             goalsHomeTeam: 2,
             goalsAwayTeam: 0,
-            isComputerGenerated: true
-          }
+            isComputerGenerated: true,
+          },
         };
         const pred3: IPrediction = {
           user: user2.id,
@@ -211,8 +211,8 @@ describe('UserScore Repo', function () {
           choice: {
             goalsHomeTeam: 3,
             goalsAwayTeam: 0,
-            isComputerGenerated: true
-          }
+            isComputerGenerated: true,
+          },
         };
         return Prediction.create([pred1, pred2, pred3]);
       })
@@ -224,14 +224,14 @@ describe('UserScore Repo', function () {
           {
             status: BOARD_STATUS.UPDATING_SCORES,
             boardType: BOARD_TYPE.GLOBAL_SEASON,
-            season: theSeason.id
+            season: theSeason.id,
           },
           {
             status: BOARD_STATUS.REFRESHED,
             boardType: BOARD_TYPE.GLOBAL_ROUND,
             season: theSeason.id,
-            gameRound: 20
-          }
+            gameRound: 20,
+          },
         ]);
       })
       .then(leaderboards => {
@@ -266,7 +266,7 @@ describe('UserScore Repo', function () {
         TeamScorePlusPoints: 3,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       };
       const hasJoker = true;
       userScoreRepo
@@ -276,7 +276,7 @@ describe('UserScore Repo', function () {
           fixtureId,
           predictionId,
           predictionPoints,
-          hasJoker
+          hasJoker,
         )
         .subscribe(score => {
           expect(score.pointsExcludingJoker).to.equal(7);
@@ -311,7 +311,7 @@ describe('UserScore Repo', function () {
         predictions: [predictionId],
         pointsExcludingJoker: 7,
         APointsExcludingJoker: 7,
-        BPointsExcludingJoker: 0
+        BPointsExcludingJoker: 0,
       };
       userScoreRepo
         .insert$(score1)
@@ -325,7 +325,7 @@ describe('UserScore Repo', function () {
               TeamScorePlusPoints: 4,
               GoalDifferencePoints: 1,
               ExactScorePoints: 1,
-              TeamScoreMinusPoints: 0
+              TeamScoreMinusPoints: 0,
             };
             const hasJoker = false;
             fixtureId = fixture2.id;
@@ -336,9 +336,9 @@ describe('UserScore Repo', function () {
               fixtureId,
               predictionId,
               predictionPoints,
-              hasJoker
+              hasJoker,
             );
-          })
+          }),
         )
         .subscribe(score => {
           expect(score.pointsExcludingJoker).to.equal(17);
@@ -372,7 +372,7 @@ describe('UserScore Repo', function () {
       predictions: [user1Pred1.id],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,
-      BPointsExcludingJoker: 0
+      BPointsExcludingJoker: 0,
     };
     const score2: IUserScore = {
       leaderboard: leaderboardId,
@@ -389,14 +389,14 @@ describe('UserScore Repo', function () {
       predictions: [user2Pred1.id],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,
-      BPointsExcludingJoker: 0
+      BPointsExcludingJoker: 0,
     };
     userScoreRepo
       .insertMany$([score2, score1])
       .pipe(
         flatMap(_ => {
           return userScoreRepo.findByLeaderboardOrderByPoints$(sBoard.id);
-        })
+        }),
       )
       .subscribe(standings => {
         expect(standings[0].points).to.be.at.least(standings[1].points);
@@ -426,7 +426,7 @@ describe('UserScore Repo', function () {
       APointsExcludingJoker: 7,
       BPointsExcludingJoker: 0,
       positionNew: 1,
-      positionOld: 2
+      positionOld: 2,
     };
     userScoreRepo
       .insert$(score1)
@@ -437,9 +437,9 @@ describe('UserScore Repo', function () {
           const positionNew = prevPosition + 1;
           return userScoreRepo.findByIdAndUpdate$(standing.id!, {
             positionNew,
-            positionOld
+            positionOld,
           });
-        })
+        }),
       )
       .subscribe(standing => {
         expect(standing.positionNew).to.equal(2);

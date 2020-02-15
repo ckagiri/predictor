@@ -10,7 +10,7 @@ import { FootballApiProvider as ApiProvider } from '../../../common/footballApiP
 import { FixtureStatus } from '../../../db/models/fixture.model';
 import {
   IFixturesUpdater,
-  FixturesUpdater
+  FixturesUpdater,
 } from '../../../app/schedulers/footballApi/fixtures.updater';
 
 const provider = ApiProvider.API_FOOTBALL_DATA;
@@ -20,16 +20,16 @@ const newApiFixture = () => {
     status: FixtureStatus.FINISHED,
     result: {
       goalsHomeTeam: 1,
-      goalsAwayTeam: 1
+      goalsAwayTeam: 1,
     },
-    odds: null
+    odds: null,
   };
 };
 const newDbFixture = () => {
   return {
     id: ObjectId().toHexString(),
     status: FixtureStatus.SCHEDULED,
-    externalReference: { [provider]: { id: 1 } }
+    externalReference: { [provider]: { id: 1 } },
   };
 };
 
@@ -50,7 +50,7 @@ describe('FixturesUpdater', () => {
       },
       findByExternalIds$: () => {
         return of(dbFixtures);
-      }
+      },
     };
     fixturesUpdater = new FixturesUpdater(fixtureRepoStub);
   });
@@ -65,7 +65,7 @@ describe('FixturesUpdater', () => {
 
       expect(spy).to.have.been.calledWithMatch(dbFixture.id, {
         result: apiFixture.result,
-        status: apiFixture.status
+        status: apiFixture.status,
       });
 
       fixtureRepoStub.findByIdAndUpdate$.restore();

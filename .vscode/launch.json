@@ -8,24 +8,24 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Server",
-      "program": "${workspaceFolder}/src/server/index.ts",
+      "program": "${workspaceFolder}/backend/server/index.ts",
       "cwd": "${workspaceFolder}",
       "outFiles": [
-        "${workspaceFolder}/src/server/index.js"
+        "${workspaceFolder}/backend/server/index.js"
       ],
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Import AFD",
-      "program": "${workspaceFolder}/src/import/start.ts",
-      "preLaunchTask": "tsc: build - tsconfig-debug.json",
+      "program": "${workspaceFolder}/backend/import/start.ts",
+      "preLaunchTask": "tsc: build - backend/tsconfig-debug.json",
       "cwd": "${workspaceFolder}",
       "env": {
         "NODE_ENV": "test"
       },
       "outFiles": [
-        "${workspaceFolder}/debug/import/start.js"
+        "${workspaceFolder}/backend/debug/import/start.js"
       ],
       "sourceMaps": true
     },

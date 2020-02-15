@@ -11,12 +11,12 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": [
-      "es2017",
-      "dom"
+      "dom",
+      "es5",
+      "es6",
+      "es7",
+      "es2017"
     ],
     "resolveJsonModule": true
-  },
-  "include": [
-    "backend/**/*.ts"
-  ]
+  }
 }

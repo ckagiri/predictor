@@ -15,8 +15,5 @@
       "dom"
     ],
     "resolveJsonModule": true
-  },
-  "include": [
-    "src/**/*.ts"
-  ]
+  }
 }

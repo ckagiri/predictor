@@ -10,7 +10,7 @@ logs
 *.log
 
 # Debug
-/debug
+debug
 
 # SSL certificates
 certs
