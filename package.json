@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "TS_NODE_PROJECT='backend/tsconfig.json' mocha --require ts-node/register backend/__tests__/**/*.spec.ts",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
+    "format": "prettier --write \"backend/**/*.ts\"",
     "lb": "npm run lint:tslint:backend",
     "lfb": "npm run lint:tslint:fix:backend",
     "lint:tslint:backend": "tslint --config backend/tslint.json --project backend/tsconfig.json && npm run typecheck:backend",
