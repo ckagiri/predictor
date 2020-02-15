@@ -5,7 +5,7 @@ export interface IUserRepository extends IBaseRepository<IUser> {}
 
 export class UserRepository extends BaseRepository<IUser, IUserDocument>
   implements IUserRepository {
-  static getInstance() {
+  public static getInstance() {
     return new UserRepository();
   }
 

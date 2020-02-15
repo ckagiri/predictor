@@ -1,8 +1,8 @@
-import { IFootballApiClient } from "../../thirdParty/footballApi/apiClient";
-import { ISeasonRepository } from "../../db/repositories/season.repo";
-import { ITeamRepository } from "../../db/repositories/team.repo";
-import { IFixtureRepository } from "../../db/repositories/fixture.repo";
-import { CompetitionJob } from "../apiFootballData/competition.job";
+import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { ISeasonRepository } from '../../db/repositories/season.repo';
+import { ITeamRepository } from '../../db/repositories/team.repo';
+import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { CompetitionJob } from '../apiFootballData/competition.job';
 
 export default class Builder {
   private competitionId!: number | string;
@@ -11,7 +11,7 @@ export default class Builder {
   private teamRepo!: ITeamRepository;
   private fixtureRepo!: IFixtureRepository;
 
-  build() {
+  public build() {
     return new CompetitionJob(this);
   }
 
@@ -19,7 +19,7 @@ export default class Builder {
     return this.apiClient;
   }
 
-  setApiClient(value: IFootballApiClient) {
+  public setApiClient(value: IFootballApiClient) {
     this.apiClient = value;
     return this;
   }
@@ -28,7 +28,7 @@ export default class Builder {
     return this.seasonRepo;
   }
 
-  setSeasonRepo(value: ISeasonRepository): Builder {
+  public setSeasonRepo(value: ISeasonRepository): Builder {
     this.seasonRepo = value;
     return this;
   }
@@ -37,7 +37,7 @@ export default class Builder {
     return this.teamRepo;
   }
 
-  setTeamRepo(value: ITeamRepository): Builder {
+  public setTeamRepo(value: ITeamRepository): Builder {
     this.teamRepo = value;
     return this;
   }
@@ -46,12 +46,12 @@ export default class Builder {
     return this.fixtureRepo;
   }
 
-  setFixtureRepo(value: IFixtureRepository): Builder {
+  public setFixtureRepo(value: IFixtureRepository): Builder {
     this.fixtureRepo = value;
     return this;
   }
 
-  withCompetition(competitionId: string | number): Builder {
+  public withCompetition(competitionId: string | number): Builder {
     this.competitionId = competitionId;
     return this;
   }

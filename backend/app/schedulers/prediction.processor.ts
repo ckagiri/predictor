@@ -16,29 +16,29 @@ export interface IPredictionProcessor {
 }
 
 export class PredictionProcessor implements IPredictionProcessor {
-  static getInstance() {
+  public static getInstance() {
     return new PredictionProcessor(
       FixtureRepository.getInstance(ApiProvider.LIGI),
       UserRepository.getInstance(),
       PredictionRepository.getInstance(),
-      PredictionCalculator.getInstance()
+      PredictionCalculator.getInstance(),
     );
   }
   constructor(
     private fixtureRepo: IFixtureRepository,
     private userRepo: IUserRepository,
     private predictionRepo: IPredictionRepository,
-    private predictionCalculator: PredictionCalculator
+    private predictionCalculator: PredictionCalculator,
   ) {}
 
-  getPredictions$(fixture: IFixture) {
+  public getPredictions$(fixture: IFixture) {
     const { season: seasonId, gameRound } = fixture;
     return this.fixtureRepo
       .findSelectableFixtures$(seasonId!, gameRound!)
       .pipe(
         map(selectableFixtures => {
           return [...selectableFixtures, fixture].map(n => n.id!);
-        })
+        }),
       )
       .pipe(
         flatMap(fixtureIds => {
@@ -47,17 +47,17 @@ export class PredictionProcessor implements IPredictionProcessor {
             .pipe(
               flatMap(users => {
                 return from(users);
-              })
+              }),
             )
             .pipe(
               map(user => {
                 return {
                   selectableFixtureIds: fixtureIds,
-                  user
+                  user,
                 };
-              })
+              }),
             );
-        })
+        }),
       )
       .pipe(
         flatMap(data => {
@@ -69,11 +69,11 @@ export class PredictionProcessor implements IPredictionProcessor {
               map(jokerPrediction => {
                 return {
                   userId,
-                  jokerPrediction
+                  jokerPrediction,
                 };
-              })
+              }),
             );
-        })
+        }),
       )
       .pipe(
         flatMap(data => {
@@ -84,12 +84,12 @@ export class PredictionProcessor implements IPredictionProcessor {
             return of(jokerPrediction);
           }
           return this.predictionRepo.findOneOrCreate$({ userId: userId!, fixtureId: fixtureId! });
-        })
+        }),
       )
       .pipe(toArray());
   }
 
-  processPrediction$(prediction: IPrediction, fixture: IFixture) {
+  public processPrediction$(prediction: IPrediction, fixture: IFixture) {
     const { choice } = prediction;
     const { result } = fixture;
     const scorePoints = this.predictionCalculator.calculateScore(choice, result!);

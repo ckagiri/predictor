@@ -1,7 +1,7 @@
-import { Observable, Subscriber } from "rxjs";
+import { Observable, Subscriber } from 'rxjs';
 
-import { DocumentDao } from "./document.dao";
-import { IEntity, IDocumentEntity } from "../models/base.model";
+import { DocumentDao } from './document.dao';
+import { IEntity, IDocumentEntity } from '../models/base.model';
 
 export interface IBaseRepository<T extends IEntity> {
   save$(obj: IEntity): Observable<T>;
@@ -21,7 +21,7 @@ export class BaseRepository<
   T extends IEntity,
   TDocument extends T & IDocumentEntity
 > extends DocumentDao<TDocument> implements IBaseRepository<T> {
-  save$(obj: IEntity): Observable<T> {
+  public save$(obj: IEntity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(
         (result: T) => {
@@ -30,12 +30,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  saveMany$(objs: IEntity[]): Observable<T[]> {
+  public saveMany$(objs: IEntity[]): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.saveMany(objs).then(
         (result: T[]) => {
@@ -44,12 +44,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  insert$(obj: IEntity): Observable<T> {
+  public insert$(obj: IEntity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.insert(obj).then(
         (result: T) => {
@@ -58,12 +58,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  insertMany$(objs: IEntity[]): Observable<T[]> {
+  public insertMany$(objs: IEntity[]): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.insertMany(objs).then(
         (result: T[]) => {
@@ -72,12 +72,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  findByIdAndUpdate$(id: string, update: any): Observable<T> {
+  public findByIdAndUpdate$(id: string, update: any): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findByIdAndUpdate(id, update).then(
         (result: T) => {
@@ -86,15 +86,15 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  findOneAndUpdate$(
+  public findOneAndUpdate$(
     conditions: any,
     update: any,
-    options?: any
+    options?: any,
   ): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findOneAndUpdate(conditions, update, options).then(
@@ -104,12 +104,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]> {
+  public findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.findAll(conditions, projection, options).then(
         (result: T[]) => {
@@ -118,12 +118,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  findOne$(conditions: any, projection?: any): Observable<T> {
+  public findOne$(conditions: any, projection?: any): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findOne(conditions).then(
         (result: T) => {
@@ -132,12 +132,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  findById$(id: string): Observable<T> {
+  public findById$(id: string): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findById(id).then(
         (result: T) => {
@@ -146,12 +146,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  remove$(id: string): Observable<void> {
+  public remove$(id: string): Observable<void> {
     return Observable.create((observer: Subscriber<void>) => {
       this.remove(id).then(
         () => {
@@ -160,12 +160,12 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }
 
-  count$(conditions: any): Observable<number> {
+  public count$(conditions: any): Observable<number> {
     return Observable.create((observer: Subscriber<number>) => {
       this.count(conditions).then(
         (result: number) => {
@@ -174,7 +174,7 @@ export class BaseRepository<
         },
         (error: any) => {
           observer.error(error);
-        }
+        },
       );
     });
   }

@@ -1,13 +1,13 @@
-import { IFootballApiClient } from "../../thirdParty/footballApi/apiClient";
-import { IFixtureRepository } from "../../db/repositories/fixture.repo";
-import { FixturesJob } from "./fixtures.job";
+import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixturesJob } from './fixtures.job';
 
 export default class Builder {
   private competitionId!: number | string;
   private apiClient!: IFootballApiClient;
   private fixtureRepo!: IFixtureRepository;
 
-  build() {
+  public build() {
     return new FixturesJob(this);
   }
 
@@ -15,7 +15,7 @@ export default class Builder {
     return this.apiClient;
   }
 
-  setApiClient(value: IFootballApiClient) {
+  public setApiClient(value: IFootballApiClient) {
     this.apiClient = value;
     return this;
   }
@@ -24,12 +24,12 @@ export default class Builder {
     return this.fixtureRepo;
   }
 
-  setFixtureRepo(value: IFixtureRepository): Builder {
+  public setFixtureRepo(value: IFixtureRepository): Builder {
     this.fixtureRepo = value;
     return this;
   }
 
-  withCompetition(competitionId: string | number): Builder {
+  public withCompetition(competitionId: string | number): Builder {
     this.competitionId = competitionId;
     return this;
   }

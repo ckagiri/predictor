@@ -3,7 +3,7 @@ import { IScheduler } from '../../schedulers';
 import { ITaskRunner, TaskRunner } from '../taskRunner';
 import {
   IFootballApiClient,
-  FootballApiClient as ApiClient
+  FootballApiClient as ApiClient,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { ISeasonUpdater, SeasonUpdater } from './season.updater';
@@ -11,13 +11,13 @@ import { IEventMediator, EventMediator } from '../../../common/eventMediator';
 import { ISeasonConverter, SeasonConverter } from '../../../db/converters/season.converter';
 
 export class SeasonScheduler extends EventEmitter implements IScheduler {
-  static getInstance(provider: ApiProvider) {
+  public static getInstance(provider: ApiProvider) {
     return new SeasonScheduler(
       new TaskRunner(),
       ApiClient.getInstance(provider),
       SeasonConverter.getInstance(provider),
       SeasonUpdater.getInstance(provider),
-      EventMediator.getInstance()
+      EventMediator.getInstance(),
     );
   }
   private POLLING_INTERVAL = 24 * 60 * 60 * 1000;
@@ -29,7 +29,7 @@ export class SeasonScheduler extends EventEmitter implements IScheduler {
     private apiClient: IFootballApiClient,
     private seasonConverter: ISeasonConverter,
     private seasonUpdater: ISeasonUpdater,
-    private eventMediator: IEventMediator
+    private eventMediator: IEventMediator,
   ) {
     super();
   }
@@ -42,7 +42,7 @@ export class SeasonScheduler extends EventEmitter implements IScheduler {
     return this._pollingInterval;
   }
 
-  start = async () => {
+  public start = async () => {
     this._polling = true;
     while (this._polling) {
       await this.taskRunner.run({
@@ -53,19 +53,19 @@ export class SeasonScheduler extends EventEmitter implements IScheduler {
           await this.seasonUpdater.updateCurrentMatchRound(competitions);
           this._pollingInterval = this.POLLING_INTERVAL;
           this.onTaskExecuted();
-        }
+        },
       });
     }
   };
 
-  stop = async () => {
+  public stop = async () => {
     await Promise.resolve().then(() => {
       this._polling = false;
       this.emit('stopped');
     });
   };
 
-  onTaskExecuted = () => {
+  public onTaskExecuted = () => {
     this.emit('task:executed');
   };
 }

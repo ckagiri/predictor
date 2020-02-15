@@ -1,8 +1,7 @@
-import mongoose from "mongoose";
-mongoose.set("useCreateIndex", true);
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from 'mongoose';
+mongoose.set('useCreateIndex', true);
 
-import { IEntity, IDocumentEntity } from "./base.model";
+import { IEntity, IDocumentEntity } from './base.model';
 
 export interface IUserScore extends IEntity {
   id?: string;
@@ -27,20 +26,20 @@ export interface IUserScore extends IEntity {
   positionNew?: number;
 }
 
-export interface IUserScoreDocument extends IUserScore, IDocumentEntity {}
+export interface IUserScoreDocument extends IUserScore, IDocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 
 const userScoreSchema = new Schema({
-  user: { type: ObjectId, ref: "User", required: true, index: true },
+  user: { type: ObjectId, ref: 'User', required: true, index: true },
   leaderboard: {
     type: ObjectId,
-    ref: "Leaderboard",
+    ref: 'Leaderboard',
     required: true,
-    index: true
+    index: true,
   },
-  fixtures: [{ type: ObjectId, ref: "Fixture" }],
-  predictions: [{ type: ObjectId, ref: "Prediction" }],
+  fixtures: [{ type: ObjectId, ref: 'Fixture' }],
+  predictions: [{ type: ObjectId, ref: 'Prediction' }],
   points: { type: Number },
   APoints: { type: Number },
   BPoints: { type: Number },
@@ -55,10 +54,10 @@ const userScoreSchema = new Schema({
   pointsOld: { type: Number },
   pointsNew: { type: Number },
   positionOld: { type: Number },
-  positionNew: { type: Number }
+  positionNew: { type: Number },
 });
 
 export const UserScore = model<IUserScoreDocument>(
-  "UserScore",
-  userScoreSchema
+  'UserScore',
+  userScoreSchema,
 );

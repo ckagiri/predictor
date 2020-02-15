@@ -1,12 +1,12 @@
-import { Observable, forkJoin } from "rxjs";
-import { flatMap } from "rxjs/operators";
-import { ITeam, ITeamDocument, Team } from "../models/team.model";
+import { Observable, forkJoin } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
+import { ITeam, ITeamDocument, Team } from '../models/team.model';
 import {
   IBaseProviderRepository,
-  BaseProviderRepository
-} from "./baseProvider.repo";
-import { ITeamConverter, TeamConverter } from "../converters/team.converter";
-import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
+  BaseProviderRepository,
+} from './baseProvider.repo';
+import { ITeamConverter, TeamConverter } from '../converters/team.converter';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface ITeamRepository extends IBaseProviderRepository<ITeam> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<ITeam>;
@@ -16,7 +16,7 @@ export interface ITeamRepository extends IBaseProviderRepository<ITeam> {
 
 export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
   implements ITeamRepository {
-  static getInstance(provider: ApiProvider): ITeamRepository {
+  public static getInstance(provider: ApiProvider): ITeamRepository {
     return new TeamRepository(TeamConverter.getInstance(provider));
   }
 
@@ -24,7 +24,7 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
     super(Team, converter);
   }
 
-  findByNameAndUpsert$(name: any, obj?: any): Observable<ITeam> {
+  public findByNameAndUpsert$(name: any, obj?: any): Observable<ITeam> {
     let partialUpdate = true;
     if (obj === undefined) {
       obj = name;
@@ -32,7 +32,7 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
       partialUpdate = false;
     }
     const query = {
-      $or: [{ name }, { shortName: name }, { aliases: name }]
+      $or: [{ name }, { shortName: name }, { aliases: name }],
     };
     if (partialUpdate) {
       return super.findOneAndUpdate$(query, obj);
@@ -42,11 +42,11 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
         const { externalReference } = data;
         delete obj.externalReference;
         return this._findOneAndUpsert$(query, obj, externalReference);
-      })
+      }),
     );
   }
 
-  findEachByNameAndUpsert$(teams: any[]): Observable<ITeam[]> {
+  public findEachByNameAndUpsert$(teams: any[]): Observable<ITeam[]> {
     const obs: any[] = [];
 
     for (const team of teams) {
@@ -55,9 +55,9 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
     return forkJoin(obs);
   }
 
-  findByName$(name: string): Observable<ITeam> {
+  public findByName$(name: string): Observable<ITeam> {
     const query = {
-      $or: [{ name }, { shortName: name }, { aliases: name }]
+      $or: [{ name }, { shortName: name }, { aliases: name }],
     };
     return this.findOne$(query);
   }

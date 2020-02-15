@@ -11,9 +11,9 @@ export class FinishedFixturesScheduler extends EventEmitter implements ISchedule
 
   constructor(
     private taskRunner: ITaskRunner,
-    //private fixtureRepo: IFixtureRepository,
+    // private fixtureRepo: IFixtureRepository,
     private finishedFixturesProcessor: IFinishedFixturesProcessor,
-    private eventMediator: IEventMediator
+    private eventMediator: IEventMediator,
   ) {
     super();
     this.eventMediator.addListener('process:predictions', this.processPredictions);
@@ -27,7 +27,7 @@ export class FinishedFixturesScheduler extends EventEmitter implements ISchedule
     return this._processing;
   }
 
-  start = async () => {
+  public start = async () => {
     this._running = true;
     while (this._running) {
       await this.taskRunner.run({
@@ -36,33 +36,33 @@ export class FinishedFixturesScheduler extends EventEmitter implements ISchedule
         task: async () => {
           await this.processFinishedFixtures();
           this.emit('task:executed');
-        }
+        },
       });
     }
   };
 
-  stop = async () => {
+  public stop = async () => {
     await Promise.resolve().then(() => {
       this._running = false;
       this.emit('stopped');
     });
   };
 
-  processFinishedFixtures = async () => {
+  public processFinishedFixtures = async () => {
     if (this._processing) {
       return;
     }
-    //let fixtures = await this.fixtureRepo.findAllFinishedWithPendingPredictions$();
+    // let fixtures = await this.fixtureRepo.findAllFinishedWithPendingPredictions$();
     // await processPredictions(fs);
   };
 
-  processPredictions = async (finishedFixtures: any[]) => {
+  public processPredictions = async (finishedFixtures: any[]) => {
     if (Array.isArray(finishedFixtures) && finishedFixtures.length) {
       await this.finishedFixturesProcessor.processPredictions(finishedFixtures);
       // await leaderboardUpdater.updateScores(finishedFixtures)
-      //await leaderboardUpdater.updateRankigs()
-      //await leaderboardUpdater.markLeaderboardsAsRefreshed()
-      //await finishedFixturesProcessor.setToTrueAllPredictionsProcessed(fixtures)
+      // await leaderboardUpdater.updateRankigs()
+      // await leaderboardUpdater.markLeaderboardsAsRefreshed()
+      // await finishedFixturesProcessor.setToTrueAllPredictionsProcessed(fixtures)
     }
     this.eventMediator.publish('predictions:processed');
   };

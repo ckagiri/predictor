@@ -1,11 +1,11 @@
 import { ScorePoints, Score } from '../../common/score';
 
 export class PredictionCalculator {
-  static getInstance() {
+  public static getInstance() {
     return new PredictionCalculator();
   }
 
-  calculateScore(result: Score, choice: Score): ScorePoints {
+  public calculateScore(result: Score, choice: Score): ScorePoints {
     const scorePoints: ScorePoints = {
       points: 0,
       APoints: 0,
@@ -14,7 +14,7 @@ export class PredictionCalculator {
       TeamScorePlusPoints: 0,
       GoalDifferencePoints: 0,
       ExactScorePoints: 0,
-      TeamScoreMinusPoints: 0
+      TeamScoreMinusPoints: 0,
     };
     const choiceOutcome = calcOutcome(choice.goalsHomeTeam, choice.goalsAwayTeam);
     const resultOutcome = calcOutcome(result.goalsHomeTeam, result.goalsAwayTeam);

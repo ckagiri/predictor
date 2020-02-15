@@ -1,31 +1,31 @@
-import { Queue } from "../queue";
-import { IJob } from "../jobs/job";
-import { CompetitionJob } from "./competition.job";
-import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
+import { Queue } from '../queue';
+import { IJob } from '../jobs/job';
+import { CompetitionJob } from './competition.job';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import {
   FootballApiClient,
-  IFootballApiClient
-} from "../../thirdParty/footballApi/apiClient";
+  IFootballApiClient,
+} from '../../thirdParty/footballApi/apiClient';
 import {
   ISeasonRepository,
-  SeasonRepository
-} from "../../db/repositories/season.repo";
+  SeasonRepository,
+} from '../../db/repositories/season.repo';
 import {
   ITeamRepository,
-  TeamRepository
-} from "../../db/repositories/team.repo";
+  TeamRepository,
+} from '../../db/repositories/team.repo';
 import {
   IFixtureRepository,
-  FixtureRepository
-} from "../../db/repositories/fixture.repo";
+  FixtureRepository,
+} from '../../db/repositories/fixture.repo';
 
 export class MainJob implements IJob {
-  static getInstance() {
+  public static getInstance() {
     return new MainJob(
       FootballApiClient.getInstance(ApiProvider.API_FOOTBALL_DATA),
       SeasonRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
       TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      FixtureRepository.getInstance(ApiProvider.API_FOOTBALL_DATA)
+      FixtureRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
 
@@ -33,12 +33,12 @@ export class MainJob implements IJob {
     private apiClient: IFootballApiClient,
     private seasonRepo: ISeasonRepository,
     private teamRepo: ITeamRepository,
-    private fixtureRepo: IFixtureRepository
+    private fixtureRepo: IFixtureRepository,
   ) {}
 
-  start(queue: Queue) {
+  public start(queue: Queue) {
     // tslint:disable-next-line: no-console
-    console.log("** starting ApiFootballData Main job");
+    console.log('** starting ApiFootballData Main job');
     return this.apiClient
       .getCompetitions(2018)
       .then((response: any) => {
@@ -59,7 +59,7 @@ export class MainJob implements IJob {
         }
       })
       .catch((err: any) => {
-        const message = err.message || "Something went wrong!";
+        const message = err.message || 'Something went wrong!';
         throw new Error(message);
       });
   }

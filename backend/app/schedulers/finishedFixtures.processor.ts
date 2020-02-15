@@ -12,26 +12,26 @@ export interface IFinishedFixturesProcessor {
 }
 
 export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
-  static getInstance() {
+  public static getInstance() {
     return new FinishedFixturesProcessor(
       PredictionProcessor.getInstance(),
-      FixtureRepository.getInstance()
+      FixtureRepository.getInstance(),
     );
   }
 
   constructor(
     private predictionProcessor: IPredictionProcessor,
-    private fixtureRepo: IFixtureRepository
+    private fixtureRepo: IFixtureRepository,
   ) {}
 
-  processPredictions(fixtures: IFixture[]) {
+  public processPredictions(fixtures: IFixture[]) {
     return from(fixtures)
       .pipe(
         filter(fixture => {
           return (
             fixture.status === FixtureStatus.FINISHED && fixture.allPredictionsProcessed === false
           );
-        })
+        }),
       )
       .pipe(
         concatMap(fixture => {
@@ -40,45 +40,45 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
             .pipe(
               flatMap(predictions => {
                 return from(predictions);
-              })
+              }),
             )
             .pipe(
               map(prediction => {
                 return { fixture, prediction };
-              })
+              }),
             );
-        })
+        }),
       )
       .pipe(
         filter(data => {
           return data.prediction.status !== PredictionStatus.PROCESSED;
-        })
+        }),
       )
       .pipe(
         flatMap(data => {
           const { fixture, prediction } = data;
           return this.predictionProcessor.processPrediction$(prediction, fixture);
-        })
+        }),
       )
       .pipe(count())
       .toPromise();
   }
 
-  setToTrueAllPredictionsProcessed(fixtures: IFixture[]) {
+  public setToTrueAllPredictionsProcessed(fixtures: IFixture[]) {
     return from(fixtures)
       .pipe(
         filter(fixture => {
           return (
             fixture.status === FixtureStatus.FINISHED && fixture.allPredictionsProcessed === false
           );
-        })
+        }),
       )
       .pipe(
         flatMap(fixture => {
           return this.fixtureRepo.findByIdAndUpdate$(fixture.id!, {
-            allPredictionsProcessed: true
+            allPredictionsProcessed: true,
           });
-        })
+        }),
       )
       .pipe(count())
       .toPromise();

@@ -11,7 +11,7 @@ import { FootballApiProvider as ApiProvider } from '../../../common/footballApiP
 import { LeaderboardUpdater } from '../../../app/schedulers/leaderboard.updater';
 import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
-import { BoardStatus } from '../../../db/models/leaderboard.model';
+import { BOARD_STATUS } from '../../../db/models/leaderboard.model';
 import { CacheService } from '../../../common/observableCacheService';
 
 const seasonId = '4edd40c86762e0fb12000001';
@@ -150,7 +150,7 @@ describe('Leaderboard Updater', () => {
       await leaderboardUpdater.updateScores(finishedFixtures);
 
       expect(spy).to.have.been.called;
-      expect(spy).to.have.been.calledWith(seasonId, { status: BoardStatus.UPDATING_SCORES });
+      expect(spy).to.have.been.calledWith(seasonId, { status: BOARD_STATUS.UPDATING_SCORES });
     });
 
     it('should get Monthboard and set status to UPDATING_SCORES ', async () => {
@@ -162,7 +162,7 @@ describe('Leaderboard Updater', () => {
       const month = arsVche.date.getUTCMonth() + 1;
       const year = arsVche.date.getFullYear();
       expect(spy.firstCall).to.have.been.calledWith(seasonId, year, month, {
-        status: BoardStatus.UPDATING_SCORES
+        status: BOARD_STATUS.UPDATING_SCORES
       });
     });
 
@@ -173,7 +173,7 @@ describe('Leaderboard Updater', () => {
 
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(seasonId, gameRound, {
-        status: BoardStatus.UPDATING_SCORES
+        status: BOARD_STATUS.UPDATING_SCORES
       });
     });
     it('should get fixture prediction for the user', async () => {
@@ -216,7 +216,7 @@ describe('Leaderboard Updater', () => {
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(
         sinon.match.string,
-        sinon.match({ status: BoardStatus.UPDATING_RANKINGS })
+        sinon.match({ status: BOARD_STATUS.UPDATING_RANKINGS })
       );
     });
 
@@ -263,7 +263,7 @@ describe('Leaderboard Updater', () => {
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(
         sinon.match.string,
-        sinon.match({ status: BoardStatus.UPDATING_RANKINGS })
+        sinon.match({ status: BOARD_STATUS.UPDATING_RANKINGS })
       );
     });
   });

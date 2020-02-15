@@ -1,13 +1,13 @@
-import { Observable, of } from "rxjs";
-import { flatMap } from "rxjs/operators";
+import { Observable, of } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
 
-import { ScorePoints } from "../../common/score";
+import { ScorePoints } from '../../common/score';
 import {
   IUserScore,
   IUserScoreDocument,
-  UserScore
-} from "../models/userScore.model";
-import { IBaseRepository, BaseRepository } from "./base.repo";
+  UserScore,
+} from '../models/userScore.model';
+import { IBaseRepository, BaseRepository } from './base.repo';
 
 export interface IUserScoreRepository extends IBaseRepository<IUserScore> {
   findOneAndUpsert$(
@@ -16,17 +16,17 @@ export interface IUserScoreRepository extends IBaseRepository<IUserScore> {
     fixtureId: string,
     predictionId: string,
     predictionPoints: ScorePoints,
-    hasJoker: boolean
+    hasJoker: boolean,
   ): Observable<IUserScore>;
   findByLeaderboardOrderByPoints$(
-    leaderboardId: string
+    leaderboardId: string,
   ): Observable<IUserScore[]>;
 }
 
 export class UserScoreRepository
   extends BaseRepository<IUserScore, IUserScoreDocument>
   implements IUserScoreRepository {
-  static getInstance() {
+  public static getInstance() {
     return new UserScoreRepository();
   }
 
@@ -34,13 +34,13 @@ export class UserScoreRepository
     super(UserScore);
   }
 
-  findOneAndUpsert$(
+  public findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
     fixtureId: string,
     predictionId: string,
     predictionPoints: ScorePoints,
-    hasJoker: boolean
+    hasJoker: boolean,
   ) {
     const {
       points,
@@ -50,7 +50,7 @@ export class UserScoreRepository
       TeamScorePlusPoints,
       ExactScorePoints,
       GoalDifferencePoints,
-      TeamScoreMinusPoints
+      TeamScoreMinusPoints,
     } = predictionPoints;
 
     const score: IUserScore = {
@@ -63,7 +63,7 @@ export class UserScoreRepository
       TeamScorePlusPoints,
       ExactScorePoints,
       GoalDifferencePoints,
-      TeamScoreMinusPoints
+      TeamScoreMinusPoints,
     };
 
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
@@ -128,16 +128,16 @@ export class UserScoreRepository
               TeamScoreMinusPoints: standing.TeamScoreMinusPoints,
               pointsExcludingJoker: standing.pointsExcludingJoker,
               APointsExcludingJoker: standing.APointsExcludingJoker,
-              BPointsExcludingJoker: standing.BPointsExcludingJoker
+              BPointsExcludingJoker: standing.BPointsExcludingJoker,
             },
-            $push: { fixtures: fixtureId, predictions: predictionId }
+            $push: { fixtures: fixtureId, predictions: predictionId },
           });
         }
-      })
+      }),
     );
   }
 
-  findByLeaderboardOrderByPoints$(leaderboardId: string) {
+  public findByLeaderboardOrderByPoints$(leaderboardId: string) {
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
         points: -1,
@@ -146,8 +146,8 @@ export class UserScoreRepository
         MatchOutcomePoints: -1,
         TeamScorePlusPoints: -1,
         ExactScorePoints: -1,
-        GoalDifferencePoints: -1
-      }
+        GoalDifferencePoints: -1,
+      },
     });
   }
 }

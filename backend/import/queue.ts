@@ -1,14 +1,14 @@
-import { IJob } from "./jobs/job";
+import { IJob } from './jobs/job';
 
 export class Queue {
-  tokensInInterval: number;
-  tokensLeftInInterval: number;
-  timeInterval: number;
-  jobs: IJob[];
-  pendingJobs: any[];
-  isActive: boolean;
-  timer: any;
-  onComplete: () => void;
+  public tokensInInterval: number;
+  public tokensLeftInInterval: number;
+  public timeInterval: number;
+  public jobs: IJob[];
+  public pendingJobs: any[];
+  public isActive: boolean;
+  public timer: any;
+  public onComplete: () => void;
 
   constructor(limit: number, timeInterval: number) {
     this.tokensInInterval = limit;
@@ -22,7 +22,7 @@ export class Queue {
     };
   }
 
-  start = () => {
+  public start = () => {
     if (this.isActive) {
       return;
     }
@@ -31,7 +31,7 @@ export class Queue {
     this.processJobQueue();
   };
 
-  startTimer = () => {
+  public startTimer = () => {
     this.timer = setInterval(() => {
       this.tokensLeftInInterval = this.tokensInInterval;
       while (this.pendingJobs.length > 0) {
@@ -48,14 +48,14 @@ export class Queue {
     }, this.timeInterval);
   };
 
-  addJob = (job: IJob) => {
+  public addJob = (job: IJob) => {
     this.jobs.push(job);
     if (!this.isActive) {
       this.start();
     }
   };
 
-  processJobQueue = () => {
+  public processJobQueue = () => {
     if (this.jobs.length > 0) {
       const job = this.jobs.pop() as IJob;
       this.processLastJob(job);
@@ -64,12 +64,12 @@ export class Queue {
     }
   };
 
-  processLastJob = (job: IJob) => {
+  public processLastJob = (job: IJob) => {
     const wrappedJob = this.wrapJob(job);
     wrappedJob();
   };
 
-  wrapJob = (job: IJob) => {
+  public wrapJob = (job: IJob) => {
     const self = this;
     return async () => {
       if (self.tokensLeftInInterval > 0) {
@@ -89,7 +89,7 @@ export class Queue {
     };
   };
 
-  cleanUp = () => {
+  public cleanUp = () => {
     if (this.isActive) {
       clearInterval(this.timer);
       this.timer = null;

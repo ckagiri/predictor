@@ -10,7 +10,7 @@ import { Season, ISeason } from '../../db/models/season.model';
 import { Team, ITeam } from '../../db/models/team.model';
 import { Fixture, IFixture, FixtureStatus } from '../../db/models/fixture.model';
 import { Prediction, IPrediction } from '../../db/models/prediction.model';
-import { Leaderboard, BoardStatus, BoardType } from '../../db/models/leaderboard.model';
+import { Leaderboard, BOARD_STATUS, BOARD_TYPE } from '../../db/models/leaderboard.model';
 import { IUserScore } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
@@ -222,13 +222,13 @@ describe('UserScore Repo', function () {
         user2Pred1 = predictions[2];
         return Leaderboard.create([
           {
-            status: BoardStatus.UPDATING_SCORES,
-            boardType: BoardType.GLOBAL_SEASON,
+            status: BOARD_STATUS.UPDATING_SCORES,
+            boardType: BOARD_TYPE.GLOBAL_SEASON,
             season: theSeason.id
           },
           {
-            status: BoardStatus.REFRESHED,
-            boardType: BoardType.GLOBAL_ROUND,
+            status: BOARD_STATUS.REFRESHED,
+            boardType: BOARD_TYPE.GLOBAL_ROUND,
             season: theSeason.id,
             gameRound: 20
           }

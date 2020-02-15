@@ -1,35 +1,35 @@
-import { Observable } from "rxjs";
+import { Observable } from 'rxjs';
 
 import {
   ILeaderboard,
   Leaderboard,
   ILeaderboardDocument,
-  BoardType
-} from "../models/leaderboard.model";
-import { IBaseRepository, BaseRepository } from "./base.repo";
+  BOARD_TYPE,
+} from '../models/leaderboard.model';
+import { IBaseRepository, BaseRepository } from './base.repo';
 
 export interface ILeaderboardRepository extends IBaseRepository<ILeaderboard> {
   findSeasonBoardAndUpsert$(
     seasonId: string,
-    update: any
+    update: any,
   ): Observable<ILeaderboard>;
   findMonthBoardAndUpsert$(
     seasonId: string,
     year: number,
     month: number,
-    update: any
+    update: any,
   ): Observable<ILeaderboard>;
   findRoundBoardAndUpsert$(
     seasonId: string,
     gameRound: number,
-    update: any
+    update: any,
   ): Observable<ILeaderboard>;
 }
 
 export class LeaderboardRepository
   extends BaseRepository<ILeaderboard, ILeaderboardDocument>
   implements ILeaderboardRepository {
-  static getInstance() {
+  public static getInstance() {
     return new LeaderboardRepository();
   }
 
@@ -37,31 +37,31 @@ export class LeaderboardRepository
     super(Leaderboard);
   }
 
-  findSeasonBoardAndUpsert$(seasonId: string, update: any) {
-    const query: any = { season: seasonId, boardType: BoardType.GLOBAL_SEASON };
+  public findSeasonBoardAndUpsert$(seasonId: string, update: any) {
+    const query: any = { season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON };
     return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
   }
 
-  findMonthBoardAndUpsert$(
+  public findMonthBoardAndUpsert$(
     seasonId: string,
     year: number,
     month: number,
-    update: any
+    update: any,
   ) {
     const query: any = {
       season: seasonId,
       year,
       month,
-      boardType: BoardType.GLOBAL_MONTH
+      boardType: BOARD_TYPE.GLOBAL_MONTH,
     };
     return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
   }
 
-  findRoundBoardAndUpsert$(seasonId: string, gameRound: number, update: any) {
+  public findRoundBoardAndUpsert$(seasonId: string, gameRound: number, update: any) {
     const query: any = {
       season: seasonId,
       gameRound,
-      boardType: BoardType.GLOBAL_ROUND
+      boardType: BOARD_TYPE.GLOBAL_ROUND,
     };
     return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
   }

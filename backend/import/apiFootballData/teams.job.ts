@@ -1,10 +1,10 @@
-import { from } from "rxjs";
-import { flatMap, map } from "rxjs/operators";
-import { IJob } from "../jobs/job";
-import { Queue } from "../queue";
-import { IFootballApiClient } from "../../thirdParty/footballApi/apiClient";
-import { ITeamRepository } from "../../db/repositories/team.repo";
-import Builder from "./teamsJob.builder";
+import { from } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
+import { IJob } from '../jobs/job';
+import { Queue } from '../queue';
+import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { ITeamRepository } from '../../db/repositories/team.repo';
+import Builder from './teamsJob.builder';
 
 export class TeamsJob implements IJob {
   private competitionId: number | string;
@@ -21,15 +21,15 @@ export class TeamsJob implements IJob {
     return new Builder();
   }
 
-  start(queue: Queue) {
+  public start(queue: Queue) {
     // tslint:disable-next-line: no-console
-    console.log("** starting ApiFootballData Teams job");
+    console.log('** starting ApiFootballData Teams job');
     return from(this.apiClient.getTeams(this.competitionId))
       .pipe(
         flatMap((teamsRes: any) => {
           const teams = teamsRes.data.teams;
           return this.teamRepo.findEachByNameAndUpsert$(teams);
-        })
+        }),
       )
       .toPromise();
   }

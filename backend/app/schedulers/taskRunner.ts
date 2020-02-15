@@ -8,7 +8,7 @@ export interface ITaskRunner extends IEventEmitter {
 }
 
 export class TaskRunner extends EventEmitter implements ITaskRunner {
-  async run({ whenToExecute, task = () => {}, context, callback }: any) {
+  public async run({ whenToExecute, task = () => {}, context, callback }: any) {
     if (task && typeof task !== 'function') {
       throw new Error('Task must be a function');
     }
