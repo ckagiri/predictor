@@ -3,7 +3,7 @@ import { FixtureStatus } from '../../db/models/fixture.model';
 const epl = {
   name: 'English Premier League',
   slug: 'english_premier_league',
-  code: 'epl'
+  code: 'epl',
 };
 
 const epl18 = {
@@ -14,7 +14,7 @@ const epl18 = {
   seasonEnd: '2019-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: null
+  league: null,
 };
 
 const manu = {
@@ -23,7 +23,7 @@ const manu = {
   code: 'MUN',
   slug: 'man_united',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-  aliases: ['ManU', 'ManUtd']
+  aliases: ['ManU', 'ManUtd'],
 };
 
 const manc = {
@@ -32,7 +32,7 @@ const manc = {
   code: 'MCI',
   slug: 'man_city',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
-  aliases: ['ManCity']
+  aliases: ['ManCity'],
 };
 
 const che = {
@@ -41,7 +41,7 @@ const che = {
   code: 'CHE',
   slug: 'chelsea',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Chelsea_FC.svg',
-  aliases: ['Chelsea']
+  aliases: ['Chelsea'],
 };
 
 const ars = {
@@ -50,7 +50,7 @@ const ars = {
   code: 'ARS',
   slug: 'arsenal',
   crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Arsenal_FC.svg',
-  aliases: ['Arsenal']
+  aliases: ['Arsenal'],
 };
 
 const manuVmanc = {
@@ -62,7 +62,7 @@ const manuVmanc = {
   homeTeam: null,
   awayTeam: null,
   slug: null,
-  result: null
+  result: null,
 };
 
 const cheVars = {
@@ -74,17 +74,17 @@ const cheVars = {
   homeTeam: null,
   awayTeam: null,
   slug: null,
-  result: null
+  result: null,
 };
 
 const chalo = {
   username: 'chalo',
-  email: 'chalo@example.com'
+  email: 'chalo@example.com',
 };
 
 const kagiri = {
   username: 'kagiri',
-  email: 'kagiri@example.com'
+  email: 'kagiri@example.com',
 };
 
 const points1 = {
@@ -95,7 +95,7 @@ const points1 = {
   TeamScorePlusPoints: 4,
   GoalDifferencePoints: 1,
   ExactScorePoints: 1,
-  TeamScoreMinusPoints: 0
+  TeamScoreMinusPoints: 0,
 };
 
 const points2 = {
@@ -106,7 +106,7 @@ const points2 = {
   TeamScorePlusPoints: 3,
   GoalDifferencePoints: 0,
   ExactScorePoints: 0,
-  TeamScoreMinusPoints: 0
+  TeamScoreMinusPoints: 0,
 };
 
 export default {
@@ -121,5 +121,5 @@ export default {
   manuVmanc,
   cheVars,
   points1,
-  points2
+  points2,
 };

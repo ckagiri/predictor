@@ -8,7 +8,7 @@ describe('PredictionCalculator', () => {
     it('should be correct for choice 2 1', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 2, goalsAwayTeam: 1 }
+        { goalsHomeTeam: 2, goalsAwayTeam: 1 },
       );
       expect(scorePoints).to.eql({
         points: 4,
@@ -18,14 +18,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
 
     it('should be correct for choice 1 0', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 1, goalsAwayTeam: 0 }
+        { goalsHomeTeam: 1, goalsAwayTeam: 0 },
       );
       expect(scorePoints).to.eql({
         points: 4,
@@ -35,14 +35,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 1,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1
+        TeamScoreMinusPoints: -1,
       });
     });
 
     it('should be correct for choice 4 1', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 4, goalsAwayTeam: 1 }
+        { goalsHomeTeam: 4, goalsAwayTeam: 1 },
       );
       expect(scorePoints).to.eql({
         points: 5,
@@ -52,14 +52,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 1,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
 
     it('should be correct for choice 4 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 4, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 4, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: 3,
@@ -69,14 +69,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1
+        TeamScoreMinusPoints: -1,
       });
     });
 
     it('should be correct for choice 2 0', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 2, goalsAwayTeam: 0 }
+        { goalsHomeTeam: 2, goalsAwayTeam: 0 },
       );
       expect(scorePoints).to.eql({
         points: 5,
@@ -86,14 +86,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 1,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
 
     it('should be correct for choice 3 1', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 1 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 1 },
       );
       expect(scorePoints).to.eql({
         points: 7,
@@ -103,14 +103,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 3,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
 
     it('should be correct for choice 3 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: 6,
@@ -120,14 +120,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 3,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1
+        TeamScoreMinusPoints: -1,
       });
     });
 
     it('should be correct for choice 3 0', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 0 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 0 },
       );
       expect(scorePoints).to.eql({
         points: 10,
@@ -137,14 +137,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 4,
         GoalDifferencePoints: 1,
         ExactScorePoints: 1,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
 
     it('should be correct for choice 5 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 3, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 5, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 5, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: 3,
@@ -154,7 +154,7 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 1,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2
+        TeamScoreMinusPoints: -2,
       });
     });
   });
@@ -163,7 +163,7 @@ describe('PredictionCalculator', () => {
     it('should be correct for choice 1 0', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 1, goalsAwayTeam: 0 }
+        { goalsHomeTeam: 1, goalsAwayTeam: 0 },
       );
       expect(scorePoints).to.eql({
         points: 1,
@@ -173,13 +173,13 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 1,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
     it('should be correct for choice 2 0', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 2, goalsAwayTeam: 0 }
+        { goalsHomeTeam: 2, goalsAwayTeam: 0 },
       );
       expect(scorePoints).to.eql({
         points: 0,
@@ -189,13 +189,13 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
     it('should be correct for choice 3 1', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 1 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 1 },
       );
       expect(scorePoints).to.eql({
         points: 0,
@@ -205,13 +205,13 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 1,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1
+        TeamScoreMinusPoints: -1,
       });
     });
     it('should be correct for choice 2 1', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 2, goalsAwayTeam: 1 }
+        { goalsHomeTeam: 2, goalsAwayTeam: 1 },
       );
       expect(scorePoints).to.eql({
         points: 1,
@@ -221,13 +221,13 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 1,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
     it('should be correct for choice 2 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 2, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 2, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: 5,
@@ -237,13 +237,13 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 1,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
     it('should be correct for choice 1 1', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 1, goalsAwayTeam: 1 }
+        { goalsHomeTeam: 1, goalsAwayTeam: 1 },
       );
       expect(scorePoints).to.eql({
         points: 8,
@@ -253,14 +253,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 2,
         GoalDifferencePoints: 1,
         ExactScorePoints: 1,
-        TeamScoreMinusPoints: 0
+        TeamScoreMinusPoints: 0,
       });
     });
 
     it('should be correct for choice 3 3', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 3 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 3 },
       );
       expect(scorePoints).to.eql({
         points: 3,
@@ -270,7 +270,7 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 1,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2
+        TeamScoreMinusPoints: -2,
       });
     });
   });
@@ -279,7 +279,7 @@ describe('PredictionCalculator', () => {
     it('should be correct for choice 3 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: 3,
@@ -289,14 +289,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 1,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2
+        TeamScoreMinusPoints: -2,
       });
     });
 
     it('should be correct for choice 4 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 4, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 4, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: 2,
@@ -306,14 +306,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2
+        TeamScoreMinusPoints: -2,
       });
     });
 
     it('should be correct for choice 3 3', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 3, goalsAwayTeam: 3 }
+        { goalsHomeTeam: 3, goalsAwayTeam: 3 },
       );
       expect(scorePoints).to.eql({
         points: -2,
@@ -323,14 +323,14 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2
+        TeamScoreMinusPoints: -2,
       });
     });
 
     it('should be correct for choice 0 2', () => {
       const scorePoints = calculator.calculateScore(
         { goalsHomeTeam: 1, goalsAwayTeam: 0 },
-        { goalsHomeTeam: 0, goalsAwayTeam: 2 }
+        { goalsHomeTeam: 0, goalsAwayTeam: 2 },
       );
       expect(scorePoints).to.eql({
         points: -1,
@@ -340,7 +340,7 @@ describe('PredictionCalculator', () => {
         TeamScorePlusPoints: 0,
         GoalDifferencePoints: 0,
         ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1
+        TeamScoreMinusPoints: -1,
       });
     });
   });

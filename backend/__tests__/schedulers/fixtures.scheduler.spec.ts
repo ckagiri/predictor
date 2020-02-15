@@ -11,20 +11,20 @@ const ObjectId = Types.ObjectId;
 const taskRunnerStub: any = {
   run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
-  }
+  },
 };
 
 const newFixture = (
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED
+  status: string = FixtureStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
     slug: `${homeTeamName}V${awayTeamName}`,
     homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
     awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
-    status
+    status,
   } as IFixture;
 };
 
@@ -41,20 +41,20 @@ const apiClientStub: any = {
   },
   getTodaysFixtures: () => {
     return Promise.resolve({ data: { fixtures: [arsVcheTd, livVsouTd] } });
-  }
+  },
 };
 const fixtureConverterStub: any = {
   map: (data: any[]) => {
     return data;
-  }
+  },
 };
 const fixturesUpdaterStub: any = {
   updateGameDetails: (fixtures: any[]) => {
     return Promise.resolve(fixtures);
-  }
+  },
 };
 const eventMediatorStub: any = {
-  publish(event: string, ...args: any[]) { }
+  publish(event: string, ...args: any[]) { },
 };
 let fixturesScheduler: FixturesScheduler;
 describe('ApiFootballData: Fixtures scheduler', () => {
@@ -64,7 +64,7 @@ describe('ApiFootballData: Fixtures scheduler', () => {
       apiClientStub,
       fixtureConverterStub,
       fixturesUpdaterStub,
-      eventMediatorStub
+      eventMediatorStub,
     );
   });
   it('should set polling true/false when started/stopped respectively', done => {
@@ -83,7 +83,7 @@ describe('ApiFootballData: Fixtures scheduler', () => {
     fixturesScheduler.start();
     fixturesScheduler.on('task:executed', () => {
       taskExecutionCount += 1;
-      if (taskExecutionCount == 2) {
+      if (taskExecutionCount === 2) {
         fixturesScheduler.stop();
       }
     });
@@ -105,7 +105,7 @@ describe('ApiFootballData: Fixtures scheduler', () => {
       expect(spy).to.have.been.called;
       done();
     });
-    //todo: tohave been called with first arg, second arg
+    // todo: tohave been called with first arg, second arg
     clock.restore();
   });
 

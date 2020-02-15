@@ -1,19 +1,17 @@
-import "chai";
-import { expect } from "chai";
-import { Observable } from "rxjs";
+import { expect } from 'chai';
 
-import { SeasonConverter as LigiSeasonConverter } from "../../db/converters/ligi/season.converter";
-import { SeasonConverter as AfdSeasonConverter } from "../../db/converters/apiFootballData/season.converter";
+import { SeasonConverter as LigiSeasonConverter } from '../../db/converters/ligi/season.converter';
+import { SeasonConverter as AfdSeasonConverter } from '../../db/converters/apiFootballData/season.converter';
 
-describe("Season Converter", () => {
-  describe.skip("Ligi SeasonConverter", () => {
+describe('Season Converter', () => {
+  describe.skip('Ligi SeasonConverter', () => {
     const converter = LigiSeasonConverter.getInstance();
     const season = {
-      name: "2017-2018",
-      slug: "17-18",
-      year: 2017
+      name: '2017-2018',
+      slug: '17-18',
+      year: 2017,
     };
-    it("should convert correctly", done => {
+    it('should convert correctly', done => {
       const conversion = converter.from(season);
       conversion.subscribe(s => {
         expect(s.name).to.equal(season.name);
@@ -24,28 +22,28 @@ describe("Season Converter", () => {
     });
   });
 
-  describe("Afd SeasonConverter", () => {
+  describe('Afd SeasonConverter', () => {
     const converter = new AfdSeasonConverter();
     const season = {
       id: 2021,
-      name: "Premier League",
-      code: "PL",
+      name: 'Premier League',
+      code: 'PL',
       currentSeason: {
         id: 151,
-        startDate: "2018-08-10",
-        endDate: "2019-05-12",
+        startDate: '2018-08-10',
+        endDate: '2019-05-12',
         currentMatchday: 34,
-        winner: null
-      }
+        winner: null,
+      },
     };
-    it("should convert correctly", done => {
+    it('should convert correctly', done => {
       const conversion = converter.from(season);
       conversion.subscribe(s => {
         expect(s.currentMatchRound).to.equal(
-          season.currentSeason.currentMatchday
+          season.currentSeason.currentMatchday,
         );
         expect(s.externalReference).to.deep.equal({
-          API_FOOTBALL_DATA: { id: 151 }
+          API_FOOTBALL_DATA: { id: 151 },
         });
         done();
       });

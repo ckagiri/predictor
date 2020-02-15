@@ -12,14 +12,14 @@ import { IPrediction } from '../../../db/models/prediction.model';
 
 import {
   IPredictionProcessor,
-  PredictionProcessor
+  PredictionProcessor,
 } from '../../../app/schedulers/prediction.processor';
 
 const newFixture = (
   id: number,
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED
+  status: string = FixtureStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
@@ -31,17 +31,17 @@ const newFixture = (
     status,
     result: { goalsHomeTeam: 2, goalsAwayTeam: 1 },
     externalReference: {
-      [ApiProvider.API_FOOTBALL_DATA]: { id }
-    }
+      [ApiProvider.API_FOOTBALL_DATA]: { id },
+    },
   } as IFixture;
 };
 const chalo = {
   id: ObjectId().toHexString(),
-  userName: 'chalo'
+  userName: 'chalo',
 };
 const kagiri = {
   id: ObjectId().toHexString(),
-  userName: 'kagiri'
+  userName: 'kagiri',
 };
 const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
 const livVsou = newFixture(2, 'Liverpool', 'Southampton');
@@ -49,12 +49,12 @@ const livVsou = newFixture(2, 'Liverpool', 'Southampton');
 const fixtureRepoStub: any = {
   findSelectableFixtures$: () => {
     return of([livVsou]);
-  }
+  },
 };
 const userRepoStub: any = {
   findAll$: () => {
     return of([chalo, kagiri]);
-  }
+  },
 };
 const chaloJoker = { id: ObjectId().toHexString(), user: chalo.id, fixture: livVsou.id };
 const kagiriJoker = { id: ObjectId().toHexString(), user: kagiri.id, fixture: arsVche.id };
@@ -62,17 +62,17 @@ const chaloPred = {
   id: ObjectId().toHexString(),
   user: chalo.id,
   fixture: arsVche.id,
-  choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 }
+  choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
 } as IPrediction;
 const predictionRepoStub: any = {
   findOrCreateJoker$: sinon.stub(),
   findOneOrCreate$: sinon.stub(),
-  findByIdAndUpdate$: sinon.stub()
+  findByIdAndUpdate$: sinon.stub(),
 };
 const predictionCalculatorStub: any = {
   calculateScore: () => {
     return { points: 9 };
-  }
+  },
 };
 let predictionProcessor: IPredictionProcessor;
 describe('Prediction Processor', () => {
@@ -87,7 +87,7 @@ describe('Prediction Processor', () => {
         fixtureRepoStub,
         userRepoStub,
         predictionRepoStub,
-        predictionCalculatorStub
+        predictionCalculatorStub,
       );
     });
 
@@ -122,13 +122,13 @@ describe('Prediction Processor', () => {
         chalo.id,
         arsVche.season,
         arsVche.gameRound,
-        [livVsou.id, arsVche.id]
+        [livVsou.id, arsVche.id],
       );
       expect(spy.secondCall).to.have.been.calledWithExactly(
         kagiri.id,
         arsVche.season,
         arsVche.gameRound,
-        [livVsou.id, arsVche.id]
+        [livVsou.id, arsVche.id],
       );
     });
 
@@ -164,7 +164,7 @@ describe('Prediction Processor', () => {
         fixtureRepoStub,
         userRepoStub,
         predictionRepoStub,
-        predictionCalculatorStub
+        predictionCalculatorStub,
       );
     });
     afterEach(() => {
@@ -178,7 +178,7 @@ describe('Prediction Processor', () => {
         expect(spy).to.have.been.calledOnce;
         expect(spy).to.have.been.calledWith(
           { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-          { goalsHomeTeam: 2, goalsAwayTeam: 1 }
+          { goalsHomeTeam: 2, goalsAwayTeam: 1 },
         );
         done();
       });

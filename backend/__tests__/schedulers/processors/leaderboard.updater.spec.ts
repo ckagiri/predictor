@@ -20,7 +20,7 @@ const newFixture = (
   id: any,
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED
+  status: string = FixtureStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
@@ -33,8 +33,8 @@ const newFixture = (
     result: { goalsHomeTeam: 2, goalsAwayTeam: 1 },
     allPredictionsProcessed: false,
     externalReference: {
-      [ApiProvider.API_FOOTBALL_DATA]: { id }
-    }
+      [ApiProvider.API_FOOTBALL_DATA]: { id },
+    },
   } as IFixture;
 };
 const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
@@ -54,8 +54,8 @@ const newPrediction = (userId: string, fixture: IFixture, status = PredictionSta
       pointsAgainst: 0,
       MatchOutcomePoints: 0,
       GoalDifferencePoints: 0,
-      TeamScorePoints: 0
-    }
+      TeamScorePoints: 0,
+    },
   };
 };
 const finishedFixtures = [arsVche, livVsou, eveVwat];
@@ -64,15 +64,15 @@ const leaderboardRepoStub: any = {
   findMonthBoardAndUpsert$: sinon.stub(),
   findRoundBoardAndUpsert$: sinon.stub(),
   findAll$: sinon.stub(),
-  findByIdAndUpdate$: sinon.stub()
+  findByIdAndUpdate$: sinon.stub(),
 };
 const chalo = {
   id: ObjectId().toHexString(),
-  userName: 'chalo'
+  userName: 'chalo',
 };
 const kagiri = {
   id: ObjectId().toHexString(),
-  userName: 'kagiri'
+  userName: 'kagiri',
 };
 const pred1 = newPrediction(chalo.id, arsVche);
 const lb1 = { id: ObjectId().toHexString() };
@@ -83,7 +83,7 @@ const standing1 = {
   user: kagiri.id,
   points: 20,
   positionOld: 1,
-  positionNew: 1
+  positionNew: 1,
 };
 const standing2 = {
   id: ObjectId().toHexString(),
@@ -91,17 +91,17 @@ const standing2 = {
   user: chalo.id,
   points: 30,
   positionOld: 2,
-  positionNew: 2
+  positionNew: 2,
 };
 const userRepoStub: any = {
   findAll$: () => {
     return of([chalo, kagiri]);
-  }
+  },
 };
 const predictionRepoStub: any = {
   findOne$: () => {
     return of(pred1);
-  }
+  },
 };
 const userScoreRepoStub: any = {
   findOneAndUpsert$: () => {
@@ -112,13 +112,13 @@ const userScoreRepoStub: any = {
   },
   findByIdAndUpdate$: () => {
     return of(standing1);
-  }
+  },
 };
 const leaderboardUpdater = new LeaderboardUpdater(
   userRepoStub,
   leaderboardRepoStub,
   predictionRepoStub,
-  userScoreRepoStub
+  userScoreRepoStub,
 );
 
 describe('Leaderboard Updater', () => {
@@ -162,7 +162,7 @@ describe('Leaderboard Updater', () => {
       const month = arsVche.date.getUTCMonth() + 1;
       const year = arsVche.date.getFullYear();
       expect(spy.firstCall).to.have.been.calledWith(seasonId, year, month, {
-        status: BOARD_STATUS.UPDATING_SCORES
+        status: BOARD_STATUS.UPDATING_SCORES,
       });
     });
 
@@ -173,7 +173,7 @@ describe('Leaderboard Updater', () => {
 
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(seasonId, gameRound, {
-        status: BOARD_STATUS.UPDATING_SCORES
+        status: BOARD_STATUS.UPDATING_SCORES,
       });
     });
     it('should get fixture prediction for the user', async () => {
@@ -216,7 +216,7 @@ describe('Leaderboard Updater', () => {
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(
         sinon.match.string,
-        sinon.match({ status: BOARD_STATUS.UPDATING_RANKINGS })
+        sinon.match({ status: BOARD_STATUS.UPDATING_RANKINGS }),
       );
     });
 
@@ -237,11 +237,11 @@ describe('Leaderboard Updater', () => {
       expect(spy).to.have.been.called;
       expect(spy.firstCall).to.have.been.calledWith(sinon.match.string, {
         positionNew: 1,
-        positionOld: 2
+        positionOld: 2,
       });
       expect(spy.secondCall).to.have.been.calledWith(sinon.match.string, {
         positionNew: 2,
-        positionOld: 1
+        positionOld: 1,
       });
     });
   });
@@ -263,7 +263,7 @@ describe('Leaderboard Updater', () => {
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(
         sinon.match.string,
-        sinon.match({ status: BOARD_STATUS.UPDATING_RANKINGS })
+        sinon.match({ status: BOARD_STATUS.UPDATING_RANKINGS }),
       );
     });
   });

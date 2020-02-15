@@ -12,14 +12,14 @@ import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import {
   IFinishedFixturesProcessor,
-  FinishedFixturesProcessor
+  FinishedFixturesProcessor,
 } from '../../../app/schedulers/finishedFixtures.processor';
 
 const newFixture = (
   id: any,
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED
+  status: string = FixtureStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
@@ -32,8 +32,8 @@ const newFixture = (
     result: { goalsHomeTeam: 2, goalsAwayTeam: 1 },
     allPredictionsProcessed: false,
     externalReference: {
-      [ApiProvider.API_FOOTBALL_DATA]: { id }
-    }
+      [ApiProvider.API_FOOTBALL_DATA]: { id },
+    },
   } as IFixture;
 };
 const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
@@ -49,7 +49,7 @@ const newPrediction = (userId: string, fixture: IFixture, status = PredictionSta
     user: userId,
     fixture,
     status,
-    choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 }
+    choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
   };
 };
 const pred1 = newPrediction(chalo, arsVche);
@@ -59,12 +59,12 @@ const pred4 = newPrediction(kag, livVsou);
 
 const predictionProcessorStub: any = {
   getPredictions$: sinon.stub(),
-  processPrediction$: sinon.stub()
+  processPrediction$: sinon.stub(),
 };
 const fixtureRepoStub: any = {
   findByIdAndUpdate$: () => {
     return of({});
-  }
+  },
 };
 
 let finishedFixturesProcessor: IFinishedFixturesProcessor;
@@ -82,7 +82,7 @@ describe('Finished Fixtures', () => {
       predictionProcessorStub.processPrediction$.returns(of(pred1));
       finishedFixturesProcessor = new FinishedFixturesProcessor(
         predictionProcessorStub,
-        fixtureRepoStub
+        fixtureRepoStub,
       );
     });
     afterEach(() => {

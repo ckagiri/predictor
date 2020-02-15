@@ -7,7 +7,7 @@ import { config } from '../../config/environment/index';
 
 const userRepo = UserRepository.getInstance();
 
-describe('User Repo', function () {
+describe('User Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(config.testDb.uri, done, { drop: true });
@@ -16,11 +16,11 @@ describe('User Repo', function () {
     const user1 = new User({
       username: 'chalo',
       email: 'chalo@example.com',
-      local: { password: 'chalo' }
+      local: { password: 'chalo' },
     });
     const user2 = {
       username: 'kagiri',
-      email: 'kagiri@example.com'
+      email: 'kagiri@example.com',
     };
     Promise.all([user1.save(), User.create(user2)]).then(() => done());
   });

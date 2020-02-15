@@ -9,22 +9,22 @@ import { SeasonScheduler } from '../../app/schedulers/footballApi/season.schedul
 const taskRunnerStub: any = {
   run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
-  }
+  },
 };
 const apiClientStub: any = {
   getCompetitions: () => {
     return Promise.resolve();
-  }
+  },
 };
 const seasonConverterStub: any = {
   map: (data: any) => {
     return data;
-  }
+  },
 };
 const seasonUpdaterStub: any = {
   updateCurrentMatchRound: () => {
     return Promise.resolve();
-  }
+  },
 };
 const eventMediatorStub: any = sinon.stub();
 
@@ -37,7 +37,7 @@ describe('ApiFootballData: Season scheduler', () => {
       apiClientStub,
       seasonConverterStub,
       seasonUpdaterStub,
-      eventMediatorStub
+      eventMediatorStub,
     );
   });
   describe('start', () => {
@@ -66,7 +66,7 @@ describe('ApiFootballData: Season scheduler', () => {
       });
       seasonScheduler.on('stopped', () => {
         expect(spy).to.have.callCount(2);
-        expect(seasonScheduler.PollingInterval).to.equal(POLLING_INTERVAL); //24hours
+        expect(seasonScheduler.PollingInterval).to.equal(POLLING_INTERVAL); // 24hours
         done();
       });
       clock.restore();

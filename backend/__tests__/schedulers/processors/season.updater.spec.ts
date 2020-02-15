@@ -14,14 +14,14 @@ const provider = ApiProvider.API_FOOTBALL_DATA;
 const newApiSeason = () => {
   return {
     id: 1,
-    currentMatchRound: 2
+    currentMatchRound: 2,
   };
 };
 const newDbSeason = () => {
   return {
     id: ObjectId().toHexString(),
     currentMatchRound: 1,
-    externalReference: { [provider]: { id: 1 } }
+    externalReference: { [provider]: { id: 1 } },
   };
 };
 const dbSeason = newDbSeason();
@@ -41,7 +41,7 @@ describe('SeasonUpdater', () => {
       },
       findByExternalIds$: () => {
         return of(dbSeasons);
-      }
+      },
     };
     seasonUpdater = new SeasonUpdater(seasonRepoStub);
   });

@@ -28,7 +28,7 @@ describe('TaskRunner', () => {
       taskRunner.on('end', stub);
 
       taskRunner.run({
-        whenToExecute: 15
+        whenToExecute: 15,
       });
       setTimeout(() => {
         expect(stub.called).to.be.false;
@@ -41,7 +41,7 @@ describe('TaskRunner', () => {
       taskRunner.on('end', stub);
 
       taskRunner.run({
-        whenToExecute: 5
+        whenToExecute: 5,
       });
       setTimeout(() => {
         expect(stub.called).to.be.true;
@@ -62,7 +62,7 @@ describe('TaskRunner', () => {
               resolve(res);
             }, 25);
           });
-        }
+        },
       });
 
       setTimeout(() => {
@@ -83,7 +83,7 @@ describe('TaskRunner', () => {
               resolve();
             }, 5);
           });
-        }
+        },
       });
 
       setTimeout(() => {
@@ -105,7 +105,7 @@ describe('TaskRunner', () => {
               resolve(res);
             }, 15);
           });
-        }
+        },
       });
 
       setTimeout(() => {
