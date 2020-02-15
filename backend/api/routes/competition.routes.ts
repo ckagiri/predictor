@@ -3,7 +3,7 @@ import { competitionService } from '../services';
 
 const router = express.Router();
 
-router.get('/heroes', (req, res) => {
+router.get('/competitions', (req, res) => {
   competitionService.getCompetitions(req, res);
 });
 
