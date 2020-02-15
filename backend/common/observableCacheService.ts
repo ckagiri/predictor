@@ -7,7 +7,11 @@ interface CacheContent {
 }
 
 export interface ICacheService {
-  get(key: string, fallback?: Observable<any>, maxAge?: number): Observable<any> | Subject<any>;
+  get(
+    key: string,
+    fallback?: Observable<any>,
+    maxAge?: number,
+  ): Observable<any> | Subject<any>;
   set(key: string, value: any, maxAge?: number): void;
   has(key: string): boolean;
   clear(): void;
@@ -21,7 +25,10 @@ export interface ICacheService {
  */
 export class CacheService {
   private cache: Map<string, CacheContent> = new Map<string, CacheContent>();
-  private inFlightObservables: Map<string, Subject<any>> = new Map<string, Subject<any>>();
+  private inFlightObservables: Map<string, Subject<any>> = new Map<
+    string,
+    Subject<any>
+  >();
   public readonly DEFAULT_MAX_AGE: number = 15 * 60 * 1000;
 
   /**
@@ -30,7 +37,11 @@ export class CacheService {
    * in flight, if so return the subject. If not create a new
    * Subject inFlightObservable and return the source observable.
    */
-  public get(key: string, fallback?: Observable<any>, maxAge?: number): Observable<any> | Subject<any> {
+  public get(
+    key: string,
+    fallback?: Observable<any>,
+    maxAge?: number,
+  ): Observable<any> | Subject<any> {
     if (this.hasValidCachedValue(key)) {
       // console.log(`%cGetting from cache ${key}`, 'color: green');
       return of(this.cache.get(key)!.value);
@@ -59,7 +70,11 @@ export class CacheService {
    * Sets the value with key in the cache
    * Notifies all observers of the new value
    */
-  public set(key: string, value: any, maxAge: number = this.DEFAULT_MAX_AGE): void {
+  public set(
+    key: string,
+    value: any,
+    maxAge: number = this.DEFAULT_MAX_AGE,
+  ): void {
     this.cache.set(key, { value, expiry: Date.now() + maxAge });
     this.notifyInFlightObservers(key, value);
   }

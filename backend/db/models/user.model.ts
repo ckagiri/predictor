@@ -110,7 +110,10 @@ userSchema.pre('save', function(next) {
   });
 });
 
-userSchema.methods.comparePassword = function comparePassword(candidatePassword: string, cb: any) {
+userSchema.methods.comparePassword = function comparePassword(
+  candidatePassword: string,
+  cb: any,
+) {
   bcrypt.compare(candidatePassword, this.local.password, (err, isMatch) => {
     if (err) {
       return cb(err);

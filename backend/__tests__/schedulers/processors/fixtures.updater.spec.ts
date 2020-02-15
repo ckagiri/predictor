@@ -71,10 +71,12 @@ describe('FixturesUpdater', () => {
       fixtureRepoStub.findByIdAndUpdate$.restore();
     });
 
-    xit('should update matchOdds if changed', () => { });
+    xit('should update matchOdds if changed', () => {});
 
-    xit('should update matchStatus if changed', () => { });
+    xit('should update matchStatus if changed', () => {});
 
-    xit('it should not make update call if result, odds or status hasnt changed');
+    xit(
+      'it should not make update call if result, odds or status hasnt changed',
+    );
   });
 });

@@ -8,9 +8,17 @@ import { User } from '../../db/models/user.model';
 import { League, ILeague } from '../../db/models/league.model';
 import { Season, ISeason } from '../../db/models/season.model';
 import { Team, ITeam } from '../../db/models/team.model';
-import { Fixture, IFixture, FixtureStatus } from '../../db/models/fixture.model';
+import {
+  Fixture,
+  IFixture,
+  FixtureStatus,
+} from '../../db/models/fixture.model';
 import { Prediction, IPrediction } from '../../db/models/prediction.model';
-import { Leaderboard, BOARD_STATUS, BOARD_TYPE } from '../../db/models/leaderboard.model';
+import {
+  Leaderboard,
+  BOARD_STATUS,
+  BOARD_TYPE,
+} from '../../db/models/leaderboard.model';
 import { IUserScore } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
@@ -53,7 +61,8 @@ const manu: ITeam = {
   shortName: 'Man United',
   code: 'MUN',
   slug: 'man_united',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
+  crestUrl:
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
   aliases: ['ManU', 'ManUtd'],
 };
 
@@ -62,7 +71,8 @@ const manc: ITeam = {
   shortName: 'Man City',
   code: 'MCI',
   slug: 'man_city',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
+  crestUrl:
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
   aliases: ['ManCity'],
 };
 

@@ -26,7 +26,7 @@ export interface IUserScore extends IEntity {
   positionNew?: number;
 }
 
-export interface IUserScoreDocument extends IUserScore, IDocumentEntity { }
+export interface IUserScoreDocument extends IUserScore, IDocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 

@@ -4,7 +4,8 @@ import { IEventMediator } from '../../common/eventMediator';
 import { IFinishedFixturesProcessor } from './finishedFixtures.processor';
 import { IScheduler } from '../schedulers';
 
-export class FinishedFixturesScheduler extends EventEmitter implements IScheduler {
+export class FinishedFixturesScheduler extends EventEmitter
+  implements IScheduler {
   private _processing = false;
   private _running = false;
   private RUN_INTERVAL = 10 * 60 * 60 * 1000;
@@ -16,7 +17,10 @@ export class FinishedFixturesScheduler extends EventEmitter implements ISchedule
     private eventMediator: IEventMediator,
   ) {
     super();
-    this.eventMediator.addListener('process:predictions', this.processPredictions);
+    this.eventMediator.addListener(
+      'process:predictions',
+      this.processPredictions,
+    );
   }
 
   get IsRunning() {

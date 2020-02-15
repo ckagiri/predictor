@@ -101,7 +101,10 @@ export class FixtureRepository
     return forkJoin(obs);
   }
 
-  public findAllFinishedWithPendingPredictions$(seasonId: string, gameRound?: number) {
+  public findAllFinishedWithPendingPredictions$(
+    seasonId: string,
+    gameRound?: number,
+  ) {
     const query: any = {
       $and: [
         { season: seasonId },

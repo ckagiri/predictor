@@ -16,8 +16,14 @@ export class PredictionCalculator {
       ExactScorePoints: 0,
       TeamScoreMinusPoints: 0,
     };
-    const choiceOutcome = calcOutcome(choice.goalsHomeTeam, choice.goalsAwayTeam);
-    const resultOutcome = calcOutcome(result.goalsHomeTeam, result.goalsAwayTeam);
+    const choiceOutcome = calcOutcome(
+      choice.goalsHomeTeam,
+      choice.goalsAwayTeam,
+    );
+    const resultOutcome = calcOutcome(
+      result.goalsHomeTeam,
+      result.goalsAwayTeam,
+    );
     if (choiceOutcome === resultOutcome) {
       scorePoints.MatchOutcomePoints = 4;
       scorePoints.APoints += 4;

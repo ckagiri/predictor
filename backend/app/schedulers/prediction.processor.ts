@@ -1,18 +1,33 @@
 import { Observable, from, of } from 'rxjs';
 import { map, flatMap, toArray } from 'rxjs/operators';
 
-import { IFixtureRepository, FixtureRepository } from '../../db/repositories/fixture.repo';
-import { IUserRepository, UserRepository } from '../../db/repositories/user.repo';
-import { IPredictionRepository, PredictionRepository } from '../../db/repositories/prediction.repo';
+import {
+  IFixtureRepository,
+  FixtureRepository,
+} from '../../db/repositories/fixture.repo';
+import {
+  IUserRepository,
+  UserRepository,
+} from '../../db/repositories/user.repo';
+import {
+  IPredictionRepository,
+  PredictionRepository,
+} from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
 import { IFixture } from '../../db/models/fixture.model';
-import { IPrediction, PredictionStatus } from '../../db/models/prediction.model';
+import {
+  IPrediction,
+  PredictionStatus,
+} from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface IPredictionProcessor {
   getPredictions$(fixture: IFixture): Observable<IPrediction[]>;
-  processPrediction$(prediction: IPrediction, fixture: IFixture): Observable<IPrediction>;
+  processPrediction$(
+    prediction: IPrediction,
+    fixture: IFixture,
+  ): Observable<IPrediction>;
 }
 
 export class PredictionProcessor implements IPredictionProcessor {
@@ -64,7 +79,12 @@ export class PredictionProcessor implements IPredictionProcessor {
           const selectableFixtureIds = data.selectableFixtureIds;
           const userId = data.user.id;
           return this.predictionRepo
-            .findOrCreateJoker$(userId!, seasonId!, gameRound!, selectableFixtureIds)
+            .findOrCreateJoker$(
+              userId!,
+              seasonId!,
+              gameRound!,
+              selectableFixtureIds,
+            )
             .pipe(
               map(jokerPrediction => {
                 return {
@@ -83,7 +103,10 @@ export class PredictionProcessor implements IPredictionProcessor {
           if (jokerPrediction.fixture === fixtureId) {
             return of(jokerPrediction);
           }
-          return this.predictionRepo.findOneOrCreate$({ userId: userId!, fixtureId: fixtureId! });
+          return this.predictionRepo.findOneOrCreate$({
+            userId: userId!,
+            fixtureId: fixtureId!,
+          });
         }),
       )
       .pipe(toArray());
@@ -92,8 +115,14 @@ export class PredictionProcessor implements IPredictionProcessor {
   public processPrediction$(prediction: IPrediction, fixture: IFixture) {
     const { choice } = prediction;
     const { result } = fixture;
-    const scorePoints = this.predictionCalculator.calculateScore(choice, result!);
+    const scorePoints = this.predictionCalculator.calculateScore(
+      choice,
+      result!,
+    );
     const status = PredictionStatus.PROCESSED;
-    return this.predictionRepo.findByIdAndUpdate$(prediction.id!, { scorePoints, status });
+    return this.predictionRepo.findByIdAndUpdate$(prediction.id!, {
+      scorePoints,
+      status,
+    });
   }
 }

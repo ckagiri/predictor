@@ -40,7 +40,11 @@ const newFixture = (
 const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
 const livVsou = newFixture(2, 'Liverpool', 'Southampton');
 const eveVwat = newFixture(3, 'Everton', 'Watford', FixtureStatus.IN_PLAY);
-const newPrediction = (userId: string, fixture: IFixture, status = PredictionStatus.PENDING) => {
+const newPrediction = (
+  userId: string,
+  fixture: IFixture,
+  status = PredictionStatus.PENDING,
+) => {
   return {
     id: ObjectId().toHexString(),
     user: userId,
@@ -150,7 +154,9 @@ describe('Leaderboard Updater', () => {
       await leaderboardUpdater.updateScores(finishedFixtures);
 
       expect(spy).to.have.been.called;
-      expect(spy).to.have.been.calledWith(seasonId, { status: BOARD_STATUS.UPDATING_SCORES });
+      expect(spy).to.have.been.calledWith(seasonId, {
+        status: BOARD_STATUS.UPDATING_SCORES,
+      });
     });
 
     it('should get Monthboard and set status to UPDATING_SCORES ', async () => {
@@ -182,7 +188,9 @@ describe('Leaderboard Updater', () => {
       await leaderboardUpdater.updateScores(finishedFixtures);
 
       expect(spy).to.have.been.called;
-      expect(spy).to.have.been.calledWith(sinon.match({ userId: chalo.id, fixtureId: arsVche.id }));
+      expect(spy).to.have.been.calledWith(
+        sinon.match({ userId: chalo.id, fixtureId: arsVche.id }),
+      );
     });
     it('should cache boards', async () => {
       const spy = leaderboardRepoStub.findSeasonBoardAndUpsert$;
@@ -221,7 +229,10 @@ describe('Leaderboard Updater', () => {
     });
 
     it('should get userScores from leaderboard ordered by points', async () => {
-      const spy = sinon.spy(userScoreRepoStub, 'findByLeaderboardOrderByPoints$');
+      const spy = sinon.spy(
+        userScoreRepoStub,
+        'findByLeaderboardOrderByPoints$',
+      );
 
       await leaderboardUpdater.updateRankings(seasonId);
 
@@ -258,7 +269,9 @@ describe('Leaderboard Updater', () => {
     it('should change leaderboard status to REFRESHED', async () => {
       const spy = leaderboardRepoStub.findByIdAndUpdate$;
 
-      const count = await leaderboardUpdater.markLeaderboardsAsRefreshed(seasonId);
+      const count = await leaderboardUpdater.markLeaderboardsAsRefreshed(
+        seasonId,
+      );
 
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(

@@ -22,7 +22,8 @@ const manu = {
   shortName: 'Man United',
   code: 'MUN',
   slug: 'man_united',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
+  crestUrl:
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
   aliases: ['ManU', 'ManUtd'],
 };
 
@@ -31,7 +32,8 @@ const manc = {
   shortName: 'Man City',
   code: 'MCI',
   slug: 'man_city',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
+  crestUrl:
+    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
   aliases: ['ManCity'],
 };
 

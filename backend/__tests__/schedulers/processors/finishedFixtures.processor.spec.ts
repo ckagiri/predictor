@@ -44,7 +44,11 @@ bouVwat.allPredictionsProcessed = true;
 const finishedFixtures = [arsVche, livVsou, eveVwat, bouVwat];
 const chalo = ObjectId().toHexString();
 const kag = ObjectId().toHexString();
-const newPrediction = (userId: string, fixture: IFixture, status = PredictionStatus.PENDING) => {
+const newPrediction = (
+  userId: string,
+  fixture: IFixture,
+  status = PredictionStatus.PENDING,
+) => {
   return {
     user: userId,
     fixture,
@@ -106,5 +110,5 @@ describe('Finished Fixtures', () => {
     });
   });
 
-  describe('setToTrueAllPredictionsProcessed', () => { });
+  describe('setToTrueAllPredictionsProcessed', () => {});
 });

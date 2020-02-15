@@ -1,16 +1,35 @@
 import { from, Observable, forkJoin } from 'rxjs';
-import { concatMap, count, distinct, filter, flatMap, map } from 'rxjs/operators';
+import {
+  concatMap,
+  count,
+  distinct,
+  filter,
+  flatMap,
+  map,
+} from 'rxjs/operators';
 
 import { IFixture, FixtureStatus } from '../../db/models/fixture.model';
-import { IUserRepository, UserRepository } from '../../db/repositories/user.repo';
+import {
+  IUserRepository,
+  UserRepository,
+} from '../../db/repositories/user.repo';
 import { BOARD_STATUS, ILeaderboard } from '../../db/models/leaderboard.model';
 import {
   ILeaderboardRepository,
   LeaderboardRepository,
 } from '../../db/repositories/leaderboard.repo';
-import { IPredictionRepository, PredictionRepository } from '../../db/repositories/prediction.repo';
-import { IUserScoreRepository, UserScoreRepository } from '../../db/repositories/userScore.repo';
-import { ICacheService, CacheService } from '../../common/observableCacheService';
+import {
+  IPredictionRepository,
+  PredictionRepository,
+} from '../../db/repositories/prediction.repo';
+import {
+  IUserScoreRepository,
+  UserScoreRepository,
+} from '../../db/repositories/userScore.repo';
+import {
+  ICacheService,
+  CacheService,
+} from '../../common/observableCacheService';
 
 export interface ILeaderboardUpdater {
   updateScores(fixtures: IFixture[]): Promise<number>;
@@ -35,7 +54,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
     private leaderboardRepo: ILeaderboardRepository,
     private predictionRepo: IPredictionRepository,
     private userScoreRepo: IUserScoreRepository,
-  ) { }
+  ) {}
 
   public setCacheService(cacheService: ICacheService) {
     this.cacheService = cacheService;
@@ -50,7 +69,8 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
       .pipe(
         filter(fixture => {
           return (
-            fixture.status === FixtureStatus.FINISHED && fixture.allPredictionsProcessed === false
+            fixture.status === FixtureStatus.FINISHED &&
+            fixture.allPredictionsProcessed === false
           );
         }),
       )
@@ -91,26 +111,44 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             );
             mBoard = this.cacheService.get(
               `${season}-${year}-${month}`,
-              this.leaderboardRepo.findMonthBoardAndUpsert$(season!, year, month, {
-                status: BOARD_STATUS.UPDATING_SCORES,
-              }),
+              this.leaderboardRepo.findMonthBoardAndUpsert$(
+                season!,
+                year,
+                month,
+                {
+                  status: BOARD_STATUS.UPDATING_SCORES,
+                },
+              ),
             );
             rBoard = this.cacheService.get(
               `${season}-${gameRound}`,
-              this.leaderboardRepo.findRoundBoardAndUpsert$(season!, gameRound!, {
-                status: BOARD_STATUS.UPDATING_SCORES,
-              }),
+              this.leaderboardRepo.findRoundBoardAndUpsert$(
+                season!,
+                gameRound!,
+                {
+                  status: BOARD_STATUS.UPDATING_SCORES,
+                },
+              ),
             );
           } else {
             sBoard = this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
               status: BOARD_STATUS.UPDATING_SCORES,
             });
-            mBoard = this.leaderboardRepo.findMonthBoardAndUpsert$(season!, year, month, {
-              status: BOARD_STATUS.UPDATING_SCORES,
-            });
-            rBoard = this.leaderboardRepo.findRoundBoardAndUpsert$(season!, gameRound!, {
-              status: BOARD_STATUS.UPDATING_SCORES,
-            });
+            mBoard = this.leaderboardRepo.findMonthBoardAndUpsert$(
+              season!,
+              year,
+              month,
+              {
+                status: BOARD_STATUS.UPDATING_SCORES,
+              },
+            );
+            rBoard = this.leaderboardRepo.findRoundBoardAndUpsert$(
+              season!,
+              gameRound!,
+              {
+                status: BOARD_STATUS.UPDATING_SCORES,
+              },
+            );
           }
           boards.push(sBoard, mBoard, rBoard);
           return forkJoin(boards)
@@ -129,11 +167,13 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
       .pipe(
         flatMap(data => {
           const { user, fixture, leaderboard } = data;
-          return this.predictionRepo.findOne$({ userId: user.id, fixtureId: fixture.id }).pipe(
-            map(prediction => {
-              return { user, fixture, leaderboard, prediction };
-            }),
-          );
+          return this.predictionRepo
+            .findOne$({ userId: user.id, fixtureId: fixture.id })
+            .pipe(
+              map(prediction => {
+                return { user, fixture, leaderboard, prediction };
+              }),
+            );
         }),
       )
       .pipe(
@@ -189,7 +229,10 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
                 const positionOld = previousPosition;
                 const positionNew = index;
                 return this.userScoreRepo
-                  .findByIdAndUpdate$(standing.id!, { positionNew, positionOld })
+                  .findByIdAndUpdate$(standing.id!, {
+                    positionNew,
+                    positionOld,
+                  })
                   .pipe(
                     map(_ => {
                       return leaderboard.id;
