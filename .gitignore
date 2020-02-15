@@ -97,7 +97,8 @@ Desktop.ini
 # Windows shortcuts
 *.lnk
 
-config
+# config
+backend/config
 
 # Cruft
 .DS_Store
