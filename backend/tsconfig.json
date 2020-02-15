@@ -3,7 +3,7 @@
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
-    "outDir": "debug",
+    "outDir": "dist",
     "strict": true,
     "esModuleInterop": true,
     "declaration": false,
@@ -15,8 +15,5 @@
       "dom"
     ],
     "resolveJsonModule": true
-  },
-  "include": [
-    "src/**/*.ts"
-  ]
+  }
 }

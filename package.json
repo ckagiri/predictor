@@ -4,7 +4,7 @@
   "description": "Predictor",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require ts-node/register 'backend/__tests__/**/*.spec.ts'",
+    "test": "TS_NODE_PROJECT='backend/tsconfig.json' mocha --require ts-node/register backend/__tests__/**/*.spec.ts",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "lint:ts": "npm run lint:tslint",
