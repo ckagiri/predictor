@@ -1,20 +1,79 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-      "tslint:recommended", "tslint-config-prettier", "tslint-no-unused-expression-chai"
+  "extends": [
+    "tslint:latest",
+    "tslint-react",
+    "tslint-react-hooks"
+  ],
+  "rules": {
+    "no-this-assignment": [
+      true,
+      {
+        "allowed-names": [
+          "^self$"
+        ],
+        "allow-destructuring": true
+      }
     ],
-    "jsRules": {},
-    "rules": {
-      "rxjs-collapse-imports": true,
-      "rxjs-pipeable-operators-only": true,
-      "rxjs-no-static-observable-methods": true,
-      "rxjs-proper-imports": true,
-      "object-literal-sort-keys": false,
-      "ordered-imports": false,
-      "member-access": false,
-      "interface-name": false
+    "variable-name": {
+      "options": [
+        "check-format",
+        "allow-leading-underscore",
+        "allow-pascal-case"
+      ]
     },
-    "rulesDirectory": [
-      "node_modules/rxjs-tslint"
+    "no-empty-interface": false,
+    "jsx-no-lambda": false,
+    "semicolon": [
+      true,
+      "always",
+      "ignore-bound-class-methods"
+    ],
+    "interface-name": false,
+    "object-literal-shorthand": [
+      false,
+      "never"
+    ],
+    "indent": [
+      true,
+      "spaces"
+    ],
+    "quotemark": [
+      true,
+      "single",
+      "jsx-double"
+    ],
+    "no-var-requires": false,
+    "ordered-imports": false,
+    "no-unused-variable": [
+      false,
+      "react"
+    ],
+    "member-ordering": [
+      false
+    ],
+    "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
+    "no-console": [
+      false
+    ],
+    "no-consecutive-blank-lines": [
+      false
+    ],
+    "no-string-literal": false,
+    "jsx-no-multiline-js": false,
+    "jsx-boolean-value": false,
+    "arrow-parens": [
+      false
+    ],
+    "no-implicit-dependencies": false,
+    "no-submodule-imports": false,
+    "no-empty": false,
+    "jsx-alignment": false
+  },
+  "linterOptions": {
+    "exclude": [
+      "**/*.js",
+      "backend/__tests__/**/*.ts"
     ]
+  }
 }

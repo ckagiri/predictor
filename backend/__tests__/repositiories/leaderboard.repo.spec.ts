@@ -8,8 +8,8 @@ import { LeaderboardRepository } from "../../db/repositories/leaderboard.repo";
 import {
   ILeaderboard,
   Leaderboard,
-  BoardStatus,
-  BoardType
+  BOARD_STATUS,
+  BOARD_TYPE
 } from "../../db/models/leaderboard.model";
 
 const epl: ILeague = {
@@ -72,12 +72,12 @@ describe("Leaderboard Repo", function () {
     it("should create seasonBoard if it doesnt exist", done => {
       leaderboardRepo
         .findSeasonBoardAndUpsert$(theSeason.id, {
-          status: BoardStatus.UPDATING_SCORES
+          status: BOARD_STATUS.UPDATING_SCORES
         })
         .subscribe(lb => {
-          expect(lb.status).to.equal(BoardStatus.UPDATING_SCORES);
+          expect(lb.status).to.equal(BOARD_STATUS.UPDATING_SCORES);
           expect(lb.season.toString()).to.equal(theSeason.id);
-          expect(lb.boardType).to.equal(BoardType.GLOBAL_SEASON);
+          expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_SEASON);
           done();
         });
     });
@@ -86,19 +86,19 @@ describe("Leaderboard Repo", function () {
       let leaderboard: ILeaderboard;
       leaderboardRepo
         .findSeasonBoardAndUpsert$(theSeason.id, {
-          status: BoardStatus.UPDATING_SCORES
+          status: BOARD_STATUS.UPDATING_SCORES
         })
         .pipe(
           flatMap(lb => {
             leaderboard = lb;
             return leaderboardRepo.findSeasonBoardAndUpsert$(theSeason.id, {
-              status: BoardStatus.UPDATING_RANKINGS
+              status: BOARD_STATUS.UPDATING_RANKINGS
             });
           })
         )
         .subscribe(lb => {
           expect(lb.id).to.equal(leaderboard.id);
-          expect(lb.status).to.equal(BoardStatus.UPDATING_RANKINGS);
+          expect(lb.status).to.equal(BOARD_STATUS.UPDATING_RANKINGS);
           done();
         });
     });
@@ -106,12 +106,12 @@ describe("Leaderboard Repo", function () {
     it("should create monthBoard if it doesnt exist", done => {
       leaderboardRepo
         .findMonthBoardAndUpsert$(theSeason.id, year, month, {
-          status: BoardStatus.UPDATING_SCORES
+          status: BOARD_STATUS.UPDATING_SCORES
         })
         .subscribe(lb => {
-          expect(lb.status).to.equal(BoardStatus.UPDATING_SCORES);
+          expect(lb.status).to.equal(BOARD_STATUS.UPDATING_SCORES);
           expect(lb.season.toString()).to.equal(theSeason.id);
-          expect(lb.boardType).to.equal(BoardType.GLOBAL_MONTH);
+          expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_MONTH);
           expect(lb.year).to.equal(year);
           expect(lb.month).to.equal(month);
           done();
@@ -121,12 +121,12 @@ describe("Leaderboard Repo", function () {
     it("should create roundBoard if it doesnt exist", done => {
       leaderboardRepo
         .findRoundBoardAndUpsert$(theSeason.id, gameRound, {
-          status: BoardStatus.UPDATING_SCORES
+          status: BOARD_STATUS.UPDATING_SCORES
         })
         .subscribe(lb => {
-          expect(lb.status).to.equal(BoardStatus.UPDATING_SCORES);
+          expect(lb.status).to.equal(BOARD_STATUS.UPDATING_SCORES);
           expect(lb.season.toString()).to.equal(theSeason.id);
-          expect(lb.boardType).to.equal(BoardType.GLOBAL_ROUND);
+          expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_ROUND);
           expect(lb.gameRound).to.equal(gameRound);
           done();
         });
@@ -139,20 +139,20 @@ describe("Leaderboard Repo", function () {
     beforeEach(done => {
       Leaderboard.create([
         {
-          status: BoardStatus.UPDATING_SCORES,
-          boardType: BoardType.GLOBAL_SEASON,
+          status: BOARD_STATUS.UPDATING_SCORES,
+          boardType: BOARD_TYPE.GLOBAL_SEASON,
           season: theSeason.id
         },
         {
-          status: BoardStatus.UPDATING_SCORES,
-          boardType: BoardType.GLOBAL_MONTH,
+          status: BOARD_STATUS.UPDATING_SCORES,
+          boardType: BOARD_TYPE.GLOBAL_MONTH,
           season: theSeason.id,
           year: 2018,
           month: 4
         },
         {
-          status: BoardStatus.REFRESHED,
-          boardType: BoardType.GLOBAL_ROUND,
+          status: BOARD_STATUS.REFRESHED,
+          boardType: BOARD_TYPE.GLOBAL_ROUND,
           season: theSeason.id,
           gameRound: 20
         }
@@ -168,7 +168,7 @@ describe("Leaderboard Repo", function () {
 
     it("should find all by season and status", done => {
       leaderboardRepo
-        .findAll$({ season: theSeason.id, status: BoardStatus.UPDATING_SCORES })
+        .findAll$({ season: theSeason.id, status: BOARD_STATUS.UPDATING_SCORES })
         .subscribe(lbs => {
           expect(lbs).to.have.length(2);
           done();
@@ -177,9 +177,9 @@ describe("Leaderboard Repo", function () {
 
     it("should find by id and update status", done => {
       leaderboardRepo
-        .findByIdAndUpdate$(lb1.id!, { status: BoardStatus.UPDATING_RANKINGS })
+        .findByIdAndUpdate$(lb1.id!, { status: BOARD_STATUS.UPDATING_RANKINGS })
         .subscribe(lb => {
-          expect(lb).to.have.property("status", BoardStatus.UPDATING_RANKINGS);
+          expect(lb).to.have.property("status", BOARD_STATUS.UPDATING_RANKINGS);
           done();
         });
     });

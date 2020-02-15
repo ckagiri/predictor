@@ -1,10 +1,10 @@
-import { from } from "rxjs";
-import { flatMap } from "rxjs/operators";
-import { IJob } from "../jobs/job";
-import { Queue } from "../queue";
-import { IFootballApiClient } from "../../thirdParty/footballApi/apiClient";
-import { IFixtureRepository } from "../../db/repositories/fixture.repo";
-import Builder from "./fixturesJob.builder";
+import { from } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
+import { IJob } from '../jobs/job';
+import { Queue } from '../queue';
+import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import Builder from './fixturesJob.builder';
 
 export class FixturesJob implements IJob {
   private competitionId: number | string;
@@ -21,15 +21,15 @@ export class FixturesJob implements IJob {
     return new Builder();
   }
 
-  start(queue: Queue) {
+  public start(queue: Queue) {
     // tslint:disable-next-line: no-console
-    console.log("** starting ApiFootballData Fixtures job");
+    console.log('** starting ApiFootballData Fixtures job');
     return from(this.apiClient.getFixtures(this.competitionId))
       .pipe(
         flatMap((response: any) => {
           const fixtures = response.data.matches;
           return this.fixtureRepo.findEachBySeasonAndTeamsAndUpsert$(fixtures);
-        })
+        }),
       )
       .toPromise();
   }

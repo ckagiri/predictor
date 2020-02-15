@@ -32,13 +32,13 @@ const fixtureChanged = (apiFixture: any, dbFixture: IFixture) => {
 };
 
 export class FixturesUpdater implements IFixturesUpdater {
-  static getInstance(provider: ApiProvider) {
+  public static getInstance(provider: ApiProvider) {
     return new FixturesUpdater(FixtureRepository.getInstance(provider));
   }
 
   constructor(private fixtureRepo: IFixtureRepository) {}
 
-  updateGameDetails(apiFixtures: any[]) {
+  public updateGameDetails(apiFixtures: any[]) {
     const externalIdToApiFixtureMap: any = new Map<string, any>();
     const externalIds: string[] = [];
     for (const apiFixture of apiFixtures) {
@@ -50,7 +50,7 @@ export class FixturesUpdater implements IFixturesUpdater {
       .pipe(
         flatMap(dbFixtures => {
           return from(dbFixtures);
-        })
+        }),
       )
       .pipe(
         flatMap(dbFixture => {
@@ -66,7 +66,7 @@ export class FixturesUpdater implements IFixturesUpdater {
             return this.fixtureRepo.findByIdAndUpdate$(id!, update);
           }
           return of(dbFixture);
-        })
+        }),
       )
       .toPromise();
   }

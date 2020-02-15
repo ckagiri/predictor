@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
-import { Schema, model } from 'mongoose';
+
 import * as bcrypt from 'bcrypt-nodejs';
 
 import { IEntity, IDocumentEntity } from './base.model';
@@ -51,7 +51,7 @@ const userSchema = new Schema({
   email: { type: String, required: true, unique: true, lowercase: true },
   local: {
     password: { type: Schema.Types.String },
-    required: false
+    required: false,
   },
   username: { type: String, unique: true, lowercase: true },
   displayName: { type: String },
@@ -65,7 +65,7 @@ const userSchema = new Schema({
     name: { type: String },
     imageUrl: { type: String },
     profileUrl: { type: String },
-    required: false
+    required: false,
   },
   facebook: {
     id: { type: String },
@@ -74,7 +74,7 @@ const userSchema = new Schema({
     name: { type: String },
     imageUrl: { type: String },
     profileUrl: { type: String },
-    required: false
+    required: false,
   },
   twitter: {
     id: { type: String },
@@ -82,8 +82,8 @@ const userSchema = new Schema({
     displayName: { type: String },
     username: { type: String },
     imageUrl: { type: String },
-    required: false
-  }
+    required: false,
+  },
 });
 
 userSchema.pre('save', function(next) {
@@ -105,14 +105,13 @@ userSchema.pre('save', function(next) {
         }
         user.local!.password = hash;
         next();
-      }
+      },
     );
   });
 });
 
 userSchema.methods.comparePassword = function comparePassword(candidatePassword: string, cb: any) {
-  const user = this;
-  bcrypt.compare(candidatePassword, user.local.password, (err, isMatch) => {
+  bcrypt.compare(candidatePassword, this.local.password, (err, isMatch) => {
     if (err) {
       return cb(err);
     } else {

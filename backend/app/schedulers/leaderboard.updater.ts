@@ -3,10 +3,10 @@ import { concatMap, count, distinct, filter, flatMap, map } from 'rxjs/operators
 
 import { IFixture, FixtureStatus } from '../../db/models/fixture.model';
 import { IUserRepository, UserRepository } from '../../db/repositories/user.repo';
-import { BoardStatus, ILeaderboard } from '../../db/models/leaderboard.model';
+import { BOARD_STATUS, ILeaderboard } from '../../db/models/leaderboard.model';
 import {
   ILeaderboardRepository,
-  LeaderboardRepository
+  LeaderboardRepository,
 } from '../../db/repositories/leaderboard.repo';
 import { IPredictionRepository, PredictionRepository } from '../../db/repositories/prediction.repo';
 import { IUserScoreRepository, UserScoreRepository } from '../../db/repositories/userScore.repo';
@@ -19,12 +19,12 @@ export interface ILeaderboardUpdater {
 }
 
 export class LeaderboardUpdater implements ILeaderboardUpdater {
-  static getInstance() {
+  public static getInstance() {
     return new LeaderboardUpdater(
       UserRepository.getInstance(),
       LeaderboardRepository.getInstance(),
       PredictionRepository.getInstance(),
-      UserScoreRepository.getInstance()
+      UserScoreRepository.getInstance(),
     ).setCacheService(new CacheService());
   }
 
@@ -34,15 +34,15 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
     private userRepo: IUserRepository,
     private leaderboardRepo: ILeaderboardRepository,
     private predictionRepo: IPredictionRepository,
-    private userScoreRepo: IUserScoreRepository
-  ) {}
+    private userScoreRepo: IUserScoreRepository,
+  ) { }
 
-  setCacheService(cacheService: ICacheService) {
+  public setCacheService(cacheService: ICacheService) {
     this.cacheService = cacheService;
     return this;
   }
 
-  updateScores(fixtures: IFixture[]) {
+  public updateScores(fixtures: IFixture[]) {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }
@@ -52,7 +52,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
           return (
             fixture.status === FixtureStatus.FINISHED && fixture.allPredictionsProcessed === false
           );
-        })
+        }),
       )
       .pipe(
         flatMap(fixture => {
@@ -61,14 +61,14 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             .pipe(
               flatMap(users => {
                 return from(users);
-              })
+              }),
             )
             .pipe(
               map(user => {
                 return { user, fixture };
-              })
+              }),
             );
-        })
+        }),
       )
       .pipe(
         flatMap(data => {
@@ -86,30 +86,30 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             sBoard = this.cacheService.get(
               `${season}`,
               this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
-                status: BoardStatus.UPDATING_SCORES
-              })
+                status: BOARD_STATUS.UPDATING_SCORES,
+              }),
             );
             mBoard = this.cacheService.get(
               `${season}-${year}-${month}`,
               this.leaderboardRepo.findMonthBoardAndUpsert$(season!, year, month, {
-                status: BoardStatus.UPDATING_SCORES
-              })
+                status: BOARD_STATUS.UPDATING_SCORES,
+              }),
             );
             rBoard = this.cacheService.get(
               `${season}-${gameRound}`,
               this.leaderboardRepo.findRoundBoardAndUpsert$(season!, gameRound!, {
-                status: BoardStatus.UPDATING_SCORES
-              })
+                status: BOARD_STATUS.UPDATING_SCORES,
+              }),
             );
           } else {
             sBoard = this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
-              status: BoardStatus.UPDATING_SCORES
+              status: BOARD_STATUS.UPDATING_SCORES,
             });
             mBoard = this.leaderboardRepo.findMonthBoardAndUpsert$(season!, year, month, {
-              status: BoardStatus.UPDATING_SCORES
+              status: BOARD_STATUS.UPDATING_SCORES,
             });
             rBoard = this.leaderboardRepo.findRoundBoardAndUpsert$(season!, gameRound!, {
-              status: BoardStatus.UPDATING_SCORES
+              status: BOARD_STATUS.UPDATING_SCORES,
             });
           }
           boards.push(sBoard, mBoard, rBoard);
@@ -117,14 +117,14 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             .pipe(
               flatMap(leaderboards => {
                 return from(leaderboards);
-              })
+              }),
             )
             .pipe(
               map(leaderboard => {
                 return { user, fixture, leaderboard };
-              })
+              }),
             );
-        })
+        }),
       )
       .pipe(
         flatMap(data => {
@@ -132,9 +132,9 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
           return this.predictionRepo.findOne$({ userId: user.id, fixtureId: fixture.id }).pipe(
             map(prediction => {
               return { user, fixture, leaderboard, prediction };
-            })
+            }),
           );
-        })
+        }),
       )
       .pipe(
         concatMap(data => {
@@ -150,28 +150,28 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             fixtureId,
             predictionId,
             points!,
-            hasJoker!
+            hasJoker!,
           );
-        })
+        }),
       )
       .pipe(count())
       .toPromise();
   }
 
-  updateRankings(seasonId: string) {
+  public updateRankings(seasonId: string) {
     return this.leaderboardRepo
-      .findAll$({ season: seasonId, status: BoardStatus.UPDATING_SCORES })
+      .findAll$({ season: seasonId, status: BOARD_STATUS.UPDATING_SCORES })
       .pipe(
         flatMap(leaderboards => {
           return from(leaderboards);
-        })
+        }),
       )
       .pipe(
         flatMap(leaderboard => {
           return this.leaderboardRepo.findByIdAndUpdate$(leaderboard.id!, {
-            status: BoardStatus.UPDATING_RANKINGS
+            status: BOARD_STATUS.UPDATING_RANKINGS,
           });
-        })
+        }),
       )
       .pipe(
         flatMap(leaderboard => {
@@ -180,7 +180,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             .pipe(
               flatMap(userScores => {
                 return from(userScores);
-              })
+              }),
             )
             .pipe(
               flatMap((standing, index) => {
@@ -193,33 +193,33 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
                   .pipe(
                     map(_ => {
                       return leaderboard.id;
-                    })
+                    }),
                   );
-              })
+              }),
             );
-        })
+        }),
       )
       .pipe(
         distinct(),
-        count()
+        count(),
       )
       .toPromise();
   }
 
-  markLeaderboardsAsRefreshed(seasonId: string) {
+  public markLeaderboardsAsRefreshed(seasonId: string) {
     return this.leaderboardRepo
-      .findAll$({ season: seasonId, status: BoardStatus.UPDATING_RANKINGS })
+      .findAll$({ season: seasonId, status: BOARD_STATUS.UPDATING_RANKINGS })
       .pipe(
         flatMap(leaderboards => {
           return from(leaderboards);
-        })
+        }),
       )
       .pipe(
         flatMap(leaderboard => {
           return this.leaderboardRepo.findByIdAndUpdate$(leaderboard.id!, {
-            status: BoardStatus.REFRESHED
+            status: BOARD_STATUS.REFRESHED,
           });
-        })
+        }),
       )
       .pipe(count())
       .toPromise();

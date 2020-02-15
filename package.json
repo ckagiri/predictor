@@ -7,6 +7,11 @@
     "test": "mocha --require ts-node/register 'backend/__tests__/**/*.spec.ts'",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
+    "lint:ts": "npm run lint:tslint",
+    "lint:ts:fx": "npm run lint:tslint:fix",
+    "lint:tslint": "tslint --config ./tslint.json --project ./tsconfig.json && npm run typecheck",
+    "lint:tslint:fix": "tslint --config ./tslint.json --project ./tsconfig.json --fix && npm run typecheck",
+    "typecheck": "tsc --noEmit",
     "compile": "tsc",
     "dsit": "npm run drop:seed:import:envt",
     "dst": "npm run drop:seed:envt",
@@ -78,6 +83,8 @@
     "tslint": "^5.15.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-no-unused-expression-chai": "^0.1.4",
-    "typescript": "^3.4.2"
+    "tslint-react": "^4.2.0",
+    "tslint-react-hooks": "^2.2.1",
+    "typescript": "^3.5.3"
   }
 }

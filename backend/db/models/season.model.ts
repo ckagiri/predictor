@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
-mongoose.set("useCreateIndex", true);
-import { Schema, model } from "mongoose";
-import { IEntity, IDocumentEntity } from "./base.model";
+import mongoose, { Schema, model } from 'mongoose';
+mongoose.set('useCreateIndex', true);
+import { IEntity, IDocumentEntity } from './base.model';
 
 export interface ISeason extends IEntity {
   name?: string;
@@ -20,7 +19,7 @@ export interface ISeason extends IEntity {
   externalReference?: any;
 }
 
-export interface ISeasonDocument extends ISeason, IDocumentEntity {}
+export interface ISeasonDocument extends ISeason, IDocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -28,7 +27,7 @@ export const seasonSchema = new Schema({
   league: {
     name: { type: String, required: true },
     slug: { type: String, required: true },
-    id: { type: ObjectId, ref: "League", index: true, required: true }
+    id: { type: ObjectId, ref: 'League', index: true, required: true },
   },
   name: { type: String, required: true },
   slug: { type: String, required: true, trim: true },
@@ -40,7 +39,7 @@ export const seasonSchema = new Schema({
   numberOfRounds: { type: Number },
   numberOfTeams: { type: Number },
   numberOfGames: { type: Number },
-  externalReference: { type: Mixed }
+  externalReference: { type: Mixed },
 });
 
-export const Season = model<ISeasonDocument>("Season", seasonSchema);
+export const Season = model<ISeasonDocument>('Season', seasonSchema);

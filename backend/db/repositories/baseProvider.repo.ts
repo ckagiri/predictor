@@ -1,12 +1,12 @@
-import { Observable, Observer, Subscriber, forkJoin, of } from "rxjs";
-import { flatMap } from "rxjs/operators";
-import { Model, Document } from "mongoose";
-import * as _ from "lodash";
+import { Observable, Observer, Subscriber, forkJoin, of } from 'rxjs';
+import { flatMap } from 'rxjs/operators';
+import { Model, Document } from 'mongoose';
+import * as _ from 'lodash';
 
-import { BaseRepository, IBaseRepository } from "../repositories/base.repo";
-import { IEntity, IDocumentEntity } from "../models/base.model";
-import { IConverter } from "../converters/converter";
-import { FootballApiProvider as ApiProvider } from "../../common/footballApiProvider";
+import { BaseRepository, IBaseRepository } from '../repositories/base.repo';
+import { IEntity, IDocumentEntity } from '../models/base.model';
+import { IConverter } from '../converters/converter';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface IBaseProviderRepository<T extends IEntity>
   extends IBaseRepository<T> {
@@ -33,15 +33,15 @@ export class BaseProviderRepository<
     return this.converter.provider;
   }
 
-  save$(obj: IEntity): Observable<T> {
+  public save$(obj: IEntity): Observable<T> {
     return this.converter.from(obj).pipe(
       flatMap(entity => {
         return super.save$(entity);
-      })
+      }),
     );
   }
 
-  findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
+  public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
     const externalIdKey = `externalReference.${this.Provider}.id`;
     if (obj === undefined) {
       obj = id;
@@ -50,14 +50,14 @@ export class BaseProviderRepository<
         flatMap((entity: any) => {
           delete entity.externalReference;
           return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
-        })
+        }),
       );
     } else {
       return super.findOneAndUpdate$({ [externalIdKey]: id }, obj);
     }
   }
 
-  findEachByExternalIdAndUpdate$(objs: IEntity[]): Observable<T[]> {
+  public findEachByExternalIdAndUpdate$(objs: IEntity[]): Observable<T[]> {
     const obs: any[] = [];
     for (const obj of objs) {
       obs.push(this.findByExternalIdAndUpdate$(obj));
@@ -65,12 +65,12 @@ export class BaseProviderRepository<
     return forkJoin(obs);
   }
 
-  findByExternalId$(id: string | number): Observable<T> {
+  public findByExternalId$(id: string | number): Observable<T> {
     const externalIdKey = `externalReference.${this.Provider}.id`;
     return this.findOne$({ [externalIdKey]: id });
   }
 
-  findByExternalIds$(ids: Array<string | number>): Observable<T[]> {
+  public findByExternalIds$(ids: Array<string | number>): Observable<T[]> {
     const externalIdKey = `externalReference.${this.Provider}.id`;
 
     return this.findAll$({ [externalIdKey]: { $in: ids } });
@@ -79,7 +79,7 @@ export class BaseProviderRepository<
   protected _findOneAndUpsert$(
     conditions: any,
     obj: IEntity,
-    externalReference: any
+    externalReference: any,
   ): Observable<T> {
     return super
       .findOneAndUpdate$(conditions, obj, { new: true, upsert: true })
@@ -91,7 +91,7 @@ export class BaseProviderRepository<
           }
           _.merge(updatedObj, { externalReference });
           return super.save$(updatedObj);
-        })
+        }),
       );
   }
 }

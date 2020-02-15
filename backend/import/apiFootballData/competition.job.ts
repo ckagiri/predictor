@@ -1,14 +1,14 @@
-import { from } from "rxjs";
-import { flatMap, map } from "rxjs/operators";
-import { IJob } from "../jobs/job";
-import { Queue } from "../queue";
-import { IFootballApiClient } from "../../thirdParty/footballApi/apiClient";
-import { ISeasonRepository } from "../../db/repositories/season.repo";
-import { ITeamRepository } from "../../db/repositories/team.repo";
-import { IFixtureRepository } from "../../db/repositories/fixture.repo";
-import { FixturesJob } from "./fixtures.job";
-import { TeamsJob } from "./teams.job";
-import Builder from "./competitionJob.builder";
+import { from } from 'rxjs';
+import { flatMap, map } from 'rxjs/operators';
+import { IJob } from '../jobs/job';
+import { Queue } from '../queue';
+import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { ISeasonRepository } from '../../db/repositories/season.repo';
+import { ITeamRepository } from '../../db/repositories/team.repo';
+import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixturesJob } from './fixtures.job';
+import { TeamsJob } from './teams.job';
+import Builder from './competitionJob.builder';
 
 export class CompetitionJob implements IJob {
   private competitionId: number | string;
@@ -29,9 +29,9 @@ export class CompetitionJob implements IJob {
     return new Builder();
   }
 
-  start(queue: Queue) {
+  public start(queue: Queue) {
     // tslint:disable-next-line: no-console
-    console.log("** starting ApiFootballData Competition job");
+    console.log('** starting ApiFootballData Competition job');
     return from(this.apiClient.getCompetition(this.competitionId))
       .pipe(
         flatMap((response: any) => {
@@ -54,7 +54,7 @@ export class CompetitionJob implements IJob {
 
           queue.addJob(fixturesJob);
           queue.addJob(teamsJob);
-        })
+        }),
       )
       .toPromise();
   }

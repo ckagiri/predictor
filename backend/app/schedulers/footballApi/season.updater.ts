@@ -9,13 +9,13 @@ export interface ISeasonUpdater {
 }
 
 export class SeasonUpdater implements ISeasonUpdater {
-  static getInstance(provider: ApiProvider) {
+  public static getInstance(provider: ApiProvider) {
     return new SeasonUpdater(SeasonRepository.getInstance(provider));
   }
 
   constructor(private seasonRepo: ISeasonRepository) {}
 
-  updateCurrentMatchRound(apiSeasons: any[]) {
+  public updateCurrentMatchRound(apiSeasons: any[]) {
     const externalIdToApiSeasonMap: any = new Map<string, any>();
     const externalIds: string[] = [];
     for (const apiSeason of apiSeasons) {
@@ -27,7 +27,7 @@ export class SeasonUpdater implements ISeasonUpdater {
       .pipe(
         flatMap(dbSeasons => {
           return from(dbSeasons);
-        })
+        }),
       )
       .pipe(
         flatMap(dbSeason => {
@@ -43,7 +43,7 @@ export class SeasonUpdater implements ISeasonUpdater {
           } else {
             return of(dbSeason);
           }
-        })
+        }),
       )
       .toPromise();
   }

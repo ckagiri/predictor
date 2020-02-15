@@ -1,6 +1,6 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
-import { IEntity, IDocumentEntity } from "./base.model";
+import { IEntity, IDocumentEntity } from './base.model';
 
 export interface ITeam extends IEntity {
   id?: string;
@@ -24,7 +24,7 @@ export const teamSchema = new Schema({
   code: { type: String },
   aliases: { type: [String] },
   crestUrl: { type: String },
-  externalReference: { type: Mixed }
+  externalReference: { type: Mixed },
 });
 
-export const Team = model<ITeamDocument>("Team", teamSchema);
+export const Team = model<ITeamDocument>('Team', teamSchema);

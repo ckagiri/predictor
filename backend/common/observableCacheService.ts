@@ -22,7 +22,7 @@ export interface ICacheService {
 export class CacheService {
   private cache: Map<string, CacheContent> = new Map<string, CacheContent>();
   private inFlightObservables: Map<string, Subject<any>> = new Map<string, Subject<any>>();
-  readonly DEFAULT_MAX_AGE: number = 15 * 60 * 1000;
+  public readonly DEFAULT_MAX_AGE: number = 15 * 60 * 1000;
 
   /**
    * Gets the value from cache if the key is provided.
@@ -30,7 +30,7 @@ export class CacheService {
    * in flight, if so return the subject. If not create a new
    * Subject inFlightObservable and return the source observable.
    */
-  get(key: string, fallback?: Observable<any>, maxAge?: number): Observable<any> | Subject<any> {
+  public get(key: string, fallback?: Observable<any>, maxAge?: number): Observable<any> | Subject<any> {
     if (this.hasValidCachedValue(key)) {
       // console.log(`%cGetting from cache ${key}`, 'color: green');
       return of(this.cache.get(key)!.value);
@@ -48,7 +48,7 @@ export class CacheService {
       return fallback.pipe(
         tap(value => {
           this.set(key, value, maxAge);
-        })
+        }),
       );
     } else {
       return throwError('Requested key is not available in Cache');
@@ -59,7 +59,7 @@ export class CacheService {
    * Sets the value with key in the cache
    * Notifies all observers of the new value
    */
-  set(key: string, value: any, maxAge: number = this.DEFAULT_MAX_AGE): void {
+  public set(key: string, value: any, maxAge: number = this.DEFAULT_MAX_AGE): void {
     this.cache.set(key, { value, expiry: Date.now() + maxAge });
     this.notifyInFlightObservers(key, value);
   }
@@ -67,11 +67,11 @@ export class CacheService {
   /**
    * Checks if the a key exists in cache
    */
-  has(key: string): boolean {
+  public has(key: string): boolean {
     return this.cache.has(key);
   }
 
-  clear() {
+  public clear() {
     this.cache.clear();
   }
 

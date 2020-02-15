@@ -5,7 +5,7 @@ import { IScheduler } from '../../schedulers';
 import { ITaskRunner, TaskRunner } from '../taskRunner';
 import {
   IFootballApiClient,
-  FootballApiClient as ApiClient
+  FootballApiClient as ApiClient,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { IEventMediator, EventMediator } from '../../../common/eventMediator';
@@ -15,13 +15,13 @@ import { IFixture, FixtureStatus } from '../../../db/models/fixture.model';
 import { IFixturesUpdater, FixturesUpdater } from './fixtures.updater';
 
 export class FixturesScheduler extends EventEmitter implements IScheduler {
-  static getInstance(provider: ApiProvider) {
+  public static getInstance(provider: ApiProvider) {
     return new FixturesScheduler(
       new TaskRunner(),
       ApiClient.getInstance(provider),
       FixtureConverter.getInstance(provider),
       FixturesUpdater.getInstance(provider),
-      EventMediator.getInstance()
+      EventMediator.getInstance(),
     );
   }
 
@@ -34,7 +34,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
     private apiClient: IFootballApiClient,
     private fixtureConverter: IFixtureConverter,
     private fixturesUpdater: IFixturesUpdater,
-    private eventMedidatior: IEventMediator
+    private eventMedidatior: IEventMediator,
   ) {
     super();
   }
@@ -51,7 +51,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
     return this._previousUpdate;
   }
 
-  start = async () => {
+  public start = async () => {
     this._polling = true;
     while (this._polling) {
       await this.taskRunner.run({
@@ -65,7 +65,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
             const tommorowsFixtures = this.fixtureConverter.map(tommorowsFixturesRes.data.fixtures);
             const yesterdaysFixturesRes = await this.apiClient.getYesterdaysFixtures();
             const yesterdaysFixtures = this.fixtureConverter.map(
-              yesterdaysFixturesRes.data.fixtures
+              yesterdaysFixturesRes.data.fixtures,
             );
 
             fixtures = [].concat(...([tommorowsFixtures, yesterdaysFixtures] as any[]));
@@ -79,31 +79,31 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
           this._nextUpdate = this.calculateNextUpdate(fixtures);
           const finishedFixtures = [].filter.call(
             changedDbFixtures,
-            (n: any) => n.status === FixtureStatus.FINISHED
+            (n: any) => n.status === FixtureStatus.FINISHED,
           );
           this.eventMedidatior.publish('process:predictions', finishedFixtures);
           this.emit('task:executed');
-        }
+        },
       });
     }
   };
 
-  stop = async () => {
+  public stop = async () => {
     await Promise.resolve().then(() => {
       this._polling = false;
       this.emit('stopped');
     });
   };
 
-  calculateNextUpdate = (fixtureList: IFixture[]) => {
+  public calculateNextUpdate = (fixtureList: IFixture[]) => {
     let nextUpdate = moment().add(12, 'hours');
     const fixtures = fixtureList.filter(f => f.status !== FixtureStatus.FINISHED);
     let hasLiveFixture = false;
     for (const fixture of fixtures) {
-      if (fixture.status == FixtureStatus.IN_PLAY) {
+      if (fixture.status === FixtureStatus.IN_PLAY) {
         hasLiveFixture = true;
       }
-      if (fixture.status == FixtureStatus.SCHEDULED || fixture.status == FixtureStatus.TIMED) {
+      if (fixture.status === FixtureStatus.SCHEDULED || fixture.status === FixtureStatus.TIMED) {
         const fixtureStart = moment(fixture.date);
         const diff = fixtureStart.diff(moment(), 'minutes');
         if (diff <= 5) {

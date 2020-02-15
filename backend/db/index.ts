@@ -1,9 +1,9 @@
-import mongoose = require("mongoose");
+import mongoose = require('mongoose');
 
 export const init = (
   mongoUri: string,
   cb?: any,
-  options: any = { drop: false }
+  options: any = { drop: false },
 ) => {
   cb =
     cb ||
