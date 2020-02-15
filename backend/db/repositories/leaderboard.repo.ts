@@ -38,7 +38,10 @@ export class LeaderboardRepository
   }
 
   public findSeasonBoardAndUpsert$(seasonId: string, update: any) {
-    const query: any = { season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON };
+    const query: any = {
+      season: seasonId,
+      boardType: BOARD_TYPE.GLOBAL_SEASON,
+    };
     return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
   }
 
@@ -57,7 +60,11 @@ export class LeaderboardRepository
     return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
   }
 
-  public findRoundBoardAndUpsert$(seasonId: string, gameRound: number, update: any) {
+  public findRoundBoardAndUpsert$(
+    seasonId: string,
+    gameRound: number,
+    update: any,
+  ) {
     const query: any = {
       season: seasonId,
       gameRound,

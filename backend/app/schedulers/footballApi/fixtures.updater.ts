@@ -1,7 +1,10 @@
 import { from, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { IFixture } from '../../../db/models/fixture.model';
-import { IFixtureRepository, FixtureRepository } from '../../../db/repositories/fixture.repo';
+import {
+  IFixtureRepository,
+  FixtureRepository,
+} from '../../../db/repositories/fixture.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 export interface IFixturesUpdater {
@@ -62,7 +65,9 @@ export class FixturesUpdater implements IFixturesUpdater {
             const id = dbFixture.id;
             const { result, status, odds } = apiFixture;
             const update: any = { result, status, odds };
-            Object.keys(update).forEach(key => update[key] == null && delete update[key]);
+            Object.keys(update).forEach(
+              key => update[key] == null && delete update[key],
+            );
             return this.fixtureRepo.findByIdAndUpdate$(id!, update);
           }
           return of(dbFixture);

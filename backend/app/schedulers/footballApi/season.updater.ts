@@ -1,6 +1,9 @@
 import { of, from } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
-import { ISeasonRepository, SeasonRepository } from '../../../db/repositories/season.repo';
+import {
+  ISeasonRepository,
+  SeasonRepository,
+} from '../../../db/repositories/season.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { ISeason } from '../../../db/models/season.model';
 
@@ -34,7 +37,8 @@ export class SeasonUpdater implements ISeasonUpdater {
           const provider = this.seasonRepo.Provider;
           // tslint:disable-next-line: no-string-literal
           const extId = dbSeason['externalReference'][provider]['id'];
-          const extCurrentMatchRound = externalIdToApiSeasonMap[extId].currentMatchRound;
+          const extCurrentMatchRound =
+            externalIdToApiSeasonMap[extId].currentMatchRound;
 
           if (dbSeason.currentMatchRound !== extCurrentMatchRound) {
             const id = dbSeason.id;

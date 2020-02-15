@@ -41,7 +41,7 @@ export interface IFixture extends IEntity {
   [key: string]: any;
 }
 
-export interface IFixtureDocument extends IFixture, IDocumentEntity { }
+export interface IFixtureDocument extends IFixture, IDocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -66,7 +66,14 @@ export const fixtureSchema = new Schema({
   status: {
     type: String,
     required: true,
-    enum: ['SCHEDULED', 'TIMED', 'IN_PLAY', 'CANCELED', 'POSTPONED', 'FINISHED'],
+    enum: [
+      'SCHEDULED',
+      'TIMED',
+      'IN_PLAY',
+      'CANCELED',
+      'POSTPONED',
+      'FINISHED',
+    ],
   },
   result: {
     goalsHomeTeam: { type: Number },

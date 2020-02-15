@@ -3,8 +3,14 @@ import { concatMap, filter, flatMap, map, count } from 'rxjs/operators';
 
 import { PredictionStatus } from '../../db/models/prediction.model';
 import { IFixture, FixtureStatus } from '../../db/models/fixture.model';
-import { IPredictionProcessor, PredictionProcessor } from './prediction.processor';
-import { IFixtureRepository, FixtureRepository } from '../../db/repositories/fixture.repo';
+import {
+  IPredictionProcessor,
+  PredictionProcessor,
+} from './prediction.processor';
+import {
+  IFixtureRepository,
+  FixtureRepository,
+} from '../../db/repositories/fixture.repo';
 
 export interface IFinishedFixturesProcessor {
   processPredictions(fixtures: IFixture[]): Promise<number>;
@@ -29,7 +35,8 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
       .pipe(
         filter(fixture => {
           return (
-            fixture.status === FixtureStatus.FINISHED && fixture.allPredictionsProcessed === false
+            fixture.status === FixtureStatus.FINISHED &&
+            fixture.allPredictionsProcessed === false
           );
         }),
       )
@@ -57,7 +64,10 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
       .pipe(
         flatMap(data => {
           const { fixture, prediction } = data;
-          return this.predictionProcessor.processPrediction$(prediction, fixture);
+          return this.predictionProcessor.processPrediction$(
+            prediction,
+            fixture,
+          );
         }),
       )
       .pipe(count())
@@ -69,7 +79,8 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
       .pipe(
         filter(fixture => {
           return (
-            fixture.status === FixtureStatus.FINISHED && fixture.allPredictionsProcessed === false
+            fixture.status === FixtureStatus.FINISHED &&
+            fixture.allPredictionsProcessed === false
           );
         }),
       )

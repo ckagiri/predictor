@@ -9,7 +9,7 @@ import { FixtureStatus, IFixture } from '../../db/models/fixture.model';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => { }, context }: any) => {
+  run: async ({ whenToExecute, task = () => {}, context }: any) => {
     await task.call(context);
   },
 };
@@ -54,7 +54,7 @@ const fixturesUpdaterStub: any = {
   },
 };
 const eventMediatorStub: any = {
-  publish(event: string, ...args: any[]) { },
+  publish(event: string, ...args: any[]) {},
 };
 let fixturesScheduler: FixturesScheduler;
 describe('ApiFootballData: Fixtures scheduler', () => {

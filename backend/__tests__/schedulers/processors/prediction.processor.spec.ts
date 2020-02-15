@@ -56,8 +56,16 @@ const userRepoStub: any = {
     return of([chalo, kagiri]);
   },
 };
-const chaloJoker = { id: ObjectId().toHexString(), user: chalo.id, fixture: livVsou.id };
-const kagiriJoker = { id: ObjectId().toHexString(), user: kagiri.id, fixture: arsVche.id };
+const chaloJoker = {
+  id: ObjectId().toHexString(),
+  user: chalo.id,
+  fixture: livVsou.id,
+};
+const kagiriJoker = {
+  id: ObjectId().toHexString(),
+  user: kagiri.id,
+  fixture: arsVche.id,
+};
 const chaloPred = {
   id: ObjectId().toHexString(),
   user: chalo.id,
@@ -78,7 +86,9 @@ let predictionProcessor: IPredictionProcessor;
 describe('Prediction Processor', () => {
   describe('getPredictions$', async () => {
     beforeEach(() => {
-      predictionRepoStub.findOrCreateJoker$.withArgs(sinon.match(chalo.id)).returns(of(chaloJoker));
+      predictionRepoStub.findOrCreateJoker$
+        .withArgs(sinon.match(chalo.id))
+        .returns(of(chaloJoker));
       predictionRepoStub.findOrCreateJoker$
         .withArgs(sinon.match(kagiri.id))
         .returns(of(kagiriJoker));
@@ -138,7 +148,9 @@ describe('Prediction Processor', () => {
       await predictionProcessor.getPredictions$(arsVche).toPromise();
 
       expect(spy).to.have.been.calledOnce;
-      expect(spy).to.have.been.calledWith(sinon.match({ userId: chalo.id, fixtureId: arsVche.id }));
+      expect(spy).to.have.been.calledWith(
+        sinon.match({ userId: chalo.id, fixtureId: arsVche.id }),
+      );
     });
 
     it('should not findOrCreate prediction if joker fixture == passedIn fixture', async () => {
@@ -150,7 +162,9 @@ describe('Prediction Processor', () => {
     });
 
     it('should return equal number of predictions to users', async () => {
-      const predictions = await predictionProcessor.getPredictions$(arsVche).toPromise();
+      const predictions = await predictionProcessor
+        .getPredictions$(arsVche)
+        .toPromise();
 
       expect(predictions).to.be.an('array');
       expect(predictions.length).to.equal(2);
@@ -174,24 +188,28 @@ describe('Prediction Processor', () => {
     it('should calculate score for prediction', done => {
       const spy = sinon.spy(predictionCalculatorStub, 'calculateScore');
 
-      predictionProcessor.processPrediction$(chaloPred, arsVche).subscribe(_ => {
-        expect(spy).to.have.been.calledOnce;
-        expect(spy).to.have.been.calledWith(
-          { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-          { goalsHomeTeam: 2, goalsAwayTeam: 1 },
-        );
-        done();
-      });
+      predictionProcessor
+        .processPrediction$(chaloPred, arsVche)
+        .subscribe(_ => {
+          expect(spy).to.have.been.calledOnce;
+          expect(spy).to.have.been.calledWith(
+            { goalsHomeTeam: 1, goalsAwayTeam: 1 },
+            { goalsHomeTeam: 2, goalsAwayTeam: 1 },
+          );
+          done();
+        });
     });
 
     it('should save calculatedScore for prediction', done => {
       const spy = predictionRepoStub.findByIdAndUpdate$;
 
-      predictionProcessor.processPrediction$(chaloPred, arsVche).subscribe(_ => {
-        expect(spy).to.have.been.called;
-        expect(spy).to.have.been.calledWithMatch(chaloPred.id);
-        done();
-      });
+      predictionProcessor
+        .processPrediction$(chaloPred, arsVche)
+        .subscribe(_ => {
+          expect(spy).to.have.been.called;
+          expect(spy).to.have.been.calledWithMatch(chaloPred.id);
+          done();
+        });
     });
   });
 });

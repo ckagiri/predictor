@@ -23,7 +23,7 @@ export interface IPrediction extends IEntity {
   jokerAutoPicked?: boolean;
 }
 
-export interface IPredictionDocument extends IPrediction, IDocumentEntity { }
+export interface IPredictionDocument extends IPrediction, IDocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;

@@ -13,7 +13,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => { }, context }: any) => {
+  run: async ({ whenToExecute, task = () => {}, context }: any) => {
     await task.call(context);
   },
 };

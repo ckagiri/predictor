@@ -1,1 +1,1 @@
-declare module "mais-mongoose-seeder";
+declare module 'mais-mongoose-seeder';

@@ -7,7 +7,7 @@ const expect = chai.expect;
 import { SeasonScheduler } from '../../app/schedulers/footballApi/season.scheduler';
 
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => { }, context }: any) => {
+  run: async ({ whenToExecute, task = () => {}, context }: any) => {
     await task.call(context);
   },
 };

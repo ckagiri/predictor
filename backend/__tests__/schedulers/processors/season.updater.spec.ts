@@ -52,7 +52,9 @@ describe('SeasonUpdater', () => {
 
       await seasonUpdater.updateCurrentMatchRound(apiSeasons);
       const externalIds = [].map.call(apiSeasons, (n: any) => n.id);
-      expect(spy).to.have.been.calledOnce.and.to.have.been.calledWith(sinon.match(externalIds));
+      expect(spy).to.have.been.calledOnce.and.to.have.been.calledWith(
+        sinon.match(externalIds),
+      );
     });
 
     it('should update currentRound of season if different from stored', async () => {

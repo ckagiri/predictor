@@ -8,7 +8,10 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { ISeasonUpdater, SeasonUpdater } from './season.updater';
 import { IEventMediator, EventMediator } from '../../../common/eventMediator';
-import { ISeasonConverter, SeasonConverter } from '../../../db/converters/season.converter';
+import {
+  ISeasonConverter,
+  SeasonConverter,
+} from '../../../db/converters/season.converter';
 
 export class SeasonScheduler extends EventEmitter implements IScheduler {
   public static getInstance(provider: ApiProvider) {

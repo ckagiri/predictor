@@ -9,7 +9,10 @@ import {
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { IEventMediator, EventMediator } from '../../../common/eventMediator';
-import { IFixtureConverter, FixtureConverter } from '../../../db/converters/fixture.converter';
+import {
+  IFixtureConverter,
+  FixtureConverter,
+} from '../../../db/converters/fixture.converter';
 import { IFixture, FixtureStatus } from '../../../db/models/fixture.model';
 
 import { IFixturesUpdater, FixturesUpdater } from './fixtures.updater';
@@ -62,19 +65,27 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
           if (this._nextUpdate > 6 * 60 * 60 * 1000) {
             // 6h
             const tommorowsFixturesRes = await this.apiClient.getTomorrowsFixtures();
-            const tommorowsFixtures = this.fixtureConverter.map(tommorowsFixturesRes.data.fixtures);
+            const tommorowsFixtures = this.fixtureConverter.map(
+              tommorowsFixturesRes.data.fixtures,
+            );
             const yesterdaysFixturesRes = await this.apiClient.getYesterdaysFixtures();
             const yesterdaysFixtures = this.fixtureConverter.map(
               yesterdaysFixturesRes.data.fixtures,
             );
 
-            fixtures = [].concat(...([tommorowsFixtures, yesterdaysFixtures] as any[]));
+            fixtures = [].concat(
+              ...([tommorowsFixtures, yesterdaysFixtures] as any[]),
+            );
           }
           const todaysFixturesRes = await this.apiClient.getTodaysFixtures();
-          const todaysFixtures = this.fixtureConverter.map(todaysFixturesRes.data.fixtures);
+          const todaysFixtures = this.fixtureConverter.map(
+            todaysFixturesRes.data.fixtures,
+          );
 
           fixtures = fixtures.concat(todaysFixtures);
-          const changedDbFixtures = await this.fixturesUpdater.updateGameDetails(fixtures);
+          const changedDbFixtures = await this.fixturesUpdater.updateGameDetails(
+            fixtures,
+          );
           this._previousUpdate = this._nextUpdate;
           this._nextUpdate = this.calculateNextUpdate(fixtures);
           const finishedFixtures = [].filter.call(
@@ -97,19 +108,27 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
 
   public calculateNextUpdate = (fixtureList: IFixture[]) => {
     let nextUpdate = moment().add(12, 'hours');
-    const fixtures = fixtureList.filter(f => f.status !== FixtureStatus.FINISHED);
+    const fixtures = fixtureList.filter(
+      f => f.status !== FixtureStatus.FINISHED,
+    );
     let hasLiveFixture = false;
     for (const fixture of fixtures) {
       if (fixture.status === FixtureStatus.IN_PLAY) {
         hasLiveFixture = true;
       }
-      if (fixture.status === FixtureStatus.SCHEDULED || fixture.status === FixtureStatus.TIMED) {
+      if (
+        fixture.status === FixtureStatus.SCHEDULED ||
+        fixture.status === FixtureStatus.TIMED
+      ) {
         const fixtureStart = moment(fixture.date);
         const diff = fixtureStart.diff(moment(), 'minutes');
         if (diff <= 5) {
           hasLiveFixture = true;
         }
-        if (fixtureStart.isAfter(moment()) && fixtureStart.isBefore(nextUpdate)) {
+        if (
+          fixtureStart.isAfter(moment()) &&
+          fixtureStart.isBefore(nextUpdate)
+        ) {
           nextUpdate = fixtureStart;
         }
       }

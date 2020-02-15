@@ -168,7 +168,10 @@ describe('Leaderboard Repo', function() {
 
     it('should find all by season and status', done => {
       leaderboardRepo
-        .findAll$({ season: theSeason.id, status: BOARD_STATUS.UPDATING_SCORES })
+        .findAll$({
+          season: theSeason.id,
+          status: BOARD_STATUS.UPDATING_SCORES,
+        })
         .subscribe(lbs => {
           expect(lbs).to.have.length(2);
           done();

@@ -109,7 +109,11 @@ export class BaseRepository<
     });
   }
 
-  public findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]> {
+  public findAll$(
+    conditions?: any,
+    projection?: any,
+    options?: any,
+  ): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.findAll(conditions, projection, options).then(
         (result: T[]) => {

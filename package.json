@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "TS_NODE_PROJECT='backend/tsconfig.json' mocha --require ts-node/register backend/__tests__/**/*.spec.ts",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\" \"test/**/*.ts\"",
+    "prettify": "prettier --write \"**/*.ts\"",
     "lb": "npm run lint:tslint:backend",
     "lfb": "npm run lint:tslint:fix:backend",
     "lint:tslint:backend": "tslint --config backend/tslint.json --project backend/tsconfig.json && npm run typecheck:backend",
@@ -19,6 +19,14 @@
     "drop:seed:import:test": "NODE_ENV=test&& npm run compile:backend && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js && node dist/import/start.js",
     "import:test": "NODE_ENV=test&& npm run compile:backend && node dist/import/start.js",
     "drop:seed:test": "NODE_ENV=test&& npm run compile:backend && node dist/db/tasks/drop.js && node dist/db/tasks/seed.js"
+  },
+  "lint-staged": {
+    "*.ts": "lint:tslint:fix:backend"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint:tslint:fix:backend"
+    }
   },
   "repository": {
     "type": "git",
@@ -70,6 +78,8 @@
     "@types/sinon-chai": "^3.2.2",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.7",
     "mais-mongoose-seeder": "^1.0.7",
     "mocha": "^7.0.1",
     "mocha-typescript": "^1.1.17",

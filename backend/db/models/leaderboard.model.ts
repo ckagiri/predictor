@@ -15,7 +15,7 @@ export interface ILeaderboard extends IEntity {
   lastStatusUpdate?: Date;
 }
 
-export interface ILeaderboardDocument extends ILeaderboard, IDocumentEntity { }
+export interface ILeaderboardDocument extends ILeaderboard, IDocumentEntity {}
 
 export enum BOARD_STATUS {
   UPDATING_SCORES = 'UPDATING_SCORES',

@@ -27,7 +27,11 @@ export class DocumentDao<T extends Document> {
     return this.Model.insertMany(objs) as Promise<T[]>;
   }
 
-  public findAll(conditions: any = {}, projection?: any, options?: any): Promise<T[]> {
+  public findAll(
+    conditions: any = {},
+    projection?: any,
+    options?: any,
+  ): Promise<T[]> {
     return this.Model.find(conditions, projection, options).exec() as Promise<
       T[]
     >;
