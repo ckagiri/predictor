@@ -5,6 +5,22 @@
     "tslint-react-hooks"
   ],
   "rules": {
+    "no-this-assignment": [
+      true,
+      {
+        "allowed-names": [
+          "^self$"
+        ],
+        "allow-destructuring": true
+      }
+    ],
+    "variable-name": {
+      "options": [
+        "check-format",
+        "allow-leading-underscore",
+        "allow-pascal-case"
+      ]
+    },
     "no-empty-interface": false,
     "jsx-no-lambda": false,
     "semicolon": [
