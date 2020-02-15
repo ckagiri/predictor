@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "name": "Gameweek 1",
+    "ord": "1",
+    "slug": "gameweek-1"
+  },
+  {
+    "id": "2",
+    "name": "Gameweek 2",
+    "ord": "2",
+    "slug": "gameweek-2"
+  },
+  {
+    "id": "3",
+    "name": "Gameweek 3",
+    "ord": "3",
+    "slug": "gameweek-3"
+  },
+  {
+    "id": "4",
+    "name": "Gameweek 4",
+    "ord": "4",
+    "slug": "gameweek-4"
+  }
+]

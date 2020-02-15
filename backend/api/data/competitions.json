@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "English Premier League",
+    "slug": "english-premier-league",
+    "code": "EPL"
+  },
+  {
+    "id": 2,
+    "name": "Kenya Premier League",
+    "slug": "kenya-premier-league",
+    "code": "KPL"
+  }
+]

@@ -16,7 +16,7 @@ debug
 certs
 
 # Database
-data
+# data
 
 # Build results
 dist
@@ -77,6 +77,7 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.*
 
 ### VisualStudioCode ###
 .vscode/*

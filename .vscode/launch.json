@@ -17,6 +17,17 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Launch Node Express via NPM",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run-script",
+        "node:debug"
+      ],
+      "port": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Import AFD",
       "program": "${workspaceFolder}/backend/import/start.ts",
       "preLaunchTask": "tsc: build - backend/tsconfig-debug.json",
