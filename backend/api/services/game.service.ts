@@ -31,7 +31,6 @@ async function getCompetitions(_req: Request, res: Response) {
   }
 }
 
-
 async function getCompetition(req: Request, res: Response) {
   try {
     const competitions = data.getCompetitions();
@@ -57,7 +56,10 @@ async function getSeason(req: Request, res: Response) {
   try {
     const seasons = data.getSeasons();
     const season = seasons.find((s: any) => {
-      return s.competitionSlug === req.params.competitionSlug && s.slug === req.params.seasonSlug;
+      return (
+        s.competitionSlug === req.params.competitionSlug &&
+        s.slug === req.params.seasonSlug
+      );
     })[0];
     const teams = data.getTeams();
     const rounds = data.getRounds();
