@@ -17,6 +17,8 @@
       "es7",
       "es2017"
     ],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true
   }
 }
