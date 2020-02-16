@@ -1,8 +1,8 @@
 import express from 'express';
-import { competitionRoutes } from './competition.routes';
+import { gameRoutes } from './game.routes';
 
 const router = express.Router();
 
-router.use('/', competitionRoutes);
+router.use('/game', gameRoutes);
 
 export { router };
