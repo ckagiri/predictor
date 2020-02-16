@@ -11,7 +11,7 @@ router.get('/competitions/:slug', (req, res) => {
   gameService.getCompetition(req, res);
 });
 
-router.get('/competitions/:slug/season', (req, res) => {
+router.get('/competitions/:slug/seasons', (req, res) => {
   gameService.getSeasons(req, res);
 });
 
