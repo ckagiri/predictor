@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import setup from './middlewares/frontendMiddleware';
 import { router } from './routes';
+import { resolve } from 'path';
 
 if (!process.env.NODE_ENV || !process.env.PORT) {
   console.error(
@@ -13,15 +15,14 @@ if (!process.env.NODE_ENV || !process.env.PORT) {
 }
 
 const app = express();
-const port = process.env.PORT || 7070;
-const www = process.env.WWW || './dist';
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use(express.static(www));
-console.log(`serving ${www}`);
 app.use('/api', router);
-app.get('*', (req, res) => {
-  res.sendFile('index.html', { root: www });
+
+setup(app, {
+  outputPath: resolve(process.cwd(), 'dist'),
+  publicPath: '/',
 });
+
+const port = process.env.PORT || 7070;
 app.listen(port, () => console.log(`listening on http://localhost:${port}`));

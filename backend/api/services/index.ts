@@ -1,3 +1,3 @@
-import competitionService from './competition.service';
+import gameService from './game.service';
 
-export { competitionService };
+export { gameService };

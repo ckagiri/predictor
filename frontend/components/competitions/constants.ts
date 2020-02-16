@@ -1,0 +1,17 @@
+enum ActionTypes {
+  PRELOAD_START = 'lp/Competitions/PRELOAD_START',
+  PRELOAD_COMPLETE = 'lp/Competitions/PRELOAD_COMPLETE',
+  PRELOAD_ERROR = 'lp/Competitions/PRELOAD_ERROR',
+  GET_COMPETITIONS_START = 'lp/Competitions/GET_COMPETITIONS_START',
+  GET_COMPETITIONS_COMPLETE = 'lp/Competitions/GET_COMPETITIONS_COMPLETE',
+  SELECT_COMPETITION = 'lp/Competitions/SELECT_COMPETITION',
+  GET_SEASONS_START = 'lp/Competitions/GET_SEASONS_START',
+  GET_SEASONS_COMPLETE = 'lp/Competitions/GET_SEASONS_COMPLETE',
+  SELECT_SEASON = 'lp/Competitions/SELECT_SEASON',
+  SET_SEASON_DATA = 'lp/Competitions/SET_SEASON_DATA',
+  SELECT_GAME_ROUND = 'lp/Competitions/SELECT_GAME_ROUND',
+  ROUTE_TO_MATCHES_PAGE = 'lp/Competitions/ROUTE_TO_MATCHES_PAGE',
+  SET_CURRENT_PAGE = 'lp/Competitions/SET_CURRENT_PAGE'
+}
+
+export default ActionTypes;
