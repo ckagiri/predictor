@@ -21,7 +21,7 @@ app.use('/api', router);
 
 setup(app, {
   outputPath: resolve(process.cwd(), 'dist'),
-  publicPath: '/'
+  publicPath: '/',
 });
 
 const port = process.env.PORT || 7070;
