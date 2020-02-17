@@ -1,9 +1,7 @@
 import { flatMap } from 'rxjs/operators';
-import { Document } from 'mongoose';
 import { expect } from 'chai';
 
 import * as db from '../../db';
-import { config } from '../../config/environment';
 import { User, IUser } from '../../db/models/user.model';
 import { League, ILeague } from '../../db/models/league.model';
 import { Season, ISeason } from '../../db/models/season.model';
@@ -25,15 +23,12 @@ import { PredictionRepository } from '../../db/repositories/prediction.repo';
 const predictionRepo = PredictionRepository.getInstance();
 // tslint:disable-next-line: one-variable-per-declaration
 let user1: any,
-  user2: any,
-  theLeague: any,
   theSeason: any,
   team1: any,
   team2: any,
   team3: any,
   team4: any,
-  fixture1: any,
-  fixture2: any;
+  fixture1: any;
 
 const epl: ILeague = {
   name: 'English Premier League',
@@ -135,11 +130,9 @@ describe('Prediction repo', function () {
     User.create([chalo, kagiri])
       .then(users => {
         user1 = users[0];
-        user2 = users[1];
         return League.create(epl);
       })
       .then(l => {
-        theLeague = l;
         const { name, slug, id } = l;
         epl18.league = { name, slug, id: id! };
         return Season.create(epl18);
@@ -186,7 +179,6 @@ describe('Prediction repo', function () {
       })
       .then(fixtures => {
         fixture1 = fixtures[0];
-        fixture2 = fixtures[1];
         done();
       });
   });
@@ -226,7 +218,6 @@ describe('Prediction repo', function () {
       slug: fixtureSlug,
       season,
       gameRound,
-      odds,
       id: fixtureId,
     } = fixture1;
     const pred: IPrediction = {
@@ -264,7 +255,6 @@ describe('Prediction repo', function () {
         });
     });
     it('should return existing prediction', done => {
-      type Prd = IPrediction | Document;
       let prediction: IPredictionDocument;
       predictionRepo
         .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })

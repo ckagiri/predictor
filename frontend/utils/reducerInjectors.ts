@@ -16,13 +16,16 @@ export function injectReducerFactory(store: LifeStore, isValid: boolean) {
 
     invariant(
       isString(key) && !isEmpty(key) && isFunction(reducer),
-      '(app/utils...) injectReducer: Expected `reducer` to be a reducer function'
+      '(app/utils...) injectReducer: Expected `reducer` to be a reducer function',
     );
 
     // tslint:disable-next-line:max-line-length
     // Check `store.injectedReducers[key] === reducer` for hot reloading when a key is the same but a reducer is different
 
-    if (Reflect.has(store.injectedReducers, key) && store.injectedReducers[key] === reducer) {
+    if (
+      Reflect.has(store.injectedReducers, key) &&
+      store.injectedReducers[key] === reducer
+    ) {
       return;
     }
 
@@ -35,6 +38,6 @@ export default function getInjectors(store: LifeStore) {
   checkStore(store);
 
   return {
-    injectReducer: injectReducerFactory(store, true)
+    injectReducer: injectReducerFactory(store, true),
   };
 }

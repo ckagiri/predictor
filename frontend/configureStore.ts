@@ -36,7 +36,7 @@ export default function configureStore(initialState = {}, history) {
   const store = createStore(
     createReducer(),
     initialState,
-    composeEnhancers(...enhancers)
+    composeEnhancers(...enhancers),
   ) as LifeStore; // FIX: disable any
 
   // Extensions

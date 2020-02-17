@@ -1,4 +1,3 @@
-import { config } from '../../config/environment/index';
 import seedData from '../tasks/seedData/seed-epl19.json';
 
 import mongooseSeeder = require('mais-mongoose-seeder');
@@ -15,7 +14,7 @@ function seed() {
     console.log('seeding db..');
     seeder
       .seed(seedData, { dropDatabase: true, dropCollections: true })
-      .then((dbData: any) => {
+      .then(() => {
         /**/
       })
       .catch((err: any) => {

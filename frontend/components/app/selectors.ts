@@ -12,25 +12,25 @@ const selectRoute = (state: ApplicationRootState) => {
 const makeSelectCurrentUser = () =>
   createSelector(
     selectGlobal,
-    globalState => globalState.currentUser
+    globalState => globalState.currentUser,
   );
 
 const makeSelectLoading = () =>
   createSelector(
     selectGlobal,
-    globalState => globalState.loading
+    globalState => globalState.loading,
   );
 
 const makeSelectError = () =>
   createSelector(
     selectGlobal,
-    globalState => globalState.error
+    globalState => globalState.error,
   );
 
 const makeSelectLocation = () =>
   createSelector(
     selectRoute,
-    routeState => routeState.location
+    routeState => routeState.location,
   );
 
 export {
@@ -38,5 +38,5 @@ export {
   makeSelectCurrentUser,
   makeSelectLoading,
   makeSelectError,
-  makeSelectLocation
+  makeSelectLocation,
 };

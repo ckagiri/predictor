@@ -21,7 +21,7 @@ function checkStatus(response): Response {
 
 export default function request(
   url: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<{} | { err: ResponseError }> {
   return fetch(url, options)
     .then(checkStatus)

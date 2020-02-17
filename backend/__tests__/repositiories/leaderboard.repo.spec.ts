@@ -1,7 +1,6 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 import * as db from '../../db/index';
-import { config } from '../../config/environment/index';
 import { ILeague, League } from '../../db/models/league.model';
 import { ISeason, Season } from '../../db/models/season.model';
 import { LeaderboardRepository } from '../../db/repositories/leaderboard.repo';

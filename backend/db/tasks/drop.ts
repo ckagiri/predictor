@@ -1,5 +1,4 @@
 import mongoose = require('mongoose');
-import { config } from '../../config/environment/index';
 
 function drop() {
   // tslint:disable-next-line:no-console

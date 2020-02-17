@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 
-import { config } from '../../config/environment/index';
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { LeagueRepository } from '../../db/repositories/league.repo';
