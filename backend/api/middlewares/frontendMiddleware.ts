@@ -33,7 +33,7 @@ function addDevMiddlewares(app: Application, webpackConfig: WebpackConfig) {
     noInfo: true,
     publicPath: webpackConfig!.output!.publicPath,
     silent: true,
-    stats: 'errors-only'
+    stats: 'errors-only',
   });
 
   app.use(middleware);
