@@ -3,5 +3,5 @@
   "watch": [
     "./backend"
   ],
-  "exec": "webpack --mode=development --config ./config/webpack.server.js && node -r dotenv-flow/config backend/build/server.generated.js --node-env=development"
+  "exec": "NODE_ENV=development webpack --mode=development --config ./config/webpack.client.dev.js && tsc --project backend/tsconfig.json"
 }

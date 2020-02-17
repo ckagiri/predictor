@@ -5,7 +5,7 @@ import ActionTypes from './constants';
 import * as actions from './actions';
 import request from 'utils/request';
 
-function* preload() {
+function* prime() {
   try {
     // fromRouter competition, season, round
     const requestUrl = '/api/game/competitions';
@@ -21,14 +21,14 @@ function* preload() {
     yield put(actions.setSeasonData(seasonId, { teams, matches, predictions, rounds }));
     const roundSlug = selectedRound.slug;
     yield put(actions.selectGameRound(seasonId, roundSlug));
-    yield put(actions.preloadComplete());
+    yield put(actions.primeComplete());
   } catch (error) {
-    //const isPreloading = yield select(state => state.preloading);
-    yield put(actions.preloadError(error));
+    //const isPriming = yield select(state => state.priming);
+    yield put(actions.primeError(error));
   }
 }
 
-function* routeToMatchesPage() {
+function* loadMatchesPage() {
   //const pathname = yield select(state => state);
   //const query = querySelector(state);
   // const round = +query.round === 1 ? 2 : 1;
@@ -40,28 +40,28 @@ function* routeToMatchesPage() {
   yield put(push({ pathname: '/competitions/english-premier-league/seasons/2018-19/matches' }));
 }
 
-function* updateToMatchesRoute() {
+function* replaceUrlWithMatchesUrl() {
   yield put(replace({ pathname: '/competitions/english-premier-league/seasons/2018-19/matches' }));
 }
 
-function* watchPreload() {
+function* watchPrime() {
   while (true) {
-    yield take(ActionTypes.PRELOAD_START);
-    yield call(preload);
+    yield take(ActionTypes.PRIME_START);
+    yield call(prime);
   }
 }
 
-function* watchPreloadComplete() {
+function* watchPrimeComplete() {
   while (true) {
-    yield take(ActionTypes.PRELOAD_COMPLETE);
-    yield call(updateToMatchesRoute);
+    yield take(ActionTypes.PRIME_COMPLETE);
+    yield call(replaceUrlWithMatchesUrl);
   }
 }
 
-function* watchRouteToMatchesPage() {
-  yield takeLatest(ActionTypes.ROUTE_TO_MATCHES_PAGE, routeToMatchesPage);
+function* watchLoadMatchesPage() {
+  yield takeLatest(ActionTypes.LOAD_MATCHES_PAGE, loadMatchesPage);
 }
 
 export default function* gameSaga() {
-  yield all([fork(watchPreload), fork(watchPreloadComplete), fork(watchRouteToMatchesPage)]);
+  yield all([fork(watchPrime), fork(watchPrimeComplete), fork(watchLoadMatchesPage)]);
 }

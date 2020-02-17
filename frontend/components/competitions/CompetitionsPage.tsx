@@ -8,8 +8,8 @@ import { useInjectSaga } from 'utils/injectSaga';
 import reducer from './reducer';
 import { Switch, Route, Redirect } from 'react-router';
 import saga from './saga';
-import { preload } from './actions';
-import MatchListPage from 'components/matches/MatchListPage';
+import { prime } from './actions';
+import MatchesPage from 'components/matches/MatchesPage';
 
 const key = 'game';
 
@@ -20,7 +20,7 @@ const key = 'game';
 // }
 
 interface DispatchProps {
-  preloadData(): void;
+  prime(): void;
 }
 
 function CompetitionsPage() {
@@ -36,17 +36,17 @@ export function CompetitionsContainer(props) {
   useInjectSaga({ key: key, saga: saga });
 
   useEffect(() => {
-    if (!props.isPreloaded) {
-      props.preloadData();
+    if (!props.isPrimed) {
+      props.prime();
     }
-  }, [props.isPreloaded]);
+  }, [props.isPrimed]);
 
-  const { isPreloaded } = props;
+  const { isPrimed } = props;
   return (
-    isPreloaded && (
+    isPrimed && (
       <Switch>
         <Route path="/competitions" exact component={CompetitionsPage} />
-        <Route path="/competitions/:competition" exact component={MatchListPage} />
+        <Route path="/competitions/:competition" exact component={SeasonsPage} />
         <Route path="/competitions/:competition/seasons" exact component={SeasonsPage} />
         <Redirect
           from="/competitions/:competition/seasons/:season"
@@ -56,7 +56,7 @@ export function CompetitionsContainer(props) {
         <Route
           path="/competitions/:competition/seasons/:season/matches"
           exact
-          component={MatchListPage}
+          component={MatchesPage}
         />
       </Switch>
     )
@@ -65,16 +65,15 @@ export function CompetitionsContainer(props) {
 
 export function mapDispatchToProps(dispatch: Dispatch): DispatchProps {
   return {
-    preloadData: () => dispatch(preload())
+    prime: () => dispatch(prime())
   };
 }
 
 const mapStateToProps = state => {
   const game = state.game || {};
   return {
-    isPreloading: !!game.preloading,
-    isPreloaded: !!game.preloaded,
-    currentPage: game.currentPage
+    isPriming: !!game.priming,
+    isPrimed: !!game.primed
   };
 };
 

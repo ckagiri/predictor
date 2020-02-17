@@ -20,5 +20,8 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true
-  }
+  },
+  "exclude": [
+    "__tests__"
+  ]
 }

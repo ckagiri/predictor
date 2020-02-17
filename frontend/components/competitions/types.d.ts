@@ -2,8 +2,8 @@ import { ActionType } from 'typesafe-actions';
 import * as actions from './actions';
 
 interface GameState {
-  preloaded: boolean;
-  preloading: boolean;
+  primed: boolean;
+  priming: boolean;
   competitions: any;
   selectedCompetition: string | null;
   seasons: any;
@@ -12,7 +12,7 @@ interface GameState {
   predictions: any;
   teams: any;
   gameRounds: any;
-  selectedGameRound: null;
+  selectedGameRound: string | number | null;
 }
 
 type AppActions = ActionType<typeof actions>;

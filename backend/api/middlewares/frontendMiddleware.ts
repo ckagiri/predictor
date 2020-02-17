@@ -17,7 +17,7 @@ export default (app: Application, options: SetupOptions) => {
   if (isProd) {
     addProdMiddlewares(app, options);
   } else {
-    const webpackConfig = require('../../../config/webpack.client.dev') as WebpackConfig;
+    const webpackConfig = require('../../../../config/webpack.client.dev') as WebpackConfig;
     addDevMiddlewares(app, webpackConfig);
   }
 

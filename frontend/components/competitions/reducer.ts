@@ -2,8 +2,8 @@ import { ModuleState, ModuleActions } from './types';
 import ActionTypes from './constants';
 
 export const initialState: ModuleState = {
-  preloaded: false,
-  preloading: false,
+  primed: false,
+  priming: false,
   competitions: {},
   selectedCompetition: null,
   seasons: {},
@@ -17,10 +17,10 @@ export const initialState: ModuleState = {
 
 function gameReducer(state: ModuleState = initialState, action: ModuleActions): ModuleState {
   switch (action.type) {
-    case ActionTypes.PRELOAD_START: {
+    case ActionTypes.PRIME_START: {
       return {
         ...state,
-        preloading: true
+        priming: true
       };
     }
     case ActionTypes.GET_COMPETITIONS_COMPLETE: {
@@ -83,17 +83,17 @@ function gameReducer(state: ModuleState = initialState, action: ModuleActions): 
         selectedGameRound: gameRound
       };
     }
-    case ActionTypes.PRELOAD_ERROR: {
+    case ActionTypes.PRIME_ERROR: {
       return {
         ...state,
-        preloading: false
+        priming: false
       };
     }
-    case ActionTypes.PRELOAD_COMPLETE: {
+    case ActionTypes.PRIME_COMPLETE: {
       return {
         ...state,
-        preloading: false,
-        preloaded: true
+        priming: false,
+        primed: true
       };
     }
     default: {
