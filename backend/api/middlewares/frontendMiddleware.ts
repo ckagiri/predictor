@@ -17,7 +17,7 @@ export default (app: Application, options: SetupOptions) => {
   if (isProd) {
     addProdMiddlewares(app, options);
   } else {
-    const webpackConfig = require('../../../config/webpack.client.dev') as WebpackConfig;
+    const webpackConfig = require('../../../../config/webpack.client.dev') as WebpackConfig;
     addDevMiddlewares(app, webpackConfig);
   }
 
@@ -33,7 +33,7 @@ function addDevMiddlewares(app: Application, webpackConfig: WebpackConfig) {
     noInfo: true,
     publicPath: webpackConfig!.output!.publicPath,
     silent: true,
-    stats: 'errors-only',
+    stats: 'errors-only'
   });
 
   app.use(middleware);
