@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
 import * as db from '../../db/index';
-import { config } from '../../config/environment/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { League } from '../../db/models/league.model';
 import { Season } from '../../db/models/season.model';

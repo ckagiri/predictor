@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { User } from '../../db/models/user.model';
 import { UserRepository } from '../../db/repositories/user.repo';
 import * as db from '../../db/index';
-import { config } from '../../config/environment/index';
 
 const userRepo = UserRepository.getInstance();
 

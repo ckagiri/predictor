@@ -2,10 +2,8 @@ import 'mocha';
 import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
-import { config } from '../../config/environment/index';
 import * as db from '../../db/index';
 import { League, ILeagueDocument } from '../../db/models/league.model';
-
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { SeasonRepository } from '../../db/repositories/season.repo';
 
@@ -207,7 +205,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(theEpl17)
       .pipe(
-        flatMap(s => {
+        flatMap(() => {
           afdEpl17.currentSeason.currentMatchday = 21;
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl17);
         }),
@@ -235,7 +233,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(theEpl17)
       .pipe(
-        flatMap(s => {
+        flatMap(() => {
           const update = { currentMatchRound: 21 };
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl17.id, update);
         }),
@@ -264,7 +262,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(theEpl17)
       .pipe(
-        flatMap(s => {
+        flatMap(() => {
           afdEpl17.currentSeason.currentMatchday = 21;
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl17);
         }),

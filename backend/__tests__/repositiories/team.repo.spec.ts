@@ -2,7 +2,6 @@ import 'mocha';
 import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
-import { config } from '../../config/environment/index';
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { TeamRepository } from '../../db/repositories/team.repo';
@@ -74,7 +73,7 @@ describe('teamRepo', function () {
         expect(t.aliases).to.have.length(2);
         done();
       },
-      err => {
+      () => {
         done();
       },
     );
@@ -95,7 +94,7 @@ describe('teamRepo', function () {
           expect(t.name).to.equal(manu.name);
           done();
         },
-        err => {
+        () => {
           done();
         },
       );
@@ -117,7 +116,7 @@ describe('teamRepo', function () {
 
           done();
         },
-        err => {
+        () => {
           done();
         },
       );
@@ -139,7 +138,7 @@ describe('teamRepo', function () {
 
           done();
         },
-        err => {
+        () => {
           done();
         },
       );
@@ -164,7 +163,7 @@ describe('teamRepo', function () {
 
           done();
         },
-        err => {
+        () => {
           done();
         },
       );
@@ -192,7 +191,7 @@ describe('teamRepo', function () {
           );
           done();
         },
-        err => {
+        () => {
           done();
         },
       );
@@ -215,7 +214,7 @@ describe('teamRepo', function () {
 
           done();
         },
-        err => {
+        () => {
           done();
         },
       );

@@ -2,8 +2,6 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
 import * as db from '../../db/index';
-import { config } from '../../config/environment/index';
-
 import { User } from '../../db/models/user.model';
 import { League, ILeague } from '../../db/models/league.model';
 import { Season, ISeason } from '../../db/models/season.model';
