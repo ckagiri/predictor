@@ -2,11 +2,11 @@ import request from 'request-promise';
 import { config } from '../../../config/environment/index';
 import { IFootballApiClient } from '../apiClient';
 
-const API_KEY = config.API_FOOTBALL_DATA.apiKey;
+const API_KEY = process.env.API_FOOTBALL_DATA_KEY;
 const BASE_URL = 'http://api.football-data.org/v2';
 
 class ApiFootballDataClient implements IFootballApiClient {
-  constructor(private apiKey: string, private baseUrl: string) {}
+  constructor(private apiKey: string, private baseUrl: string) { }
 
   public getCompetitions(year: number) {
     const queryParams = year ? { year } : undefined;
@@ -78,7 +78,7 @@ class ApiFootballDataClient implements IFootballApiClient {
   }
 }
 
-const getInstance = () => new ApiFootballDataClient(API_KEY, BASE_URL);
+const getInstance = () => new ApiFootballDataClient(process.env.API_FOOTBALL_DATA_KEY!, BASE_URL);
 
 export default {
   getInstance,

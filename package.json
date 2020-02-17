@@ -18,7 +18,7 @@
     "compile:start": "concurrently \"npm run compile\" \"npm run start:dev\"",
     "cs": "npm run compile:start",
     "debug": "nodemon -r dotenv-flow/config --inspect=9229 backend/build/api/server.js --node-env=development",
-    "test": "TS_NODE_PROJECT='backend/tsconfig.json' mocha --require ts-node/register backend/__tests__/**/*.spec.ts",
+    "test": "TS_NODE_PROJECT='backend/tsconfig.json' mocha --require ts-node/register --require dotenv-flow/config  backend/__tests__/**/*.spec.ts --node-env=test",
     "prettify": "prettier --write \"**/*.ts\"",
     "lb": "npm run lint:tslint:backend",
     "lfb": "npm run lint:tslint:fix:backend",
@@ -26,11 +26,11 @@
     "lint:tslint:fix:backend": "tslint --config backend/tslint.json --project backend/tsconfig.json --fix && npm run typecheck:backend",
     "tb": "npm run typecheck:backend",
     "typecheck:backend": "tsc --project backend/tsconfig.json --noEmit",
-    "dsit": "npm run drop:seed:import:test",
-    "dst": "npm run drop:seed:test",
-    "drop:seed:import:test": "NODE_ENV=test node backend/build/db/tasks/drop.js && node backend/build/db/tasks/seed.js && node backend/build/import/start.js",
-    "import:test": "NODE_ENV=test node backend/build/import/start.js",
-    "drop:seed:test": "NODE_ENV=test node backend/build/db/tasks/drop.js && node backend/build/db/tasks/seed.js"
+    "dsit": "npm run drop:test && npm run seed:test && npm run import:test",
+    "dst": "npm run drop:test && npm run seed:test",
+    "drop:test": "node -r dotenv-flow/config backend/build/db/tasks/drop.js --node-env=test",
+    "seed:test": "node -r dotenv-flow/config backend/build/db/tasks/drop.js --node-env=test",
+    "import:test": "node -r dotenv-flow/config backend/build/import/start.js --node-env=test"
   },
   "lint-staged": {
     "*.ts": "lint:tslint:fix:backend"
