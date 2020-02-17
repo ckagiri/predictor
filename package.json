@@ -4,7 +4,7 @@
   "description": "Predictor",
   "main": "index.js",
   "scripts": {
-    "postinstall": "rm -rf node_modules/@types/react-native",
+    "postinstall": "rm -rf node_modules/@types/react-native && npm run build",
     "prebuild": "npm run build:clean",
     "build": "NODE_ENV=production webpack --mode=production --config ./config/webpack.client.prod.js --color -p --progress --hide-modules --display-optimization-bailout && npm run compile",
     "build:dev": "NODE_ENV=development webpack --mode=development --config ./config/webpack.client.dev.js && npm run compile",
@@ -178,5 +178,8 @@
     "webpack-hot-middleware": "^2.25.0",
     "webpack-node-externals": "^1.7.2",
     "whatwg-fetch": "^3.0.0"
+  },
+  "engines": {
+    "node": "12.16"
   }
 }
