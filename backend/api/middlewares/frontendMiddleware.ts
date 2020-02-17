@@ -44,13 +44,16 @@ function addDevMiddlewares(app: Application, webpackConfig: WebpackConfig) {
   const fs = middleware.fileSystem;
 
   app.get('*', (req, res) => {
-    fs.readFile(path.join(compiler.outputPath, 'index.html'), (err: Error | null, file?: any) => {
-      if (err) {
-        res.sendStatus(404);
-      } else {
-        res.send(file.toString());
-      }
-    });
+    fs.readFile(
+      path.join(compiler.outputPath, 'index.html'),
+      (err: Error | null, file?: any) => {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          res.send(file.toString());
+        }
+      },
+    );
   });
 }
 
@@ -65,7 +68,9 @@ function addProdMiddlewares(app: Application, options: SetupOptions) {
   app.use(compression());
   app.use(publicPath, express.static(outputPath));
 
-  app.get('*', (_req: Request, res: Response) => res.sendFile(path.resolve(outputPath, 'index.html')));
+  app.get('*', (_req: Request, res: Response) =>
+    res.sendFile(path.resolve(outputPath, 'index.html')),
+  );
 }
 
 // use the gzipped bundle

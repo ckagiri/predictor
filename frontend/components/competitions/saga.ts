@@ -10,15 +10,29 @@ function* prime() {
     // fromRouter competition, season, round
     const requestUrl = '/api/game/competitions';
     const data = yield call(request, requestUrl);
-    const { competitions, selectedCompetition, competitionSeasons, selectedSeason } = data;
+    const {
+      competitions,
+      selectedCompetition,
+      competitionSeasons,
+      selectedSeason,
+    } = data;
     yield put(actions.getCompetitionsComplete(competitions));
     const competitionSlug = selectedCompetition.slug;
     yield put(actions.selectCompetition(competitionSlug));
     yield put(actions.getSeasonsComplete(competitionSlug, competitionSeasons));
-    const { record, teams, matches, predictions, rounds, selectedRound } = selectedSeason;
+    const {
+      record,
+      teams,
+      matches,
+      predictions,
+      rounds,
+      selectedRound,
+    } = selectedSeason;
     const seasonId = record.id;
     yield put(actions.selectSeason(seasonId));
-    yield put(actions.setSeasonData(seasonId, { teams, matches, predictions, rounds }));
+    yield put(
+      actions.setSeasonData(seasonId, { teams, matches, predictions, rounds }),
+    );
     const roundSlug = selectedRound.slug;
     yield put(actions.selectGameRound(seasonId, roundSlug));
     yield put(actions.primeComplete());
@@ -37,11 +51,19 @@ function* loadMatchesPage() {
   // const pathname = `/competitions/${competitionSlug}/seasons/${seasonSlug}/matches`;
   // const search = `?${queryString({ round: roundSlug })}`;
   // pathname + search
-  yield put(push({ pathname: '/competitions/english-premier-league/seasons/2018-19/matches' }));
+  yield put(
+    push({
+      pathname: '/competitions/english-premier-league/seasons/2018-19/matches',
+    }),
+  );
 }
 
 function* replaceUrlWithMatchesUrl() {
-  yield put(replace({ pathname: '/competitions/english-premier-league/seasons/2018-19/matches' }));
+  yield put(
+    replace({
+      pathname: '/competitions/english-premier-league/seasons/2018-19/matches',
+    }),
+  );
 }
 
 function* watchPrime() {
@@ -63,5 +85,9 @@ function* watchLoadMatchesPage() {
 }
 
 export default function* gameSaga() {
-  yield all([fork(watchPrime), fork(watchPrimeComplete), fork(watchLoadMatchesPage)]);
+  yield all([
+    fork(watchPrime),
+    fork(watchPrimeComplete),
+    fork(watchLoadMatchesPage),
+  ]);
 }

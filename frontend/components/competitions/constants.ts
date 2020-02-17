@@ -11,7 +11,7 @@ enum ActionTypes {
   SET_SEASON_DATA = 'lp/Competitions/SET_SEASON_DATA',
   SELECT_GAME_ROUND = 'lp/Competitions/SELECT_GAME_ROUND',
   LOAD_MATCHES_PAGE = 'lp/Competitions/LOAD_MATCHES_PAGE',
-  SET_CURRENT_PAGE = 'lp/Competitions/SET_CURRENT_PAGE'
+  SET_CURRENT_PAGE = 'lp/Competitions/SET_CURRENT_PAGE',
 }
 
 export default ActionTypes;

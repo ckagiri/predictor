@@ -12,15 +12,18 @@ export const initialState: ModuleState = {
   predictions: {},
   teams: {},
   gameRounds: {},
-  selectedGameRound: null
+  selectedGameRound: null,
 };
 
-function gameReducer(state: ModuleState = initialState, action: ModuleActions): ModuleState {
+function gameReducer(
+  state: ModuleState = initialState,
+  action: ModuleActions,
+): ModuleState {
   switch (action.type) {
     case ActionTypes.PRIME_START: {
       return {
         ...state,
-        priming: true
+        priming: true,
       };
     }
     case ActionTypes.GET_COMPETITIONS_COMPLETE: {
@@ -29,10 +32,10 @@ function gameReducer(state: ModuleState = initialState, action: ModuleActions): 
         (acc, competition) => {
           return {
             ...acc,
-            [competition.slug]: competition
+            [competition.slug]: competition,
           };
         },
-        { ...state.competitions }
+        { ...state.competitions },
       );
       return { ...state, competitions: entities };
     }
@@ -46,8 +49,8 @@ function gameReducer(state: ModuleState = initialState, action: ModuleActions): 
         ...state,
         seasons: {
           ...state.seasons,
-          [competitionSlug]: seasons
-        }
+          [competitionSlug]: seasons,
+        },
       };
     }
     case ActionTypes.SELECT_SEASON: {
@@ -60,40 +63,40 @@ function gameReducer(state: ModuleState = initialState, action: ModuleActions): 
         ...state,
         teams: {
           ...state.teams,
-          [seasonId]: teams
+          [seasonId]: teams,
         },
         matches: {
           ...state.matches,
-          [seasonId]: matches
+          [seasonId]: matches,
         },
         predictions: {
           ...state.predictions,
-          [seasonId]: predictions
+          [seasonId]: predictions,
         },
         gameRounds: {
           ...state.gameRounds,
-          [seasonId]: rounds
-        }
+          [seasonId]: rounds,
+        },
       };
     }
     case ActionTypes.SELECT_GAME_ROUND: {
       const gameRound = action.payload;
       return {
         ...state,
-        selectedGameRound: gameRound
+        selectedGameRound: gameRound,
       };
     }
     case ActionTypes.PRIME_ERROR: {
       return {
         ...state,
-        priming: false
+        priming: false,
       };
     }
     case ActionTypes.PRIME_COMPLETE: {
       return {
         ...state,
         priming: false,
-        primed: true
+        primed: true,
       };
     }
     default: {

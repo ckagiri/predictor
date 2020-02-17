@@ -7,7 +7,10 @@ import { ModuleState as GameState } from 'components/competitions/types';
 export interface LifeStore extends Store {
   injectedReducers: any;
   injectedSagas: any;
-  runSaga(saga: (() => IterableIterator<any>) | undefined, args: any | undefined): any;
+  runSaga(
+    saga: (() => IterableIterator<any>) | undefined,
+    args: any | undefined,
+  ): any;
 }
 
 export interface InjectReducerParams {

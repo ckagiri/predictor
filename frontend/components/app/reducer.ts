@@ -3,7 +3,7 @@ import { ModuleState } from './types';
 export const initialState: ModuleState = {
   loading: false,
   error: false,
-  currentUser: ''
+  currentUser: '',
 };
 
 function appReducer(state: ModuleState = initialState): ModuleState {
