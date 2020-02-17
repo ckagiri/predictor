@@ -7,27 +7,30 @@ export const selectedCompetitionSelector = createSelector(
   (competitionSlug, competitionMap) => competitionMap[competitionSlug!] || {}
 );
 
+export const selectedSeasonIdSelector = (state: ModuleState) => state.selectedSeason;
 export const selectedSeasonSelector = createSelector(
   (state: ModuleState) => state.selectedCompetition,
   (state: ModuleState) => state.selectedSeason,
   (state: ModuleState) => state.seasons,
   (competitionSlug, seasonId, competitionSeasonsMap) => {
-    const seasons = competitionSeasonsMap[competitionSlug!];
+    const seasons = (competitionSlug && competitionSeasonsMap[competitionSlug]) || [];
     const season = seasons.filter(n => n.id === seasonId)[0];
     return season;
   }
 );
 
-export const selectedRoundSelector = (state: ModuleState) => state.selectedGameRound;
-export const seasonFixturesSelector = (state: ModuleState) => {
-  const seasonId = selectedSeasonSelector(state).id;
-  const seasonFixturesMap = state.matches;
-  const matches = seasonFixturesMap[seasonId];
-  return matches;
-};
+export const seasonMatchesSelector = createSelector(
+  (state: ModuleState) => state.selectedSeason,
+  (state: ModuleState) => state.matches,
+  (seasonId, seasonMatchesMap) => {
+    const matches = (seasonId && seasonMatchesMap[seasonId]) || [];
+    return matches;
+  }
+)
 
-export const roundFixturesSelector = createSelector(
-  [seasonFixturesSelector, selectedRoundSelector],
+export const selectedRoundIdSelector = (state: ModuleState) => state.selectedGameRound;
+export const roundMatchesSelector = createSelector(
+  [seasonMatchesSelector, selectedRoundIdSelector],
   (matches, round) => {
     return matches.filter(m => m.gameRound == round);
   }

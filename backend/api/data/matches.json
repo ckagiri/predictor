@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "seasonId": 1,
+    "seasonId": 3,
     "slug": "arsenal-v-bournemouth",
     "matchDay": 1,
     "gameRoundId": 1,
@@ -17,7 +17,7 @@
   },
   {
     "id": 2,
-    "seasonId": 1,
+    "seasonId": 3,
     "slug": "brighton-&-hove-albion-v-burnley",
     "matchDay": 1,
     "gameRoundId": 1,
@@ -33,7 +33,7 @@
   },
   {
     "id": 3,
-    "seasonId": 1,
+    "seasonId": 3,
     "slug": "arsenal-v-brighton-&-hove-albion",
     "matchDay": 2,
     "gameRoundId": 2,
@@ -49,7 +49,7 @@
   },
   {
     "id": 4,
-    "seasonId": 1,
+    "seasonId": 3,
     "slug": "bournemouth-v-burnley",
     "matchDay": 2,
     "gameRoundId": 2,

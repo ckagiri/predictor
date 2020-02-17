@@ -4,7 +4,7 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import styled from 'styles/styled-components';
 
 import GlobalStyle from '../../global-styles';
-import CompetitionsContainer from 'components/competitions/Loadable';
+import CompetitionsPage from 'components/competitions/Loadable';
 const AppWrapper = styled.div`
   max-width: calc(768px + 16px * 2);
   margin: 0 auto;
@@ -22,7 +22,7 @@ export default function App() {
       </Helmet>
       <Switch>
         <Redirect from="/" exact to="/competitions" />
-        <Route path="/competitions" component={CompetitionsContainer} />
+        <Route path="/competitions" component={CompetitionsPage} />
       </Switch>
       <GlobalStyle />
     </AppWrapper>
