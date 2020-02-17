@@ -128,10 +128,10 @@ const kagiri = {
   email: 'kagiri@example.com',
 };
 
-describe('UserScore Repo', function() {
+describe('UserScore Repo', function () {
   this.timeout(5000);
   before(done => {
-    db.init(config.testDb.uri, done, { drop: true });
+    db.init(process.env.MONGO_URI!, done, { drop: true });
   });
 
   beforeEach(done => {

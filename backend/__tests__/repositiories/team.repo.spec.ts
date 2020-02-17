@@ -47,10 +47,10 @@ const afdManc = {
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
 };
 
-describe('teamRepo', function() {
+describe('teamRepo', function () {
   this.timeout(5000);
   before(done => {
-    db.init(config.testDb.uri, done, { drop: true });
+    db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   afterEach(done => {
     db.drop().then(() => {
