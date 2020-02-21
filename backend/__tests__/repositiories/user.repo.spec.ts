@@ -6,7 +6,7 @@ import * as db from '../../db/index';
 
 const userRepo = UserRepository.getInstance();
 
-describe('User Repo', function () {
+describe('User Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

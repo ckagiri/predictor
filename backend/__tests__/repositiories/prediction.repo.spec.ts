@@ -119,7 +119,7 @@ const kagiri: IUser = {
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function () {
+describe('Prediction repo', function() {
   this.timeout(5000);
 
   before(done => {
@@ -214,12 +214,7 @@ describe('Prediction repo', function () {
 
   it('should findOne prediction by user and fixture', done => {
     let prediction: IPrediction;
-    const {
-      slug: fixtureSlug,
-      season,
-      gameRound,
-      id: fixtureId,
-    } = fixture1;
+    const { slug: fixtureSlug, season, gameRound, id: fixtureId } = fixture1;
     const pred: IPrediction = {
       user: user1.id,
       fixture: fixtureId,
