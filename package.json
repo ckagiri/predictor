@@ -29,11 +29,11 @@
     "dsit": "cd backend && npm run drop:test && npm run seed:test && npm run import:test"
   },
   "lint-staged": {
-    "*.ts": "lint:tslint:fix:backend"
+    "*.ts": "lfb"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint:tslint:fix:backend"
+      "pre-commit": "npm run lfb"
     }
   },
   "repository": {
