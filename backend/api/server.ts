@@ -20,7 +20,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use('/api', router);
 
 setup(app, {
-  outputPath: resolve(process.cwd(), 'dist'),
+  outputPath: resolve(process.cwd(), '../dist'),
   publicPath: '/',
 });
 

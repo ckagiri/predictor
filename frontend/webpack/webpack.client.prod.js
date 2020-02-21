@@ -4,6 +4,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { HashedModuleIdsPlugin } = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const config = require('./config');
 
 module.exports = require('./webpack.client.base')({
   mode: 'production',
@@ -11,7 +12,7 @@ module.exports = require('./webpack.client.base')({
   // In production, we skip all hot-reloading stuff
   entry: [
     require.resolve('react-app-polyfill/ie11'),
-    path.join(process.cwd(), 'frontend/app.tsx'),
+    config.fromFrontendDir('app.tsx'),
   ],
 
   // Utilize long-term caching by adding content hashes (not compilation hashes) to compiled assets
@@ -77,7 +78,7 @@ module.exports = require('./webpack.client.base')({
   plugins: [
     // Minify and optimize the index.html
     new HtmlWebpackPlugin({
-      template: 'frontend/index.html',
+      template: config.fromFrontendDir('index.html'),
       minify: {
         removeComments: true,
         collapseWhitespace: true,

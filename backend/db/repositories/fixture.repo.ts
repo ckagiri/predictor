@@ -93,7 +93,7 @@ export class FixtureRepository
   }
 
   public findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
-    const obs: any[] = [];
+    const obs: Array<Observable<IFixture>> = [];
 
     for (const obj of objs) {
       obs.push(this.findBySeasonAndTeamsAndUpsert$(obj));

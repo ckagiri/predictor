@@ -4,15 +4,14 @@
 
 const path = require('path');
 const webpack = require('webpack');
-
+const config = require('./config');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-
 module.exports = options => ({
   mode: options.mode,
   entry: options.entry,
   output: Object.assign(
     {
-      path: path.resolve(process.cwd(), 'dist'),
+      path: config.distDir,
       publicPath: '/',
     },
     options.output,
@@ -120,7 +119,7 @@ module.exports = options => ({
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     }),
-    new ForkTsCheckerWebpackPlugin({ tsconfig: './backend/tsconfig.json', checkSyntacticErrors: true }),
+    new ForkTsCheckerWebpackPlugin({ tsconfig: config.fromFrontendDir('tsconfig.json'), checkSyntacticErrors: true }),
   ]),
   resolve: {
     modules: ['node_modules', 'frontend'],
