@@ -40,7 +40,7 @@ export default function configureStore(initialState = {}, history) {
   ) as LifeStore; // FIX: disable any
 
   // Extensions
-  store.runSaga = sagaMiddleware.run;
+  store.runSaga = sagaMiddleware.run as any;
   store.injectedReducers = {}; // Reducer registry
   store.injectedSagas = {}; // Saga registry
 

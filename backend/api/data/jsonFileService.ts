@@ -5,17 +5,17 @@ function getJsonFromFile(file: string) {
   const json = getConfig(file);
   return json;
 
-  function readJsonFileSync(filepath: string, encoding: string | undefined) {
+  function readJsonFileSync(filePath: string, encoding: string | undefined) {
     if (typeof encoding === 'undefined') {
       encoding = 'utf8';
     }
-    const file = fs.readFileSync(filepath, encoding);
+    const file = fs.readFileSync(filePath, encoding);
     return JSON.parse(file);
   }
 
   function getConfig(file: string) {
-    const filepath = path.join(process.cwd(), file);
-    return readJsonFileSync(filepath, undefined);
+    const filePath = path.join(process.cwd(), file);
+    return readJsonFileSync(filePath, undefined);
   }
 }
 

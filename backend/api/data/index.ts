@@ -1,6 +1,6 @@
 import jsonFileService from './jsonFileService';
 
-const dataPath = 'backend/api/data/';
+const dataPath = 'api/data/';
 const competitions = jsonFileService.getJsonFromFile(
   `${dataPath}competitions.json`,
 );

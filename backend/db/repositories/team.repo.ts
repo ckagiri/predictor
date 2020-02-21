@@ -47,7 +47,7 @@ export class TeamRepository extends BaseProviderRepository<ITeam, ITeamDocument>
   }
 
   public findEachByNameAndUpsert$(teams: any[]): Observable<ITeam[]> {
-    const obs: any[] = [];
+    const obs: Array<Observable<ITeam>> = [];
 
     for (const team of teams) {
       obs.push(this.findByNameAndUpsert$(team));
