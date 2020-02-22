@@ -12,7 +12,7 @@ module.exports = require('./webpack.client.base')({
   // In production, we skip all hot-reloading stuff
   entry: [
     require.resolve('react-app-polyfill/ie11'),
-    config.fromFrontendDir('app.tsx'),
+    config.fromFrontendDir('app.js'),
   ],
 
   // Utilize long-term caching by adding content hashes (not compilation hashes) to compiled assets
@@ -20,17 +20,6 @@ module.exports = require('./webpack.client.base')({
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].chunk.js',
   },
-
-  tsLoaders: [
-    // { loader: 'babel-loader' },
-    {
-      loader: 'ts-loader',
-      options: {
-        transpileOnly: true, // fork-ts-checker-webpack-plugin is used for type checking
-        logLevel: 'info',
-      },
-    },
-  ],
 
   optimization: {
     minimize: true,
