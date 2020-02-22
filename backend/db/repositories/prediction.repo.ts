@@ -3,8 +3,8 @@ import { filter, first, flatMap, catchError } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import {
-  IPrediction,
-  IPredictionDocument,
+  PredictionEntity,
+  PredictionDocument,
   Prediction,
   PredictionStatus,
 } from '../models/prediction.model';
@@ -16,28 +16,28 @@ import {
 import { Score } from '../../common/score';
 import { IBaseRepository, BaseRepository } from './base.repo';
 
-export interface IPredictionRepository extends IBaseRepository<IPrediction> {
+export interface IPredictionRepository extends IBaseRepository<PredictionEntity> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<IPrediction>;
+  ): Observable<PredictionEntity>;
   findOneOrCreate$({
     userId,
     fixtureId,
   }: {
     userId: string;
     fixtureId: string;
-  }): Observable<IPrediction>;
+  }): Observable<PredictionEntity>;
   findOneAndUpsert$(
     { userId, fixtureId }: { userId: string; fixtureId: string },
     choice: Score,
-  ): Observable<IPrediction>;
+  ): Observable<PredictionEntity>;
 }
 
 export class PredictionRepository
-  extends BaseRepository<IPrediction, IPredictionDocument>
+  extends BaseRepository<PredictionEntity, PredictionDocument>
   implements IPredictionRepository {
   public static getInstance() {
     return new PredictionRepository(
@@ -57,7 +57,7 @@ export class PredictionRepository
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<IPrediction> {
+  ): Observable<PredictionEntity> {
     const query: any = {
       user: userId,
       season: seasonId,
@@ -125,7 +125,7 @@ export class PredictionRepository
         return this.fixtureRepo.findById$(fixtureId).pipe(
           flatMap(fixture => {
             const { slug: fixtureSlug, season, gameRound, odds } = fixture;
-            const pred: IPrediction = {
+            const pred: PredictionEntity = {
               user: userId,
               fixture: fixtureId,
               fixtureSlug,
@@ -151,7 +151,7 @@ export class PredictionRepository
 
   private pickJoker$(
     userId: string,
-    currentJoker: IPrediction,
+    currentJoker: PredictionEntity,
     newJokerFixtureId: string,
     autoPicked: boolean,
   ) {
@@ -180,14 +180,14 @@ export class PredictionRepository
         }),
       )
       .pipe(
-        flatMap((newJokerPrediction: IPrediction) => {
+        flatMap((newJokerPrediction: PredictionEntity) => {
           const {
             slug: fixtureSlug,
             season,
             gameRound,
             odds,
           } = newJokerFixture;
-          let newJoker: IPrediction;
+          let newJoker: PredictionEntity;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();
             newJoker = {
@@ -205,7 +205,7 @@ export class PredictionRepository
             newJoker.hasJoker = true;
             newJoker.jokerAutoPicked = autoPicked;
           }
-          const predictionJokers: IPrediction[] = [newJoker];
+          const predictionJokers: PredictionEntity[] = [newJoker];
           if (currentJoker) {
             currentJoker.hasJoker = false;
             predictionJokers.push(currentJoker);

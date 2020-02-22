@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { FixtureStatus, FixtureEntity } from '../../../db/models/fixture.model';
-import { IPrediction } from '../../../db/models/prediction.model';
+import { PredictionEntity } from '../../../db/models/prediction.model';
 
 import {
   IPredictionProcessor,
@@ -71,7 +71,7 @@ const chaloPred = {
   user: chalo.id,
   fixture: arsVche.id,
   choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-} as IPrediction;
+} as PredictionEntity;
 const predictionRepoStub: any = {
   findOrCreateJoker$: sinon.stub(),
   findOneOrCreate$: sinon.stub(),

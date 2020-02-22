@@ -11,7 +11,7 @@ import {
   FixtureEntity,
   FixtureStatus,
 } from '../../db/models/fixture.model';
-import { Prediction, IPrediction } from '../../db/models/prediction.model';
+import { Prediction, PredictionEntity } from '../../db/models/prediction.model';
 import {
   Leaderboard,
   BOARD_STATUS,
@@ -186,7 +186,7 @@ describe('UserScore Repo', function () {
       .then(fixtures => {
         fixture1 = fixtures[0];
         fixture2 = fixtures[1];
-        const pred1: IPrediction = {
+        const pred1: PredictionEntity = {
           user: user1.id,
           fixture: fixture1.id,
           fixtureSlug: fixture1.slug,
@@ -198,7 +198,7 @@ describe('UserScore Repo', function () {
             isComputerGenerated: true,
           },
         };
-        const pred2: IPrediction = {
+        const pred2: PredictionEntity = {
           user: user1.id,
           fixture: fixture2.id,
           fixtureSlug: fixture2.slug,
@@ -210,7 +210,7 @@ describe('UserScore Repo', function () {
             isComputerGenerated: true,
           },
         };
-        const pred3: IPrediction = {
+        const pred3: PredictionEntity = {
           user: user2.id,
           fixture: fixture1.id,
           fixtureSlug: fixture1.slug,

@@ -17,17 +17,17 @@ import { PredictionCalculator } from './prediction.calculator';
 
 import { FixtureEntity } from '../../db/models/fixture.model';
 import {
-  IPrediction,
+  PredictionEntity,
   PredictionStatus,
 } from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface IPredictionProcessor {
-  getPredictions$(fixture: FixtureEntity): Observable<IPrediction[]>;
+  getPredictions$(fixture: FixtureEntity): Observable<PredictionEntity[]>;
   processPrediction$(
-    prediction: IPrediction,
+    prediction: PredictionEntity,
     fixture: FixtureEntity,
-  ): Observable<IPrediction>;
+  ): Observable<PredictionEntity>;
 }
 
 export class PredictionProcessor implements IPredictionProcessor {
@@ -112,7 +112,7 @@ export class PredictionProcessor implements IPredictionProcessor {
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: IPrediction, fixture: FixtureEntity) {
+  public processPrediction$(prediction: PredictionEntity, fixture: FixtureEntity) {
     const { choice } = prediction;
     const { result } = fixture;
     const scorePoints = this.predictionCalculator.calculateScore(

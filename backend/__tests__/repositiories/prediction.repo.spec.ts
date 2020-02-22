@@ -13,8 +13,8 @@ import {
 } from '../../db/models/fixture.model';
 import {
   Prediction,
-  IPrediction,
-  IPredictionDocument,
+  PredictionEntity,
+  PredictionDocument,
 } from '../../db/models/prediction.model';
 
 import { ScorePoints } from '../../common/score';
@@ -213,9 +213,9 @@ describe('Prediction repo', function () {
   });
 
   it('should findOne prediction by user and fixture', done => {
-    let prediction: IPrediction;
+    let prediction: PredictionEntity;
     const { slug: fixtureSlug, season, gameRound, id: fixtureId } = fixture1;
-    const pred: IPrediction = {
+    const pred: PredictionEntity = {
       user: user1.id,
       fixture: fixtureId,
       fixtureSlug,
@@ -250,12 +250,12 @@ describe('Prediction repo', function () {
         });
     });
     it('should return existing prediction', done => {
-      let prediction: IPredictionDocument;
+      let prediction: PredictionDocument;
       predictionRepo
         .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })
         .pipe(
           flatMap(p => {
-            prediction = p as IPredictionDocument;
+            prediction = p as PredictionDocument;
             return predictionRepo.findOneOrCreate$({
               userId: user1.id,
               fixtureId: fixture1.id,
@@ -263,7 +263,7 @@ describe('Prediction repo', function () {
           }),
         )
         .subscribe(p => {
-          expect((p as IPredictionDocument).toObject()).to.eql(
+          expect((p as PredictionDocument).toObject()).to.eql(
             prediction.toObject(),
           );
           done();
@@ -291,7 +291,7 @@ describe('Prediction repo', function () {
         }),
       )
       .subscribe(p => {
-        const pred = (p as IPredictionDocument).toObject() as IPrediction;
+        const pred = (p as PredictionDocument).toObject() as PredictionEntity;
         expect(pred.scorePoints).to.eql(scorePoints);
         done();
       });
