@@ -5,7 +5,7 @@ import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
 import { League, LeagueEntity } from '../../db/models/league.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
-import { Team, ITeam } from '../../db/models/team.model';
+import { Team, TeamEntity } from '../../db/models/team.model';
 import {
   Fixture,
   FixtureEntity,
@@ -54,7 +54,7 @@ const epl18: SeasonEntity = {
   league: undefined,
 };
 
-const manu: ITeam = {
+const manu: TeamEntity = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -64,7 +64,7 @@ const manu: ITeam = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const manc: ITeam = {
+const manc: TeamEntity = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -74,7 +74,7 @@ const manc: ITeam = {
   aliases: ['ManCity'],
 };
 
-const che: ITeam = {
+const che: TeamEntity = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -83,7 +83,7 @@ const che: ITeam = {
   aliases: ['Chelsea'],
 };
 
-const ars: ITeam = {
+const ars: TeamEntity = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
