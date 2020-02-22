@@ -242,10 +242,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             );
         }),
       )
-      .pipe(
-        distinct(),
-        count(),
-      )
+      .pipe(distinct(), count())
       .toPromise();
   }
 

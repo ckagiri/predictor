@@ -17,7 +17,10 @@ export default (app: Application, options: SetupOptions) => {
   if (isProd) {
     addProdMiddlewares(app, options);
   } else {
-    const filePath = path.resolve(process.cwd(), '../frontend/webpack/webpack.client.dev');
+    const filePath = path.resolve(
+      process.cwd(),
+      '../frontend/webpack/webpack.client.dev',
+    );
     const webpackConfig = require(filePath) as WebpackConfig;
     addDevMiddlewares(app, webpackConfig);
   }
@@ -61,7 +64,8 @@ function addDevMiddlewares(app: Application, webpackConfig: WebpackConfig) {
 // Production middlewares
 function addProdMiddlewares(app: Application, options: SetupOptions) {
   const publicPath = options.publicPath || '/';
-  const outputPath = options.outputPath || path.resolve(process.cwd(), '../dist');
+  const outputPath =
+    options.outputPath || path.resolve(process.cwd(), '../dist');
 
   // compression middleware compresses your server responses which makes them
   // smaller (applies also to assets). You can read more about that technique

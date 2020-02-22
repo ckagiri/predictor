@@ -21,7 +21,7 @@ export interface IBaseProviderRepository<T extends IEntity>
 export class BaseProviderRepository<
   T extends IEntity,
   TDocument extends T & IDocumentEntity
-  > extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
+> extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
   protected converter: IConverter;
 
   constructor(SchemaModel: Model<Document>, converter: IConverter) {

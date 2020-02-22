@@ -62,7 +62,7 @@ const afdEpl16 = {
 
 let aLeague: ILeagueDocument;
 
-describe('seasonRepo', function () {
+describe('seasonRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

@@ -1,7 +1,0 @@
-{
-  "verbose": false,
-  "watch": [
-    "./backend"
-  ],
-  "exec": "NODE_ENV=development webpack --mode=development --config ./frontend/webpack/webpack.client.dev.js && tsc --project backend/tsconfig.json"
-}
