@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
+import { FixtureStatus, FixtureEntity } from '../../../db/models/fixture.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import {
   IFinishedFixturesProcessor,
@@ -34,7 +34,7 @@ const newFixture = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as IFixture;
+  } as FixtureEntity;
 };
 const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
 const livVsou = newFixture(2, 'Liverpool', 'Southampton');
@@ -46,7 +46,7 @@ const chalo = ObjectId().toHexString();
 const kag = ObjectId().toHexString();
 const newPrediction = (
   userId: string,
-  fixture: IFixture,
+  fixture: FixtureEntity,
   status = PredictionStatus.PENDING,
 ) => {
   return {
@@ -110,5 +110,5 @@ describe('Finished Fixtures', () => {
     });
   });
 
-  describe('setToTrueAllPredictionsProcessed', () => {});
+  describe('setToTrueAllPredictionsProcessed', () => { });
 });

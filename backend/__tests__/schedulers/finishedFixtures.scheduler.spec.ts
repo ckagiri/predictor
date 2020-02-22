@@ -8,12 +8,12 @@ import { FinishedFixturesScheduler } from '../../app/schedulers/finishedFixtures
 import { FixturesScheduler } from '../../app/schedulers/footballApi/fixtures.scheduler';
 
 import { IEventMediator, EventMediator } from '../../common/eventMediator';
-import { FixtureStatus, IFixture } from '../../db/models/fixture.model';
+import { FixtureStatus, FixtureEntity } from '../../db/models/fixture.model';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => {}, context }: any) => {
+  run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
   },
 };
@@ -59,7 +59,7 @@ describe('ApiFootballData: FinishedFixtures scheduler', () => {
         homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
         awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
         status,
-      } as IFixture;
+      } as FixtureEntity;
     };
     const arsVcheTd = newFixture('Arsenal', 'Chelsea');
     const livVsouTd = newFixture('Liverpool', 'Southampton');

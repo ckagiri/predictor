@@ -1,6 +1,6 @@
 import { Observable, zip } from 'rxjs';
 
-import { IFixture } from '../../models/fixture.model';
+import { FixtureEntity } from '../../models/fixture.model';
 import { IFixtureConverter } from '../fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
@@ -26,7 +26,7 @@ export class FixtureConverter implements IFixtureConverter {
     this.provider = ApiProvider.LIGI;
   }
 
-  public from(data: any): Observable<IFixture> {
+  public from(data: any): Observable<FixtureEntity> {
     return zip(
       this.seasonRepo.findById$(data.seasonId),
       this.teamRepo.findById$(data.homeTeamId),

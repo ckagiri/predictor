@@ -8,7 +8,7 @@ import { Season, ISeason } from '../../db/models/season.model';
 import { Team, ITeam } from '../../db/models/team.model';
 import {
   Fixture,
-  IFixture,
+  FixtureEntity,
   FixtureStatus,
 } from '../../db/models/fixture.model';
 import { Prediction, IPrediction } from '../../db/models/prediction.model';
@@ -92,7 +92,7 @@ const ars: ITeam = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: IFixture = {
+const manuVmanc: FixtureEntity = {
   date: '2017-09-10T11:30:00Z',
   status: FixtureStatus.SCHEDULED,
   matchRound: 20,
@@ -104,7 +104,7 @@ const manuVmanc: IFixture = {
   result: undefined,
 };
 
-const cheVars: IFixture = {
+const cheVars: FixtureEntity = {
   date: '2017-09-10T11:30:00Z',
   status: FixtureStatus.SCHEDULED,
   matchRound: 20,
@@ -126,7 +126,7 @@ const kagiri = {
   email: 'kagiri@example.com',
 };
 
-describe('UserScore Repo', function() {
+describe('UserScore Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

@@ -2,7 +2,7 @@ import { from } from 'rxjs';
 import { concatMap, filter, flatMap, map, count } from 'rxjs/operators';
 
 import { PredictionStatus } from '../../db/models/prediction.model';
-import { IFixture, FixtureStatus } from '../../db/models/fixture.model';
+import { FixtureEntity, FixtureStatus } from '../../db/models/fixture.model';
 import {
   IPredictionProcessor,
   PredictionProcessor,
@@ -13,8 +13,8 @@ import {
 } from '../../db/repositories/fixture.repo';
 
 export interface IFinishedFixturesProcessor {
-  processPredictions(fixtures: IFixture[]): Promise<number>;
-  setToTrueAllPredictionsProcessed(fixtures: IFixture[]): Promise<number>;
+  processPredictions(fixtures: FixtureEntity[]): Promise<number>;
+  setToTrueAllPredictionsProcessed(fixtures: FixtureEntity[]): Promise<number>;
 }
 
 export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
@@ -28,9 +28,9 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
   constructor(
     private predictionProcessor: IPredictionProcessor,
     private fixtureRepo: IFixtureRepository,
-  ) {}
+  ) { }
 
-  public processPredictions(fixtures: IFixture[]) {
+  public processPredictions(fixtures: FixtureEntity[]) {
     return from(fixtures)
       .pipe(
         filter(fixture => {
@@ -74,7 +74,7 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
       .toPromise();
   }
 
-  public setToTrueAllPredictionsProcessed(fixtures: IFixture[]) {
+  public setToTrueAllPredictionsProcessed(fixtures: FixtureEntity[]) {
     return from(fixtures)
       .pipe(
         filter(fixture => {

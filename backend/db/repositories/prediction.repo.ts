@@ -8,7 +8,7 @@ import {
   Prediction,
   PredictionStatus,
 } from '../models/prediction.model';
-import { IFixture, FixtureStatus } from '../models/fixture.model';
+import { FixtureEntity, FixtureStatus } from '../models/fixture.model';
 import {
   IFixtureRepository,
   FixtureRepository,
@@ -155,7 +155,7 @@ export class PredictionRepository
     newJokerFixtureId: string,
     autoPicked: boolean,
   ) {
-    let newJokerFixture: IFixture;
+    let newJokerFixture: FixtureEntity;
     return this.fixtureRepo
       .findById$(newJokerFixtureId)
       .pipe(

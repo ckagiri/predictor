@@ -2,8 +2,8 @@ import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
 import {
-  IFixture,
-  IFixtureDocument,
+  FixtureEntity,
+  FixtureDocument,
   Fixture,
   FixtureStatus,
 } from '../models/fixture.model';
@@ -17,21 +17,21 @@ import {
 } from '../converters/fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IFixtureRepository extends IBaseProviderRepository<IFixture> {
+export interface IFixtureRepository extends IBaseProviderRepository<FixtureEntity> {
   findSelectableFixtures$(
     seasonId: string,
     gameRound: number,
-  ): Observable<IFixture[]>;
-  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<IFixture>;
-  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<IFixture[]>;
+  ): Observable<FixtureEntity[]>;
+  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<FixtureEntity>;
+  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<FixtureEntity[]>;
   findAllFinishedWithPendingPredictions$(
     seasonId: string,
     gameRound?: number,
-  ): Observable<IFixture[]>;
+  ): Observable<FixtureEntity[]>;
 }
 
 export class FixtureRepository
-  extends BaseProviderRepository<IFixture, IFixtureDocument>
+  extends BaseProviderRepository<FixtureEntity, FixtureDocument>
   implements IFixtureRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
@@ -93,7 +93,7 @@ export class FixtureRepository
   }
 
   public findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
-    const obs: Array<Observable<IFixture>> = [];
+    const obs: Array<Observable<FixtureEntity>> = [];
 
     for (const obj of objs) {
       obs.push(this.findBySeasonAndTeamsAndUpsert$(obj));

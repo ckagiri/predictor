@@ -5,11 +5,11 @@ chai.use(sinonChai);
 const expect = chai.expect;
 
 import { FixturesScheduler } from '../../app/schedulers/footballApi/fixtures.scheduler';
-import { FixtureStatus, IFixture } from '../../db/models/fixture.model';
+import { FixtureStatus, FixtureEntity } from '../../db/models/fixture.model';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => {}, context }: any) => {
+  run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
   },
 };
@@ -25,13 +25,13 @@ const newFixture = (
     homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
     awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
     status,
-  } as IFixture;
+  } as FixtureEntity;
 };
 
-const arsVcheTd: IFixture = newFixture('Arsenal', 'Chelsea');
-const livVsouTd: IFixture = newFixture('Liverpool', 'Southampton');
-const eveVburYd: IFixture = newFixture('Everton', 'Burnley');
-const bouVwatTm: IFixture = newFixture('Bournemouth', 'Watford');
+const arsVcheTd: FixtureEntity = newFixture('Arsenal', 'Chelsea');
+const livVsouTd: FixtureEntity = newFixture('Liverpool', 'Southampton');
+const eveVburYd: FixtureEntity = newFixture('Everton', 'Burnley');
+const bouVwatTm: FixtureEntity = newFixture('Bournemouth', 'Watford');
 const apiClientStub: any = {
   getTomorrowsFixtures: () => {
     return Promise.resolve({ data: { fixtures: [bouVwatTm] } });
@@ -54,7 +54,7 @@ const fixturesUpdaterStub: any = {
   },
 };
 const eventMediatorStub: any = {
-  publish(event: string, ...args: any[]) {},
+  publish(event: string, ...args: any[]) { },
 };
 let fixturesScheduler: FixturesScheduler;
 describe('ApiFootballData: Fixtures scheduler', () => {

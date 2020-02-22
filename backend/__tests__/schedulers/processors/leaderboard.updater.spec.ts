@@ -9,7 +9,7 @@ const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { LeaderboardUpdater } from '../../../app/schedulers/leaderboard.updater';
-import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
+import { FixtureStatus, FixtureEntity } from '../../../db/models/fixture.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import { BOARD_STATUS } from '../../../db/models/leaderboard.model';
 import { CacheService } from '../../../common/observableCacheService';
@@ -35,14 +35,14 @@ const newFixture = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as IFixture;
+  } as FixtureEntity;
 };
 const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
 const livVsou = newFixture(2, 'Liverpool', 'Southampton');
 const eveVwat = newFixture(3, 'Everton', 'Watford', FixtureStatus.IN_PLAY);
 const newPrediction = (
   userId: string,
-  fixture: IFixture,
+  fixture: FixtureEntity,
   status = PredictionStatus.PENDING,
 ) => {
   return {

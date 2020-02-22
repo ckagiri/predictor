@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
+import { FixtureStatus, FixtureEntity } from '../../../db/models/fixture.model';
 import { IPrediction } from '../../../db/models/prediction.model';
 
 import {
@@ -33,7 +33,7 @@ const newFixture = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as IFixture;
+  } as FixtureEntity;
 };
 const chalo = {
   id: ObjectId().toHexString(),

@@ -8,7 +8,7 @@ import {
   map,
 } from 'rxjs/operators';
 
-import { IFixture, FixtureStatus } from '../../db/models/fixture.model';
+import { FixtureEntity, FixtureStatus } from '../../db/models/fixture.model';
 import {
   IUserRepository,
   UserRepository,
@@ -32,7 +32,7 @@ import {
 } from '../../common/observableCacheService';
 
 export interface ILeaderboardUpdater {
-  updateScores(fixtures: IFixture[]): Promise<number>;
+  updateScores(fixtures: FixtureEntity[]): Promise<number>;
   updateRankings(seasonId: string): Promise<number>;
   markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
 }
@@ -54,14 +54,14 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
     private leaderboardRepo: ILeaderboardRepository,
     private predictionRepo: IPredictionRepository,
     private userScoreRepo: IUserScoreRepository,
-  ) {}
+  ) { }
 
   public setCacheService(cacheService: ICacheService) {
     this.cacheService = cacheService;
     return this;
   }
 
-  public updateScores(fixtures: IFixture[]) {
+  public updateScores(fixtures: FixtureEntity[]) {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }

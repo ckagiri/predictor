@@ -15,7 +15,7 @@ import {
 } from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
-import { IFixture } from '../../db/models/fixture.model';
+import { FixtureEntity } from '../../db/models/fixture.model';
 import {
   IPrediction,
   PredictionStatus,
@@ -23,10 +23,10 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface IPredictionProcessor {
-  getPredictions$(fixture: IFixture): Observable<IPrediction[]>;
+  getPredictions$(fixture: FixtureEntity): Observable<IPrediction[]>;
   processPrediction$(
     prediction: IPrediction,
-    fixture: IFixture,
+    fixture: FixtureEntity,
   ): Observable<IPrediction>;
 }
 
@@ -44,9 +44,9 @@ export class PredictionProcessor implements IPredictionProcessor {
     private userRepo: IUserRepository,
     private predictionRepo: IPredictionRepository,
     private predictionCalculator: PredictionCalculator,
-  ) {}
+  ) { }
 
-  public getPredictions$(fixture: IFixture) {
+  public getPredictions$(fixture: FixtureEntity) {
     const { season: seasonId, gameRound } = fixture;
     return this.fixtureRepo
       .findSelectableFixtures$(seasonId!, gameRound!)
@@ -112,7 +112,7 @@ export class PredictionProcessor implements IPredictionProcessor {
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: IPrediction, fixture: IFixture) {
+  public processPrediction$(prediction: IPrediction, fixture: FixtureEntity) {
     const { choice } = prediction;
     const { result } = fixture;
     const scorePoints = this.predictionCalculator.calculateScore(

@@ -8,7 +8,7 @@ import { Season, ISeason } from '../../db/models/season.model';
 import { Team, ITeam } from '../../db/models/team.model';
 import {
   Fixture,
-  IFixture,
+  FixtureEntity,
   FixtureStatus,
 } from '../../db/models/fixture.model';
 import {
@@ -85,7 +85,7 @@ const ars: ITeam = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: IFixture = {
+const manuVmanc: FixtureEntity = {
   date: '2018-09-10T11:30:00Z',
   status: FixtureStatus.SCHEDULED,
   matchRound: 20,
@@ -97,7 +97,7 @@ const manuVmanc: IFixture = {
   result: undefined,
 };
 
-const cheVars: IFixture = {
+const cheVars: FixtureEntity = {
   date: '2018-09-10T11:30:00Z',
   status: FixtureStatus.SCHEDULED,
   matchRound: 20,
@@ -119,7 +119,7 @@ const kagiri: IUser = {
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function() {
+describe('Prediction repo', function () {
   this.timeout(5000);
 
   before(done => {

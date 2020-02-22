@@ -13,7 +13,7 @@ import {
   IFixtureConverter,
   FixtureConverter,
 } from '../../../db/converters/fixture.converter';
-import { IFixture, FixtureStatus } from '../../../db/models/fixture.model';
+import { FixtureEntity, FixtureStatus } from '../../../db/models/fixture.model';
 
 import { IFixturesUpdater, FixturesUpdater } from './fixtures.updater';
 
@@ -106,7 +106,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
     });
   };
 
-  public calculateNextUpdate = (fixtureList: IFixture[]) => {
+  public calculateNextUpdate = (fixtureList: FixtureEntity[]) => {
     let nextUpdate = moment().add(12, 'hours');
     const fixtures = fixtureList.filter(
       f => f.status !== FixtureStatus.FINISHED,

@@ -13,7 +13,7 @@ export enum FixtureStatus {
   FINISHED = 'FINISHED',
 }
 
-export interface IFixture extends Entity {
+export interface FixtureEntity extends Entity {
   id?: string;
   season?: string;
   slug: string;
@@ -41,7 +41,7 @@ export interface IFixture extends Entity {
   [key: string]: any;
 }
 
-export interface IFixtureDocument extends IFixture, DocumentEntity { }
+export interface FixtureDocument extends FixtureEntity, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -89,4 +89,4 @@ export const fixtureSchema = new Schema({
   externalReference: { type: Mixed },
 });
 
-export const Fixture = model<IFixtureDocument>('Fixture', fixtureSchema);
+export const Fixture = model<FixtureDocument>('Fixture', fixtureSchema);
