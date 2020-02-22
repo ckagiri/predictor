@@ -6,10 +6,8 @@
     "build:dev": "NODE_ENV=development webpack --mode=development --config ./webpack/webpack.client.dev.js",
     "lint": "npm run lint:js && npm run lint:css",
     "lint:css": "stylelint **/*.js",
-    "lint:eslint": "eslint --ignore-path .gitignore",
-    "lint:eslint:fix": "eslint --ignore-path .gitignore --fix",
     "lint:js": "eslint -- . ",
-    "lint:js:fix": "eslint --fix .",
+    "lint:fix": "eslint --fix .",
     "prettify": "prettier --write"
   },
   "author": "",
