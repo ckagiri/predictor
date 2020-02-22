@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 import { Entity, DocumentEntity } from './base.model';
 
-export interface ISeason extends Entity {
+export interface SeasonEntity extends Entity {
   name?: string;
   year?: string | number;
   slug?: string;
@@ -19,7 +19,7 @@ export interface ISeason extends Entity {
   externalReference?: any;
 }
 
-export interface ISeasonDocument extends ISeason, DocumentEntity { }
+export interface SeasonDocument extends SeasonEntity, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -42,4 +42,4 @@ export const seasonSchema = new Schema({
   externalReference: { type: Mixed },
 });
 
-export const Season = model<ISeasonDocument>('Season', seasonSchema);
+export const Season = model<SeasonDocument>('Season', seasonSchema);

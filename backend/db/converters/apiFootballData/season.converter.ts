@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { ISeason } from '../../models/season.model';
+import { SeasonEntity } from '../../models/season.model';
 import { ISeasonConverter } from '../season.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
@@ -14,7 +14,7 @@ export class SeasonConverter implements ISeasonConverter {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<ISeason> {
+  public from(data: any): Observable<SeasonEntity> {
     const { currentSeason } = data;
     const { id, currentMatchday, startDate, endDate } = currentSeason;
     return of({

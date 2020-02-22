@@ -5,10 +5,10 @@ import {
   SeasonRepository,
 } from '../../../db/repositories/season.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { ISeason } from '../../../db/models/season.model';
+import { SeasonEntity } from '../../../db/models/season.model';
 
 export interface ISeasonUpdater {
-  updateCurrentMatchRound(apiSeasons: any[]): Promise<ISeason>;
+  updateCurrentMatchRound(apiSeasons: any[]): Promise<SeasonEntity>;
 }
 
 export class SeasonUpdater implements ISeasonUpdater {
@@ -16,7 +16,7 @@ export class SeasonUpdater implements ISeasonUpdater {
     return new SeasonUpdater(SeasonRepository.getInstance(provider));
   }
 
-  constructor(private seasonRepo: ISeasonRepository) {}
+  constructor(private seasonRepo: ISeasonRepository) { }
 
   public updateCurrentMatchRound(apiSeasons: any[]) {
     const externalIdToApiSeasonMap: any = new Map<string, any>();

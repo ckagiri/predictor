@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import * as db from '../../db';
 import { User, IUser } from '../../db/models/user.model';
 import { League, LeagueEntity } from '../../db/models/league.model';
-import { Season, ISeason } from '../../db/models/season.model';
+import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, ITeam } from '../../db/models/team.model';
 import {
   Fixture,
@@ -36,7 +36,7 @@ const epl: LeagueEntity = {
   code: 'epl',
 };
 
-const epl18: ISeason = {
+const epl18: SeasonEntity = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,

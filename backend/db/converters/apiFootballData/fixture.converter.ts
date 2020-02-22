@@ -8,7 +8,7 @@ import {
 } from '../../repositories/season.repo';
 import { ITeamRepository, TeamRepository } from '../../repositories/team.repo';
 import { FixtureEntity } from '../../models/fixture.model';
-import { ISeason } from '../../models/season.model';
+import { SeasonEntity } from '../../models/season.model';
 import { ITeam } from '../../models/team.model';
 
 export class FixtureConverter implements IFixtureConverter {
@@ -32,7 +32,7 @@ export class FixtureConverter implements IFixtureConverter {
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.name),
       this.teamRepo.findByName$(data.awayTeam.name),
-      (season: ISeason, homeTeam: ITeam, awayTeam: ITeam) => {
+      (season: SeasonEntity, homeTeam: ITeam, awayTeam: ITeam) => {
         return {
           season: season.id,
           date: data.utcDate,
