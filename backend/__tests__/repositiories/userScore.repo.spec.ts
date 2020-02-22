@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
-import { League, ILeague } from '../../db/models/league.model';
+import { League, LeagueEntity } from '../../db/models/league.model';
 import { Season, ISeason } from '../../db/models/season.model';
 import { Team, ITeam } from '../../db/models/team.model';
 import {
@@ -37,7 +37,7 @@ let user1Pred2: any;
 let user2Pred1: any;
 let sBoard: any;
 
-const epl: ILeague = {
+const epl: LeagueEntity = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',

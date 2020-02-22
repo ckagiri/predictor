@@ -1,4 +1,4 @@
-import { ILeague, ILeagueDocument, League } from '../models/league.model';
+import { LeagueEntity, ILeagueDocument, League } from '../models/league.model';
 import {
   IBaseProviderRepository,
   BaseProviderRepository,
@@ -9,10 +9,10 @@ import {
 } from '../converters/league.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ILeagueRepository extends IBaseProviderRepository<ILeague> {}
+export interface ILeagueRepository extends IBaseProviderRepository<LeagueEntity> { }
 
 export class LeagueRepository
-  extends BaseProviderRepository<ILeague, ILeagueDocument>
+  extends BaseProviderRepository<LeagueEntity, ILeagueDocument>
   implements ILeagueRepository {
   public static getInstance(provider: ApiProvider): ILeagueRepository {
     return new LeagueRepository(LeagueConverter.getInstance(provider));

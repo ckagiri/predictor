@@ -1,7 +1,7 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 import * as db from '../../db/index';
-import { ILeague, League } from '../../db/models/league.model';
+import { LeagueEntity, League } from '../../db/models/league.model';
 import { ISeason, Season } from '../../db/models/season.model';
 import { LeaderboardRepository } from '../../db/repositories/leaderboard.repo';
 import {
@@ -11,7 +11,7 @@ import {
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
 
-const epl: ILeague = {
+const epl: LeagueEntity = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
