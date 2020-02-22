@@ -14,9 +14,9 @@ import {
   FixtureRepository,
 } from '../repositories/fixture.repo';
 import { Score } from '../../common/score';
-import { IBaseRepository, BaseRepository } from './base.repo';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IPredictionRepository extends IBaseRepository<PredictionEntity> {
+export interface IPredictionRepository extends BaseRepository<PredictionEntity> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
@@ -37,7 +37,7 @@ export interface IPredictionRepository extends IBaseRepository<PredictionEntity>
 }
 
 export class PredictionRepository
-  extends BaseRepository<PredictionEntity, PredictionDocument>
+  extends BaseRepositoryImpl<PredictionEntity, PredictionDocument>
   implements IPredictionRepository {
   public static getInstance() {
     return new PredictionRepository(

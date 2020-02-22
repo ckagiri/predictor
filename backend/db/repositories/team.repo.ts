@@ -2,19 +2,19 @@ import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { TeamEntity, TeamDocument, Team } from '../models/team.model';
 import {
-  IBaseProviderRepository,
   BaseProviderRepository,
+  BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
 import { ITeamConverter, TeamConverter } from '../converters/team.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ITeamRepository extends IBaseProviderRepository<TeamEntity> {
+export interface ITeamRepository extends BaseProviderRepository<TeamEntity> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<TeamEntity>;
   findEachByNameAndUpsert$(teams: any[]): Observable<TeamEntity[]>;
   findByName$(name: string): Observable<TeamEntity>;
 }
 
-export class TeamRepository extends BaseProviderRepository<TeamEntity, TeamDocument>
+export class TeamRepository extends BaseProviderRepositoryImpl<TeamEntity, TeamDocument>
   implements ITeamRepository {
   public static getInstance(provider: ApiProvider): ITeamRepository {
     return new TeamRepository(TeamConverter.getInstance(provider));

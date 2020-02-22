@@ -3,7 +3,7 @@ import { Observable, Subscriber } from 'rxjs';
 import { DocumentDao } from './document.dao';
 import { Entity, DocumentEntity } from '../models/base.model';
 
-export interface IBaseRepository<T extends Entity> {
+export interface BaseRepository<T extends Entity> {
   save$(obj: Entity): Observable<T>;
   insert$(obj: Entity): Observable<T>;
   saveMany$(objs: Entity[]): Observable<T[]>;
@@ -17,10 +17,10 @@ export interface IBaseRepository<T extends Entity> {
   count$(conditions: any): Observable<number>;
 }
 
-export class BaseRepository<
+export class BaseRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-  > extends DocumentDao<TDocument> implements IBaseRepository<T> {
+  > extends DocumentDao<TDocument> implements BaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(

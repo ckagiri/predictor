@@ -6,9 +6,9 @@ import {
   LeaderboardDocument,
   BOARD_TYPE,
 } from '../models/leaderboard.model';
-import { IBaseRepository, BaseRepository } from './base.repo';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface ILeaderboardRepository extends IBaseRepository<LeaderboardEntity> {
+export interface ILeaderboardRepository extends BaseRepository<LeaderboardEntity> {
   findSeasonBoardAndUpsert$(
     seasonId: string,
     update: any,
@@ -27,7 +27,7 @@ export interface ILeaderboardRepository extends IBaseRepository<LeaderboardEntit
 }
 
 export class LeaderboardRepository
-  extends BaseRepository<LeaderboardEntity, LeaderboardDocument>
+  extends BaseRepositoryImpl<LeaderboardEntity, LeaderboardDocument>
   implements ILeaderboardRepository {
   public static getInstance() {
     return new LeaderboardRepository();

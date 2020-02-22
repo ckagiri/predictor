@@ -3,13 +3,13 @@ import { flatMap } from 'rxjs/operators';
 import { Model, Document } from 'mongoose';
 import * as _ from 'lodash';
 
-import { BaseRepository, IBaseRepository } from '../repositories/base.repo';
+import { BaseRepositoryImpl, BaseRepository } from '../repositories/base.repo';
 import { Entity, DocumentEntity } from '../models/base.model';
 import { IConverter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IBaseProviderRepository<T extends Entity>
-  extends IBaseRepository<T> {
+export interface BaseProviderRepository<T extends Entity>
+  extends BaseRepository<T> {
   Provider: ApiProvider;
   save$(obj: Entity): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
@@ -18,10 +18,10 @@ export interface IBaseProviderRepository<T extends Entity>
   findByExternalIds$(ids: Array<string | number>): Observable<T[]>;
 }
 
-export class BaseProviderRepository<
+export class BaseProviderRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-  > extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
+  > extends BaseRepositoryImpl<T, TDocument> implements BaseProviderRepository<T> {
   protected converter: IConverter;
 
   constructor(SchemaModel: Model<Document>, converter: IConverter) {

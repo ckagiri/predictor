@@ -7,9 +7,9 @@ import {
   IUserScoreDocument,
   UserScore,
 } from '../models/userScore.model';
-import { IBaseRepository, BaseRepository } from './base.repo';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IUserScoreRepository extends IBaseRepository<IUserScore> {
+export interface IUserScoreRepository extends BaseRepository<IUserScore> {
   findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
@@ -24,7 +24,7 @@ export interface IUserScoreRepository extends IBaseRepository<IUserScore> {
 }
 
 export class UserScoreRepository
-  extends BaseRepository<IUserScore, IUserScoreDocument>
+  extends BaseRepositoryImpl<IUserScore, IUserScoreDocument>
   implements IUserScoreRepository {
   public static getInstance() {
     return new UserScoreRepository();
