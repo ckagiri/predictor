@@ -1,7 +1,7 @@
 import mongoose, { Model, Document } from 'mongoose';
 mongoose.set('useFindAndModify', false);
 
-import { IEntity } from '../models/base.model';
+import { Entity } from '../models/base.model';
 
 export class DocumentDao<T extends Document> {
   protected Model: Model<Document>;
@@ -10,20 +10,20 @@ export class DocumentDao<T extends Document> {
     this.Model = SchemaModel;
   }
 
-  public save(obj: IEntity): Promise<T> {
+  public save(obj: Entity): Promise<T> {
     const model = new this.Model(obj) as T;
     return model.save();
   }
 
-  public saveMany(objs: IEntity[]): Promise<T[]> {
+  public saveMany(objs: Entity[]): Promise<T[]> {
     return this.Model.create(objs) as Promise<T[]>;
   }
 
-  public insert(obj: IEntity): Promise<T> {
+  public insert(obj: Entity): Promise<T> {
     return this.Model.create(obj) as Promise<T>;
   }
 
-  public insertMany(objs: IEntity[]): Promise<T[]> {
+  public insertMany(objs: Entity[]): Promise<T[]> {
     return this.Model.insertMany(objs) as Promise<T[]>;
   }
 

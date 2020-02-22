@@ -1,14 +1,14 @@
 import { Schema, model } from 'mongoose';
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { Entity, IDocumentEntity } from './base.model';
 
-export interface ILeague extends IEntity {
+export interface ILeague extends Entity {
   name: string;
   slug: string;
   code?: string;
 }
 
-export interface ILeagueDocument extends ILeague, IDocumentEntity {}
+export interface ILeagueDocument extends ILeague, IDocumentEntity { }
 
 export const leagueSchema = new Schema({
   name: { type: String, required: true },

@@ -4,24 +4,24 @@ import { Model, Document } from 'mongoose';
 import * as _ from 'lodash';
 
 import { BaseRepository, IBaseRepository } from '../repositories/base.repo';
-import { IEntity, IDocumentEntity } from '../models/base.model';
+import { Entity, IDocumentEntity } from '../models/base.model';
 import { IConverter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IBaseProviderRepository<T extends IEntity>
+export interface IBaseProviderRepository<T extends Entity>
   extends IBaseRepository<T> {
   Provider: ApiProvider;
-  save$(obj: IEntity): Observable<T>;
+  save$(obj: Entity): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
-  findEachByExternalIdAndUpdate$(objs: IEntity[]): Observable<T[]>;
+  findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
   findByExternalId$(id: string | number): Observable<T>;
   findByExternalIds$(ids: Array<string | number>): Observable<T[]>;
 }
 
 export class BaseProviderRepository<
-  T extends IEntity,
+  T extends Entity,
   TDocument extends T & IDocumentEntity
-> extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
+  > extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
   protected converter: IConverter;
 
   constructor(SchemaModel: Model<Document>, converter: IConverter) {
@@ -33,7 +33,7 @@ export class BaseProviderRepository<
     return this.converter.provider;
   }
 
-  public save$(obj: IEntity): Observable<T> {
+  public save$(obj: Entity): Observable<T> {
     return this.converter.from(obj).pipe(
       flatMap(entity => {
         return super.save$(entity);
@@ -57,7 +57,7 @@ export class BaseProviderRepository<
     }
   }
 
-  public findEachByExternalIdAndUpdate$(objs: IEntity[]): Observable<T[]> {
+  public findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {
     const obs: Array<Observable<T>> = [];
     for (const obj of objs) {
       obs.push(this.findByExternalIdAndUpdate$(obj));
@@ -78,7 +78,7 @@ export class BaseProviderRepository<
 
   protected _findOneAndUpsert$(
     conditions: any,
-    obj: IEntity,
+    obj: Entity,
     externalReference: any,
   ): Observable<T> {
     return super

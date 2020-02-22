@@ -1,9 +1,9 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { Entity, IDocumentEntity } from './base.model';
 
-export interface ILeaderboard extends IEntity {
+export interface ILeaderboard extends Entity {
   id?: string;
   season: string;
   year?: number;
@@ -15,7 +15,7 @@ export interface ILeaderboard extends IEntity {
   lastStatusUpdate?: Date;
 }
 
-export interface ILeaderboardDocument extends ILeaderboard, IDocumentEntity {}
+export interface ILeaderboardDocument extends ILeaderboard, IDocumentEntity { }
 
 export enum BOARD_STATUS {
   UPDATING_SCORES = 'UPDATING_SCORES',

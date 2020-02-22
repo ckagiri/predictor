@@ -3,10 +3,10 @@ mongoose.set('useCreateIndex', true);
 
 import * as bcrypt from 'bcrypt-nodejs';
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { Entity, IDocumentEntity } from './base.model';
 import { never } from 'rxjs';
 
-export interface IUser extends IEntity {
+export interface IUser extends Entity {
   id?: string;
   email: string;
   isAdmin?: boolean;
