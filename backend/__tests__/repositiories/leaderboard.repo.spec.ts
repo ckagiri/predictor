@@ -5,7 +5,7 @@ import { ILeague, League } from '../../db/models/league.model';
 import { ISeason, Season } from '../../db/models/season.model';
 import { LeaderboardRepository } from '../../db/repositories/leaderboard.repo';
 import {
-  ILeaderboard,
+  LeaderboardEntity,
   Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
@@ -31,7 +31,7 @@ const epl18: ISeason = {
 const leaderboardRepo = LeaderboardRepository.getInstance();
 let theSeason: any;
 
-describe('Leaderboard Repo', function() {
+describe('Leaderboard Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -82,7 +82,7 @@ describe('Leaderboard Repo', function() {
     });
 
     it('should update seasonBoard if it exists', done => {
-      let leaderboard: ILeaderboard;
+      let leaderboard: LeaderboardEntity;
       leaderboardRepo
         .findSeasonBoardAndUpsert$(theSeason.id, {
           status: BOARD_STATUS.UPDATING_SCORES,
@@ -133,8 +133,8 @@ describe('Leaderboard Repo', function() {
   });
 
   // tslint:disable-next-line: only-arrow-functions
-  describe('finders', function() {
-    let lb1: ILeaderboard;
+  describe('finders', function () {
+    let lb1: LeaderboardEntity;
     beforeEach(done => {
       Leaderboard.create([
         {

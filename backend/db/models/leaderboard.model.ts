@@ -3,7 +3,7 @@ mongoose.set('useCreateIndex', true);
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface ILeaderboard extends Entity {
+export interface LeaderboardEntity extends Entity {
   id?: string;
   season: string;
   year?: number;
@@ -15,7 +15,7 @@ export interface ILeaderboard extends Entity {
   lastStatusUpdate?: Date;
 }
 
-export interface ILeaderboardDocument extends ILeaderboard, DocumentEntity { }
+export interface LeaderboardDocument extends LeaderboardEntity, DocumentEntity { }
 
 export enum BOARD_STATUS {
   UPDATING_SCORES = 'UPDATING_SCORES',
@@ -56,7 +56,7 @@ const leaderboardSchema = new Schema({
   lastStatusUpdate: { type: Schema.Types.Date },
 });
 
-export const Leaderboard = model<ILeaderboardDocument>(
+export const Leaderboard = model<LeaderboardDocument>(
   'Leaderboard',
   leaderboardSchema,
 );

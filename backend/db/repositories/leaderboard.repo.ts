@@ -1,33 +1,33 @@
 import { Observable } from 'rxjs';
 
 import {
-  ILeaderboard,
+  LeaderboardEntity,
   Leaderboard,
-  ILeaderboardDocument,
+  LeaderboardDocument,
   BOARD_TYPE,
 } from '../models/leaderboard.model';
 import { IBaseRepository, BaseRepository } from './base.repo';
 
-export interface ILeaderboardRepository extends IBaseRepository<ILeaderboard> {
+export interface ILeaderboardRepository extends IBaseRepository<LeaderboardEntity> {
   findSeasonBoardAndUpsert$(
     seasonId: string,
     update: any,
-  ): Observable<ILeaderboard>;
+  ): Observable<LeaderboardEntity>;
   findMonthBoardAndUpsert$(
     seasonId: string,
     year: number,
     month: number,
     update: any,
-  ): Observable<ILeaderboard>;
+  ): Observable<LeaderboardEntity>;
   findRoundBoardAndUpsert$(
     seasonId: string,
     gameRound: number,
     update: any,
-  ): Observable<ILeaderboard>;
+  ): Observable<LeaderboardEntity>;
 }
 
 export class LeaderboardRepository
-  extends BaseRepository<ILeaderboard, ILeaderboardDocument>
+  extends BaseRepository<LeaderboardEntity, LeaderboardDocument>
   implements ILeaderboardRepository {
   public static getInstance() {
     return new LeaderboardRepository();

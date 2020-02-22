@@ -13,7 +13,7 @@ import {
   IUserRepository,
   UserRepository,
 } from '../../db/repositories/user.repo';
-import { BOARD_STATUS, ILeaderboard } from '../../db/models/leaderboard.model';
+import { BOARD_STATUS, LeaderboardEntity } from '../../db/models/leaderboard.model';
 import {
   ILeaderboardRepository,
   LeaderboardRepository,
@@ -97,10 +97,10 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
           const month = date.getUTCMonth() + 1;
           const year = date.getFullYear();
 
-          const boards: Array<Observable<ILeaderboard>> = [];
-          let sBoard: Observable<ILeaderboard>;
-          let mBoard: Observable<ILeaderboard>;
-          let rBoard: Observable<ILeaderboard>;
+          const boards: Array<Observable<LeaderboardEntity>> = [];
+          let sBoard: Observable<LeaderboardEntity>;
+          let mBoard: Observable<LeaderboardEntity>;
+          let rBoard: Observable<LeaderboardEntity>;
 
           if (this.cacheService != null) {
             sBoard = this.cacheService.get(
