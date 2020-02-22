@@ -4,7 +4,7 @@ module.exports = {
       '@babel/preset-env',
       {
         modules: false,
-      }
+      },
     ],
     '@babel/preset-react',
   ],
@@ -12,7 +12,7 @@ module.exports = {
     'styled-components',
     '@babel/plugin-proposal-class-properties',
     '@babel/proposal-object-rest-spread',
-    '@babel/plugin-syntax-dynamic-import'
+    '@babel/plugin-syntax-dynamic-import',
   ],
   env: {
     production: {

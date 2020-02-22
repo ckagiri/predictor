@@ -1,9 +1,9 @@
-
 export const PRIME_START = 'lp/Competitions/PRIME_START';
 export const PRIME_COMPLETE = 'lp/Competitions/PRIME_COMPLETE';
 export const PRIME_ERROR = 'lp/Competitions/PRIME_ERROR';
 export const GET_COMPETITIONS_START = 'lp/Competitions/GET_COMPETITIONS_START';
-export const GET_COMPETITIONS_COMPLETE = 'lp/Competitions/GET_COMPETITIONS_COMPLETE';
+export const GET_COMPETITIONS_COMPLETE =
+  'lp/Competitions/GET_COMPETITIONS_COMPLETE';
 export const SELECT_COMPETITION = 'lp/Competitions/SELECT_COMPETITION';
 export const GET_SEASONS_START = 'lp/Competitions/GET_SEASONS_START';
 export const GET_SEASONS_COMPLETE = 'lp/Competitions/GET_SEASONS_COMPLETE';

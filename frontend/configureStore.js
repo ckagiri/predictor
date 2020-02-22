@@ -44,8 +44,8 @@ export default function configureStore(initialState = {}, history) {
   store.injectedSagas = {}; // Saga registry
 
   // Make reducers hot reloadable, see http://mxs.is/googmo
-  if (module['hot']) {
-    module['hot'].accept('./reducers', () => {
+  if (module.hot) {
+    module.hot.accept('./reducers', () => {
       store.replaceReducer(createReducer(store.injectedReducers));
     });
   }

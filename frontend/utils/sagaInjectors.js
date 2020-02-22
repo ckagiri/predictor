@@ -15,8 +15,7 @@ const checkKey = key =>
 const checkDescriptor = descriptor => {
   const shape = {
     saga: isFunction,
-    mode: mode =>
-      isString(mode) && allowedModes.includes(mode),
+    mode: mode => isString(mode) && allowedModes.includes(mode),
   };
   invariant(
     conformsTo(descriptor, shape),
@@ -25,11 +24,7 @@ const checkDescriptor = descriptor => {
 };
 
 export function injectSagaFactory(store, isValid) {
-  return function injectSaga(
-    key,
-    descriptor = {},
-    args
-  ) {
+  return function injectSaga(key, descriptor = {}, args) {
     if (!isValid) {
       checkStore(store);
     }

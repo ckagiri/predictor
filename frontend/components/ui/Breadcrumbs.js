@@ -32,10 +32,13 @@ export const getBreadcrumbs = ({ routes, pathname }) => {
       routes.some(({ breadcrumb, matchOptions, path }) => {
         if (!breadcrumb || !path) {
           throw new Error(
-            'withBreadcrumbs: `breadcrumb` and `path` must be provided in every route object'
+            'withBreadcrumbs: `breadcrumb` and `path` must be provided in every route object',
           );
         }
-        const match = matchPath(pathSection, { ...(matchOptions || DEFAULT_MATCH_OPTIONS), path });
+        const match = matchPath(pathSection, {
+          ...(matchOptions || DEFAULT_MATCH_OPTIONS),
+          path,
+        });
 
         // if a route match is found ^ break out of the loop with a rendered breadcumb
         // and match object to add to the `matches` array
@@ -43,7 +46,7 @@ export const getBreadcrumbs = ({ routes, pathname }) => {
           breadcrumbMatch = {
             breadcrumb: renderer({ breadcrumb, match }),
             path,
-            match
+            match,
           };
           return true;
         }
@@ -65,7 +68,7 @@ const withBreadcrumbs = routes => Component =>
       {...props}
       breadcrumbs={getBreadcrumbs({
         pathname: props.location.pathname,
-        routes
+        routes,
       })}
     />
   ));

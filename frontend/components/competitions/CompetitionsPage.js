@@ -1,15 +1,15 @@
 import React, { useEffect, memo } from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { compose } from 'redux';
 
 import { useInjectReducer } from 'utils/injectReducer';
 import { useInjectSaga } from 'utils/injectSaga';
 
-import reducer from './reducer';
 import { Switch, Route, Redirect } from 'react-router';
+import MatchesPage from 'components/matches/MatchesPage';
+import reducer from './reducer';
 import saga from './saga';
 import { prime } from './actions';
-import MatchesPage from 'components/matches/MatchesPage';
 
 const key = 'game';
 
@@ -22,8 +22,8 @@ function SeasonsPage() {
 }
 
 export function CompetitionsContainer(props) {
-  useInjectReducer({ key: key, reducer: reducer });
-  useInjectSaga({ key: key, saga: saga });
+  useInjectReducer({ key, reducer });
+  useInjectSaga({ key, saga });
 
   useEffect(() => {
     if (!props.isPrimed) {
@@ -36,8 +36,16 @@ export function CompetitionsContainer(props) {
     isPrimed && (
       <Switch>
         <Route path="/competitions" exact component={CompetitionsPage} />
-        <Route path="/competitions/:competition" exact component={SeasonsPage} />
-        <Route path="/competitions/:competition/seasons" exact component={SeasonsPage} />
+        <Route
+          path="/competitions/:competition"
+          exact
+          component={SeasonsPage}
+        />
+        <Route
+          path="/competitions/:competition/seasons"
+          exact
+          component={SeasonsPage}
+        />
         <Redirect
           from="/competitions/:competition/seasons/:season"
           exact
@@ -55,7 +63,7 @@ export function CompetitionsContainer(props) {
 
 export function mapDispatchToProps(dispatch) {
   return {
-    prime: () => dispatch(prime())
+    prime: () => dispatch(prime()),
   };
 }
 
@@ -63,16 +71,10 @@ const mapStateToProps = state => {
   const game = state.game || {};
   return {
     isPriming: !!game.priming,
-    isPrimed: !!game.primed
+    isPrimed: !!game.primed,
   };
 };
 
-const withConnect = connect(
-  mapStateToProps,
-  mapDispatchToProps
-);
+const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
-export default compose(
-  withConnect,
-  memo
-)(CompetitionsContainer);
+export default compose(withConnect, memo)(CompetitionsContainer);

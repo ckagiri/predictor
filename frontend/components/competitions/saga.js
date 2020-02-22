@@ -1,9 +1,9 @@
 import { take, put, call, fork, all, takeLatest } from 'redux-saga/effects';
 import { push, replace } from 'connected-react-router';
 
-import { PRIME_START, PRIME_ERROR, PRIME_COMPLETE, LOAD_MATCHES_PAGE } from './constants';
-import * as actions from './actions';
 import request from 'utils/request';
+import { PRIME_START, PRIME_COMPLETE, LOAD_MATCHES_PAGE } from './constants';
+import * as actions from './actions';
 
 function* prime() {
   try {
@@ -42,8 +42,8 @@ function* prime() {
 }
 
 function* loadMatchesPage() {
-  //const pathname = yield select(state => state);
-  //const query = querySelector(state);
+  // const pathname = yield select(state => state);
+  // const query = querySelector(state);
   // const round = +query.round === 1 ? 2 : 1;
   // const search = `?${queryString({ ...query, round })}`;
   // console.log(`competition: ${competitionSlug}, season ${seasonSlug}, round: ${roundSlug}`);

@@ -6,8 +6,7 @@ export const selectedCompetitionSelector = createSelector(
   (competitionSlug, competitionMap) => competitionMap[competitionSlug] || {},
 );
 
-export const selectedSeasonIdSelector = state =>
-  state.selectedSeason;
+export const selectedSeasonIdSelector = state => state.selectedSeason;
 export const selectedSeasonSelector = createSelector(
   state => state.selectedCompetition,
   state => state.selectedSeason,
@@ -29,11 +28,8 @@ export const seasonMatchesSelector = createSelector(
   },
 );
 
-export const selectedRoundIdSelector = state =>
-  state.selectedGameRound;
+export const selectedRoundIdSelector = state => state.selectedGameRound;
 export const roundMatchesSelector = createSelector(
   [seasonMatchesSelector, selectedRoundIdSelector],
-  (matches, round) => {
-    return matches.filter(m => m.gameRound == round);
-  },
+  (matches, round) => matches.filter(m => m.gameRound === round),
 );

@@ -1,6 +1,13 @@
 import {
-  PRIME_START, PRIME_ERROR, PRIME_COMPLETE, GET_COMPETITIONS_COMPLETE, SELECT_COMPETITION, GET_SEASONS_COMPLETE,
-  SELECT_SEASON, SET_SEASON_DATA, SELECT_GAME_ROUND
+  PRIME_START,
+  PRIME_ERROR,
+  PRIME_COMPLETE,
+  GET_COMPETITIONS_COMPLETE,
+  SELECT_COMPETITION,
+  GET_SEASONS_COMPLETE,
+  SELECT_SEASON,
+  SET_SEASON_DATA,
+  SELECT_GAME_ROUND,
 } from './constants';
 
 export const initialState = {
@@ -17,10 +24,7 @@ export const initialState = {
   selectedGameRound: null,
 };
 
-function gameReducer(
-  state = initialState,
-  action,
-) {
+function gameReducer(state = initialState, action) {
   switch (action.type) {
     case PRIME_START: {
       return {
@@ -31,12 +35,10 @@ function gameReducer(
     case GET_COMPETITIONS_COMPLETE: {
       const competitions = action.payload;
       const entities = competitions.reduce(
-        (acc, competition) => {
-          return {
-            ...acc,
-            [competition.slug]: competition,
-          };
-        },
+        (acc, competition) => ({
+          ...acc,
+          [competition.slug]: competition,
+        }),
         { ...state.competitions },
       );
       return { ...state, competitions: entities };

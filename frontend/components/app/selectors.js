@@ -1,13 +1,8 @@
 import { createSelector } from 'reselect';
-import { ApplicationRootState } from 'types';
 
-const selectGlobal = state => {
-  return state.global;
-};
+const selectGlobal = state => state.global;
 
-const selectRoute = state => {
-  return state.router;
-};
+const selectRoute = state => state.router;
 
 const makeSelectCurrentUser = () =>
   createSelector(selectGlobal, globalState => globalState.currentUser);
