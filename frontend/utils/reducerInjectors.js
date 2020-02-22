@@ -15,7 +15,6 @@ export function injectReducerFactory(store, isValid) {
       '(app/utils...) injectReducer: Expected `reducer` to be a reducer function',
     );
 
-    // tslint:disable-next-line:max-line-length
     // Check `store.injectedReducers[key] === reducer` for hot reloading when a key is the same but a reducer is different
 
     if (

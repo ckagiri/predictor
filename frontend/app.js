@@ -28,7 +28,6 @@ const MOUNT_NODE = document.getElementById('app');
 
 const render = () => {
   ReactDOM.render(
-    // tslint:disable-next-line:jsx-wrap-multiline
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <App />
