@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { Entity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 
 export interface IUserScore extends Entity {
   id?: string;
@@ -26,7 +26,7 @@ export interface IUserScore extends Entity {
   positionNew?: number;
 }
 
-export interface IUserScoreDocument extends IUserScore, IDocumentEntity { }
+export interface IUserScoreDocument extends IUserScore, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 

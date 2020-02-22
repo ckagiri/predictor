@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { Entity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 import { ScorePoints, Score } from '../../common/score';
 
 export enum PredictionStatus {
@@ -23,7 +23,7 @@ export interface IPrediction extends Entity {
   jokerAutoPicked?: boolean;
 }
 
-export interface IPredictionDocument extends IPrediction, IDocumentEntity { }
+export interface IPredictionDocument extends IPrediction, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;

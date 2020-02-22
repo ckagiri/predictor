@@ -1,7 +1,7 @@
 import { Observable, Subscriber } from 'rxjs';
 
 import { DocumentDao } from './document.dao';
-import { Entity, IDocumentEntity } from '../models/base.model';
+import { Entity, DocumentEntity } from '../models/base.model';
 
 export interface IBaseRepository<T extends Entity> {
   save$(obj: Entity): Observable<T>;
@@ -19,7 +19,7 @@ export interface IBaseRepository<T extends Entity> {
 
 export class BaseRepository<
   T extends Entity,
-  TDocument extends T & IDocumentEntity
+  TDocument extends T & DocumentEntity
   > extends DocumentDao<TDocument> implements IBaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {

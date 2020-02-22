@@ -4,6 +4,6 @@ export interface Entity {
   id?: string;
 }
 
-export interface IDocumentEntity extends Entity, Document {
+export interface DocumentEntity extends Entity, Document {
   id?: string;
 }

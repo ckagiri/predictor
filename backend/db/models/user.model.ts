@@ -3,7 +3,7 @@ mongoose.set('useCreateIndex', true);
 
 import * as bcrypt from 'bcrypt-nodejs';
 
-import { Entity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 import { never } from 'rxjs';
 
 export interface IUser extends Entity {
@@ -43,7 +43,7 @@ export interface IUser extends Entity {
   };
 }
 
-export interface IUserDocument extends IUser, IDocumentEntity {
+export interface IUserDocument extends IUser, DocumentEntity {
   comparePassword(candidatePassword: string, cb: any): void;
 }
 

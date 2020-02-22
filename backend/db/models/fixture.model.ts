@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { Entity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 import { Score, Odds } from '../../common/score';
 
 export enum FixtureStatus {
@@ -41,7 +41,7 @@ export interface IFixture extends Entity {
   [key: string]: any;
 }
 
-export interface IFixtureDocument extends IFixture, IDocumentEntity { }
+export interface IFixtureDocument extends IFixture, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 

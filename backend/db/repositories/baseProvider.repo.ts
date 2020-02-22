@@ -4,7 +4,7 @@ import { Model, Document } from 'mongoose';
 import * as _ from 'lodash';
 
 import { BaseRepository, IBaseRepository } from '../repositories/base.repo';
-import { Entity, IDocumentEntity } from '../models/base.model';
+import { Entity, DocumentEntity } from '../models/base.model';
 import { IConverter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
@@ -20,7 +20,7 @@ export interface IBaseProviderRepository<T extends Entity>
 
 export class BaseProviderRepository<
   T extends Entity,
-  TDocument extends T & IDocumentEntity
+  TDocument extends T & DocumentEntity
   > extends BaseRepository<T, TDocument> implements IBaseProviderRepository<T> {
   protected converter: IConverter;
 
