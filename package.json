@@ -21,7 +21,7 @@
     "start:dev": "cd backend && npm run start:dev",
     "watch:dev": "cd backend && npm run watch:dev",
     "debug:dev": "cd backend && npm run debug:dev",
-    "prettify": "prettier --write \"**/*.ts\"",
+    "format": "prettier --write \"**/*.{js,ts}\"",
     "lb": "cd backend && npm run lint",
     "lfb": "cd backend && npm run lint:fix",
     "tb": "cd backend && npm run typecheck",
