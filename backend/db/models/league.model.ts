@@ -8,7 +8,7 @@ export interface LeagueEntity extends Entity {
   code?: string;
 }
 
-export interface ILeagueDocument extends LeagueEntity, DocumentEntity { }
+export interface LeagueDocument extends LeagueEntity, DocumentEntity { }
 
 export const leagueSchema = new Schema({
   name: { type: String, required: true },
@@ -16,4 +16,4 @@ export const leagueSchema = new Schema({
   code: { type: String, default: '' },
 });
 
-export const League = model<ILeagueDocument>('League', leagueSchema);
+export const League = model<LeagueDocument>('League', leagueSchema);

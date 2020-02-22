@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
 import * as db from '../../db/index';
-import { League, ILeagueDocument } from '../../db/models/league.model';
+import { League, LeagueDocument } from '../../db/models/league.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { SeasonRepository } from '../../db/repositories/season.repo';
 
@@ -60,9 +60,9 @@ const afdEpl16 = {
   },
 };
 
-let aLeague: ILeagueDocument;
+let aLeague: LeagueDocument;
 
-describe('seasonRepo', function() {
+describe('seasonRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
