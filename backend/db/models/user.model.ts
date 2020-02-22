@@ -6,7 +6,7 @@ import * as bcrypt from 'bcrypt-nodejs';
 import { Entity, DocumentEntity } from './base.model';
 import { never } from 'rxjs';
 
-export interface IUser extends Entity {
+export interface UserEntity extends Entity {
   id?: string;
   email: string;
   isAdmin?: boolean;
@@ -43,7 +43,7 @@ export interface IUser extends Entity {
   };
 }
 
-export interface IUserDocument extends IUser, DocumentEntity {
+export interface UserDocument extends UserEntity, DocumentEntity {
   comparePassword(candidatePassword: string, cb: any): void;
 }
 
@@ -87,7 +87,7 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', function(next) {
-  const user = this as IUserDocument;
+  const user = this as UserDocument;
   if (!user.isModified('local.password')) {
     return next();
   }
@@ -123,4 +123,4 @@ userSchema.methods.comparePassword = function comparePassword(
   });
 };
 
-export const User = model<IUserDocument>('User', userSchema);
+export const User = model<UserDocument>('User', userSchema);

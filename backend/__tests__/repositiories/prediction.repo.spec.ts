@@ -2,7 +2,7 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
 import * as db from '../../db';
-import { User, IUser } from '../../db/models/user.model';
+import { User, UserEntity } from '../../db/models/user.model';
 import { League, LeagueEntity } from '../../db/models/league.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, TeamEntity } from '../../db/models/team.model';
@@ -109,12 +109,12 @@ const cheVars: FixtureEntity = {
   result: undefined,
 };
 
-const chalo: IUser = {
+const chalo: UserEntity = {
   username: 'chalo',
   email: 'chalo@example.com',
 };
 
-const kagiri: IUser = {
+const kagiri: UserEntity = {
   username: 'kagiri',
   email: 'kagiri@example.com',
 };

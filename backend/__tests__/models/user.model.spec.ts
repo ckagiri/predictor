@@ -2,7 +2,7 @@ import 'mocha';
 import { expect } from 'chai';
 import * as bcrypt from 'bcrypt-nodejs';
 
-import { User, IUser } from '../../db/models/user.model';
+import { User, UserEntity } from '../../db/models/user.model';
 
 describe('Users', () => {
   describe('schema', () => {
@@ -24,7 +24,7 @@ describe('Users', () => {
     });
 
     describe('a minimal user', () => {
-      const user: IUser = {
+      const user: UserEntity = {
         username: 'Alpha',
         email: 'test@example.com',
         phone: '+254123456',
@@ -64,7 +64,7 @@ describe('Users', () => {
     });
 
     describe('an admin user', () => {
-      const user: IUser = {
+      const user: UserEntity = {
         username: 'Alpha',
         email: 'admin@example.com',
         isAdmin: true,
@@ -85,7 +85,7 @@ describe('Users', () => {
     describe('comparePassword', () => {
       const salt = bcrypt.genSaltSync(10);
 
-      const user: IUser = {
+      const user: UserEntity = {
         username: 'Alpha',
         email: 'user@example.com',
         phone: '+254123456',
