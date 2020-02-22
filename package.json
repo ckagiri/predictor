@@ -21,20 +21,12 @@
     "start:dev": "cd backend && npm run start:dev",
     "watch:dev": "cd backend && npm run watch:dev",
     "debug:dev": "cd backend && npm run debug:dev",
-    "prettify": "prettier --write \"**/*.ts\"",
+    "format": "prettier --write \"**/*.{js,ts}\"",
     "lb": "cd backend && npm run lint",
     "lfb": "cd backend && npm run lint:fix",
     "tb": "cd backend && npm run typecheck",
     "dst": "cd backend && npm run drop:test && npm run seed:test",
     "dsit": "cd backend && npm run drop:test && npm run seed:test && npm run import:test"
-  },
-  "lint-staged": {
-    "*.ts": "lfb"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lfb"
-    }
   },
   "repository": {
     "type": "git",
@@ -54,6 +46,7 @@
     "dotenv-flow": "^3.1.0",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.7",
+    "pre-commit": "^1.2.2",
     "prettier": "^1.16.4",
     "rimraf": "^3.0.2"
   },

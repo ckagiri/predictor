@@ -2,10 +2,9 @@
  * COMMON WEBPACK CONFIGURATION
  */
 
-const path = require('path');
 const webpack = require('webpack');
 const config = require('./config');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+
 module.exports = options => ({
   mode: options.mode,
   entry: options.entry,
@@ -26,11 +25,6 @@ module.exports = options => ({
           loader: 'babel-loader',
           options: options.babelQuery,
         },
-      },
-      {
-        test: /\.ts(x?)$/,
-        exclude: /node_modules/,
-        use: options.tsLoaders,
       },
       {
         // Preprocess our own .css files
@@ -71,7 +65,7 @@ module.exports = options => ({
             options: {
               // Inline files smaller than 10 kB
               limit: 10 * 1024,
-            }
+            },
           },
           {
             loader: 'image-webpack-loader',
@@ -107,10 +101,10 @@ module.exports = options => ({
           loader: 'url-loader',
           options: {
             limit: 10000,
-          }
-        }
-      }
-    ]
+          },
+        },
+      },
+    ],
   },
   plugins: options.plugins.concat([
     // Always expose NODE_ENV to webpack, in order to use `process.env.NODE_ENV`
@@ -119,11 +113,10 @@ module.exports = options => ({
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'development',
     }),
-    new ForkTsCheckerWebpackPlugin({ tsconfig: config.fromFrontendDir('tsconfig.json'), checkSyntacticErrors: true }),
   ]),
   resolve: {
     modules: ['node_modules', 'frontend'],
-    extensions: ['.js', '.jsx', '.react.js', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.react.js'],
     mainFields: ['browser', 'jsnext:main', 'main'],
   },
   devtool: options.devtool,
