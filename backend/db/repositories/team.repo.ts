@@ -4,7 +4,7 @@ import { TeamEntity, TeamDocument, Team } from '../models/team.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
-} from './baseProvider.repo';
+} from './baseFootballApi.repo';
 import { TeamConverter, TeamConverterImpl } from '../converters/team.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 

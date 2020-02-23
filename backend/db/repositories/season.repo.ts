@@ -2,7 +2,7 @@ import { SeasonEntity, SeasonDocument, Season } from '../models/season.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
-} from './baseProvider.repo';
+} from './baseFootballApi.repo';
 import {
   SeasonConverter,
   SeasonConverterImpl,

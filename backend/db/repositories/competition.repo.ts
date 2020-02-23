@@ -6,7 +6,7 @@ import {
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
-} from './baseProvider.repo';
+} from './baseFootballApi.repo';
 import {
   CompetitionConverter,
   CompetitionConverterImpl,
