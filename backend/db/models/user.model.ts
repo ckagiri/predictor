@@ -4,7 +4,6 @@ mongoose.set('useCreateIndex', true);
 import * as bcrypt from 'bcrypt-nodejs';
 
 import { Entity, DocumentEntity } from './base.model';
-import { never } from 'rxjs';
 
 export interface UserEntity extends Entity {
   id?: string;

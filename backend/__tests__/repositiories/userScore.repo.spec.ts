@@ -17,7 +17,7 @@ import {
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
-import { IUserScore } from '../../db/models/userScore.model';
+import { UserScoreEntity } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
@@ -304,7 +304,7 @@ describe('UserScore Repo', function () {
       const userId = user1.id;
       let fixtureId = fixture1.id;
       let predictionId = user1Pred1.id;
-      const score1: IUserScore = {
+      const score1: UserScoreEntity = {
         leaderboard: leaderboardId,
         user: userId,
         points: 14,
@@ -365,7 +365,7 @@ describe('UserScore Repo', function () {
   it('should find by leaderboard and order by points', done => {
     const leaderboardId = sBoard.id;
     const fixtureId = fixture1.id;
-    const score1: IUserScore = {
+    const score1: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: user1.id,
       points: 14,
@@ -382,7 +382,7 @@ describe('UserScore Repo', function () {
       APointsExcludingJoker: 7,
       BPointsExcludingJoker: 0,
     };
-    const score2: IUserScore = {
+    const score2: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: user2.id,
       points: 10,
@@ -417,7 +417,7 @@ describe('UserScore Repo', function () {
     const userId = user1.id;
     const fixtureId = fixture1.id;
     const predictionId = user1Pred1.id;
-    const score1: IUserScore = {
+    const score1: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: userId,
       points: 14,
