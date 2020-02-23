@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { Observable } from 'rxjs';
 
 import { LeagueConverter } from '../../db/converters/league.converter';
-import { LeagueConverterImpl as LigiLeagueConverter } from '../../db/converters/ligi/league.converter';
+import { LigiLeagueConverter } from '../../db/converters/ligi/league.converter';
 
 describe('League Converter', () => {
   describe('Ligi LeagueConverterImpl', () => {
