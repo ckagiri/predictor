@@ -4,14 +4,14 @@ import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
 
-import { TaskRunner } from '../../app/schedulers/taskRunner';
+import { TaskRunnerImpl } from '../../app/schedulers/taskRunner';
 
-describe('TaskRunner', () => {
-  let taskRunner: TaskRunner;
+describe('TaskRunnerImpl', () => {
+  let taskRunner: TaskRunnerImpl;
 
   describe('run', () => {
     beforeEach(() => {
-      taskRunner = new TaskRunner();
+      taskRunner = new TaskRunnerImpl();
     });
     it('should call begin', () => {
       const stub = sinon.stub();

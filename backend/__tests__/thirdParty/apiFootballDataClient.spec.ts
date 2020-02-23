@@ -4,8 +4,8 @@ import sinon from 'sinon';
 import * as mockery from 'mockery';
 
 import {
+  FootballApiClientImpl,
   FootballApiClient,
-  IFootballApiClient,
 } from '../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
@@ -22,7 +22,7 @@ describe('apifootballDataClient', () => {
       mockery.disable();
     });
     it('should get real competitions by year', async () => {
-      const apiClient = FootballApiClient.getInstance(
+      const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
       const response = await apiClient.getCompetitions(2018);
@@ -42,7 +42,7 @@ describe('apifootballDataClient', () => {
       const requestStub = sinon.stub().returns(Promise.resolve(response));
       mockery.registerMock('request-promise', requestStub);
       const ApiFootballDataClient = require('../../thirdParty/footballApi/apiFootballData/apiClient');
-      const apiFootballDataClient = ApiFootballDataClient.getInstance() as IFootballApiClient;
+      const apiFootballDataClient = ApiFootballDataClient.getInstance() as FootballApiClient;
       const { data, metadata } = await apiFootballDataClient.getCompetitions(
         2018,
       );
@@ -65,7 +65,7 @@ describe('apifootballDataClient', () => {
     });
 
     it('should get real competition by id', async () => {
-      const apiClient = FootballApiClient.getInstance(
+      const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
       const { data, metadata } = await apiClient.getCompetition(2021);
@@ -86,7 +86,7 @@ describe('apifootballDataClient', () => {
       mockery.registerMock('request-promise', requestStub);
 
       const ApiFootballDataClient = require('../../thirdParty/footballApi/apiFootballData/apiClient');
-      const apiFootballDataClient = ApiFootballDataClient.getInstance() as IFootballApiClient;
+      const apiFootballDataClient: FootballApiClient = ApiFootballDataClient.getInstance();
       const { data, metadata } = await apiFootballDataClient.getCompetition(
         2021,
       );
@@ -108,7 +108,7 @@ describe('apifootballDataClient', () => {
     });
 
     it('should get real teams by competition', async () => {
-      const apiClient = FootballApiClient.getInstance(
+      const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
       const { data, metadata } = await apiClient.getTeams(2021);
@@ -131,7 +131,7 @@ describe('apifootballDataClient', () => {
       mockery.registerMock('request-promise', requestStub);
 
       const ApiFootballDataClient = require('../../thirdParty/footballApi/apiFootballData/apiClient');
-      const apiFootballDataClient: IFootballApiClient = ApiFootballDataClient.getInstance();
+      const apiFootballDataClient: FootballApiClient = ApiFootballDataClient.getInstance();
       const { data, metadata } = await apiFootballDataClient.getTeams(415);
 
       expect(data).to.be.an('object');
@@ -141,7 +141,7 @@ describe('apifootballDataClient', () => {
     });
   });
 
-  describe('getFixtures', () => {
+  describe('getMatches', () => {
     before(() => {
       mockery.enable({
         warnOnReplace: false,
@@ -153,21 +153,21 @@ describe('apifootballDataClient', () => {
       mockery.disable();
     });
 
-    it('should get real fixtures by competition', async () => {
-      const apiClient = FootballApiClient.getInstance(
+    it('should get real matches by competition', async () => {
+      const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
-      const { data, metadata } = await apiClient.getFixtures(2021);
+      const { data, metadata } = await apiClient.getMatches(2021);
       expect(data).to.be.an('object');
       expect(metadata).to.be.an('object');
       expect(data.count).to.be.a('number');
       expect(data.matches).to.be.an('array');
     }).timeout(0);
 
-    it('should get fixtures by competition', async () => {
-      const fixtures = require('../fixtures/requests/apiFootballData.epl2018Fixtures');
+    it('should get matches by competition', async () => {
+      const matches = require('../fixtures/requests/apiFootballData.epl2018Matches');
       const response = {
-        body: JSON.stringify(fixtures),
+        body: JSON.stringify(matches),
         headers: {
           'x-requests-available': '49',
           'x-requestcounter-reset': '60',
@@ -177,8 +177,8 @@ describe('apifootballDataClient', () => {
       mockery.registerMock('request-promise', requestStub);
 
       const ApiFootballDataClient = require('../../thirdParty/footballApi/apiFootballData/apiClient');
-      const apiFootballDataClient: IFootballApiClient = ApiFootballDataClient.getInstance();
-      const { data, metadata } = await apiFootballDataClient.getFixtures(2021);
+      const apiFootballDataClient: FootballApiClient = ApiFootballDataClient.getInstance();
+      const { data, metadata } = await apiFootballDataClient.getMatches(2021);
 
       expect(data).to.be.an('object');
       expect(metadata).to.be.an('object');

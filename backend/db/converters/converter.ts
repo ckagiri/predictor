@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
-import { IEntity } from '../models/base.model';
+import { Entity } from '../models/base.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IConverter {
+export interface Converter {
   provider: ApiProvider;
-  from(data: any): Observable<IEntity>;
+  from(data: any): Observable<Entity>;
 }

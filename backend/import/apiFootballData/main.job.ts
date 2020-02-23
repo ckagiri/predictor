@@ -1,39 +1,39 @@
 import { Queue } from '../queue';
-import { IJob } from '../jobs/job';
+import { Job } from '../jobs/job';
 import { CompetitionJob } from './competition.job';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import {
   FootballApiClient,
-  IFootballApiClient,
+  FootballApiClientImpl,
 } from '../../thirdParty/footballApi/apiClient';
 import {
-  ISeasonRepository,
   SeasonRepository,
+  SeasonRepositoryImpl,
 } from '../../db/repositories/season.repo';
 import {
-  ITeamRepository,
   TeamRepository,
+  TeamRepositoryImpl,
 } from '../../db/repositories/team.repo';
 import {
-  IFixtureRepository,
-  FixtureRepository,
-} from '../../db/repositories/fixture.repo';
+  MatchRepository,
+  MatchRepositoryImpl,
+} from '../../db/repositories/match.repo';
 
-export class MainJob implements IJob {
+export class MainJob implements Job {
   public static getInstance() {
     return new MainJob(
-      FootballApiClient.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      SeasonRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      FixtureRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      FootballApiClientImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      MatchRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
 
   constructor(
-    private apiClient: IFootballApiClient,
-    private seasonRepo: ISeasonRepository,
-    private teamRepo: ITeamRepository,
-    private fixtureRepo: IFixtureRepository,
+    private apiClient: FootballApiClient,
+    private seasonRepo: SeasonRepository,
+    private teamRepo: TeamRepository,
+    private matchRepo: MatchRepository,
   ) {}
 
   public start(queue: Queue) {
@@ -52,7 +52,7 @@ export class MainJob implements IJob {
             .setApiClient(this.apiClient)
             .setSeasonRepo(this.seasonRepo)
             .setTeamRepo(this.teamRepo)
-            .setFixtureRepo(this.fixtureRepo)
+            .setMatchRepo(this.matchRepo)
             .withCompetition(comp.id)
             .build();
           queue.addJob(job);

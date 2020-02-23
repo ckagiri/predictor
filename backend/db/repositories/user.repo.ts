@@ -1,12 +1,13 @@
-import { IUser, IUserDocument, User } from '../models/user.model';
-import { IBaseRepository, BaseRepository } from './base.repo';
+import { UserEntity, UserDocument, User } from '../models/user.model';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IUserRepository extends IBaseRepository<IUser> {}
+export interface UserRepository extends BaseRepository<UserEntity> {}
 
-export class UserRepository extends BaseRepository<IUser, IUserDocument>
-  implements IUserRepository {
+export class UserRepositoryImpl
+  extends BaseRepositoryImpl<UserEntity, UserDocument>
+  implements UserRepository {
   public static getInstance() {
-    return new UserRepository();
+    return new UserRepositoryImpl();
   }
 
   constructor() {

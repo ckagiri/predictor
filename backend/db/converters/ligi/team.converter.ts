@@ -1,12 +1,12 @@
 import { Observable, of } from 'rxjs';
 
-import { ITeam } from '../../models/team.model';
-import { ITeamConverter } from '../team.converter';
+import { TeamEntity } from '../../models/team.model';
+import { TeamConverter } from '../team.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class TeamConverter implements ITeamConverter {
-  public static getInstance(): ITeamConverter {
-    return new TeamConverter();
+export class LigiTeamConverter implements TeamConverter {
+  public static getInstance(): TeamConverter {
+    return new LigiTeamConverter();
   }
   public provider: ApiProvider;
 
@@ -14,7 +14,7 @@ export class TeamConverter implements ITeamConverter {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<ITeam> {
+  public from(data: any): Observable<TeamEntity> {
     return of({ ...data });
   }
 }

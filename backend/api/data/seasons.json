@@ -2,7 +2,7 @@
   {
     "id": 3,
     "competitionId": 1,
-    "competitionSlug": "english-premier-league",
+    "competitionSlug": "english-premier-competition",
     "name": "2018-2019",
     "slug": "2018-19",
     "year": "2019",
@@ -16,7 +16,7 @@
   {
     "id": 2,
     "competitionId": 1,
-    "competitionSlug": "english-premier-league",
+    "competitionSlug": "english-premier-competition",
     "name": "2017-2018",
     "slug": "2017-18",
     "year": "2018",
@@ -30,7 +30,7 @@
   {
     "id": 1,
     "competitionId": 1,
-    "competitionSlug": "english-premier-league",
+    "competitionSlug": "english-premier-competition",
     "name": "2016-2017",
     "slug": "2016-17",
     "year": "2017",

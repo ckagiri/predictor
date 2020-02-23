@@ -7,19 +7,19 @@ import { of } from 'rxjs';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
-import { IPrediction } from '../../../db/models/prediction.model';
+import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
+import { PredictionEntity } from '../../../db/models/prediction.model';
 
 import {
   IPredictionProcessor,
   PredictionProcessor,
 } from '../../../app/schedulers/prediction.processor';
 
-const newFixture = (
+const newMatch = (
   id: number,
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED,
+  status: string = MatchStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
@@ -33,7 +33,7 @@ const newFixture = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as IFixture;
+  } as MatchEntity;
 };
 const chalo = {
   id: ObjectId().toHexString(),
@@ -43,11 +43,11 @@ const kagiri = {
   id: ObjectId().toHexString(),
   userName: 'kagiri',
 };
-const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
-const livVsou = newFixture(2, 'Liverpool', 'Southampton');
+const arsVche = newMatch(1, 'Arsenal', 'Chelsea');
+const livVsou = newMatch(2, 'Liverpool', 'Southampton');
 
-const fixtureRepoStub: any = {
-  findSelectableFixtures$: () => {
+const matchRepoStub: any = {
+  findSelectableMatches$: () => {
     return of([livVsou]);
   },
 };
@@ -59,19 +59,19 @@ const userRepoStub: any = {
 const chaloJoker = {
   id: ObjectId().toHexString(),
   user: chalo.id,
-  fixture: livVsou.id,
+  match: livVsou.id,
 };
 const kagiriJoker = {
   id: ObjectId().toHexString(),
   user: kagiri.id,
-  fixture: arsVche.id,
+  match: arsVche.id,
 };
 const chaloPred = {
   id: ObjectId().toHexString(),
   user: chalo.id,
-  fixture: arsVche.id,
+  match: arsVche.id,
   choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-} as IPrediction;
+} as PredictionEntity;
 const predictionRepoStub: any = {
   findOrCreateJoker$: sinon.stub(),
   findOneOrCreate$: sinon.stub(),
@@ -94,7 +94,7 @@ describe('Prediction Processor', () => {
         .returns(of(kagiriJoker));
       predictionRepoStub.findOneOrCreate$.returns(of(chaloPred));
       predictionProcessor = new PredictionProcessor(
-        fixtureRepoStub,
+        matchRepoStub,
         userRepoStub,
         predictionRepoStub,
         predictionCalculatorStub,
@@ -106,8 +106,8 @@ describe('Prediction Processor', () => {
       predictionRepoStub.findOneOrCreate$ = sinon.stub();
     });
 
-    it('should get the selectable fixtures of gameRound', async () => {
-      const spy = sinon.spy(fixtureRepoStub, 'findSelectableFixtures$');
+    it('should get the selectable matches of gameRound', async () => {
+      const spy = sinon.spy(matchRepoStub, 'findSelectableMatches$');
 
       await predictionProcessor.getPredictions$(arsVche).toPromise();
 
@@ -142,18 +142,18 @@ describe('Prediction Processor', () => {
       );
     });
 
-    it('should findOrCreate prediction if joker fixure != fixture passed', async () => {
+    it('should findOrCreate prediction if joker fixure != match passed', async () => {
       const spy = predictionRepoStub.findOneOrCreate$;
 
       await predictionProcessor.getPredictions$(arsVche).toPromise();
 
       expect(spy).to.have.been.calledOnce;
       expect(spy).to.have.been.calledWith(
-        sinon.match({ userId: chalo.id, fixtureId: arsVche.id }),
+        sinon.match({ userId: chalo.id, matchId: arsVche.id }),
       );
     });
 
-    it('should not findOrCreate prediction if joker fixture == passedIn fixture', async () => {
+    it('should not findOrCreate prediction if joker match == passedIn match', async () => {
       const spy = predictionRepoStub.findOneOrCreate$;
 
       await predictionProcessor.getPredictions$(livVsou).toPromise();
@@ -175,7 +175,7 @@ describe('Prediction Processor', () => {
     beforeEach(() => {
       predictionRepoStub.findByIdAndUpdate$.returns(of(chaloPred));
       predictionProcessor = new PredictionProcessor(
-        fixtureRepoStub,
+        matchRepoStub,
         userRepoStub,
         predictionRepoStub,
         predictionCalculatorStub,

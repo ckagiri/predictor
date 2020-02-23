@@ -7,7 +7,7 @@ const expect = chai.expect;
 import { SeasonScheduler } from '../../app/schedulers/footballApi/season.scheduler';
 
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => {}, context }: any) => {
+  run: async ({ task = () => {}, context }: any) => {
     await task.call(context);
   },
 };
@@ -16,17 +16,11 @@ const apiClientStub: any = {
     return Promise.resolve();
   },
 };
-const seasonConverterStub: any = {
-  map: (data: any) => {
-    return data;
-  },
-};
 const seasonUpdaterStub: any = {
   updateCurrentMatchRound: () => {
     return Promise.resolve();
   },
 };
-const eventMediatorStub: any = sinon.stub();
 
 let seasonScheduler: any;
 
@@ -35,13 +29,11 @@ describe('ApiFootballData: Season scheduler', () => {
     seasonScheduler = new SeasonScheduler(
       taskRunnerStub,
       apiClientStub,
-      seasonConverterStub,
       seasonUpdaterStub,
-      eventMediatorStub,
     );
   });
   describe('start', () => {
-    const POLLING_INTERVAL = 24 * 60 * 60 * 1000;
+    const POLLING_INTERVAL = 12 * 60 * 60 * 1000;
 
     it('should set polling true/false when started/stopped respectively', done => {
       seasonScheduler.start();
@@ -66,7 +58,7 @@ describe('ApiFootballData: Season scheduler', () => {
       });
       seasonScheduler.on('stopped', () => {
         expect(spy).to.have.callCount(2);
-        expect(seasonScheduler.PollingInterval).to.equal(POLLING_INTERVAL); // 24hours
+        expect(seasonScheduler.PollingInterval).to.equal(POLLING_INTERVAL); // 12hours
         done();
       });
       clock.restore();

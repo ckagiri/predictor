@@ -3,31 +3,31 @@ import { flatMap } from 'rxjs/operators';
 
 import { ScorePoints } from '../../common/score';
 import {
-  IUserScore,
-  IUserScoreDocument,
+  UserScoreEntity,
+  UserScoreDocument,
   UserScore,
 } from '../models/userScore.model';
-import { IBaseRepository, BaseRepository } from './base.repo';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IUserScoreRepository extends IBaseRepository<IUserScore> {
+export interface UserScoreRepository extends BaseRepository<UserScoreEntity> {
   findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
-    fixtureId: string,
+    matchId: string,
     predictionId: string,
     predictionPoints: ScorePoints,
     hasJoker: boolean,
-  ): Observable<IUserScore>;
+  ): Observable<UserScoreEntity>;
   findByLeaderboardOrderByPoints$(
     leaderboardId: string,
-  ): Observable<IUserScore[]>;
+  ): Observable<UserScoreEntity[]>;
 }
 
-export class UserScoreRepository
-  extends BaseRepository<IUserScore, IUserScoreDocument>
-  implements IUserScoreRepository {
+export class UserScoreRepositoryImpl
+  extends BaseRepositoryImpl<UserScoreEntity, UserScoreDocument>
+  implements UserScoreRepository {
   public static getInstance() {
-    return new UserScoreRepository();
+    return new UserScoreRepositoryImpl();
   }
 
   constructor() {
@@ -37,7 +37,7 @@ export class UserScoreRepository
   public findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
-    fixtureId: string,
+    matchId: string,
     predictionId: string,
     predictionPoints: ScorePoints,
     hasJoker: boolean,
@@ -53,7 +53,7 @@ export class UserScoreRepository
       TeamScoreMinusPoints,
     } = predictionPoints;
 
-    const score: IUserScore = {
+    const score: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: userId,
       points,
@@ -69,7 +69,7 @@ export class UserScoreRepository
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
       flatMap(standing => {
         if (standing === null) {
-          score.fixtures = [fixtureId];
+          score.matches = [matchId];
           score.predictions = [predictionId];
           score.pointsExcludingJoker = points;
           score.APointsExcludingJoker = APoints;
@@ -86,9 +86,9 @@ export class UserScoreRepository
           }
           return this.insert$(score);
         } else {
-          const fixtures = standing.fixtures as string[];
-          const fixtureExists = fixtures.some(n => n.toString() === fixtureId);
-          if (fixtureExists) {
+          const matches = standing.matches as string[];
+          const matchExists = matches.some(n => n.toString() === matchId);
+          if (matchExists) {
             return of(standing);
           }
 
@@ -130,7 +130,7 @@ export class UserScoreRepository
               APointsExcludingJoker: standing.APointsExcludingJoker,
               BPointsExcludingJoker: standing.BPointsExcludingJoker,
             },
-            $push: { fixtures: fixtureId, predictions: predictionId },
+            $push: { matches: matchId, predictions: predictionId },
           });
         }
       }),

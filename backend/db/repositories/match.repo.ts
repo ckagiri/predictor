@@ -2,48 +2,48 @@ import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
 import {
-  IFixture,
-  IFixtureDocument,
-  Fixture,
-  FixtureStatus,
-} from '../models/fixture.model';
+  MatchEntity,
+  MatchDocument,
+  Match,
+  MatchStatus,
+} from '../models/match.model';
 import {
-  IBaseProviderRepository,
   BaseProviderRepository,
+  BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
 import {
-  IFixtureConverter,
-  FixtureConverter,
-} from '../converters/fixture.converter';
+  MatchConverter,
+  MatchConverterImpl,
+} from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IFixtureRepository extends IBaseProviderRepository<IFixture> {
-  findSelectableFixtures$(
+export interface MatchRepository extends BaseProviderRepository<MatchEntity> {
+  findSelectableMatches$(
     seasonId: string,
     gameRound: number,
-  ): Observable<IFixture[]>;
-  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<IFixture>;
-  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<IFixture[]>;
+  ): Observable<MatchEntity[]>;
+  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<MatchEntity>;
+  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<MatchEntity[]>;
   findAllFinishedWithPendingPredictions$(
     seasonId: string,
     gameRound?: number,
-  ): Observable<IFixture[]>;
+  ): Observable<MatchEntity[]>;
 }
 
-export class FixtureRepository
-  extends BaseProviderRepository<IFixture, IFixtureDocument>
-  implements IFixtureRepository {
+export class MatchRepositoryImpl
+  extends BaseProviderRepositoryImpl<MatchEntity, MatchDocument>
+  implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
-  ): IFixtureRepository {
-    return new FixtureRepository(FixtureConverter.getInstance(provider));
+  ): MatchRepository {
+    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: IFixtureConverter) {
-    super(Fixture, converter);
+  constructor(converter: MatchConverter) {
+    super(Match, converter);
   }
 
-  public findSelectableFixtures$(seasonId: string, gameRound: number) {
+  public findSelectableMatches$(seasonId: string, gameRound: number) {
     const {
       SCHEDULED,
       TIMED,
@@ -51,7 +51,7 @@ export class FixtureRepository
       CANCELED,
       POSTPONED,
       FINISHED,
-    } = FixtureStatus;
+    } = MatchStatus;
     const query = {
       $or: [
         {
@@ -76,7 +76,7 @@ export class FixtureRepository
   }
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
-    return (this.converter as IFixtureConverter).from(obj).pipe(
+    return (this.converter as MatchConverter).from(obj).pipe(
       flatMap(data => {
         const { season, homeTeam, awayTeam, externalReference } = data;
         const query = {
@@ -93,7 +93,7 @@ export class FixtureRepository
   }
 
   public findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
-    const obs: Array<Observable<IFixture>> = [];
+    const obs: Array<Observable<MatchEntity>> = [];
 
     for (const obj of objs) {
       obs.push(this.findBySeasonAndTeamsAndUpsert$(obj));

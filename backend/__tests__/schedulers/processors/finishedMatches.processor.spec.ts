@@ -8,18 +8,18 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
+import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import {
-  IFinishedFixturesProcessor,
-  FinishedFixturesProcessor,
-} from '../../../app/schedulers/finishedFixtures.processor';
+  FinishedMatchesProcessor,
+  FinishedMatchesProcessorImpl,
+} from '../../../app/schedulers/finishedMatches.processor';
 
-const newFixture = (
+const newMatch = (
   id: any,
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED,
+  status: string = MatchStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
@@ -34,24 +34,24 @@ const newFixture = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as IFixture;
+  } as MatchEntity;
 };
-const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
-const livVsou = newFixture(2, 'Liverpool', 'Southampton');
-const eveVwat = newFixture(3, 'Everton', 'Watford', FixtureStatus.IN_PLAY);
-const bouVwat = newFixture(4, 'Bournemouth', 'Watford');
+const arsVche = newMatch(1, 'Arsenal', 'Chelsea');
+const livVsou = newMatch(2, 'Liverpool', 'Southampton');
+const eveVwat = newMatch(3, 'Everton', 'Watford', MatchStatus.IN_PLAY);
+const bouVwat = newMatch(4, 'Bournemouth', 'Watford');
 bouVwat.allPredictionsProcessed = true;
-const finishedFixtures = [arsVche, livVsou, eveVwat, bouVwat];
+const finishedMatches = [arsVche, livVsou, eveVwat, bouVwat];
 const chalo = ObjectId().toHexString();
 const kag = ObjectId().toHexString();
 const newPrediction = (
   userId: string,
-  fixture: IFixture,
+  match: MatchEntity,
   status = PredictionStatus.PENDING,
 ) => {
   return {
     user: userId,
-    fixture,
+    match,
     status,
     choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
   };
@@ -65,15 +65,15 @@ const predictionProcessorStub: any = {
   getPredictions$: sinon.stub(),
   processPrediction$: sinon.stub(),
 };
-const fixtureRepoStub: any = {
+const matchRepoStub: any = {
   findByIdAndUpdate$: () => {
     return of({});
   },
 };
 
-let finishedFixturesProcessor: IFinishedFixturesProcessor;
+let finishedMatchesProcessor: FinishedMatchesProcessor;
 
-describe('Finished Fixtures', () => {
+describe('Finished Matches', () => {
   describe('processPredictions', () => {
     beforeEach(() => {
       predictionProcessorStub.getPredictions$
@@ -84,19 +84,19 @@ describe('Finished Fixtures', () => {
         .returns(of([pred3, pred4]));
 
       predictionProcessorStub.processPrediction$.returns(of(pred1));
-      finishedFixturesProcessor = new FinishedFixturesProcessor(
+      finishedMatchesProcessor = new FinishedMatchesProcessorImpl(
         predictionProcessorStub,
-        fixtureRepoStub,
+        matchRepoStub,
       );
     });
     afterEach(() => {
       predictionProcessorStub.getPredictions$ = sinon.stub();
       predictionProcessorStub.processPrediction$ = sinon.stub();
     });
-    it('should getPredictions for FINISHED but not AllPredictionsProcessed fixture', async () => {
+    it('should getPredictions for FINISHED but not AllPredictionsProcessed match', async () => {
       const spy = predictionProcessorStub.getPredictions$;
 
-      await finishedFixturesProcessor.processPredictions(finishedFixtures);
+      await finishedMatchesProcessor.processPredictions(finishedMatches);
 
       expect(spy).to.have.been.calledTwice;
     });
@@ -104,7 +104,7 @@ describe('Finished Fixtures', () => {
     it('should process PENDING predictions', async () => {
       const spy = predictionProcessorStub.processPrediction$;
 
-      await finishedFixturesProcessor.processPredictions(finishedFixtures);
+      await finishedMatchesProcessor.processPredictions(finishedMatches);
 
       expect(spy).to.have.callCount(3);
     });

@@ -1,9 +1,9 @@
 import { Document } from 'mongoose';
 
-export interface IEntity {
+export interface Entity {
   id?: string;
 }
 
-export interface IDocumentEntity extends IEntity, Document {
+export interface DocumentEntity extends Entity, Document {
   id?: string;
 }

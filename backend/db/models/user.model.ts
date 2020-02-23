@@ -3,10 +3,9 @@ mongoose.set('useCreateIndex', true);
 
 import * as bcrypt from 'bcrypt-nodejs';
 
-import { IEntity, IDocumentEntity } from './base.model';
-import { never } from 'rxjs';
+import { Entity, DocumentEntity } from './base.model';
 
-export interface IUser extends IEntity {
+export interface UserEntity extends Entity {
   id?: string;
   email: string;
   isAdmin?: boolean;
@@ -43,7 +42,7 @@ export interface IUser extends IEntity {
   };
 }
 
-export interface IUserDocument extends IUser, IDocumentEntity {
+export interface UserDocument extends UserEntity, DocumentEntity {
   comparePassword(candidatePassword: string, cb: any): void;
 }
 
@@ -87,7 +86,7 @@ const userSchema = new Schema({
 });
 
 userSchema.pre('save', function(next) {
-  const user = this as IUserDocument;
+  const user = this as UserDocument;
   if (!user.isModified('local.password')) {
     return next();
   }
@@ -123,4 +122,4 @@ userSchema.methods.comparePassword = function comparePassword(
   });
 };
 
-export const User = model<IUserDocument>('User', userSchema);
+export const User = model<UserDocument>('User', userSchema);

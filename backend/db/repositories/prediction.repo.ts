@@ -3,53 +3,53 @@ import { filter, first, flatMap, catchError } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import {
-  IPrediction,
-  IPredictionDocument,
+  PredictionEntity,
+  PredictionDocument,
   Prediction,
   PredictionStatus,
 } from '../models/prediction.model';
-import { IFixture, FixtureStatus } from '../models/fixture.model';
+import { MatchEntity, MatchStatus } from '../models/match.model';
 import {
-  IFixtureRepository,
-  FixtureRepository,
-} from '../repositories/fixture.repo';
+  MatchRepository,
+  MatchRepositoryImpl,
+} from '../repositories/match.repo';
 import { Score } from '../../common/score';
-import { IBaseRepository, BaseRepository } from './base.repo';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IPredictionRepository extends IBaseRepository<IPrediction> {
+export interface PredictionRepository extends BaseRepository<PredictionEntity> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<IPrediction>;
+  ): Observable<PredictionEntity>;
   findOneOrCreate$({
     userId,
-    fixtureId,
+    matchId,
   }: {
     userId: string;
-    fixtureId: string;
-  }): Observable<IPrediction>;
+    matchId: string;
+  }): Observable<PredictionEntity>;
   findOneAndUpsert$(
-    { userId, fixtureId }: { userId: string; fixtureId: string },
+    { userId, matchId }: { userId: string; matchId: string },
     choice: Score,
-  ): Observable<IPrediction>;
+  ): Observable<PredictionEntity>;
 }
 
-export class PredictionRepository
-  extends BaseRepository<IPrediction, IPredictionDocument>
-  implements IPredictionRepository {
+export class PredictionRepositoryImpl
+  extends BaseRepositoryImpl<PredictionEntity, PredictionDocument>
+  implements PredictionRepository {
   public static getInstance() {
-    return new PredictionRepository(
-      FixtureRepository.getInstance(ApiProvider.LIGI),
+    return new PredictionRepositoryImpl(
+      MatchRepositoryImpl.getInstance(ApiProvider.LIGI),
     );
   }
 
-  private fixtureRepo: IFixtureRepository;
+  private matchRepo: MatchRepository;
 
-  constructor(fixtureRepo: IFixtureRepository) {
+  constructor(matchRepo: MatchRepository) {
     super(Prediction);
-    this.fixtureRepo = fixtureRepo;
+    this.matchRepo = matchRepo;
   }
 
   public findOrCreateJoker$(
@@ -57,7 +57,7 @@ export class PredictionRepository
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<IPrediction> {
+  ): Observable<PredictionEntity> {
     const query: any = {
       user: userId,
       season: seasonId,
@@ -66,69 +66,59 @@ export class PredictionRepository
     };
     return this.findOne$(query).pipe(
       flatMap(currentJoker => {
-        let newJokerFixtureId: string;
+        let newJokerMatchId: string;
         if (pick instanceof Array) {
           if (currentJoker) {
             return of(currentJoker);
           } else {
-            newJokerFixtureId = pick[Math.floor(Math.random() * pick.length)];
-            return this.pickJoker$(
-              userId,
-              currentJoker,
-              newJokerFixtureId,
-              true,
-            );
+            newJokerMatchId = pick[Math.floor(Math.random() * pick.length)];
+            return this.pickJoker$(userId, currentJoker, newJokerMatchId, true);
           }
         } else {
-          newJokerFixtureId = pick;
+          newJokerMatchId = pick;
           if (
             currentJoker &&
             currentJoker.status === PredictionStatus.PROCESSED
           ) {
             return throwError(new Error('Joker prediction already processed'));
           }
-          return this.pickJoker$(
-            userId,
-            currentJoker,
-            newJokerFixtureId,
-            false,
-          );
+          return this.pickJoker$(userId, currentJoker, newJokerMatchId, false);
         }
       }),
     );
   }
 
   public findOne$(query?: any) {
-    const { userId, fixtureId } = query;
-    if (userId !== undefined && fixtureId !== undefined) {
+    const { userId, matchId } = query;
+    if (userId !== undefined && matchId !== undefined) {
       query.user = userId;
-      query.fixture = fixtureId;
+      query.match = matchId;
       delete query.userId;
-      delete query.fixtureId;
+      delete query.matchId;
     }
     return super.findOne$(query);
   }
 
   public findOneOrCreate$({
     userId,
-    fixtureId,
+    matchId,
   }: {
     userId: string;
-    fixtureId: string;
+    matchId: string;
   }) {
-    const query = { user: userId, fixture: fixtureId };
+    const query = { user: userId, match: matchId };
     return this.findOne$(query).pipe(
       flatMap(prediction => {
         if (prediction) {
           return of(prediction);
         }
-        return this.fixtureRepo.findById$(fixtureId).pipe(
-          flatMap(fixture => {
-            const { slug: fixtureSlug, season, gameRound, odds } = fixture;
-            const pred: IPrediction = {
+        return this.matchRepo.findById$(matchId).pipe(
+          flatMap(match => {
+            const { slug: matchSlug, season, gameRound, odds } = match;
+            const pred: PredictionEntity = {
               user: userId,
-              fixture: fixtureId,
-              fixtureSlug,
+              match: matchId,
+              matchSlug,
               season,
               gameRound,
               choice: {} as any,
@@ -143,7 +133,7 @@ export class PredictionRepository
   }
 
   public findOneAndUpsert$(
-    { userId, fixtureId }: { userId: string; fixtureId: string },
+    { userId, matchId }: { userId: string; matchId: string },
     choice: Score,
   ) {
     return throwError(new Error('method not implemented'));
@@ -151,27 +141,27 @@ export class PredictionRepository
 
   private pickJoker$(
     userId: string,
-    currentJoker: IPrediction,
-    newJokerFixtureId: string,
+    currentJoker: PredictionEntity,
+    newJokerMatchId: string,
     autoPicked: boolean,
   ) {
-    let newJokerFixture: IFixture;
-    return this.fixtureRepo
-      .findById$(newJokerFixtureId)
+    let newJokerMatch: MatchEntity;
+    return this.matchRepo
+      .findById$(newJokerMatchId)
       .pipe(
-        flatMap(fixture => {
-          if (!fixture) {
-            return throwError(new Error('Fixture does not exist'));
+        flatMap(match => {
+          if (!match) {
+            return throwError(new Error('Match does not exist'));
           }
-          newJokerFixture = fixture;
+          newJokerMatch = match;
           if (
             autoPicked ||
-            newJokerFixture.status === FixtureStatus.SCHEDULED ||
-            newJokerFixture.status === FixtureStatus.TIMED
+            newJokerMatch.status === MatchStatus.SCHEDULED ||
+            newJokerMatch.status === MatchStatus.TIMED
           ) {
-            return this.findOne$({ user: userId, fixture: newJokerFixtureId });
+            return this.findOne$({ user: userId, match: newJokerMatchId });
           }
-          return throwError(new Error('Fixture not scheduled'));
+          return throwError(new Error('Match not scheduled'));
         }),
       )
       .pipe(
@@ -180,20 +170,15 @@ export class PredictionRepository
         }),
       )
       .pipe(
-        flatMap((newJokerPrediction: IPrediction) => {
-          const {
-            slug: fixtureSlug,
-            season,
-            gameRound,
-            odds,
-          } = newJokerFixture;
-          let newJoker: IPrediction;
+        flatMap((newJokerPrediction: PredictionEntity) => {
+          const { slug: matchSlug, season, gameRound, odds } = newJokerMatch;
+          let newJoker: PredictionEntity;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();
             newJoker = {
               user: userId,
-              fixture: newJokerFixtureId,
-              fixtureSlug,
+              match: newJokerMatchId,
+              matchSlug,
               season,
               gameRound,
               hasJoker: true,
@@ -205,7 +190,7 @@ export class PredictionRepository
             newJoker.hasJoker = true;
             newJoker.jokerAutoPicked = autoPicked;
           }
-          const predictionJokers: IPrediction[] = [newJoker];
+          const predictionJokers: PredictionEntity[] = [newJoker];
           if (currentJoker) {
             currentJoker.hasJoker = false;
             predictionJokers.push(currentJoker);
@@ -225,7 +210,7 @@ export class PredictionRepository
       )
       .pipe(
         filter(prediction => {
-          return prediction.fixture.toString() === newJokerFixture.id;
+          return prediction.match.toString() === newJokerMatch.id;
         }),
       )
       .pipe(first());

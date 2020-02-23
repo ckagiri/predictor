@@ -1,24 +1,25 @@
-import { ISeason, ISeasonDocument, Season } from '../models/season.model';
+import { SeasonEntity, SeasonDocument, Season } from '../models/season.model';
 import {
-  IBaseProviderRepository,
   BaseProviderRepository,
+  BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
 import {
-  ISeasonConverter,
   SeasonConverter,
+  SeasonConverterImpl,
 } from '../converters/season.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ISeasonRepository extends IBaseProviderRepository<ISeason> {}
+export interface SeasonRepository
+  extends BaseProviderRepository<SeasonEntity> {}
 
-export class SeasonRepository
-  extends BaseProviderRepository<ISeason, ISeasonDocument>
-  implements ISeasonRepository {
-  public static getInstance(provider: ApiProvider): ISeasonRepository {
-    return new SeasonRepository(SeasonConverter.getInstance(provider));
+export class SeasonRepositoryImpl
+  extends BaseProviderRepositoryImpl<SeasonEntity, SeasonDocument>
+  implements SeasonRepository {
+  public static getInstance(provider: ApiProvider): SeasonRepository {
+    return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: ISeasonConverter) {
+  constructor(converter: SeasonConverter) {
     super(Season, converter);
   }
 }

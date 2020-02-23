@@ -1,3 +1,3 @@
-export interface IScheduler {
+export interface Scheduler {
   start: () => void;
 }

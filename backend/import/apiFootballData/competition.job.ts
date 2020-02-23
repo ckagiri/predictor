@@ -1,27 +1,27 @@
 import { from } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
-import { IJob } from '../jobs/job';
+import { Job } from '../jobs/job';
 import { Queue } from '../queue';
-import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { ISeasonRepository } from '../../db/repositories/season.repo';
-import { ITeamRepository } from '../../db/repositories/team.repo';
-import { IFixtureRepository } from '../../db/repositories/fixture.repo';
-import { FixturesJob } from './fixtures.job';
+import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { SeasonRepository } from '../../db/repositories/season.repo';
+import { TeamRepository } from '../../db/repositories/team.repo';
+import { MatchRepository } from '../../db/repositories/match.repo';
+import { MatchesJob } from './matches.job';
 import { TeamsJob } from './teams.job';
 import Builder from './competitionJob.builder';
 
-export class CompetitionJob implements IJob {
+export class CompetitionJob implements Job {
   private competitionId: number | string;
-  private apiClient: IFootballApiClient;
-  private seasonRepo: ISeasonRepository;
-  private teamRepo: ITeamRepository;
-  private fixtureRepo: IFixtureRepository;
+  private apiClient: FootballApiClient;
+  private seasonRepo: SeasonRepository;
+  private teamRepo: TeamRepository;
+  private matchRepo: MatchRepository;
 
   constructor(builder: Builder) {
     this.apiClient = builder.ApiClient;
     this.seasonRepo = builder.SeasonRepo;
     this.teamRepo = builder.TeamRepo;
-    this.fixtureRepo = builder.FixtureRepo;
+    this.matchRepo = builder.MatchRepo;
     this.competitionId = builder.CompetitionId;
   }
 
@@ -42,8 +42,8 @@ export class CompetitionJob implements IJob {
           return this.seasonRepo.findByExternalIdAndUpdate$(season);
         }),
         map(_ => {
-          const fixturesJob = FixturesJob.Builder.setApiClient(this.apiClient)
-            .setFixtureRepo(this.fixtureRepo)
+          const matchesJob = MatchesJob.Builder.setApiClient(this.apiClient)
+            .setMatchRepo(this.matchRepo)
             .withCompetition(this.competitionId)
             .build();
 
@@ -52,7 +52,7 @@ export class CompetitionJob implements IJob {
             .withCompetition(this.competitionId)
             .build();
 
-          queue.addJob(fixturesJob);
+          queue.addJob(matchesJob);
           queue.addJob(teamsJob);
         }),
       )

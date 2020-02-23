@@ -1,12 +1,12 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import { FixtureStatus, Fixture } from '../../db/models/fixture.model';
+import { MatchStatus, Match } from '../../db/models/match.model';
 
-describe('Fixture', () => {
+describe('Match', () => {
   describe('schema', () => {
-    describe('an empty fixture', () => {
-      const s = new Fixture();
+    describe('an empty match', () => {
+      const s = new Match();
 
       it('should have a mongoose schema', () => {
         expect(s.schema).to.not.be.undefined;
@@ -55,11 +55,11 @@ describe('Fixture', () => {
       });
     });
 
-    describe('a fixture', () => {
-      const fixture = {
+    describe('a match', () => {
+      const match = {
         season: '4edd40c86762e0fb12000001',
         date: '2018-05-13T14:00:00Z',
-        status: FixtureStatus.SCHEDULED,
+        status: MatchStatus.SCHEDULED,
         matchRound: 38,
         gameRound: 38,
         homeTeam: {
@@ -74,9 +74,9 @@ describe('Fixture', () => {
         },
         slug: 'arsenal-chelsea',
       };
-      const f = new Fixture(fixture);
+      const m = new Match(match);
       it('should have 0 errors', done => {
-        f.validate(err => {
+        m.validate(err => {
           expect(err).to.not.exist;
           done();
         });

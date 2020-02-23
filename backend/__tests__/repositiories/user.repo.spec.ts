@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 
 import { User } from '../../db/models/user.model';
-import { UserRepository } from '../../db/repositories/user.repo';
+import { UserRepositoryImpl } from '../../db/repositories/user.repo';
 import * as db from '../../db/index';
 
-const userRepo = UserRepository.getInstance();
+const userRepo = UserRepositoryImpl.getInstance();
 
 describe('User Repo', function() {
   this.timeout(5000);

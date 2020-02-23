@@ -46,9 +46,9 @@ describe('Season', () => {
         });
       });
 
-      it('should require partial league info', done => {
+      it('should require partial competition info', done => {
         s.validate(err => {
-          expect(err.errors['league.id']).to.exist;
+          expect(err.errors['competition.id']).to.exist;
           done();
         });
       });
@@ -59,7 +59,7 @@ describe('Season', () => {
         name: '2017-2018',
         slug: '17-18',
         year: 2017,
-        league: {
+        competition: {
           name: 'English Premier League',
           slug: 'english_premier_league',
           id: '4edd40c86762e0fb12000003',

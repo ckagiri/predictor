@@ -1,9 +1,8 @@
-import { IJob } from './job';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { Job } from './job';
 import { MainJob as ApiFootballDataMainJob } from '../apiFootballData/main.job';
 
 export abstract class MainJob {
-  public static getInstance(provider: ApiProvider): IJob {
+  public static getInstance(): Job {
     return ApiFootballDataMainJob.getInstance();
   }
 }

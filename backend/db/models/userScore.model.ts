@@ -1,13 +1,13 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 
-export interface IUserScore extends IEntity {
+export interface UserScoreEntity extends Entity {
   id?: string;
   leaderboard: string;
   user: string;
-  fixtures?: string[];
+  matches?: string[];
   predictions?: string[];
   points: number;
   APoints: number;
@@ -26,7 +26,7 @@ export interface IUserScore extends IEntity {
   positionNew?: number;
 }
 
-export interface IUserScoreDocument extends IUserScore, IDocumentEntity {}
+export interface UserScoreDocument extends UserScoreEntity, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 
@@ -38,7 +38,7 @@ const userScoreSchema = new Schema({
     required: true,
     index: true,
   },
-  fixtures: [{ type: ObjectId, ref: 'Fixture' }],
+  matches: [{ type: ObjectId, ref: 'Match' }],
   predictions: [{ type: ObjectId, ref: 'Prediction' }],
   points: { type: Number },
   APoints: { type: Number },
@@ -57,7 +57,4 @@ const userScoreSchema = new Schema({
   positionNew: { type: Number },
 });
 
-export const UserScore = model<IUserScoreDocument>(
-  'UserScore',
-  userScoreSchema,
-);
+export const UserScore = model<UserScoreDocument>('UserScore', userScoreSchema);

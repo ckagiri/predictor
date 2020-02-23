@@ -1,23 +1,26 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 import * as db from '../../db/index';
-import { ILeague, League } from '../../db/models/league.model';
-import { ISeason, Season } from '../../db/models/season.model';
-import { LeaderboardRepository } from '../../db/repositories/leaderboard.repo';
 import {
-  ILeaderboard,
+  CompetitionEntity,
+  Competition,
+} from '../../db/models/competition.model';
+import { SeasonEntity, Season } from '../../db/models/season.model';
+import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
+import {
+  LeaderboardEntity,
   Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
 
-const epl: ILeague = {
+const epl: CompetitionEntity = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-const epl18: ISeason = {
+const epl18: SeasonEntity = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -25,10 +28,10 @@ const epl18: ISeason = {
   seasonEnd: '2019-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: undefined,
+  competition: undefined,
 };
 
-const leaderboardRepo = LeaderboardRepository.getInstance();
+const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 let theSeason: any;
 
 describe('Leaderboard Repo', function() {
@@ -38,10 +41,10 @@ describe('Leaderboard Repo', function() {
   });
 
   beforeEach(done => {
-    League.create(epl)
+    Competition.create(epl)
       .then(l => {
         const { name, slug, id } = l;
-        epl18.league = { name, slug, id: id! };
+        epl18.competition = { name, slug, id: id! };
         return Season.create(epl18);
       })
       .then(s => {
@@ -82,7 +85,7 @@ describe('Leaderboard Repo', function() {
     });
 
     it('should update seasonBoard if it exists', done => {
-      let leaderboard: ILeaderboard;
+      let leaderboard: LeaderboardEntity;
       leaderboardRepo
         .findSeasonBoardAndUpsert$(theSeason.id, {
           status: BOARD_STATUS.UPDATING_SCORES,
@@ -134,7 +137,7 @@ describe('Leaderboard Repo', function() {
 
   // tslint:disable-next-line: only-arrow-functions
   describe('finders', function() {
-    let lb1: ILeaderboard;
+    let lb1: LeaderboardEntity;
     beforeEach(done => {
       Leaderboard.create([
         {

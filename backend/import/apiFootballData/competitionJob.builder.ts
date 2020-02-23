@@ -1,15 +1,15 @@
-import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { ISeasonRepository } from '../../db/repositories/season.repo';
-import { ITeamRepository } from '../../db/repositories/team.repo';
-import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { SeasonRepository } from '../../db/repositories/season.repo';
+import { TeamRepository } from '../../db/repositories/team.repo';
+import { MatchRepository } from '../../db/repositories/match.repo';
 import { CompetitionJob } from '../apiFootballData/competition.job';
 
 export default class Builder {
   private competitionId!: number | string;
-  private apiClient!: IFootballApiClient;
-  private seasonRepo!: ISeasonRepository;
-  private teamRepo!: ITeamRepository;
-  private fixtureRepo!: IFixtureRepository;
+  private apiClient!: FootballApiClient;
+  private seasonRepo!: SeasonRepository;
+  private teamRepo!: TeamRepository;
+  private matchRepo!: MatchRepository;
 
   public build() {
     return new CompetitionJob(this);
@@ -19,7 +19,7 @@ export default class Builder {
     return this.apiClient;
   }
 
-  public setApiClient(value: IFootballApiClient) {
+  public setApiClient(value: FootballApiClient) {
     this.apiClient = value;
     return this;
   }
@@ -28,7 +28,7 @@ export default class Builder {
     return this.seasonRepo;
   }
 
-  public setSeasonRepo(value: ISeasonRepository): Builder {
+  public setSeasonRepo(value: SeasonRepository): Builder {
     this.seasonRepo = value;
     return this;
   }
@@ -37,17 +37,17 @@ export default class Builder {
     return this.teamRepo;
   }
 
-  public setTeamRepo(value: ITeamRepository): Builder {
+  public setTeamRepo(value: TeamRepository): Builder {
     this.teamRepo = value;
     return this;
   }
 
-  get FixtureRepo() {
-    return this.fixtureRepo;
+  get MatchRepo() {
+    return this.matchRepo;
   }
 
-  public setFixtureRepo(value: IFixtureRepository): Builder {
-    this.fixtureRepo = value;
+  public setMatchRepo(value: MatchRepository): Builder {
+    this.matchRepo = value;
     return this;
   }
 

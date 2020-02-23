@@ -1,38 +1,29 @@
 import { EventEmitter } from 'events';
-import { IScheduler } from '../../schedulers';
-import { ITaskRunner, TaskRunner } from '../taskRunner';
+import { Scheduler } from '../../schedulers';
+import { TaskRunner, TaskRunnerImpl } from '../taskRunner';
 import {
-  IFootballApiClient,
-  FootballApiClient as ApiClient,
+  FootballApiClient,
+  FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { ISeasonUpdater, SeasonUpdater } from './season.updater';
-import { IEventMediator, EventMediator } from '../../../common/eventMediator';
-import {
-  ISeasonConverter,
-  SeasonConverter,
-} from '../../../db/converters/season.converter';
+import { SeasonUpdater, SeasonUpdaterImpl } from './season.updater';
 
-export class SeasonScheduler extends EventEmitter implements IScheduler {
+export class SeasonScheduler extends EventEmitter implements Scheduler {
   public static getInstance(provider: ApiProvider) {
     return new SeasonScheduler(
-      new TaskRunner(),
-      ApiClient.getInstance(provider),
-      SeasonConverter.getInstance(provider),
-      SeasonUpdater.getInstance(provider),
-      EventMediator.getInstance(),
+      new TaskRunnerImpl(),
+      FootballApiClientImpl.getInstance(provider),
+      SeasonUpdaterImpl.getInstance(provider),
     );
   }
-  private POLLING_INTERVAL = 24 * 60 * 60 * 1000;
+  private POLLING_INTERVAL = 12 * 60 * 60 * 1000;
   private _pollingInterval = 0;
   private _polling = false;
 
   constructor(
-    private taskRunner: ITaskRunner,
-    private apiClient: IFootballApiClient,
-    private seasonConverter: ISeasonConverter,
-    private seasonUpdater: ISeasonUpdater,
-    private eventMediator: IEventMediator,
+    private taskRunner: TaskRunner,
+    private apiClient: FootballApiClient,
+    private seasonUpdater: SeasonUpdater,
   ) {
     super();
   }

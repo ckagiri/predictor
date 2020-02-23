@@ -1,4 +1,4 @@
-import { FixtureStatus } from '../../db/models/fixture.model';
+import { MatchStatus } from '../../db/models/match.model';
 
 const epl = {
   name: 'English Premier League',
@@ -14,7 +14,7 @@ const epl18 = {
   seasonEnd: '2019-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: null,
+  competition: null,
 };
 
 const manu = {
@@ -57,7 +57,7 @@ const ars = {
 
 const manuVmanc = {
   date: '2018-09-10T11:30:00Z',
-  status: FixtureStatus.FINISHED,
+  status: MatchStatus.FINISHED,
   matchRound: 20,
   gameRound: 20,
   season: null,
@@ -69,7 +69,7 @@ const manuVmanc = {
 
 const cheVars = {
   date: '2018-09-10T11:30:00Z',
-  status: FixtureStatus.FINISHED,
+  status: MatchStatus.FINISHED,
   matchRound: 20,
   gameRound: 20,
   season: null,

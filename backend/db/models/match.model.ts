@@ -1,10 +1,10 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 import { Score, Odds } from '../../common/score';
 
-export enum FixtureStatus {
+export enum MatchStatus {
   SCHEDULED = 'SCHEDULED',
   TIMED = 'TIMED',
   IN_PLAY = 'IN_PLAY',
@@ -13,14 +13,14 @@ export enum FixtureStatus {
   FINISHED = 'FINISHED',
 }
 
-export interface IFixture extends IEntity {
+export interface MatchEntity extends Entity {
   id?: string;
   season?: string;
   slug: string;
   date?: any;
   matchRound?: number;
   gameRound?: number;
-  status?: FixtureStatus;
+  status?: MatchStatus;
   homeTeam?: {
     name: string;
     slug: string;
@@ -41,11 +41,11 @@ export interface IFixture extends IEntity {
   [key: string]: any;
 }
 
-export interface IFixtureDocument extends IFixture, IDocumentEntity {}
+export interface MatchDocument extends MatchEntity, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 
-export const fixtureSchema = new Schema({
+export const matchSchema = new Schema({
   season: { type: ObjectId, ref: 'Season', index: true, required: true },
   slug: { type: String, required: true, trim: true },
   matchRound: { type: Number, required: true },
@@ -89,4 +89,4 @@ export const fixtureSchema = new Schema({
   externalReference: { type: Mixed },
 });
 
-export const Fixture = model<IFixtureDocument>('Fixture', fixtureSchema);
+export const Match = model<MatchDocument>('Match', matchSchema);

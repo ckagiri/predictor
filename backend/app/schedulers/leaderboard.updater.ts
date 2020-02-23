@@ -8,23 +8,26 @@ import {
   map,
 } from 'rxjs/operators';
 
-import { IFixture, FixtureStatus } from '../../db/models/fixture.model';
+import { MatchEntity, MatchStatus } from '../../db/models/match.model';
 import {
-  IUserRepository,
   UserRepository,
+  UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
-import { BOARD_STATUS, ILeaderboard } from '../../db/models/leaderboard.model';
 import {
-  ILeaderboardRepository,
+  BOARD_STATUS,
+  LeaderboardEntity,
+} from '../../db/models/leaderboard.model';
+import {
   LeaderboardRepository,
+  LeaderboardRepositoryImpl,
 } from '../../db/repositories/leaderboard.repo';
 import {
-  IPredictionRepository,
   PredictionRepository,
+  PredictionRepositoryImpl,
 } from '../../db/repositories/prediction.repo';
 import {
-  IUserScoreRepository,
   UserScoreRepository,
+  UserScoreRepositoryImpl,
 } from '../../db/repositories/userScore.repo';
 import {
   ICacheService,
@@ -32,7 +35,7 @@ import {
 } from '../../common/observableCacheService';
 
 export interface ILeaderboardUpdater {
-  updateScores(fixtures: IFixture[]): Promise<number>;
+  updateScores(matches: MatchEntity[]): Promise<number>;
   updateRankings(seasonId: string): Promise<number>;
   markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
 }
@@ -40,20 +43,20 @@ export interface ILeaderboardUpdater {
 export class LeaderboardUpdater implements ILeaderboardUpdater {
   public static getInstance() {
     return new LeaderboardUpdater(
-      UserRepository.getInstance(),
-      LeaderboardRepository.getInstance(),
-      PredictionRepository.getInstance(),
-      UserScoreRepository.getInstance(),
+      UserRepositoryImpl.getInstance(),
+      LeaderboardRepositoryImpl.getInstance(),
+      PredictionRepositoryImpl.getInstance(),
+      UserScoreRepositoryImpl.getInstance(),
     ).setCacheService(new CacheService());
   }
 
   private cacheService: ICacheService | undefined;
 
   constructor(
-    private userRepo: IUserRepository,
-    private leaderboardRepo: ILeaderboardRepository,
-    private predictionRepo: IPredictionRepository,
-    private userScoreRepo: IUserScoreRepository,
+    private userRepo: UserRepository,
+    private leaderboardRepo: LeaderboardRepository,
+    private predictionRepo: PredictionRepository,
+    private userScoreRepo: UserScoreRepository,
   ) {}
 
   public setCacheService(cacheService: ICacheService) {
@@ -61,21 +64,21 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
     return this;
   }
 
-  public updateScores(fixtures: IFixture[]) {
+  public updateScores(matches: MatchEntity[]) {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }
-    return from(fixtures)
+    return from(matches)
       .pipe(
-        filter(fixture => {
+        filter(match => {
           return (
-            fixture.status === FixtureStatus.FINISHED &&
-            fixture.allPredictionsProcessed === false
+            match.status === MatchStatus.FINISHED &&
+            match.allPredictionsProcessed === false
           );
         }),
       )
       .pipe(
-        flatMap(fixture => {
+        flatMap(match => {
           return this.userRepo
             .findAll$()
             .pipe(
@@ -85,22 +88,22 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             )
             .pipe(
               map(user => {
-                return { user, fixture };
+                return { user, match };
               }),
             );
         }),
       )
       .pipe(
         flatMap(data => {
-          const { user, fixture } = data;
-          const { season, gameRound, date } = fixture;
+          const { user, match } = data;
+          const { season, gameRound, date } = match;
           const month = date.getUTCMonth() + 1;
           const year = date.getFullYear();
 
-          const boards: Array<Observable<ILeaderboard>> = [];
-          let sBoard: Observable<ILeaderboard>;
-          let mBoard: Observable<ILeaderboard>;
-          let rBoard: Observable<ILeaderboard>;
+          const boards: Array<Observable<LeaderboardEntity>> = [];
+          let sBoard: Observable<LeaderboardEntity>;
+          let mBoard: Observable<LeaderboardEntity>;
+          let rBoard: Observable<LeaderboardEntity>;
 
           if (this.cacheService != null) {
             sBoard = this.cacheService.get(
@@ -159,35 +162,35 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
             )
             .pipe(
               map(leaderboard => {
-                return { user, fixture, leaderboard };
+                return { user, match, leaderboard };
               }),
             );
         }),
       )
       .pipe(
         flatMap(data => {
-          const { user, fixture, leaderboard } = data;
+          const { user, match, leaderboard } = data;
           return this.predictionRepo
-            .findOne$({ userId: user.id, fixtureId: fixture.id })
+            .findOne$({ userId: user.id, matchId: match.id })
             .pipe(
               map(prediction => {
-                return { user, fixture, leaderboard, prediction };
+                return { user, match, leaderboard, prediction };
               }),
             );
         }),
       )
       .pipe(
         concatMap(data => {
-          const { user, fixture, leaderboard, prediction } = data;
+          const { user, match, leaderboard, prediction } = data;
           const userId = user.id!;
-          const fixtureId = fixture.id!;
+          const matchId = match.id!;
           const leaderboardId = leaderboard.id!;
           const predictionId = prediction.id!;
           const { scorePoints: points, hasJoker } = prediction;
           return this.userScoreRepo.findOneAndUpsert$(
             leaderboardId,
             userId,
-            fixtureId,
+            matchId,
             predictionId,
             points!,
             hasJoker!,

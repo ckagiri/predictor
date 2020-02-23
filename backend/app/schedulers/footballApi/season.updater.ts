@@ -1,22 +1,22 @@
 import { of, from } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import {
-  ISeasonRepository,
   SeasonRepository,
+  SeasonRepositoryImpl,
 } from '../../../db/repositories/season.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { ISeason } from '../../../db/models/season.model';
+import { SeasonEntity } from '../../../db/models/season.model';
 
-export interface ISeasonUpdater {
-  updateCurrentMatchRound(apiSeasons: any[]): Promise<ISeason>;
+export interface SeasonUpdater {
+  updateCurrentMatchRound(apiSeasons: any[]): Promise<SeasonEntity>;
 }
 
-export class SeasonUpdater implements ISeasonUpdater {
+export class SeasonUpdaterImpl implements SeasonUpdater {
   public static getInstance(provider: ApiProvider) {
-    return new SeasonUpdater(SeasonRepository.getInstance(provider));
+    return new SeasonUpdaterImpl(SeasonRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private seasonRepo: ISeasonRepository) {}
+  constructor(private seasonRepo: SeasonRepository) {}
 
   public updateCurrentMatchRound(apiSeasons: any[]) {
     const externalIdToApiSeasonMap: any = new Map<string, any>();

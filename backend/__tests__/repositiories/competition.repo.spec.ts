@@ -2,16 +2,16 @@ import { expect } from 'chai';
 
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { LeagueRepository } from '../../db/repositories/league.repo';
+import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
 
-const league = {
+const competition = {
   id: '1',
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-describe('LeagueRepo', function() {
+describe('CompetitionRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -27,15 +27,17 @@ describe('LeagueRepo', function() {
     });
   });
 
-  it('should save new league', done => {
-    const leagueRepo = LeagueRepository.getInstance(ApiProvider.LIGI);
+  it('should save new competition', done => {
+    const competitionRepo = CompetitionRepositoryImpl.getInstance(
+      ApiProvider.LIGI,
+    );
 
-    leagueRepo.save$(league).subscribe(
+    competitionRepo.save$(competition).subscribe(
       (data: any) => {
         const { name, slug, code } = data;
-        expect(name).to.equal(league.name);
-        expect(slug).to.equal(league.slug);
-        expect(code).to.equal(league.code);
+        expect(name).to.equal(competition.name);
+        expect(slug).to.equal(competition.slug);
+        expect(code).to.equal(competition.code);
         done();
       },
       err => {

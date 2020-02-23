@@ -1,17 +1,17 @@
 import { Observable } from 'rxjs';
 
-import { TeamConverter as LigiTeamConverter } from '../converters/ligi/team.converter';
-import { TeamConverter as AfdTeamConverter } from '../converters/apiFootballData/team.converter';
-import { IConverter } from './converter';
-import { ITeam } from '../models/team.model';
+import { LigiTeamConverter } from '../converters/ligi/team.converter';
+import { AfdTeamConverter } from '../converters/apiFootballData/team.converter';
+import { Converter } from './converter';
+import { TeamEntity } from '../models/team.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ITeamConverter extends IConverter {
-  from(data: any): Observable<ITeam>;
+export interface TeamConverter extends Converter {
+  from(data: any): Observable<TeamEntity>;
 }
 
-export abstract class TeamConverter {
-  public static getInstance(provider: ApiProvider): ITeamConverter {
+export abstract class TeamConverterImpl {
+  public static getInstance(provider: ApiProvider): TeamConverter {
     switch (provider) {
       case ApiProvider.LIGI:
         return LigiTeamConverter.getInstance();

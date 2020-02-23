@@ -1,10 +1,10 @@
 {
-  "leagues": {
-    "_model": "League",
+  "competitions": {
+    "_model": "Competition",
     "epl": {
       "name": "English Premier League",
       "code": "PL",
-      "slug": "premier-league",
+      "slug": "premier-competition",
       "aliases": [
         "EPL"
       ]
@@ -210,10 +210,10 @@
           "id": 151
         }
       },
-      "league": {
-        "id": "->leagues.epl",
-        "name": "->leagues.epl.name",
-        "slug": "->leagues.epl.slug"
+      "competition": {
+        "id": "->competitions.epl",
+        "name": "->competitions.epl.name",
+        "slug": "->competitions.epl.slug"
       },
       "name": "2019-2020",
       "slug": "2019-20",

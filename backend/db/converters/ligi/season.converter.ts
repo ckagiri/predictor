@@ -1,34 +1,34 @@
 import { Observable, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
-import { ISeason } from '../../models/season.model';
-import { ISeasonConverter } from '../season.converter';
+import { SeasonEntity } from '../../models/season.model';
+import { SeasonConverter } from '../season.converter';
 import {
-  ILeagueRepository,
-  LeagueRepository,
-} from '../../repositories/league.repo';
+  CompetitionRepository,
+  CompetitionRepositoryImpl,
+} from '../../repositories/competition.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class SeasonConverter implements ISeasonConverter {
-  public static getInstance(): ISeasonConverter {
-    return new SeasonConverter(
-      LeagueRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
+export class LigiSeasonConverter implements SeasonConverter {
+  public static getInstance(): SeasonConverter {
+    return new LigiSeasonConverter(
+      CompetitionRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
   public provider: ApiProvider;
 
-  constructor(private leagueRepo: ILeagueRepository) {
+  constructor(private competitionRepo: CompetitionRepository) {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<ISeason> {
-    return this.leagueRepo.findById$(data.leagueId).pipe(
-      flatMap(league => {
+  public from(data: any): Observable<SeasonEntity> {
+    return this.competitionRepo.findById$(data.competitionId).pipe(
+      flatMap(competition => {
         return of({
           ...data,
-          league: {
-            id: league.id!,
-            name: league.name,
-            slug: league.slug,
+          competition: {
+            id: competition.id!,
+            name: competition.name,
+            slug: competition.slug,
           },
         });
       }),

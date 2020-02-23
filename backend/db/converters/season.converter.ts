@@ -1,17 +1,17 @@
 import { Observable } from 'rxjs';
 
-import { SeasonConverter as LigiSeasonConverter } from '../converters/ligi/season.converter';
-import { SeasonConverter as AfdSeasonConverter } from '../converters/apiFootballData/season.converter';
-import { IConverter } from './converter';
-import { ISeason } from '../models/season.model';
+import { LigiSeasonConverter } from '../converters/ligi/season.converter';
+import { AfdSeasonConverter } from '../converters/apiFootballData/season.converter';
+import { Converter } from './converter';
+import { SeasonEntity } from '../models/season.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ISeasonConverter extends IConverter {
-  from(data: any): Observable<ISeason>;
+export interface SeasonConverter extends Converter {
+  from(data: any): Observable<SeasonEntity>;
 }
 
-export abstract class SeasonConverter {
-  public static getInstance(provider: ApiProvider): ISeasonConverter {
+export abstract class SeasonConverterImpl {
+  public static getInstance(provider: ApiProvider): SeasonConverter {
     switch (provider) {
       case ApiProvider.LIGI:
         return LigiSeasonConverter.getInstance();

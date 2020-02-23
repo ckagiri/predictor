@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
-import { SeasonUpdater } from '../../../app/schedulers/footballApi/season.updater';
+import { SeasonUpdaterImpl } from '../../../app/schedulers/footballApi/season.updater';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 const provider = ApiProvider.API_FOOTBALL_DATA;
@@ -30,9 +30,9 @@ const dbSeasons = [dbSeason];
 const apiSeasons = [apiSeason];
 
 let seasonRepoStub: any;
-let seasonUpdater: SeasonUpdater;
+let seasonUpdater: SeasonUpdaterImpl;
 
-describe('SeasonUpdater', () => {
+describe('SeasonUpdaterImpl', () => {
   beforeEach(() => {
     seasonRepoStub = {
       Provider: provider,
@@ -43,7 +43,7 @@ describe('SeasonUpdater', () => {
         return of(dbSeasons);
       },
     };
-    seasonUpdater = new SeasonUpdater(seasonRepoStub);
+    seasonUpdater = new SeasonUpdaterImpl(seasonRepoStub);
   });
 
   describe('updateCurrentMatchRound', () => {

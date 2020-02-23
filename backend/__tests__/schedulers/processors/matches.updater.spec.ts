@@ -7,17 +7,17 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { of } from 'rxjs';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { FixtureStatus } from '../../../db/models/fixture.model';
+import { MatchStatus } from '../../../db/models/match.model';
 import {
-  IFixturesUpdater,
-  FixturesUpdater,
-} from '../../../app/schedulers/footballApi/fixtures.updater';
+  MatchesUpdater,
+  MatchesUpdaterImpl,
+} from '../../../app/schedulers/footballApi/matches.updater';
 
 const provider = ApiProvider.API_FOOTBALL_DATA;
-const newApiFixture = () => {
+const newApiMatch = () => {
   return {
     id: 1,
-    status: FixtureStatus.FINISHED,
+    status: MatchStatus.FINISHED,
     result: {
       goalsHomeTeam: 1,
       goalsAwayTeam: 1,
@@ -25,50 +25,50 @@ const newApiFixture = () => {
     odds: null,
   };
 };
-const newDbFixture = () => {
+const newDbMatch = () => {
   return {
     id: ObjectId().toHexString(),
-    status: FixtureStatus.SCHEDULED,
+    status: MatchStatus.SCHEDULED,
     externalReference: { [provider]: { id: 1 } },
   };
 };
 
-const dbFixture = newDbFixture();
-const apiFixture = newApiFixture();
-const dbFixtures = [dbFixture];
-const apiFixtures = [apiFixture];
+const dbMatch = newDbMatch();
+const apiMatch = newApiMatch();
+const dbMatches = [dbMatch];
+const apiMatches = [apiMatch];
 
-let fixtureRepoStub: any;
-let fixturesUpdater: IFixturesUpdater;
+let matchRepoStub: any;
+let matchesUpdater: MatchesUpdater;
 
-describe('FixturesUpdater', () => {
+describe('MatchesUpdaterImpl', () => {
   beforeEach(() => {
-    fixtureRepoStub = {
+    matchRepoStub = {
       Provider: provider,
       findByIdAndUpdate$: () => {
-        return of(dbFixture);
+        return of(dbMatch);
       },
       findByExternalIds$: () => {
-        return of(dbFixtures);
+        return of(dbMatches);
       },
     };
-    fixturesUpdater = new FixturesUpdater(fixtureRepoStub);
+    matchesUpdater = new MatchesUpdaterImpl(matchRepoStub);
   });
 
   describe('Update Game Details', () => {
     it('should update matchResult if changed', async () => {
-      const spy = sinon.spy(fixtureRepoStub, 'findByIdAndUpdate$');
+      const spy = sinon.spy(matchRepoStub, 'findByIdAndUpdate$');
 
-      const res = await fixturesUpdater.updateGameDetails(apiFixtures);
+      const res = await matchesUpdater.updateGameDetails(apiMatches);
 
       expect(spy).to.have.been.calledOnce;
 
-      expect(spy).to.have.been.calledWithMatch(dbFixture.id, {
-        result: apiFixture.result,
-        status: apiFixture.status,
+      expect(spy).to.have.been.calledWithMatch(dbMatch.id, {
+        result: apiMatch.result,
+        status: apiMatch.status,
       });
 
-      fixtureRepoStub.findByIdAndUpdate$.restore();
+      matchRepoStub.findByIdAndUpdate$.restore();
     });
 
     xit('should update matchOdds if changed', () => {});

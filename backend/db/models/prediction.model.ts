@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { IEntity, IDocumentEntity } from './base.model';
+import { Entity, DocumentEntity } from './base.model';
 import { ScorePoints, Score } from '../../common/score';
 
 export enum PredictionStatus {
@@ -9,11 +9,11 @@ export enum PredictionStatus {
   PROCESSED = 'PROCESSED',
 }
 
-export interface IPrediction extends IEntity {
+export interface PredictionEntity extends Entity {
   id?: string;
   user: string;
-  fixture: string;
-  fixtureSlug?: string;
+  match: string;
+  matchSlug?: string;
   season?: string;
   gameRound?: number;
   choice: Score;
@@ -23,15 +23,15 @@ export interface IPrediction extends IEntity {
   jokerAutoPicked?: boolean;
 }
 
-export interface IPredictionDocument extends IPrediction, IDocumentEntity {}
+export interface PredictionDocument extends PredictionEntity, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;
 
 const predictionSchema = new Schema({
   user: { type: ObjectId, ref: 'User', required: true, index: true },
-  fixture: { type: ObjectId, ref: 'Fixture', required: true, index: true },
-  fixtureSlug: { type: String, trim: true },
+  match: { type: ObjectId, ref: 'Match', required: true, index: true },
+  matchSlug: { type: String, trim: true },
   season: { type: ObjectId, ref: 'Season' },
   gameRound: { type: Number },
   choice: {
@@ -59,7 +59,7 @@ const predictionSchema = new Schema({
   },
 });
 
-export const Prediction = model<IPredictionDocument>(
+export const Prediction = model<PredictionDocument>(
   'Prediction',
   predictionSchema,
 );

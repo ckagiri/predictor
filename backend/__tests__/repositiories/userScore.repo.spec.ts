@@ -3,26 +3,25 @@ import { expect } from 'chai';
 
 import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
-import { League, ILeague } from '../../db/models/league.model';
-import { Season, ISeason } from '../../db/models/season.model';
-import { Team, ITeam } from '../../db/models/team.model';
 import {
-  Fixture,
-  IFixture,
-  FixtureStatus,
-} from '../../db/models/fixture.model';
-import { Prediction, IPrediction } from '../../db/models/prediction.model';
+  Competition,
+  CompetitionEntity,
+} from '../../db/models/competition.model';
+import { Season, SeasonEntity } from '../../db/models/season.model';
+import { Team, TeamEntity } from '../../db/models/team.model';
+import { Match, MatchEntity, MatchStatus } from '../../db/models/match.model';
+import { Prediction, PredictionEntity } from '../../db/models/prediction.model';
 import {
   Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
-import { IUserScore } from '../../db/models/userScore.model';
+import { UserScoreEntity } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
-import { UserScoreRepository } from '../../db/repositories/userScore.repo';
+import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 
-const userScoreRepo = UserScoreRepository.getInstance();
+const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 let user1: any;
 let user2: any;
 let theSeason: any;
@@ -30,20 +29,20 @@ let team1: any;
 let team2: any;
 let team3: any;
 let team4: any;
-let fixture1: any;
-let fixture2: any;
+let match1: any;
+let match2: any;
 let user1Pred1: any;
 let user1Pred2: any;
 let user2Pred1: any;
 let sBoard: any;
 
-const epl: ILeague = {
+const epl: CompetitionEntity = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-const epl18: ISeason = {
+const epl18: SeasonEntity = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -51,10 +50,10 @@ const epl18: ISeason = {
   seasonEnd: '2018-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: undefined,
+  competition: undefined,
 };
 
-const manu: ITeam = {
+const manu: TeamEntity = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -64,7 +63,7 @@ const manu: ITeam = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const manc: ITeam = {
+const manc: TeamEntity = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -74,7 +73,7 @@ const manc: ITeam = {
   aliases: ['ManCity'],
 };
 
-const che: ITeam = {
+const che: TeamEntity = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -83,7 +82,7 @@ const che: ITeam = {
   aliases: ['Chelsea'],
 };
 
-const ars: ITeam = {
+const ars: TeamEntity = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -92,9 +91,9 @@ const ars: ITeam = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: IFixture = {
+const manuVmanc: MatchEntity = {
   date: '2017-09-10T11:30:00Z',
-  status: FixtureStatus.SCHEDULED,
+  status: MatchStatus.SCHEDULED,
   matchRound: 20,
   gameRound: 20,
   season: undefined,
@@ -104,9 +103,9 @@ const manuVmanc: IFixture = {
   result: undefined,
 };
 
-const cheVars: IFixture = {
+const cheVars: MatchEntity = {
   date: '2017-09-10T11:30:00Z',
-  status: FixtureStatus.SCHEDULED,
+  status: MatchStatus.SCHEDULED,
   matchRound: 20,
   gameRound: 20,
   season: undefined,
@@ -137,11 +136,11 @@ describe('UserScore Repo', function() {
       .then(users => {
         user1 = users[0];
         user2 = users[1];
-        return League.create(epl);
+        return Competition.create(epl);
       })
       .then(l => {
         const { name, slug, id } = l;
-        epl18.league = { name, slug, id: id! };
+        epl18.competition = { name, slug, id: id! };
         return Season.create(epl18);
       })
       .then(s => {
@@ -181,41 +180,41 @@ describe('UserScore Repo', function() {
           crestUrl: team4.crestUrl,
         };
         cheVars.slug = `${team3.slug}-${team4.slug}`;
-        return Fixture.create([manuVmanc, cheVars]);
+        return Match.create([manuVmanc, cheVars]);
       })
-      .then(fixtures => {
-        fixture1 = fixtures[0];
-        fixture2 = fixtures[1];
-        const pred1: IPrediction = {
+      .then(matches => {
+        match1 = matches[0];
+        match2 = matches[1];
+        const pred1: PredictionEntity = {
           user: user1.id,
-          fixture: fixture1.id,
-          fixtureSlug: fixture1.slug,
+          match: match1.id,
+          matchSlug: match1.slug,
           season: theSeason.id,
-          gameRound: fixture1.gameRound,
+          gameRound: match1.gameRound,
           choice: {
             goalsHomeTeam: 1,
             goalsAwayTeam: 0,
             isComputerGenerated: true,
           },
         };
-        const pred2: IPrediction = {
+        const pred2: PredictionEntity = {
           user: user1.id,
-          fixture: fixture2.id,
-          fixtureSlug: fixture2.slug,
+          match: match2.id,
+          matchSlug: match2.slug,
           season: theSeason.id,
-          gameRound: fixture2.gameRound,
+          gameRound: match2.gameRound,
           choice: {
             goalsHomeTeam: 2,
             goalsAwayTeam: 0,
             isComputerGenerated: true,
           },
         };
-        const pred3: IPrediction = {
+        const pred3: PredictionEntity = {
           user: user2.id,
-          fixture: fixture1.id,
-          fixtureSlug: fixture1.slug,
+          match: match1.id,
+          matchSlug: match1.slug,
           season: theSeason.id,
-          gameRound: fixture1.gameRound,
+          gameRound: match1.gameRound,
           choice: {
             goalsHomeTeam: 3,
             goalsAwayTeam: 0,
@@ -264,7 +263,7 @@ describe('UserScore Repo', function() {
     it('should create a userScore if it does not exist', done => {
       const leaderboardId = sBoard.id;
       const userId = user1.id;
-      const fixtureId = fixture1.id;
+      const matchId = match1.id;
       const predictionId = user1Pred1.id;
       const predictionPoints: ScorePoints = {
         points: 7,
@@ -281,7 +280,7 @@ describe('UserScore Repo', function() {
         .findOneAndUpsert$(
           leaderboardId,
           userId,
-          fixtureId,
+          matchId,
           predictionId,
           predictionPoints,
           hasJoker,
@@ -293,7 +292,7 @@ describe('UserScore Repo', function() {
           expect(score.points).to.equal(14);
           expect(score.APoints).to.equal(14);
           expect(score.BPoints).to.equal(0);
-          expect(score.fixtures).to.contain(fixture1.id);
+          expect(score.matches).to.contain(match1.id);
           expect(score.predictions).to.contain(user1Pred1.id);
           done();
         });
@@ -302,9 +301,9 @@ describe('UserScore Repo', function() {
     it('should update a userScore if it exists', done => {
       const leaderboardId = sBoard.id;
       const userId = user1.id;
-      let fixtureId = fixture1.id;
+      let matchId = match1.id;
       let predictionId = user1Pred1.id;
-      const score1: IUserScore = {
+      const score1: UserScoreEntity = {
         leaderboard: leaderboardId,
         user: userId,
         points: 14,
@@ -315,7 +314,7 @@ describe('UserScore Repo', function() {
         ExactScorePoints: 0,
         GoalDifferencePoints: 0,
         TeamScoreMinusPoints: 0,
-        fixtures: [fixtureId],
+        matches: [matchId],
         predictions: [predictionId],
         pointsExcludingJoker: 7,
         APointsExcludingJoker: 7,
@@ -336,12 +335,12 @@ describe('UserScore Repo', function() {
               TeamScoreMinusPoints: 0,
             };
             const hasJoker = false;
-            fixtureId = fixture2.id;
+            matchId = match2.id;
             predictionId = user1Pred2.id;
             return userScoreRepo.findOneAndUpsert$(
               leaderboardId,
               userId,
-              fixtureId,
+              matchId,
               predictionId,
               predictionPoints,
               hasJoker,
@@ -355,7 +354,7 @@ describe('UserScore Repo', function() {
           expect(score.points).to.equal(24);
           expect(score.APoints).to.equal(22);
           expect(score.BPoints).to.equal(2);
-          expect(score.fixtures).to.contain(fixture1.id, fixture2.id);
+          expect(score.matches).to.contain(match1.id, match2.id);
           expect(score.predictions).to.contain(user1Pred1.id, user1Pred2.id);
           done();
         });
@@ -364,8 +363,8 @@ describe('UserScore Repo', function() {
 
   it('should find by leaderboard and order by points', done => {
     const leaderboardId = sBoard.id;
-    const fixtureId = fixture1.id;
-    const score1: IUserScore = {
+    const matchId = match1.id;
+    const score1: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: user1.id,
       points: 14,
@@ -376,13 +375,13 @@ describe('UserScore Repo', function() {
       ExactScorePoints: 0,
       GoalDifferencePoints: 0,
       TeamScoreMinusPoints: 0,
-      fixtures: [fixtureId],
+      matches: [matchId],
       predictions: [user1Pred1.id],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,
       BPointsExcludingJoker: 0,
     };
-    const score2: IUserScore = {
+    const score2: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: user2.id,
       points: 10,
@@ -393,7 +392,7 @@ describe('UserScore Repo', function() {
       ExactScorePoints: 1,
       GoalDifferencePoints: 1,
       TeamScoreMinusPoints: 0,
-      fixtures: [fixtureId],
+      matches: [matchId],
       predictions: [user2Pred1.id],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,
@@ -415,9 +414,9 @@ describe('UserScore Repo', function() {
   it('should find by id and update positions', done => {
     const leaderboardId = sBoard.id;
     const userId = user1.id;
-    const fixtureId = fixture1.id;
+    const matchId = match1.id;
     const predictionId = user1Pred1.id;
-    const score1: IUserScore = {
+    const score1: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: userId,
       points: 14,
@@ -428,7 +427,7 @@ describe('UserScore Repo', function() {
       ExactScorePoints: 0,
       GoalDifferencePoints: 0,
       TeamScoreMinusPoints: 0,
-      fixtures: [fixtureId],
+      matches: [matchId],
       predictions: [predictionId],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,

@@ -1,13 +1,13 @@
 import { Observable, Subscriber } from 'rxjs';
 
 import { DocumentDao } from './document.dao';
-import { IEntity, IDocumentEntity } from '../models/base.model';
+import { Entity, DocumentEntity } from '../models/base.model';
 
-export interface IBaseRepository<T extends IEntity> {
-  save$(obj: IEntity): Observable<T>;
-  insert$(obj: IEntity): Observable<T>;
-  saveMany$(objs: IEntity[]): Observable<T[]>;
-  insertMany$(objs: IEntity[]): Observable<T[]>;
+export interface BaseRepository<T extends Entity> {
+  save$(obj: Entity): Observable<T>;
+  insert$(obj: Entity): Observable<T>;
+  saveMany$(objs: Entity[]): Observable<T[]>;
+  insertMany$(objs: Entity[]): Observable<T[]>;
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
@@ -17,11 +17,11 @@ export interface IBaseRepository<T extends IEntity> {
   count$(conditions: any): Observable<number>;
 }
 
-export class BaseRepository<
-  T extends IEntity,
-  TDocument extends T & IDocumentEntity
-> extends DocumentDao<TDocument> implements IBaseRepository<T> {
-  public save$(obj: IEntity): Observable<T> {
+export class BaseRepositoryImpl<
+  T extends Entity,
+  TDocument extends T & DocumentEntity
+> extends DocumentDao<TDocument> implements BaseRepository<T> {
+  public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(
         (result: T) => {
@@ -35,7 +35,7 @@ export class BaseRepository<
     });
   }
 
-  public saveMany$(objs: IEntity[]): Observable<T[]> {
+  public saveMany$(objs: Entity[]): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.saveMany(objs).then(
         (result: T[]) => {
@@ -49,7 +49,7 @@ export class BaseRepository<
     });
   }
 
-  public insert$(obj: IEntity): Observable<T> {
+  public insert$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.insert(obj).then(
         (result: T) => {
@@ -63,7 +63,7 @@ export class BaseRepository<
     });
   }
 
-  public insertMany$(objs: IEntity[]): Observable<T[]> {
+  public insertMany$(objs: Entity[]): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.insertMany(objs).then(
         (result: T[]) => {

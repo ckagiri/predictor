@@ -2,10 +2,10 @@ import 'mocha';
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { of } from 'rxjs';
-import { FixtureConverter as AfdFixtureConverter } from '../../db/converters/apiFootballData/fixture.converter';
+import { AfdMatchConverter } from '../../db/converters/apiFootballData/match.converter';
 
-describe('Fixture Converter', () => {
-  describe('Afd FixtureConverter', () => {
+describe('Match Converter', () => {
+  describe('Afd MatchConverter', () => {
     const season = {
       _id: '4edd40c86762e0fb12000001',
     };
@@ -35,8 +35,8 @@ describe('Fixture Converter', () => {
     teamRepoStub.findByName$
       .withArgs(sinon.match('Chelsea'))
       .returns(of(awayTeam));
-    const converter = new AfdFixtureConverter(seasonRepoStub, teamRepoStub);
-    const fixture = {
+    const converter = new AfdMatchConverter(seasonRepoStub, teamRepoStub);
+    const match = {
       id: 233371,
       season: {
         id: 151,
@@ -60,11 +60,11 @@ describe('Fixture Converter', () => {
       },
     };
     it('should convert correctly', done => {
-      const conversion = converter.from(fixture);
+      const conversion = converter.from(match);
       conversion.subscribe(f => {
         expect(f.homeTeam!.name).to.equal(homeTeam.name);
         expect(f.awayTeam!.name).to.equal(awayTeam.name);
-        expect(f.matchRound).to.equal(fixture.matchday);
+        expect(f.matchRound).to.equal(match.matchday);
         expect(f.slug).to.equal(`${homeTeam.slug}-v-${awayTeam.slug}`);
         expect(f.externalReference).to.deep.equal({
           API_FOOTBALL_DATA: { id: 233371 },

@@ -9,18 +9,18 @@ const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { LeaderboardUpdater } from '../../../app/schedulers/leaderboard.updater';
-import { FixtureStatus, IFixture } from '../../../db/models/fixture.model';
+import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import { BOARD_STATUS } from '../../../db/models/leaderboard.model';
 import { CacheService } from '../../../common/observableCacheService';
 
 const seasonId = '4edd40c86762e0fb12000001';
 const gameRound = 2;
-const newFixture = (
+const newMatch = (
   id: any,
   homeTeamName: string,
   awayTeamName: string,
-  status: string = FixtureStatus.FINISHED,
+  status: string = MatchStatus.FINISHED,
 ) => {
   return {
     id: ObjectId().toHexString(),
@@ -35,20 +35,20 @@ const newFixture = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as IFixture;
+  } as MatchEntity;
 };
-const arsVche = newFixture(1, 'Arsenal', 'Chelsea');
-const livVsou = newFixture(2, 'Liverpool', 'Southampton');
-const eveVwat = newFixture(3, 'Everton', 'Watford', FixtureStatus.IN_PLAY);
+const arsVche = newMatch(1, 'Arsenal', 'Chelsea');
+const livVsou = newMatch(2, 'Liverpool', 'Southampton');
+const eveVwat = newMatch(3, 'Everton', 'Watford', MatchStatus.IN_PLAY);
 const newPrediction = (
   userId: string,
-  fixture: IFixture,
+  match: MatchEntity,
   status = PredictionStatus.PENDING,
 ) => {
   return {
     id: ObjectId().toHexString(),
     user: userId,
-    fixture,
+    match,
     status,
     choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
     hasJoker: false,
@@ -62,7 +62,7 @@ const newPrediction = (
     },
   };
 };
-const finishedFixtures = [arsVche, livVsou, eveVwat];
+const finishedMatches = [arsVche, livVsou, eveVwat];
 const leaderboardRepoStub: any = {
   findSeasonBoardAndUpsert$: sinon.stub(),
   findMonthBoardAndUpsert$: sinon.stub(),
@@ -143,7 +143,7 @@ describe('Leaderboard Updater', () => {
     it('should getUsers', async () => {
       const spy = sinon.spy(userRepoStub, 'findAll$');
 
-      await leaderboardUpdater.updateScores(finishedFixtures);
+      await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.been.calledTwice;
     });
@@ -151,7 +151,7 @@ describe('Leaderboard Updater', () => {
     it('should get Seasonboard and set status to UPDATING_SCORES ', async () => {
       const spy = leaderboardRepoStub.findSeasonBoardAndUpsert$;
 
-      await leaderboardUpdater.updateScores(finishedFixtures);
+      await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(seasonId, {
@@ -162,7 +162,7 @@ describe('Leaderboard Updater', () => {
     it('should get Monthboard and set status to UPDATING_SCORES ', async () => {
       const spy = leaderboardRepoStub.findMonthBoardAndUpsert$;
 
-      await leaderboardUpdater.updateScores(finishedFixtures);
+      await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.been.called;
       const month = arsVche.date.getUTCMonth() + 1;
@@ -175,34 +175,34 @@ describe('Leaderboard Updater', () => {
     it('should get Roundboard and set status to UPDATING_SCORES ', async () => {
       const spy = leaderboardRepoStub.findRoundBoardAndUpsert$;
 
-      await leaderboardUpdater.updateScores(finishedFixtures);
+      await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(seasonId, gameRound, {
         status: BOARD_STATUS.UPDATING_SCORES,
       });
     });
-    it('should get fixture prediction for the user', async () => {
+    it('should get match prediction for the user', async () => {
       const spy = sinon.spy(predictionRepoStub, 'findOne$');
 
-      await leaderboardUpdater.updateScores(finishedFixtures);
+      await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.been.called;
       expect(spy).to.have.been.calledWith(
-        sinon.match({ userId: chalo.id, fixtureId: arsVche.id }),
+        sinon.match({ userId: chalo.id, matchId: arsVche.id }),
       );
     });
     it('should cache boards', async () => {
       const spy = leaderboardRepoStub.findSeasonBoardAndUpsert$;
       leaderboardUpdater.setCacheService(new CacheService());
-      await leaderboardUpdater.updateScores(finishedFixtures);
+      await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.callCount(4);
     });
     it('should save userScores', async () => {
       const spy = sinon.spy(userScoreRepoStub, 'findOneAndUpsert$');
 
-      const count = await leaderboardUpdater.updateScores(finishedFixtures);
+      const count = await leaderboardUpdater.updateScores(finishedMatches);
       expect(spy).to.have.been.called;
       expect(spy.getCall(0).args.length).to.equal(6);
     });

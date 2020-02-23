@@ -4,7 +4,7 @@ import { flatMap } from 'rxjs/operators';
 
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { TeamRepository } from '../../db/repositories/team.repo';
+import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 
 const manu = {
   id: undefined,
@@ -63,7 +63,7 @@ describe('teamRepo', function() {
   });
 
   it('should save a new Team', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.LIGI);
+    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
 
     teamRepo.save$(manu).subscribe(
       (t: any) => {
@@ -80,7 +80,9 @@ describe('teamRepo', function() {
   });
 
   it('should findByName using name', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -101,7 +103,9 @@ describe('teamRepo', function() {
   });
 
   it('should findByName using shortName', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -123,7 +127,9 @@ describe('teamRepo', function() {
   });
 
   it('should findByName using alias', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -145,7 +151,9 @@ describe('teamRepo', function() {
   });
 
   it('should findByNameAndUpsert', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -170,7 +178,9 @@ describe('teamRepo', function() {
   });
 
   it('should retain external reference when doing findByNameAndUpsert', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
     const theManu = {
       ...manu,
       externalReference: { SomeOtherApi: { id: 'someExternalId' } },
@@ -198,7 +208,7 @@ describe('teamRepo', function() {
   });
 
   it('should findEachByNameAndUpert', done => {
-    const teamRepo = TeamRepository.getInstance(ApiProvider.LIGI);
+    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
 
     teamRepo
       .insertMany$([manu, manc])
