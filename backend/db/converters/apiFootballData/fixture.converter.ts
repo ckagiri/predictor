@@ -3,10 +3,10 @@ import { Observable, zip } from 'rxjs';
 import { IFixtureConverter } from '../fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
-  ISeasonRepository,
   SeasonRepository,
+  SeasonRepositoryImpl,
 } from '../../repositories/season.repo';
-import { ITeamRepository, TeamRepository } from '../../repositories/team.repo';
+import { TeamRepository, TeamRepositoryImpl } from '../../repositories/team.repo';
 import { FixtureEntity } from '../../models/fixture.model';
 import { SeasonEntity } from '../../models/season.model';
 import { TeamEntity } from '../../models/team.model';
@@ -14,15 +14,15 @@ import { TeamEntity } from '../../models/team.model';
 export class FixtureConverter implements IFixtureConverter {
   public static getInstance(): IFixtureConverter {
     return new FixtureConverter(
-      SeasonRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
   public provider: ApiProvider;
 
   constructor(
-    private seasonRepo: ISeasonRepository,
-    private teamRepo: ITeamRepository,
+    private seasonRepo: SeasonRepository,
+    private teamRepo: TeamRepository,
   ) {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }

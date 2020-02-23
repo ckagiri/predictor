@@ -1,11 +1,11 @@
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { ITeamRepository } from '../../db/repositories/team.repo';
+import { TeamRepository } from '../../db/repositories/team.repo';
 import { TeamsJob } from './teams.job';
 
 export default class Builder {
   private competitionId!: number | string;
   private apiClient!: IFootballApiClient;
-  private teamRepo!: ITeamRepository;
+  private teamRepo!: TeamRepository;
 
   public build() {
     return new TeamsJob(this);
@@ -24,7 +24,7 @@ export default class Builder {
     return this.teamRepo;
   }
 
-  public setTeamRepo(value: ITeamRepository): Builder {
+  public setTeamRepo(value: TeamRepository): Builder {
     this.teamRepo = value;
     return this;
   }

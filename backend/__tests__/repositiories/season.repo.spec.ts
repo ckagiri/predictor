@@ -5,7 +5,7 @@ import { flatMap } from 'rxjs/operators';
 import * as db from '../../db/index';
 import { League, LeagueDocument } from '../../db/models/league.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { SeasonRepository } from '../../db/repositories/season.repo';
+import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 
 const epl = {
   name: 'English Premier League',
@@ -85,7 +85,7 @@ describe('seasonRepo', function () {
   });
 
   it('should save new season', done => {
-    const seasonRepo = SeasonRepository.getInstance(ApiProvider.LIGI);
+    const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
     epl17.leagueId = aLeague._id;
     seasonRepo.save$(epl17).subscribe(
       (data: any) => {
@@ -106,7 +106,7 @@ describe('seasonRepo', function () {
   });
 
   it('should find by externalId', done => {
-    const seasonRepo = SeasonRepository.getInstance(
+    const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
     const { _id, name, slug } = aLeague;
@@ -132,7 +132,7 @@ describe('seasonRepo', function () {
   });
 
   it('should find by externalIds', done => {
-    const seasonRepo = SeasonRepository.getInstance(
+    const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
     const { _id, name, slug } = aLeague;
@@ -171,7 +171,7 @@ describe('seasonRepo', function () {
   });
 
   it('should findByIdAndUpdate currentMatchRound', done => {
-    const seasonRepo = SeasonRepository.getInstance(ApiProvider.LIGI);
+    const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
     const epl17Data = { ...epl17, leagueId: aLeague._id };
 
     seasonRepo
@@ -189,7 +189,7 @@ describe('seasonRepo', function () {
   });
 
   it('should findByExternalIdAndUpdate currentMatchRound', done => {
-    const seasonRepo = SeasonRepository.getInstance(
+    const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
     const { _id, name, slug } = aLeague;
@@ -217,7 +217,7 @@ describe('seasonRepo', function () {
   });
 
   it('should findByExternalIdAndUpdate currentMatchRound (version2)', done => {
-    const seasonRepo = SeasonRepository.getInstance(
+    const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
     const { _id, name, slug } = aLeague;
@@ -245,7 +245,7 @@ describe('seasonRepo', function () {
   });
 
   it('should findByExternalIdAndUpdate while preserving ExternalReference', done => {
-    const seasonRepo = SeasonRepository.getInstance(
+    const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
     const { _id, name, slug } = aLeague;

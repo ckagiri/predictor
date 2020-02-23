@@ -20,9 +20,9 @@ import {
 import { IUserScore } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
-import { UserScoreRepository } from '../../db/repositories/userScore.repo';
+import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 
-const userScoreRepo = UserScoreRepository.getInstance();
+const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 let user1: any;
 let user2: any;
 let theSeason: any;

@@ -18,9 +18,9 @@ import {
 } from '../../db/models/prediction.model';
 
 import { ScorePoints } from '../../common/score';
-import { PredictionRepository } from '../../db/repositories/prediction.repo';
+import { PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 
-const predictionRepo = PredictionRepository.getInstance();
+const predictionRepo = PredictionRepositoryImpl.getInstance();
 // tslint:disable-next-line: one-variable-per-declaration
 let user1: any,
   theSeason: any,

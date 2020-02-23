@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { LeagueRepository } from '../../db/repositories/league.repo';
+import { LeagueRepositoryImpl } from '../../db/repositories/league.repo';
 
 const league = {
   id: '1',
@@ -11,7 +11,7 @@ const league = {
   code: 'epl',
 };
 
-describe('LeagueRepo', function() {
+describe('LeagueRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -28,7 +28,7 @@ describe('LeagueRepo', function() {
   });
 
   it('should save new league', done => {
-    const leagueRepo = LeagueRepository.getInstance(ApiProvider.LIGI);
+    const leagueRepo = LeagueRepositoryImpl.getInstance(ApiProvider.LIGI);
 
     leagueRepo.save$(league).subscribe(
       (data: any) => {

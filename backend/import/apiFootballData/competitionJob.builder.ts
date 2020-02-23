@@ -1,14 +1,14 @@
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { ISeasonRepository } from '../../db/repositories/season.repo';
-import { ITeamRepository } from '../../db/repositories/team.repo';
+import { SeasonRepository } from '../../db/repositories/season.repo';
+import { TeamRepository } from '../../db/repositories/team.repo';
 import { FixtureRepository } from '../../db/repositories/fixture.repo';
 import { CompetitionJob } from '../apiFootballData/competition.job';
 
 export default class Builder {
   private competitionId!: number | string;
   private apiClient!: IFootballApiClient;
-  private seasonRepo!: ISeasonRepository;
-  private teamRepo!: ITeamRepository;
+  private seasonRepo!: SeasonRepository;
+  private teamRepo!: TeamRepository;
   private fixtureRepo!: FixtureRepository;
 
   public build() {
@@ -28,7 +28,7 @@ export default class Builder {
     return this.seasonRepo;
   }
 
-  public setSeasonRepo(value: ISeasonRepository): Builder {
+  public setSeasonRepo(value: SeasonRepository): Builder {
     this.seasonRepo = value;
     return this;
   }
@@ -37,7 +37,7 @@ export default class Builder {
     return this.teamRepo;
   }
 
-  public setTeamRepo(value: ITeamRepository): Builder {
+  public setTeamRepo(value: TeamRepository): Builder {
     this.teamRepo = value;
     return this;
   }

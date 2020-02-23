@@ -9,7 +9,7 @@ import {
 } from '../models/userScore.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IUserScoreRepository extends BaseRepository<IUserScore> {
+export interface UserScoreRepository extends BaseRepository<IUserScore> {
   findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
@@ -23,11 +23,11 @@ export interface IUserScoreRepository extends BaseRepository<IUserScore> {
   ): Observable<IUserScore[]>;
 }
 
-export class UserScoreRepository
+export class UserScoreRepositoryImpl
   extends BaseRepositoryImpl<IUserScore, IUserScoreDocument>
-  implements IUserScoreRepository {
+  implements UserScoreRepository {
   public static getInstance() {
-    return new UserScoreRepository();
+    return new UserScoreRepositoryImpl();
   }
 
   constructor() {

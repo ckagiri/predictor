@@ -10,8 +10,8 @@ import {
 
 import { FixtureEntity, FixtureStatus } from '../../db/models/fixture.model';
 import {
-  IUserRepository,
   UserRepository,
+  UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
 import { BOARD_STATUS, LeaderboardEntity } from '../../db/models/leaderboard.model';
 import {
@@ -19,12 +19,12 @@ import {
   LeaderboardRepositoryImpl,
 } from '../../db/repositories/leaderboard.repo';
 import {
-  IPredictionRepository,
   PredictionRepository,
+  PredictionRepositoryImpl,
 } from '../../db/repositories/prediction.repo';
 import {
-  IUserScoreRepository,
   UserScoreRepository,
+  UserScoreRepositoryImpl,
 } from '../../db/repositories/userScore.repo';
 import {
   ICacheService,
@@ -40,20 +40,20 @@ export interface ILeaderboardUpdater {
 export class LeaderboardUpdater implements ILeaderboardUpdater {
   public static getInstance() {
     return new LeaderboardUpdater(
-      UserRepository.getInstance(),
+      UserRepositoryImpl.getInstance(),
       LeaderboardRepositoryImpl.getInstance(),
-      PredictionRepository.getInstance(),
-      UserScoreRepository.getInstance(),
+      PredictionRepositoryImpl.getInstance(),
+      UserScoreRepositoryImpl.getInstance(),
     ).setCacheService(new CacheService());
   }
 
   private cacheService: ICacheService | undefined;
 
   constructor(
-    private userRepo: IUserRepository,
+    private userRepo: UserRepository,
     private leaderboardRepo: LeaderboardRepository,
-    private predictionRepo: IPredictionRepository,
-    private userScoreRepo: IUserScoreRepository,
+    private predictionRepo: PredictionRepository,
+    private userScoreRepo: UserScoreRepository,
   ) { }
 
   public setCacheService(cacheService: ICacheService) {

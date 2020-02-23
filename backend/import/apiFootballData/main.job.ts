@@ -7,12 +7,12 @@ import {
   IFootballApiClient,
 } from '../../thirdParty/footballApi/apiClient';
 import {
-  ISeasonRepository,
   SeasonRepository,
+  SeasonRepositoryImpl,
 } from '../../db/repositories/season.repo';
 import {
-  ITeamRepository,
   TeamRepository,
+  TeamRepositoryImpl,
 } from '../../db/repositories/team.repo';
 import {
   FixtureRepository,
@@ -23,16 +23,16 @@ export class MainJob implements IJob {
   public static getInstance() {
     return new MainJob(
       FootballApiClient.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      SeasonRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
       FixtureRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
 
   constructor(
     private apiClient: IFootballApiClient,
-    private seasonRepo: ISeasonRepository,
-    private teamRepo: ITeamRepository,
+    private seasonRepo: SeasonRepository,
+    private teamRepo: TeamRepository,
     private fixtureRepo: FixtureRepository,
   ) { }
 

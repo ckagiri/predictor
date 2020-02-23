@@ -1,8 +1,8 @@
 import { of, from } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import {
-  ISeasonRepository,
   SeasonRepository,
+  SeasonRepositoryImpl,
 } from '../../../db/repositories/season.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { SeasonEntity } from '../../../db/models/season.model';
@@ -13,10 +13,10 @@ export interface ISeasonUpdater {
 
 export class SeasonUpdater implements ISeasonUpdater {
   public static getInstance(provider: ApiProvider) {
-    return new SeasonUpdater(SeasonRepository.getInstance(provider));
+    return new SeasonUpdater(SeasonRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private seasonRepo: ISeasonRepository) { }
+  constructor(private seasonRepo: SeasonRepository) { }
 
   public updateCurrentMatchRound(apiSeasons: any[]) {
     const externalIdToApiSeasonMap: any = new Map<string, any>();

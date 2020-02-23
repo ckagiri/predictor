@@ -9,13 +9,13 @@ import {
 } from '../converters/season.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ISeasonRepository extends BaseProviderRepository<SeasonEntity> { }
+export interface SeasonRepository extends BaseProviderRepository<SeasonEntity> { }
 
-export class SeasonRepository
+export class SeasonRepositoryImpl
   extends BaseProviderRepositoryImpl<SeasonEntity, SeasonDocument>
-  implements ISeasonRepository {
-  public static getInstance(provider: ApiProvider): ISeasonRepository {
-    return new SeasonRepository(SeasonConverter.getInstance(provider));
+  implements SeasonRepository {
+  public static getInstance(provider: ApiProvider): SeasonRepository {
+    return new SeasonRepositoryImpl(SeasonConverter.getInstance(provider));
   }
 
   constructor(converter: ISeasonConverter) {

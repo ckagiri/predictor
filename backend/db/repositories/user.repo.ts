@@ -1,12 +1,12 @@
 import { UserEntity, UserDocument, User } from '../models/user.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IUserRepository extends BaseRepository<UserEntity> { }
+export interface UserRepository extends BaseRepository<UserEntity> { }
 
-export class UserRepository extends BaseRepositoryImpl<UserEntity, UserDocument>
-  implements IUserRepository {
+export class UserRepositoryImpl extends BaseRepositoryImpl<UserEntity, UserDocument>
+  implements UserRepository {
   public static getInstance() {
-    return new UserRepository();
+    return new UserRepositoryImpl();
   }
 
   constructor() {

@@ -16,7 +16,7 @@ import {
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface IPredictionRepository extends BaseRepository<PredictionEntity> {
+export interface PredictionRepository extends BaseRepository<PredictionEntity> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
@@ -36,11 +36,11 @@ export interface IPredictionRepository extends BaseRepository<PredictionEntity> 
   ): Observable<PredictionEntity>;
 }
 
-export class PredictionRepository
+export class PredictionRepositoryImpl
   extends BaseRepositoryImpl<PredictionEntity, PredictionDocument>
-  implements IPredictionRepository {
+  implements PredictionRepository {
   public static getInstance() {
-    return new PredictionRepository(
+    return new PredictionRepositoryImpl(
       FixtureRepositoryImpl.getInstance(ApiProvider.LIGI),
     );
   }

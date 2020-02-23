@@ -6,12 +6,12 @@ import {
   FixtureRepositoryImpl,
 } from '../../db/repositories/fixture.repo';
 import {
-  IUserRepository,
   UserRepository,
+  UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
 import {
-  IPredictionRepository,
   PredictionRepository,
+  PredictionRepositoryImpl,
 } from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
@@ -34,15 +34,15 @@ export class PredictionProcessor implements IPredictionProcessor {
   public static getInstance() {
     return new PredictionProcessor(
       FixtureRepositoryImpl.getInstance(ApiProvider.LIGI),
-      UserRepository.getInstance(),
-      PredictionRepository.getInstance(),
+      UserRepositoryImpl.getInstance(),
+      PredictionRepositoryImpl.getInstance(),
       PredictionCalculator.getInstance(),
     );
   }
   constructor(
     private fixtureRepo: FixtureRepository,
-    private userRepo: IUserRepository,
-    private predictionRepo: IPredictionRepository,
+    private userRepo: UserRepository,
+    private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
   ) { }
 

@@ -3,20 +3,20 @@ import { flatMap } from 'rxjs/operators';
 import { SeasonEntity } from '../../models/season.model';
 import { ISeasonConverter } from '../season.converter';
 import {
-  ILeagueRepository,
   LeagueRepository,
+  LeagueRepositoryImpl,
 } from '../../repositories/league.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 export class SeasonConverter implements ISeasonConverter {
   public static getInstance(): ISeasonConverter {
     return new SeasonConverter(
-      LeagueRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      LeagueRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
   public provider: ApiProvider;
 
-  constructor(private leagueRepo: ILeagueRepository) {
+  constructor(private leagueRepo: LeagueRepository) {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }
 

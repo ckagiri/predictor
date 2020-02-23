@@ -9,13 +9,13 @@ import {
 } from '../converters/league.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ILeagueRepository extends BaseProviderRepository<LeagueEntity> { }
+export interface LeagueRepository extends BaseProviderRepository<LeagueEntity> { }
 
-export class LeagueRepository
+export class LeagueRepositoryImpl
   extends BaseProviderRepositoryImpl<LeagueEntity, LeagueDocument>
-  implements ILeagueRepository {
-  public static getInstance(provider: ApiProvider): ILeagueRepository {
-    return new LeagueRepository(LeagueConverter.getInstance(provider));
+  implements LeagueRepository {
+  public static getInstance(provider: ApiProvider): LeagueRepository {
+    return new LeagueRepositoryImpl(LeagueConverter.getInstance(provider));
   }
 
   constructor(converter: ILeagueConverter) {
