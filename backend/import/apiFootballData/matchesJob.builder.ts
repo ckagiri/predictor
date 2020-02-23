@@ -1,14 +1,14 @@
 import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { FixtureRepository } from '../../db/repositories/fixture.repo';
-import { FixturesJob } from './fixtures.job';
+import { MatchRepository } from '../../db/repositories/match.repo';
+import { MatchesJob } from './matches.job';
 
 export default class Builder {
   private competitionId!: number | string;
   private apiClient!: FootballApiClient;
-  private fixtureRepo!: FixtureRepository;
+  private matchRepo!: MatchRepository;
 
   public build() {
-    return new FixturesJob(this);
+    return new MatchesJob(this);
   }
 
   get ApiClient() {
@@ -20,12 +20,12 @@ export default class Builder {
     return this;
   }
 
-  get FixtureRepo() {
-    return this.fixtureRepo;
+  get MatchRepo() {
+    return this.matchRepo;
   }
 
-  public setFixtureRepo(value: FixtureRepository): Builder {
-    this.fixtureRepo = value;
+  public setMatchRepo(value: MatchRepository): Builder {
+    this.matchRepo = value;
     return this;
   }
 

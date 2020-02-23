@@ -6,34 +6,34 @@ chai.use(sinonChai);
 const expect = chai.expect;
 import { of } from 'rxjs';
 
-import { FixturesJob } from '../../../import/apiFootballData/fixtures.job';
+import { MatchesJob } from '../../../import/apiFootballData/matches.job';
 
-import data from '../../fixtures/requests/apiFootballData.epl2018Fixtures.json';
+import data from '../../fixtures/requests/apiFootballData.epl2018Matches.json';
 const clientStub: any = {
-  getFixtures: () => {
+  getMatches: () => {
     return Promise.resolve({
       data,
     });
   },
 };
-const fixtureRepoStub: any = {
+const matchRepoStub: any = {
   findEachBySeasonAndTeamsAndUpsert$: () => {
     return of(data.matches);
   },
 };
 const competitionId = 2021;
-const jobBuilder = FixturesJob.Builder;
+const jobBuilder = MatchesJob.Builder;
 const job = jobBuilder
   .setApiClient(clientStub)
-  .setFixtureRepo(fixtureRepoStub)
+  .setMatchRepo(matchRepoStub)
   .withCompetition(competitionId)
   .build();
 const queueStub: any = sinon.stub();
 
-describe('ApiFootballData:Fixtures Job', () => {
+describe('ApiFootballData:Matches Job', () => {
   describe('start', () => {
-    it('should call client.getFixtures', async () => {
-      const spy = sinon.spy(clientStub, 'getFixtures');
+    it('should call client.getMatches', async () => {
+      const spy = sinon.spy(clientStub, 'getMatches');
 
       await job.start(queueStub);
 
@@ -42,9 +42,9 @@ describe('ApiFootballData:Fixtures Job', () => {
       );
     });
 
-    it('should call fixtureRepo.findEachBySeasonAndTeamsAndUpsert$', async () => {
+    it('should call matchRepo.findEachBySeasonAndTeamsAndUpsert$', async () => {
       const spy = sinon.spy(
-        fixtureRepoStub,
+        matchRepoStub,
         'findEachBySeasonAndTeamsAndUpsert$',
       );
 

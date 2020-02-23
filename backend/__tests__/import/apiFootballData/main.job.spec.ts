@@ -24,7 +24,7 @@ const clientStub: any = {
 };
 const seasonRepoStub: any = sinon.stub();
 const teamRepoStub: any = sinon.stub();
-const fixtureRepoStub: any = sinon.stub();
+const matchRepoStub: any = sinon.stub();
 
 describe('ApiFootballData:Main Job', () => {
   describe('start', () => {
@@ -35,7 +35,7 @@ describe('ApiFootballData:Main Job', () => {
         clientStub,
         seasonRepoStub,
         teamRepoStub,
-        fixtureRepoStub,
+        matchRepoStub,
       );
       await mainJob.start(queueStub);
 
@@ -50,7 +50,7 @@ describe('ApiFootballData:Main Job', () => {
         clientStub,
         seasonRepoStub,
         teamRepoStub,
-        fixtureRepoStub,
+        matchRepoStub,
       );
       await mainJob.start(queueStub);
 
@@ -65,7 +65,7 @@ describe('ApiFootballData:Main Job', () => {
           clientStub,
           seasonRepoStub,
           teamRepoStub,
-          fixtureRepoStub,
+          matchRepoStub,
         );
         await mainJob.start(queueStub);
 

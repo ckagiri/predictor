@@ -7,10 +7,10 @@ import { League, LeagueEntity } from '../../db/models/league.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, TeamEntity } from '../../db/models/team.model';
 import {
-  Fixture,
-  FixtureEntity,
-  FixtureStatus,
-} from '../../db/models/fixture.model';
+  Match,
+  MatchEntity,
+  MatchStatus,
+} from '../../db/models/match.model';
 import {
   Prediction,
   PredictionEntity,
@@ -28,7 +28,7 @@ let user1: any,
   team2: any,
   team3: any,
   team4: any,
-  fixture1: any;
+  match1: any;
 
 const epl: LeagueEntity = {
   name: 'English Premier League',
@@ -85,9 +85,9 @@ const ars: TeamEntity = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: FixtureEntity = {
+const manuVmanc: MatchEntity = {
   date: '2018-09-10T11:30:00Z',
-  status: FixtureStatus.SCHEDULED,
+  status: MatchStatus.SCHEDULED,
   matchRound: 20,
   gameRound: 20,
   season: undefined,
@@ -97,9 +97,9 @@ const manuVmanc: FixtureEntity = {
   result: undefined,
 };
 
-const cheVars: FixtureEntity = {
+const cheVars: MatchEntity = {
   date: '2018-09-10T11:30:00Z',
-  status: FixtureStatus.SCHEDULED,
+  status: MatchStatus.SCHEDULED,
   matchRound: 20,
   gameRound: 20,
   season: undefined,
@@ -175,10 +175,10 @@ describe('Prediction repo', function () {
         };
         cheVars.slug = `${team3.slug}-${team4.slug}`;
 
-        return Fixture.create([manuVmanc, cheVars]);
+        return Match.create([manuVmanc, cheVars]);
       })
-      .then(fixtures => {
-        fixture1 = fixtures[0];
+      .then(matches => {
+        match1 = matches[0];
         done();
       });
   });
@@ -202,7 +202,7 @@ describe('Prediction repo', function () {
           user1.id,
           theSeason.id,
           theSeason.currentGameRound,
-          [fixture1.id],
+          [match1.id],
         )
         .subscribe(p => {
           expect(p).to.have.property('hasJoker', true);
@@ -212,13 +212,13 @@ describe('Prediction repo', function () {
     });
   });
 
-  it('should findOne prediction by user and fixture', done => {
+  it('should findOne prediction by user and match', done => {
     let prediction: PredictionEntity;
-    const { slug: fixtureSlug, season, gameRound, id: fixtureId } = fixture1;
+    const { slug: matchSlug, season, gameRound, id: matchId } = match1;
     const pred: PredictionEntity = {
       user: user1.id,
-      fixture: fixtureId,
-      fixtureSlug,
+      match: matchId,
+      matchSlug,
       season,
       gameRound,
       choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
@@ -227,7 +227,7 @@ describe('Prediction repo', function () {
       .then(p => {
         prediction = p;
         return predictionRepo
-          .findOne$({ userId: user1.id, fixtureId: fixture1.id })
+          .findOne$({ userId: user1.id, matchId: match1.id })
           .toPromise();
       })
       .then(p => {
@@ -239,11 +239,11 @@ describe('Prediction repo', function () {
   describe('findOneOrCreate prediction', () => {
     it('should create prediction if it doesnt exist', done => {
       predictionRepo
-        .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })
+        .findOneOrCreate$({ userId: user1.id, matchId: match1.id })
         .subscribe(p => {
           expect(p.user.toString()).to.equal(user1.id);
-          expect(p.fixture.toString()).to.equal(fixture1.id);
-          expect(p.fixtureSlug).to.equal(fixture1.slug);
+          expect(p.match.toString()).to.equal(match1.id);
+          expect(p.matchSlug).to.equal(match1.slug);
           expect(p).to.have.property('hasJoker', false);
           expect(p).to.have.property('jokerAutoPicked', false);
           done();
@@ -252,13 +252,13 @@ describe('Prediction repo', function () {
     it('should return existing prediction', done => {
       let prediction: PredictionDocument;
       predictionRepo
-        .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })
+        .findOneOrCreate$({ userId: user1.id, matchId: match1.id })
         .pipe(
           flatMap(p => {
             prediction = p as PredictionDocument;
             return predictionRepo.findOneOrCreate$({
               userId: user1.id,
-              fixtureId: fixture1.id,
+              matchId: match1.id,
             });
           }),
         )
@@ -274,7 +274,7 @@ describe('Prediction repo', function () {
   it('should findById And update score', done => {
     let scorePoints: ScorePoints;
     predictionRepo
-      .findOneOrCreate$({ userId: user1.id, fixtureId: fixture1.id })
+      .findOneOrCreate$({ userId: user1.id, matchId: match1.id })
       .pipe(
         flatMap(p => {
           scorePoints = {

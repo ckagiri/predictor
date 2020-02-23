@@ -8,7 +8,7 @@ import { League } from '../../db/models/league.model';
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 
-import { FixtureRepositoryImpl } from '../../db/repositories/fixture.repo';
+import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 
 const epl = {
   name: 'English Premier League',
@@ -99,15 +99,15 @@ const afdManuVmanc = {
     awayWin: 3.4,
   },
 };
-const fixtureRepo = FixtureRepositoryImpl.getInstance(
+const matchRepo = MatchRepositoryImpl.getInstance(
   ApiProvider.API_FOOTBALL_DATA,
 );
-const ligiFixtureRepo = FixtureRepositoryImpl.getInstance(ApiProvider.LIGI);
+const ligiMatchRepo = MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
 let season: any;
 let team1: any;
 let team2: any;
 
-describe('FixtureRepo', function () {
+describe('MatchRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -145,34 +145,34 @@ describe('FixtureRepo', function () {
       done();
     });
   });
-  it('should save a fixture', done => {
+  it('should save a match', done => {
     manuVmanc.seasonId = season.id;
     manuVmanc.homeTeamId = team1.id;
     manuVmanc.awayTeamId = team2.id;
 
-    ligiFixtureRepo.save$(manuVmanc).subscribe(fixture => {
-      expect(fixture.season!.toString()).to.equal(season.id);
-      expect(fixture.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+    ligiMatchRepo.save$(manuVmanc).subscribe(match => {
+      expect(match.season!.toString()).to.equal(season.id);
+      expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
       done();
     });
   });
 
   it('should findEach By SeasonAndTeams AndUpdateOrCreate', done => {
-    fixtureRepo
+    matchRepo
       .findBySeasonAndTeamsAndUpsert$(afdManuVmanc)
-      .subscribe(fixture => {
-        expect(fixture.season!.toString()).to.equal(season.id);
-        expect(fixture.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+      .subscribe(match => {
+        expect(match.season!.toString()).to.equal(season.id);
+        expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
         done();
       });
   });
 
-  it('should find finished fixtures with pending predictions', done => {
-    fixtureRepo
+  it('should find finished matches with pending predictions', done => {
+    matchRepo
       .findBySeasonAndTeamsAndUpsert$(afdManuVmanc)
       .pipe(
         flatMap(_ => {
-          return fixtureRepo.findAllFinishedWithPendingPredictions$(season.id);
+          return matchRepo.findAllFinishedWithPendingPredictions$(season.id);
         }),
       )
       .subscribe(fs => {
@@ -181,16 +181,16 @@ describe('FixtureRepo', function () {
       });
   });
 
-  it('should find selectable fixtures for game round', done => {
+  it('should find selectable matches for game round', done => {
     manuVmanc.seasonId = season.id;
     manuVmanc.homeTeamId = team1.id;
     manuVmanc.awayTeamId = team2.id;
 
-    ligiFixtureRepo
+    ligiMatchRepo
       .save$(manuVmanc)
       .pipe(
         flatMap(_ => {
-          return fixtureRepo.findSelectableFixtures$(
+          return matchRepo.findSelectableMatches$(
             season.id,
             season.currentGameRound,
           );

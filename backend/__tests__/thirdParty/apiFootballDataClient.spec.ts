@@ -141,7 +141,7 @@ describe('apifootballDataClient', () => {
     });
   });
 
-  describe('getFixtures', () => {
+  describe('getMatches', () => {
     before(() => {
       mockery.enable({
         warnOnReplace: false,
@@ -153,21 +153,21 @@ describe('apifootballDataClient', () => {
       mockery.disable();
     });
 
-    it('should get real fixtures by competition', async () => {
+    it('should get real matches by competition', async () => {
       const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
-      const { data, metadata } = await apiClient.getFixtures(2021);
+      const { data, metadata } = await apiClient.getMatches(2021);
       expect(data).to.be.an('object');
       expect(metadata).to.be.an('object');
       expect(data.count).to.be.a('number');
       expect(data.matches).to.be.an('array');
     }).timeout(0);
 
-    it('should get fixtures by competition', async () => {
-      const fixtures = require('../fixtures/requests/apiFootballData.epl2018Fixtures');
+    it('should get matches by competition', async () => {
+      const matches = require('../fixtures/requests/apiFootballData.epl2018Matches');
       const response = {
-        body: JSON.stringify(fixtures),
+        body: JSON.stringify(matches),
         headers: {
           'x-requests-available': '49',
           'x-requestcounter-reset': '60',
@@ -178,7 +178,7 @@ describe('apifootballDataClient', () => {
 
       const ApiFootballDataClient = require('../../thirdParty/footballApi/apiFootballData/apiClient');
       const apiFootballDataClient: FootballApiClient = ApiFootballDataClient.getInstance();
-      const { data, metadata } = await apiFootballDataClient.getFixtures(2021);
+      const { data, metadata } = await apiFootballDataClient.getMatches(2021);
 
       expect(data).to.be.an('object');
       expect(metadata).to.be.an('object');

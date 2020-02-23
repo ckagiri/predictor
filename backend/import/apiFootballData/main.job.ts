@@ -15,9 +15,9 @@ import {
   TeamRepositoryImpl,
 } from '../../db/repositories/team.repo';
 import {
-  FixtureRepository,
-  FixtureRepositoryImpl,
-} from '../../db/repositories/fixture.repo';
+  MatchRepository,
+  MatchRepositoryImpl,
+} from '../../db/repositories/match.repo';
 
 export class MainJob implements Job {
   public static getInstance() {
@@ -25,7 +25,7 @@ export class MainJob implements Job {
       FootballApiClientImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
       SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
       TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      FixtureRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      MatchRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
 
@@ -33,7 +33,7 @@ export class MainJob implements Job {
     private apiClient: FootballApiClient,
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
-    private fixtureRepo: FixtureRepository,
+    private matchRepo: MatchRepository,
   ) { }
 
   public start(queue: Queue) {
@@ -52,7 +52,7 @@ export class MainJob implements Job {
             .setApiClient(this.apiClient)
             .setSeasonRepo(this.seasonRepo)
             .setTeamRepo(this.teamRepo)
-            .setFixtureRepo(this.fixtureRepo)
+            .setMatchRepo(this.matchRepo)
             .withCompetition(comp.id)
             .build();
           queue.addJob(job);

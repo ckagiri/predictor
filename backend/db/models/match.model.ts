@@ -4,7 +4,7 @@ mongoose.set('useCreateIndex', true);
 import { Entity, DocumentEntity } from './base.model';
 import { Score, Odds } from '../../common/score';
 
-export enum FixtureStatus {
+export enum MatchStatus {
   SCHEDULED = 'SCHEDULED',
   TIMED = 'TIMED',
   IN_PLAY = 'IN_PLAY',
@@ -13,14 +13,14 @@ export enum FixtureStatus {
   FINISHED = 'FINISHED',
 }
 
-export interface FixtureEntity extends Entity {
+export interface MatchEntity extends Entity {
   id?: string;
   season?: string;
   slug: string;
   date?: any;
   matchRound?: number;
   gameRound?: number;
-  status?: FixtureStatus;
+  status?: MatchStatus;
   homeTeam?: {
     name: string;
     slug: string;
@@ -41,11 +41,11 @@ export interface FixtureEntity extends Entity {
   [key: string]: any;
 }
 
-export interface FixtureDocument extends FixtureEntity, DocumentEntity { }
+export interface MatchDocument extends MatchEntity, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
-export const fixtureSchema = new Schema({
+export const matchSchema = new Schema({
   season: { type: ObjectId, ref: 'Season', index: true, required: true },
   slug: { type: String, required: true, trim: true },
   matchRound: { type: Number, required: true },
@@ -89,4 +89,4 @@ export const fixtureSchema = new Schema({
   externalReference: { type: Mixed },
 });
 
-export const Fixture = model<FixtureDocument>('Fixture', fixtureSchema);
+export const Match = model<MatchDocument>('Match', matchSchema);

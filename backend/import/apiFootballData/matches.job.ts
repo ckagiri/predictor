@@ -3,17 +3,17 @@ import { flatMap } from 'rxjs/operators';
 import { Job } from '../jobs/job';
 import { Queue } from '../queue';
 import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { FixtureRepository } from '../../db/repositories/fixture.repo';
-import Builder from './fixturesJob.builder';
+import { MatchRepository } from '../../db/repositories/match.repo';
+import Builder from './matchesJob.builder';
 
-export class FixturesJob implements Job {
+export class MatchesJob implements Job {
   private competitionId: number | string;
   private apiClient: FootballApiClient;
-  private fixtureRepo: FixtureRepository;
+  private matchRepo: MatchRepository;
 
   constructor(builder: Builder) {
     this.apiClient = builder.ApiClient;
-    this.fixtureRepo = builder.FixtureRepo;
+    this.matchRepo = builder.MatchRepo;
     this.competitionId = builder.CompetitionId;
   }
 
@@ -23,12 +23,12 @@ export class FixturesJob implements Job {
 
   public start(queue: Queue) {
     // tslint:disable-next-line: no-console
-    console.log('** starting ApiFootballData Fixtures job');
-    return from(this.apiClient.getFixtures(this.competitionId))
+    console.log('** starting ApiFootballData Matches job');
+    return from(this.apiClient.getMatches(this.competitionId))
       .pipe(
         flatMap((response: any) => {
-          const fixtures = response.data.matches;
-          return this.fixtureRepo.findEachBySeasonAndTeamsAndUpsert$(fixtures);
+          const matches = response.data.matches;
+          return this.matchRepo.findEachBySeasonAndTeamsAndUpsert$(matches);
         }),
       )
       .toPromise();

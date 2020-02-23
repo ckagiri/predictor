@@ -1,10 +1,10 @@
 import { EventEmitter } from 'events';
 import { TaskRunnerImpl } from './taskRunner';
 import { EventMediator } from '../../common/eventMediator';
-import { FinishedFixturesProcessor } from './finishedFixtures.processor';
+import { FinishedMatchesProcessor } from './finishedMatches.processor';
 import { Scheduler } from '../schedulers';
 
-export class FinishedFixturesScheduler extends EventEmitter
+export class FinishedMatchesScheduler extends EventEmitter
   implements Scheduler {
   private _processing = false;
   private _running = false;
@@ -12,8 +12,8 @@ export class FinishedFixturesScheduler extends EventEmitter
 
   constructor(
     private taskRunner: TaskRunnerImpl,
-    // private fixtureRepo: FixtureRepository,
-    private finishedFixturesProcessor: FinishedFixturesProcessor,
+    // private matchRepo: MatchRepository,
+    private finishedMatchesProcessor: FinishedMatchesProcessor,
     private eventMediator: EventMediator,
   ) {
     super();
@@ -38,7 +38,7 @@ export class FinishedFixturesScheduler extends EventEmitter
         whenToExecute: this.RUN_INTERVAL,
         context: this,
         task: async () => {
-          await this.processFinishedFixtures();
+          await this.processFinishedMatches();
           this.emit('task:executed');
         },
       });
@@ -52,21 +52,21 @@ export class FinishedFixturesScheduler extends EventEmitter
     });
   };
 
-  public processFinishedFixtures = async () => {
+  public processFinishedMatches = async () => {
     if (this._processing) {
       return;
     }
-    // let fixtures = await this.fixtureRepo.findAllFinishedWithPendingPredictions$();
+    // let matches = await this.matchRepo.findAllFinishedWithPendingPredictions$();
     // await processPredictions(fs);
   };
 
-  public processPredictions = async (finishedFixtures: any[]) => {
-    if (Array.isArray(finishedFixtures) && finishedFixtures.length) {
-      await this.finishedFixturesProcessor.processPredictions(finishedFixtures);
-      // await leaderboardUpdater.updateScores(finishedFixtures)
+  public processPredictions = async (finishedMatches: any[]) => {
+    if (Array.isArray(finishedMatches) && finishedMatches.length) {
+      await this.finishedMatchesProcessor.processPredictions(finishedMatches);
+      // await leaderboardUpdater.updateScores(finishedMatches)
       // await leaderboardUpdater.updateRankigs()
       // await leaderboardUpdater.markLeaderboardsAsRefreshed()
-      // await finishedFixturesProcessor.setToTrueAllPredictionsProcessed(fixtures)
+      // await finishedMatchesProcessor.setToTrueAllPredictionsProcessed(matches)
     }
     this.eventMediator.publish('predictions:processed');
   };

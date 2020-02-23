@@ -31,7 +31,7 @@ class ApiFootballDataClient implements FootballApiClient {
     );
   }
 
-  public getFixtures(competitionId: number | string, options?: any) {
+  public getMatches(competitionId: number | string, options?: any) {
     const apiResource = `/competitions/${competitionId}/matches`;
 
     return request(this._getOptions(this.apiKey, apiResource, options)).then(
@@ -39,15 +39,15 @@ class ApiFootballDataClient implements FootballApiClient {
     );
   }
 
-  public getTodaysFixtures() {
+  public getTodaysMatches() {
     throw new Error('Method not implemented.');
   }
 
-  public getTomorrowsFixtures() {
+  public getTomorrowsMatches() {
     throw new Error('Method not implemented.');
   }
 
-  public getYesterdaysFixtures() {
+  public getYesterdaysMatches() {
     throw new Error('Method not implemented.');
   }
 

@@ -2,48 +2,48 @@ import { from } from 'rxjs';
 import { concatMap, filter, flatMap, map, count } from 'rxjs/operators';
 
 import { PredictionStatus } from '../../db/models/prediction.model';
-import { FixtureEntity, FixtureStatus } from '../../db/models/fixture.model';
+import { MatchEntity, MatchStatus } from '../../db/models/match.model';
 import {
   IPredictionProcessor,
   PredictionProcessor,
 } from './prediction.processor';
 import {
-  FixtureRepository,
-  FixtureRepositoryImpl,
-} from '../../db/repositories/fixture.repo';
+  MatchRepository,
+  MatchRepositoryImpl,
+} from '../../db/repositories/match.repo';
 
-export interface FinishedFixturesProcessor {
-  processPredictions(fixtures: FixtureEntity[]): Promise<number>;
-  setToTrueAllPredictionsProcessed(fixtures: FixtureEntity[]): Promise<number>;
+export interface FinishedMatchesProcessor {
+  processPredictions(matches: MatchEntity[]): Promise<number>;
+  setToTrueAllPredictionsProcessed(matches: MatchEntity[]): Promise<number>;
 }
 
-export class FinishedFixturesProcessorImpl implements FinishedFixturesProcessor {
+export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
   public static getInstance() {
-    return new FinishedFixturesProcessorImpl(
+    return new FinishedMatchesProcessorImpl(
       PredictionProcessor.getInstance(),
-      FixtureRepositoryImpl.getInstance(),
+      MatchRepositoryImpl.getInstance(),
     );
   }
 
   constructor(
     private predictionProcessor: IPredictionProcessor,
-    private fixtureRepo: FixtureRepository,
+    private matchRepo: MatchRepository,
   ) { }
 
-  public processPredictions(fixtures: FixtureEntity[]) {
-    return from(fixtures)
+  public processPredictions(matches: MatchEntity[]) {
+    return from(matches)
       .pipe(
-        filter(fixture => {
+        filter(match => {
           return (
-            fixture.status === FixtureStatus.FINISHED &&
-            fixture.allPredictionsProcessed === false
+            match.status === MatchStatus.FINISHED &&
+            match.allPredictionsProcessed === false
           );
         }),
       )
       .pipe(
-        concatMap(fixture => {
+        concatMap(match => {
           return this.predictionProcessor
-            .getPredictions$(fixture)
+            .getPredictions$(match)
             .pipe(
               flatMap(predictions => {
                 return from(predictions);
@@ -51,7 +51,7 @@ export class FinishedFixturesProcessorImpl implements FinishedFixturesProcessor 
             )
             .pipe(
               map(prediction => {
-                return { fixture, prediction };
+                return { match, prediction };
               }),
             );
         }),
@@ -63,10 +63,10 @@ export class FinishedFixturesProcessorImpl implements FinishedFixturesProcessor 
       )
       .pipe(
         flatMap(data => {
-          const { fixture, prediction } = data;
+          const { match, prediction } = data;
           return this.predictionProcessor.processPrediction$(
             prediction,
-            fixture,
+            match,
           );
         }),
       )
@@ -74,19 +74,19 @@ export class FinishedFixturesProcessorImpl implements FinishedFixturesProcessor 
       .toPromise();
   }
 
-  public setToTrueAllPredictionsProcessed(fixtures: FixtureEntity[]) {
-    return from(fixtures)
+  public setToTrueAllPredictionsProcessed(matches: MatchEntity[]) {
+    return from(matches)
       .pipe(
-        filter(fixture => {
+        filter(match => {
           return (
-            fixture.status === FixtureStatus.FINISHED &&
-            fixture.allPredictionsProcessed === false
+            match.status === MatchStatus.FINISHED &&
+            match.allPredictionsProcessed === false
           );
         }),
       )
       .pipe(
-        flatMap(fixture => {
-          return this.fixtureRepo.findByIdAndUpdate$(fixture.id!, {
+        flatMap(match => {
+          return this.matchRepo.findByIdAndUpdate$(match.id!, {
             allPredictionsProcessed: true,
           });
         }),

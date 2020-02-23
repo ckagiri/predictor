@@ -1,19 +1,19 @@
 import { Observable, zip } from 'rxjs';
 
-import { FixtureConverter } from '../fixture.converter';
+import { MatchConverter } from '../match.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../repositories/season.repo';
 import { TeamRepository, TeamRepositoryImpl } from '../../repositories/team.repo';
-import { FixtureEntity } from '../../models/fixture.model';
+import { MatchEntity } from '../../models/match.model';
 import { SeasonEntity } from '../../models/season.model';
 import { TeamEntity } from '../../models/team.model';
 
-export class AfdFixtureConverter implements FixtureConverter {
-  public static getInstance(): FixtureConverter {
-    return new AfdFixtureConverter(
+export class AfdMatchConverter implements MatchConverter {
+  public static getInstance(): MatchConverter {
+    return new AfdMatchConverter(
       SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
       TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
@@ -27,7 +27,7 @@ export class AfdFixtureConverter implements FixtureConverter {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<FixtureEntity> {
+  public from(data: any): Observable<MatchEntity> {
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.name),

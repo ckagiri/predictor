@@ -1,7 +1,7 @@
 import { Observable, zip } from 'rxjs';
 
-import { FixtureEntity } from '../../models/fixture.model';
-import { FixtureConverter } from '../fixture.converter';
+import { MatchEntity } from '../../models/match.model';
+import { MatchConverter } from '../match.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
   SeasonRepository,
@@ -9,9 +9,9 @@ import {
 } from '../../repositories/season.repo';
 import { TeamRepository, TeamRepositoryImpl } from '../../repositories/team.repo';
 
-export class LigiFixtureConverter implements FixtureConverter {
-  public static getInstance(): FixtureConverter {
-    return new LigiFixtureConverter(
+export class LigiMatchConverter implements MatchConverter {
+  public static getInstance(): MatchConverter {
+    return new LigiMatchConverter(
       SeasonRepositoryImpl.getInstance(ApiProvider.LIGI),
       TeamRepositoryImpl.getInstance(ApiProvider.LIGI),
     );
@@ -26,7 +26,7 @@ export class LigiFixtureConverter implements FixtureConverter {
     this.provider = ApiProvider.LIGI;
   }
 
-  public from(data: any): Observable<FixtureEntity> {
+  public from(data: any): Observable<MatchEntity> {
     return zip(
       this.seasonRepo.findById$(data.seasonId),
       this.teamRepo.findById$(data.homeTeamId),

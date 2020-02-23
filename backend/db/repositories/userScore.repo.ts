@@ -13,7 +13,7 @@ export interface UserScoreRepository extends BaseRepository<UserScoreEntity> {
   findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
-    fixtureId: string,
+    matchId: string,
     predictionId: string,
     predictionPoints: ScorePoints,
     hasJoker: boolean,
@@ -37,7 +37,7 @@ export class UserScoreRepositoryImpl
   public findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
-    fixtureId: string,
+    matchId: string,
     predictionId: string,
     predictionPoints: ScorePoints,
     hasJoker: boolean,
@@ -69,7 +69,7 @@ export class UserScoreRepositoryImpl
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
       flatMap(standing => {
         if (standing === null) {
-          score.fixtures = [fixtureId];
+          score.matches = [matchId];
           score.predictions = [predictionId];
           score.pointsExcludingJoker = points;
           score.APointsExcludingJoker = APoints;
@@ -86,9 +86,9 @@ export class UserScoreRepositoryImpl
           }
           return this.insert$(score);
         } else {
-          const fixtures = standing.fixtures as string[];
-          const fixtureExists = fixtures.some(n => n.toString() === fixtureId);
-          if (fixtureExists) {
+          const matches = standing.matches as string[];
+          const matchExists = matches.some(n => n.toString() === matchId);
+          if (matchExists) {
             return of(standing);
           }
 
@@ -130,7 +130,7 @@ export class UserScoreRepositoryImpl
               APointsExcludingJoker: standing.APointsExcludingJoker,
               BPointsExcludingJoker: standing.BPointsExcludingJoker,
             },
-            $push: { fixtures: fixtureId, predictions: predictionId },
+            $push: { matches: matchId, predictions: predictionId },
           });
         }
       }),

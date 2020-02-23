@@ -5,8 +5,8 @@ import { Queue } from '../queue';
 import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
 import { SeasonRepository } from '../../db/repositories/season.repo';
 import { TeamRepository } from '../../db/repositories/team.repo';
-import { FixtureRepository } from '../../db/repositories/fixture.repo';
-import { FixturesJob } from './fixtures.job';
+import { MatchRepository } from '../../db/repositories/match.repo';
+import { MatchesJob } from './matches.job';
 import { TeamsJob } from './teams.job';
 import Builder from './competitionJob.builder';
 
@@ -15,13 +15,13 @@ export class CompetitionJob implements Job {
   private apiClient: FootballApiClient;
   private seasonRepo: SeasonRepository;
   private teamRepo: TeamRepository;
-  private fixtureRepo: FixtureRepository;
+  private matchRepo: MatchRepository;
 
   constructor(builder: Builder) {
     this.apiClient = builder.ApiClient;
     this.seasonRepo = builder.SeasonRepo;
     this.teamRepo = builder.TeamRepo;
-    this.fixtureRepo = builder.FixtureRepo;
+    this.matchRepo = builder.MatchRepo;
     this.competitionId = builder.CompetitionId;
   }
 
@@ -42,8 +42,8 @@ export class CompetitionJob implements Job {
           return this.seasonRepo.findByExternalIdAndUpdate$(season);
         }),
         map(_ => {
-          const fixturesJob = FixturesJob.Builder.setApiClient(this.apiClient)
-            .setFixtureRepo(this.fixtureRepo)
+          const matchesJob = MatchesJob.Builder.setApiClient(this.apiClient)
+            .setMatchRepo(this.matchRepo)
             .withCompetition(this.competitionId)
             .build();
 
@@ -52,7 +52,7 @@ export class CompetitionJob implements Job {
             .withCompetition(this.competitionId)
             .build();
 
-          queue.addJob(fixturesJob);
+          queue.addJob(matchesJob);
           queue.addJob(teamsJob);
         }),
       )

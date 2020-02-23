@@ -5,10 +5,10 @@ export interface FootballApiClient {
   getCompetitions(year: number): any;
   getCompetition(competitionId: number | string): any;
   getTeams(competitionId: number | string): any;
-  getFixtures(competitionId: number | string, options?: any): any;
-  getTodaysFixtures(): any;
-  getTomorrowsFixtures(): any;
-  getYesterdaysFixtures(): any;
+  getMatches(competitionId: number | string, options?: any): any;
+  getTodaysMatches(): any;
+  getTomorrowsMatches(): any;
+  getYesterdaysMatches(): any;
 }
 
 export class FootballApiClientImpl {

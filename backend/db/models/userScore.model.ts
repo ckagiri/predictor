@@ -7,7 +7,7 @@ export interface UserScoreEntity extends Entity {
   id?: string;
   leaderboard: string;
   user: string;
-  fixtures?: string[];
+  matches?: string[];
   predictions?: string[];
   points: number;
   APoints: number;
@@ -38,7 +38,7 @@ const userScoreSchema = new Schema({
     required: true,
     index: true,
   },
-  fixtures: [{ type: ObjectId, ref: 'Fixture' }],
+  matches: [{ type: ObjectId, ref: 'Match' }],
   predictions: [{ type: ObjectId, ref: 'Prediction' }],
   points: { type: Number },
   APoints: { type: Number },

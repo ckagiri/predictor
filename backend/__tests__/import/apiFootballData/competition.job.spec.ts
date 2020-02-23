@@ -7,7 +7,7 @@ const expect = chai.expect;
 import { of } from 'rxjs';
 
 import { CompetitionJob } from '../../../import/apiFootballData/competition.job';
-import { FixturesJob } from '../../../import/apiFootballData/fixtures.job';
+import { MatchesJob } from '../../../import/apiFootballData/matches.job';
 import { TeamsJob } from '../../../import/apiFootballData/teams.job';
 
 import competition from '../../fixtures/requests/apiFootballData.eplCompetitions.json';
@@ -72,13 +72,13 @@ describe('ApiFootballData:Competition Job', () => {
       );
     });
 
-    it('should add fixturesJob to queue', async () => {
+    it('should add matchesJob to queue', async () => {
       const spy = sinon.spy(queueStub, 'addJob');
 
       await job.start(queueStub);
 
       expect(spy).to.have.been.called.and.to.have.been.calledWith(
-        sinon.match.instanceOf(FixturesJob),
+        sinon.match.instanceOf(MatchesJob),
       );
 
       queueStub.addJob.restore();

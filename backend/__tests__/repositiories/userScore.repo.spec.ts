@@ -7,10 +7,10 @@ import { League, LeagueEntity } from '../../db/models/league.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, TeamEntity } from '../../db/models/team.model';
 import {
-  Fixture,
-  FixtureEntity,
-  FixtureStatus,
-} from '../../db/models/fixture.model';
+  Match,
+  MatchEntity,
+  MatchStatus,
+} from '../../db/models/match.model';
 import { Prediction, PredictionEntity } from '../../db/models/prediction.model';
 import {
   Leaderboard,
@@ -30,8 +30,8 @@ let team1: any;
 let team2: any;
 let team3: any;
 let team4: any;
-let fixture1: any;
-let fixture2: any;
+let match1: any;
+let match2: any;
 let user1Pred1: any;
 let user1Pred2: any;
 let user2Pred1: any;
@@ -92,9 +92,9 @@ const ars: TeamEntity = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: FixtureEntity = {
+const manuVmanc: MatchEntity = {
   date: '2017-09-10T11:30:00Z',
-  status: FixtureStatus.SCHEDULED,
+  status: MatchStatus.SCHEDULED,
   matchRound: 20,
   gameRound: 20,
   season: undefined,
@@ -104,9 +104,9 @@ const manuVmanc: FixtureEntity = {
   result: undefined,
 };
 
-const cheVars: FixtureEntity = {
+const cheVars: MatchEntity = {
   date: '2017-09-10T11:30:00Z',
-  status: FixtureStatus.SCHEDULED,
+  status: MatchStatus.SCHEDULED,
   matchRound: 20,
   gameRound: 20,
   season: undefined,
@@ -181,17 +181,17 @@ describe('UserScore Repo', function () {
           crestUrl: team4.crestUrl,
         };
         cheVars.slug = `${team3.slug}-${team4.slug}`;
-        return Fixture.create([manuVmanc, cheVars]);
+        return Match.create([manuVmanc, cheVars]);
       })
-      .then(fixtures => {
-        fixture1 = fixtures[0];
-        fixture2 = fixtures[1];
+      .then(matches => {
+        match1 = matches[0];
+        match2 = matches[1];
         const pred1: PredictionEntity = {
           user: user1.id,
-          fixture: fixture1.id,
-          fixtureSlug: fixture1.slug,
+          match: match1.id,
+          matchSlug: match1.slug,
           season: theSeason.id,
-          gameRound: fixture1.gameRound,
+          gameRound: match1.gameRound,
           choice: {
             goalsHomeTeam: 1,
             goalsAwayTeam: 0,
@@ -200,10 +200,10 @@ describe('UserScore Repo', function () {
         };
         const pred2: PredictionEntity = {
           user: user1.id,
-          fixture: fixture2.id,
-          fixtureSlug: fixture2.slug,
+          match: match2.id,
+          matchSlug: match2.slug,
           season: theSeason.id,
-          gameRound: fixture2.gameRound,
+          gameRound: match2.gameRound,
           choice: {
             goalsHomeTeam: 2,
             goalsAwayTeam: 0,
@@ -212,10 +212,10 @@ describe('UserScore Repo', function () {
         };
         const pred3: PredictionEntity = {
           user: user2.id,
-          fixture: fixture1.id,
-          fixtureSlug: fixture1.slug,
+          match: match1.id,
+          matchSlug: match1.slug,
           season: theSeason.id,
-          gameRound: fixture1.gameRound,
+          gameRound: match1.gameRound,
           choice: {
             goalsHomeTeam: 3,
             goalsAwayTeam: 0,
@@ -264,7 +264,7 @@ describe('UserScore Repo', function () {
     it('should create a userScore if it does not exist', done => {
       const leaderboardId = sBoard.id;
       const userId = user1.id;
-      const fixtureId = fixture1.id;
+      const matchId = match1.id;
       const predictionId = user1Pred1.id;
       const predictionPoints: ScorePoints = {
         points: 7,
@@ -281,7 +281,7 @@ describe('UserScore Repo', function () {
         .findOneAndUpsert$(
           leaderboardId,
           userId,
-          fixtureId,
+          matchId,
           predictionId,
           predictionPoints,
           hasJoker,
@@ -293,7 +293,7 @@ describe('UserScore Repo', function () {
           expect(score.points).to.equal(14);
           expect(score.APoints).to.equal(14);
           expect(score.BPoints).to.equal(0);
-          expect(score.fixtures).to.contain(fixture1.id);
+          expect(score.matches).to.contain(match1.id);
           expect(score.predictions).to.contain(user1Pred1.id);
           done();
         });
@@ -302,7 +302,7 @@ describe('UserScore Repo', function () {
     it('should update a userScore if it exists', done => {
       const leaderboardId = sBoard.id;
       const userId = user1.id;
-      let fixtureId = fixture1.id;
+      let matchId = match1.id;
       let predictionId = user1Pred1.id;
       const score1: UserScoreEntity = {
         leaderboard: leaderboardId,
@@ -315,7 +315,7 @@ describe('UserScore Repo', function () {
         ExactScorePoints: 0,
         GoalDifferencePoints: 0,
         TeamScoreMinusPoints: 0,
-        fixtures: [fixtureId],
+        matches: [matchId],
         predictions: [predictionId],
         pointsExcludingJoker: 7,
         APointsExcludingJoker: 7,
@@ -336,12 +336,12 @@ describe('UserScore Repo', function () {
               TeamScoreMinusPoints: 0,
             };
             const hasJoker = false;
-            fixtureId = fixture2.id;
+            matchId = match2.id;
             predictionId = user1Pred2.id;
             return userScoreRepo.findOneAndUpsert$(
               leaderboardId,
               userId,
-              fixtureId,
+              matchId,
               predictionId,
               predictionPoints,
               hasJoker,
@@ -355,7 +355,7 @@ describe('UserScore Repo', function () {
           expect(score.points).to.equal(24);
           expect(score.APoints).to.equal(22);
           expect(score.BPoints).to.equal(2);
-          expect(score.fixtures).to.contain(fixture1.id, fixture2.id);
+          expect(score.matches).to.contain(match1.id, match2.id);
           expect(score.predictions).to.contain(user1Pred1.id, user1Pred2.id);
           done();
         });
@@ -364,7 +364,7 @@ describe('UserScore Repo', function () {
 
   it('should find by leaderboard and order by points', done => {
     const leaderboardId = sBoard.id;
-    const fixtureId = fixture1.id;
+    const matchId = match1.id;
     const score1: UserScoreEntity = {
       leaderboard: leaderboardId,
       user: user1.id,
@@ -376,7 +376,7 @@ describe('UserScore Repo', function () {
       ExactScorePoints: 0,
       GoalDifferencePoints: 0,
       TeamScoreMinusPoints: 0,
-      fixtures: [fixtureId],
+      matches: [matchId],
       predictions: [user1Pred1.id],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,
@@ -393,7 +393,7 @@ describe('UserScore Repo', function () {
       ExactScorePoints: 1,
       GoalDifferencePoints: 1,
       TeamScoreMinusPoints: 0,
-      fixtures: [fixtureId],
+      matches: [matchId],
       predictions: [user2Pred1.id],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,
@@ -415,7 +415,7 @@ describe('UserScore Repo', function () {
   it('should find by id and update positions', done => {
     const leaderboardId = sBoard.id;
     const userId = user1.id;
-    const fixtureId = fixture1.id;
+    const matchId = match1.id;
     const predictionId = user1Pred1.id;
     const score1: UserScoreEntity = {
       leaderboard: leaderboardId,
@@ -428,7 +428,7 @@ describe('UserScore Repo', function () {
       ExactScorePoints: 0,
       GoalDifferencePoints: 0,
       TeamScoreMinusPoints: 0,
-      fixtures: [fixtureId],
+      matches: [matchId],
       predictions: [predictionId],
       pointsExcludingJoker: 7,
       APointsExcludingJoker: 7,

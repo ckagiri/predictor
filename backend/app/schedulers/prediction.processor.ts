@@ -2,9 +2,9 @@ import { Observable, from, of } from 'rxjs';
 import { map, flatMap, toArray } from 'rxjs/operators';
 
 import {
-  FixtureRepository,
-  FixtureRepositoryImpl,
-} from '../../db/repositories/fixture.repo';
+  MatchRepository,
+  MatchRepositoryImpl,
+} from '../../db/repositories/match.repo';
 import {
   UserRepository,
   UserRepositoryImpl,
@@ -15,7 +15,7 @@ import {
 } from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
-import { FixtureEntity } from '../../db/models/fixture.model';
+import { MatchEntity } from '../../db/models/match.model';
 import {
   PredictionEntity,
   PredictionStatus,
@@ -23,40 +23,40 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface IPredictionProcessor {
-  getPredictions$(fixture: FixtureEntity): Observable<PredictionEntity[]>;
+  getPredictions$(match: MatchEntity): Observable<PredictionEntity[]>;
   processPrediction$(
     prediction: PredictionEntity,
-    fixture: FixtureEntity,
+    match: MatchEntity,
   ): Observable<PredictionEntity>;
 }
 
 export class PredictionProcessor implements IPredictionProcessor {
   public static getInstance() {
     return new PredictionProcessor(
-      FixtureRepositoryImpl.getInstance(ApiProvider.LIGI),
+      MatchRepositoryImpl.getInstance(ApiProvider.LIGI),
       UserRepositoryImpl.getInstance(),
       PredictionRepositoryImpl.getInstance(),
       PredictionCalculator.getInstance(),
     );
   }
   constructor(
-    private fixtureRepo: FixtureRepository,
+    private matchRepo: MatchRepository,
     private userRepo: UserRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
   ) { }
 
-  public getPredictions$(fixture: FixtureEntity) {
-    const { season: seasonId, gameRound } = fixture;
-    return this.fixtureRepo
-      .findSelectableFixtures$(seasonId!, gameRound!)
+  public getPredictions$(match: MatchEntity) {
+    const { season: seasonId, gameRound } = match;
+    return this.matchRepo
+      .findSelectableMatches$(seasonId!, gameRound!)
       .pipe(
-        map(selectableFixtures => {
-          return [...selectableFixtures, fixture].map(n => n.id!);
+        map(selectableMatches => {
+          return [...selectableMatches, match].map(n => n.id!);
         }),
       )
       .pipe(
-        flatMap(fixtureIds => {
+        flatMap(matchIds => {
           return this.userRepo
             .findAll$()
             .pipe(
@@ -67,7 +67,7 @@ export class PredictionProcessor implements IPredictionProcessor {
             .pipe(
               map(user => {
                 return {
-                  selectableFixtureIds: fixtureIds,
+                  selectableMatchIds: matchIds,
                   user,
                 };
               }),
@@ -76,14 +76,14 @@ export class PredictionProcessor implements IPredictionProcessor {
       )
       .pipe(
         flatMap(data => {
-          const selectableFixtureIds = data.selectableFixtureIds;
+          const selectableMatchIds = data.selectableMatchIds;
           const userId = data.user.id;
           return this.predictionRepo
             .findOrCreateJoker$(
               userId!,
               seasonId!,
               gameRound!,
-              selectableFixtureIds,
+              selectableMatchIds,
             )
             .pipe(
               map(jokerPrediction => {
@@ -97,24 +97,24 @@ export class PredictionProcessor implements IPredictionProcessor {
       )
       .pipe(
         flatMap(data => {
-          const fixtureId = fixture.id;
+          const matchId = match.id;
           const { userId, jokerPrediction } = data;
 
-          if (jokerPrediction.fixture === fixtureId) {
+          if (jokerPrediction.match === matchId) {
             return of(jokerPrediction);
           }
           return this.predictionRepo.findOneOrCreate$({
             userId: userId!,
-            fixtureId: fixtureId!,
+            matchId: matchId!,
           });
         }),
       )
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: PredictionEntity, fixture: FixtureEntity) {
+  public processPrediction$(prediction: PredictionEntity, match: MatchEntity) {
     const { choice } = prediction;
-    const { result } = fixture;
+    const { result } = match;
     const scorePoints = this.predictionCalculator.calculateScore(
       choice,
       result!,
