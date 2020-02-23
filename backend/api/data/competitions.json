@@ -2,13 +2,13 @@
   {
     "id": 1,
     "name": "English Premier League",
-    "slug": "english-premier-league",
+    "slug": "english-premier-competition",
     "code": "EPL"
   },
   {
     "id": 2,
     "name": "Kenya Premier League",
-    "slug": "kenya-premier-league",
+    "slug": "kenya-premier-competition",
     "code": "KPL"
   }
 ]

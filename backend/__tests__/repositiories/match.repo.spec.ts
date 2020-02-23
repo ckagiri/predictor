@@ -4,7 +4,7 @@ import { flatMap } from 'rxjs/operators';
 
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { League } from '../../db/models/league.model';
+import { Competition } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 
@@ -24,14 +24,14 @@ const epl17 = {
   seasonEnd: '2018-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: null,
+  competition: null,
   externalReference: null,
 };
 
 const afdEpl17 = {
   id: 445,
   caption: 'Premier League 2017/18',
-  league: 'PL',
+  competition: 'PL',
   year: '2017',
   currentMatchday: 20,
   numberOfMatchdays: 38,
@@ -113,12 +113,12 @@ describe('MatchRepo', function () {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   beforeEach(done => {
-    League.create(epl)
+    Competition.create(epl)
       .then(l => {
         const { name, slug, id } = l;
         const theEpl17 = {
           ...epl17,
-          league: { name, slug, id },
+          competition: { name, slug, id },
           externalReference: {
             [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
           },

@@ -6,7 +6,7 @@ export interface SeasonEntity extends Entity {
   name?: string;
   year?: string | number;
   slug?: string;
-  league?: {
+  competition?: {
     name: string;
     slug: string;
     id: string;
@@ -24,10 +24,10 @@ export interface SeasonDocument extends SeasonEntity, DocumentEntity { }
 const { ObjectId, Mixed } = Schema.Types;
 
 export const seasonSchema = new Schema({
-  league: {
+  competition: {
     name: { type: String, required: true },
     slug: { type: String, required: true },
-    id: { type: ObjectId, ref: 'League', index: true, required: true },
+    id: { type: ObjectId, ref: 'Competition', index: true, required: true },
   },
   name: { type: String, required: true },
   slug: { type: String, required: true, trim: true },

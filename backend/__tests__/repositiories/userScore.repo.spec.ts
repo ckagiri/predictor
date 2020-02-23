@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
-import { League, LeagueEntity } from '../../db/models/league.model';
+import { Competition, CompetitionEntity } from '../../db/models/competition.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, TeamEntity } from '../../db/models/team.model';
 import {
@@ -37,7 +37,7 @@ let user1Pred2: any;
 let user2Pred1: any;
 let sBoard: any;
 
-const epl: LeagueEntity = {
+const epl: CompetitionEntity = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
@@ -51,7 +51,7 @@ const epl18: SeasonEntity = {
   seasonEnd: '2018-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: undefined,
+  competition: undefined,
 };
 
 const manu: TeamEntity = {
@@ -137,11 +137,11 @@ describe('UserScore Repo', function () {
       .then(users => {
         user1 = users[0];
         user2 = users[1];
-        return League.create(epl);
+        return Competition.create(epl);
       })
       .then(l => {
         const { name, slug, id } = l;
-        epl18.league = { name, slug, id: id! };
+        epl18.competition = { name, slug, id: id! };
         return Season.create(epl18);
       })
       .then(s => {

@@ -14,7 +14,7 @@ const epl18 = {
   seasonEnd: '2019-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
-  league: null,
+  competition: null,
 };
 
 const manu = {

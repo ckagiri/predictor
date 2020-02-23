@@ -2,7 +2,7 @@ import seedData from '../tasks/seedData/seed-epl19.json';
 
 import mongooseSeeder = require('mais-mongoose-seeder');
 import mongoose = require('mongoose');
-import('../models/league.model');
+import('../models/competition.model');
 import('../models/season.model');
 import('../models/team.model');
 

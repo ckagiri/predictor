@@ -1,6 +1,6 @@
 {
-  "leagues": {
-    "_model": "League",
+  "competitions": {
+    "_model": "Competition",
     "epl": {
       "name": "English Premier League",
       "code": "PL",
@@ -234,10 +234,10 @@
           "id": 468
         }
       },
-      "league": {
-        "id": "->leagues.epl",
-        "name": "->leagues.epl.name",
-        "slug": "->leagues.epl.slug"
+      "competition": {
+        "id": "->competitions.epl",
+        "name": "->competitions.epl.name",
+        "slug": "->competitions.epl.slug"
       },
       "name": "2018-2019",
       "slug": "2018-19",

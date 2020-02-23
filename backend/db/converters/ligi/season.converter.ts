@@ -3,32 +3,32 @@ import { flatMap } from 'rxjs/operators';
 import { SeasonEntity } from '../../models/season.model';
 import { SeasonConverter } from '../season.converter';
 import {
-  LeagueRepository,
-  LeagueRepositoryImpl,
-} from '../../repositories/league.repo';
+  CompetitionRepository,
+  CompetitionRepositoryImpl,
+} from '../../repositories/competition.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 export class LigiSeasonConverter implements SeasonConverter {
   public static getInstance(): SeasonConverter {
     return new LigiSeasonConverter(
-      LeagueRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      CompetitionRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
   public provider: ApiProvider;
 
-  constructor(private leagueRepo: LeagueRepository) {
+  constructor(private competitionRepo: CompetitionRepository) {
     this.provider = ApiProvider.API_FOOTBALL_DATA;
   }
 
   public from(data: any): Observable<SeasonEntity> {
-    return this.leagueRepo.findById$(data.leagueId).pipe(
-      flatMap(league => {
+    return this.competitionRepo.findById$(data.competitionId).pipe(
+      flatMap(competition => {
         return of({
           ...data,
-          league: {
-            id: league.id!,
-            name: league.name,
-            slug: league.slug,
+          competition: {
+            id: competition.id!,
+            name: competition.name,
+            slug: competition.slug,
           },
         });
       }),
