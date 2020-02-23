@@ -1,5 +1,5 @@
 import { Queue } from '../queue';
-import { IJob } from '../jobs/job';
+import { Job } from '../jobs/job';
 import { CompetitionJob } from './competition.job';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import {
@@ -19,7 +19,7 @@ import {
   FixtureRepositoryImpl,
 } from '../../db/repositories/fixture.repo';
 
-export class MainJob implements IJob {
+export class MainJob implements Job {
   public static getInstance() {
     return new MainJob(
       FootballApiClient.getInstance(ApiProvider.API_FOOTBALL_DATA),

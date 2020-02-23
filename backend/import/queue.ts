@@ -1,10 +1,10 @@
-import { IJob } from './jobs/job';
+import { Job } from './jobs/job';
 
 export class Queue {
   public tokensInInterval: number;
   public tokensLeftInInterval: number;
   public timeInterval: number;
-  public jobs: IJob[];
+  public jobs: Job[];
   public pendingJobs: any[];
   public isActive: boolean;
   public timer: any;
@@ -48,7 +48,7 @@ export class Queue {
     }, this.timeInterval);
   };
 
-  public addJob = (job: IJob) => {
+  public addJob = (job: Job) => {
     this.jobs.push(job);
     if (!this.isActive) {
       this.start();
@@ -57,19 +57,19 @@ export class Queue {
 
   public processJobQueue = () => {
     if (this.jobs.length > 0) {
-      const job = this.jobs.pop() as IJob;
+      const job = this.jobs.pop() as Job;
       this.processLastJob(job);
     } else {
       this.cleanUp();
     }
   };
 
-  public processLastJob = (job: IJob) => {
+  public processLastJob = (job: Job) => {
     const wrappedJob = this.wrapJob(job);
     wrappedJob();
   };
 
-  public wrapJob = (job: IJob) => {
+  public wrapJob = (job: Job) => {
     const self = this;
     return async () => {
       if (self.tokensLeftInInterval > 0) {

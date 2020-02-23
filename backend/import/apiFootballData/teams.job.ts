@@ -1,12 +1,12 @@
 import { from } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
-import { IJob } from '../jobs/job';
+import { Job } from '../jobs/job';
 import { Queue } from '../queue';
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
 import { TeamRepository } from '../../db/repositories/team.repo';
 import Builder from './teamsJob.builder';
 
-export class TeamsJob implements IJob {
+export class TeamsJob implements Job {
   private competitionId: number | string;
   private apiClient: IFootballApiClient;
   private teamRepo: TeamRepository;

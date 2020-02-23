@@ -1,5 +1,5 @@
 import { Queue } from '../queue';
 
-export interface IJob {
+export interface Job {
   start(queue: Queue): any;
 }
