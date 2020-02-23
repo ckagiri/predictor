@@ -14,7 +14,7 @@ export interface FootballApiClient {
 export class FootballApiClientImpl {
   public static getInstance(provider: ApiProvider): FootballApiClient {
     switch (provider) {
-      case ApiProvider.LIGI:
+      case ApiProvider.API_FOOTBALL_DATA:
         return ApiFootballDataClient.getInstance();
       default:
         throw new Error('FootballApiClient for Provider does not exist');
