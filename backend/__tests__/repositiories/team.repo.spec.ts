@@ -46,7 +46,7 @@ const afdManc = {
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
 };
 
-describe('teamRepo', function () {
+describe('teamRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -80,7 +80,9 @@ describe('teamRepo', function () {
   });
 
   it('should findByName using name', done => {
-    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -101,7 +103,9 @@ describe('teamRepo', function () {
   });
 
   it('should findByName using shortName', done => {
-    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -123,7 +127,9 @@ describe('teamRepo', function () {
   });
 
   it('should findByName using alias', done => {
-    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -145,7 +151,9 @@ describe('teamRepo', function () {
   });
 
   it('should findByNameAndUpsert', done => {
-    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
 
     teamRepo
       .insert$(manu)
@@ -170,7 +178,9 @@ describe('teamRepo', function () {
   });
 
   it('should retain external reference when doing findByNameAndUpsert', done => {
-    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA);
+    const teamRepo = TeamRepositoryImpl.getInstance(
+      ApiProvider.API_FOOTBALL_DATA,
+    );
     const theManu = {
       ...manu,
       externalReference: { SomeOtherApi: { id: 'someExternalId' } },

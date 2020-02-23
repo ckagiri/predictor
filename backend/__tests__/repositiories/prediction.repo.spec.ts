@@ -3,14 +3,13 @@ import { expect } from 'chai';
 
 import * as db from '../../db';
 import { User, UserEntity } from '../../db/models/user.model';
-import { Competition, CompetitionEntity } from '../../db/models/competition.model';
+import {
+  Competition,
+  CompetitionEntity,
+} from '../../db/models/competition.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, TeamEntity } from '../../db/models/team.model';
-import {
-  Match,
-  MatchEntity,
-  MatchStatus,
-} from '../../db/models/match.model';
+import { Match, MatchEntity, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
   PredictionEntity,
@@ -119,7 +118,7 @@ const kagiri: UserEntity = {
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function () {
+describe('Prediction repo', function() {
   this.timeout(5000);
 
   before(done => {

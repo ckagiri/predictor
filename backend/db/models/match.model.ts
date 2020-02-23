@@ -41,7 +41,7 @@ export interface MatchEntity extends Entity {
   [key: string]: any;
 }
 
-export interface MatchDocument extends MatchEntity, DocumentEntity { }
+export interface MatchDocument extends MatchEntity, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 

@@ -14,7 +14,8 @@ export interface TeamRepository extends BaseProviderRepository<TeamEntity> {
   findByName$(name: string): Observable<TeamEntity>;
 }
 
-export class TeamRepositoryImpl extends BaseProviderRepositoryImpl<TeamEntity, TeamDocument>
+export class TeamRepositoryImpl
+  extends BaseProviderRepositoryImpl<TeamEntity, TeamDocument>
   implements TeamRepository {
   public static getInstance(provider: ApiProvider): TeamRepository {
     return new TeamRepositoryImpl(TeamConverterImpl.getInstance(provider));

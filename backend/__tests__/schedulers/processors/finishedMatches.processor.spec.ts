@@ -110,5 +110,5 @@ describe('Finished Matches', () => {
     });
   });
 
-  describe('setToTrueAllPredictionsProcessed', () => { });
+  describe('setToTrueAllPredictionsProcessed', () => {});
 });

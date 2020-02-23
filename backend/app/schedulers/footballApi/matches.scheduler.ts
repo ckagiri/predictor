@@ -8,7 +8,10 @@ import {
   FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { EventMediator, EventMediatorImpl } from '../../../common/eventMediator';
+import {
+  EventMediator,
+  EventMediatorImpl,
+} from '../../../common/eventMediator';
 import {
   MatchConverter,
   MatchConverterImpl,
@@ -108,9 +111,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
 
   public calculateNextUpdate = (matchList: MatchEntity[]) => {
     let nextUpdate = moment().add(12, 'hours');
-    const matches = matchList.filter(
-      f => f.status !== MatchStatus.FINISHED,
-    );
+    const matches = matchList.filter(f => f.status !== MatchStatus.FINISHED);
     let hasLiveMatch = false;
     for (const match of matches) {
       if (match.status === MatchStatus.IN_PLAY) {
@@ -125,10 +126,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
         if (diff <= 5) {
           hasLiveMatch = true;
         }
-        if (
-          matchStart.isAfter(moment()) &&
-          matchStart.isBefore(nextUpdate)
-        ) {
+        if (matchStart.isAfter(moment()) && matchStart.isBefore(nextUpdate)) {
           nextUpdate = matchStart;
         }
       }

@@ -72,12 +72,7 @@ export class PredictionRepositoryImpl
             return of(currentJoker);
           } else {
             newJokerMatchId = pick[Math.floor(Math.random() * pick.length)];
-            return this.pickJoker$(
-              userId,
-              currentJoker,
-              newJokerMatchId,
-              true,
-            );
+            return this.pickJoker$(userId, currentJoker, newJokerMatchId, true);
           }
         } else {
           newJokerMatchId = pick;
@@ -87,12 +82,7 @@ export class PredictionRepositoryImpl
           ) {
             return throwError(new Error('Joker prediction already processed'));
           }
-          return this.pickJoker$(
-            userId,
-            currentJoker,
-            newJokerMatchId,
-            false,
-          );
+          return this.pickJoker$(userId, currentJoker, newJokerMatchId, false);
         }
       }),
     );
@@ -181,12 +171,7 @@ export class PredictionRepositoryImpl
       )
       .pipe(
         flatMap((newJokerPrediction: PredictionEntity) => {
-          const {
-            slug: matchSlug,
-            season,
-            gameRound,
-            odds,
-          } = newJokerMatch;
+          const { slug: matchSlug, season, gameRound, odds } = newJokerMatch;
           let newJoker: PredictionEntity;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();

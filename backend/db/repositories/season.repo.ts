@@ -9,7 +9,8 @@ import {
 } from '../converters/season.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface SeasonRepository extends BaseProviderRepository<SeasonEntity> { }
+export interface SeasonRepository
+  extends BaseProviderRepository<SeasonEntity> {}
 
 export class SeasonRepositoryImpl
   extends BaseProviderRepositoryImpl<SeasonEntity, SeasonDocument>

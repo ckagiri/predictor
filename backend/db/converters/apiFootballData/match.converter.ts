@@ -6,7 +6,10 @@ import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../repositories/season.repo';
-import { TeamRepository, TeamRepositoryImpl } from '../../repositories/team.repo';
+import {
+  TeamRepository,
+  TeamRepositoryImpl,
+} from '../../repositories/team.repo';
 import { MatchEntity } from '../../models/match.model';
 import { SeasonEntity } from '../../models/season.model';
 import { TeamEntity } from '../../models/team.model';

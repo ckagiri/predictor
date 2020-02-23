@@ -4,7 +4,7 @@ import { FootballApiClient } from '../apiClient';
 const BASE_URL = 'http://api.football-data.org/v2';
 
 class ApiFootballDataClient implements FootballApiClient {
-  constructor(private apiKey: string) { }
+  constructor(private apiKey: string) {}
 
   public getCompetitions(year: number) {
     const queryParams = year ? { year } : undefined;

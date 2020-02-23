@@ -19,7 +19,7 @@ export interface SeasonEntity extends Entity {
   externalReference?: any;
 }
 
-export interface SeasonDocument extends SeasonEntity, DocumentEntity { }
+export interface SeasonDocument extends SeasonEntity, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 

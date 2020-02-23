@@ -28,7 +28,7 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
   constructor(
     private predictionProcessor: IPredictionProcessor,
     private matchRepo: MatchRepository,
-  ) { }
+  ) {}
 
   public processPredictions(matches: MatchEntity[]) {
     return from(matches)
@@ -64,10 +64,7 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
       .pipe(
         flatMap(data => {
           const { match, prediction } = data;
-          return this.predictionProcessor.processPrediction$(
-            prediction,
-            match,
-          );
+          return this.predictionProcessor.processPrediction$(prediction, match);
         }),
       )
       .pipe(count())

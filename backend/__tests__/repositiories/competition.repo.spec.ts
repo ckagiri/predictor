@@ -11,7 +11,7 @@ const competition = {
   code: 'epl',
 };
 
-describe('CompetitionRepo', function () {
+describe('CompetitionRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -28,7 +28,9 @@ describe('CompetitionRepo', function () {
   });
 
   it('should save new competition', done => {
-    const competitionRepo = CompetitionRepositoryImpl.getInstance(ApiProvider.LIGI);
+    const competitionRepo = CompetitionRepositoryImpl.getInstance(
+      ApiProvider.LIGI,
+    );
 
     competitionRepo.save$(competition).subscribe(
       (data: any) => {

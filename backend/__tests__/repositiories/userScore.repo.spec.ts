@@ -3,14 +3,13 @@ import { expect } from 'chai';
 
 import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
-import { Competition, CompetitionEntity } from '../../db/models/competition.model';
+import {
+  Competition,
+  CompetitionEntity,
+} from '../../db/models/competition.model';
 import { Season, SeasonEntity } from '../../db/models/season.model';
 import { Team, TeamEntity } from '../../db/models/team.model';
-import {
-  Match,
-  MatchEntity,
-  MatchStatus,
-} from '../../db/models/match.model';
+import { Match, MatchEntity, MatchStatus } from '../../db/models/match.model';
 import { Prediction, PredictionEntity } from '../../db/models/prediction.model';
 import {
   Leaderboard,
@@ -126,7 +125,7 @@ const kagiri = {
   email: 'kagiri@example.com',
 };
 
-describe('UserScore Repo', function () {
+describe('UserScore Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

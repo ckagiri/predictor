@@ -34,7 +34,7 @@ export class MainJob implements Job {
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
     private matchRepo: MatchRepository,
-  ) { }
+  ) {}
 
   public start(queue: Queue) {
     // tslint:disable-next-line: no-console

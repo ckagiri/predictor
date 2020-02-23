@@ -7,7 +7,10 @@ import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../repositories/season.repo';
-import { TeamRepository, TeamRepositoryImpl } from '../../repositories/team.repo';
+import {
+  TeamRepository,
+  TeamRepositoryImpl,
+} from '../../repositories/team.repo';
 
 export class LigiMatchConverter implements MatchConverter {
   public static getInstance(): MatchConverter {

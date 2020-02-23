@@ -107,7 +107,7 @@ let season: any;
 let team1: any;
 let team2: any;
 
-describe('MatchRepo', function () {
+describe('MatchRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -158,13 +158,11 @@ describe('MatchRepo', function () {
   });
 
   it('should findEach By SeasonAndTeams AndUpdateOrCreate', done => {
-    matchRepo
-      .findBySeasonAndTeamsAndUpsert$(afdManuVmanc)
-      .subscribe(match => {
-        expect(match.season!.toString()).to.equal(season.id);
-        expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
-        done();
-      });
+    matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc).subscribe(match => {
+      expect(match.season!.toString()).to.equal(season.id);
+      expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+      done();
+    });
   });
 
   it('should find finished matches with pending predictions', done => {

@@ -13,7 +13,10 @@ import {
   UserRepository,
   UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
-import { BOARD_STATUS, LeaderboardEntity } from '../../db/models/leaderboard.model';
+import {
+  BOARD_STATUS,
+  LeaderboardEntity,
+} from '../../db/models/leaderboard.model';
 import {
   LeaderboardRepository,
   LeaderboardRepositoryImpl,
@@ -54,7 +57,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
     private leaderboardRepo: LeaderboardRepository,
     private predictionRepo: PredictionRepository,
     private userScoreRepo: UserScoreRepository,
-  ) { }
+  ) {}
 
   public setCacheService(cacheService: ICacheService) {
     this.cacheService = cacheService;

@@ -8,7 +8,9 @@ export interface CompetitionEntity extends Entity {
   code?: string;
 }
 
-export interface CompetitionDocument extends CompetitionEntity, DocumentEntity { }
+export interface CompetitionDocument
+  extends CompetitionEntity,
+    DocumentEntity {}
 
 export const competitionSchema = new Schema({
   name: { type: String, required: true },
@@ -16,4 +18,7 @@ export const competitionSchema = new Schema({
   code: { type: String, default: '' },
 });
 
-export const Competition = model<CompetitionDocument>('Competition', competitionSchema);
+export const Competition = model<CompetitionDocument>(
+  'Competition',
+  competitionSchema,
+);

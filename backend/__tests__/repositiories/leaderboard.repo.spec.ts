@@ -1,7 +1,10 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 import * as db from '../../db/index';
-import { CompetitionEntity, Competition } from '../../db/models/competition.model';
+import {
+  CompetitionEntity,
+  Competition,
+} from '../../db/models/competition.model';
 import { SeasonEntity, Season } from '../../db/models/season.model';
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
 import {
@@ -31,7 +34,7 @@ const epl18: SeasonEntity = {
 const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 let theSeason: any;
 
-describe('Leaderboard Repo', function () {
+describe('Leaderboard Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -133,7 +136,7 @@ describe('Leaderboard Repo', function () {
   });
 
   // tslint:disable-next-line: only-arrow-functions
-  describe('finders', function () {
+  describe('finders', function() {
     let lb1: LeaderboardEntity;
     beforeEach(done => {
       Leaderboard.create([

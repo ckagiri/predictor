@@ -26,7 +26,7 @@ export interface UserScoreEntity extends Entity {
   positionNew?: number;
 }
 
-export interface UserScoreDocument extends UserScoreEntity, DocumentEntity { }
+export interface UserScoreDocument extends UserScoreEntity, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 
@@ -57,7 +57,4 @@ const userScoreSchema = new Schema({
   positionNew: { type: Number },
 });
 
-export const UserScore = model<UserScoreDocument>(
-  'UserScore',
-  userScoreSchema,
-);
+export const UserScore = model<UserScoreDocument>('UserScore', userScoreSchema);
