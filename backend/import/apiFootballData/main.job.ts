@@ -15,8 +15,8 @@ import {
   TeamRepository,
 } from '../../db/repositories/team.repo';
 import {
-  IFixtureRepository,
   FixtureRepository,
+  FixtureRepositoryImpl,
 } from '../../db/repositories/fixture.repo';
 
 export class MainJob implements IJob {
@@ -25,7 +25,7 @@ export class MainJob implements IJob {
       FootballApiClient.getInstance(ApiProvider.API_FOOTBALL_DATA),
       SeasonRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
       TeamRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
-      FixtureRepository.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      FixtureRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
 
@@ -33,8 +33,8 @@ export class MainJob implements IJob {
     private apiClient: IFootballApiClient,
     private seasonRepo: ISeasonRepository,
     private teamRepo: ITeamRepository,
-    private fixtureRepo: IFixtureRepository,
-  ) {}
+    private fixtureRepo: FixtureRepository,
+  ) { }
 
   public start(queue: Queue) {
     // tslint:disable-next-line: no-console

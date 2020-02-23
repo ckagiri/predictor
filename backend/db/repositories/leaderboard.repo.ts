@@ -8,7 +8,7 @@ import {
 } from '../models/leaderboard.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface ILeaderboardRepository extends BaseRepository<LeaderboardEntity> {
+export interface LeaderboardRepository extends BaseRepository<LeaderboardEntity> {
   findSeasonBoardAndUpsert$(
     seasonId: string,
     update: any,
@@ -26,11 +26,11 @@ export interface ILeaderboardRepository extends BaseRepository<LeaderboardEntity
   ): Observable<LeaderboardEntity>;
 }
 
-export class LeaderboardRepository
+export class LeaderboardRepositoryImpl
   extends BaseRepositoryImpl<LeaderboardEntity, LeaderboardDocument>
-  implements ILeaderboardRepository {
+  implements LeaderboardRepository {
   public static getInstance() {
-    return new LeaderboardRepository();
+    return new LeaderboardRepositoryImpl();
   }
 
   constructor() {

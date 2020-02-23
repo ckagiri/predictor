@@ -8,7 +8,7 @@ import { League } from '../../db/models/league.model';
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 
-import { FixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixtureRepositoryImpl } from '../../db/repositories/fixture.repo';
 
 const epl = {
   name: 'English Premier League',
@@ -99,15 +99,15 @@ const afdManuVmanc = {
     awayWin: 3.4,
   },
 };
-const fixtureRepo = FixtureRepository.getInstance(
+const fixtureRepo = FixtureRepositoryImpl.getInstance(
   ApiProvider.API_FOOTBALL_DATA,
 );
-const ligiFixtureRepo = FixtureRepository.getInstance(ApiProvider.LIGI);
+const ligiFixtureRepo = FixtureRepositoryImpl.getInstance(ApiProvider.LIGI);
 let season: any;
 let team1: any;
 let team2: any;
 
-describe('FixtureRepo', function() {
+describe('FixtureRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

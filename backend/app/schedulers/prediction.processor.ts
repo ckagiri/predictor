@@ -2,8 +2,8 @@ import { Observable, from, of } from 'rxjs';
 import { map, flatMap, toArray } from 'rxjs/operators';
 
 import {
-  IFixtureRepository,
   FixtureRepository,
+  FixtureRepositoryImpl,
 } from '../../db/repositories/fixture.repo';
 import {
   IUserRepository,
@@ -33,14 +33,14 @@ export interface IPredictionProcessor {
 export class PredictionProcessor implements IPredictionProcessor {
   public static getInstance() {
     return new PredictionProcessor(
-      FixtureRepository.getInstance(ApiProvider.LIGI),
+      FixtureRepositoryImpl.getInstance(ApiProvider.LIGI),
       UserRepository.getInstance(),
       PredictionRepository.getInstance(),
       PredictionCalculator.getInstance(),
     );
   }
   constructor(
-    private fixtureRepo: IFixtureRepository,
+    private fixtureRepo: FixtureRepository,
     private userRepo: IUserRepository,
     private predictionRepo: IPredictionRepository,
     private predictionCalculator: PredictionCalculator,

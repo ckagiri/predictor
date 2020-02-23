@@ -3,13 +3,13 @@ import { flatMap } from 'rxjs/operators';
 import { IJob } from '../jobs/job';
 import { Queue } from '../queue';
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixtureRepository } from '../../db/repositories/fixture.repo';
 import Builder from './fixturesJob.builder';
 
 export class FixturesJob implements IJob {
   private competitionId: number | string;
   private apiClient: IFootballApiClient;
-  private fixtureRepo: IFixtureRepository;
+  private fixtureRepo: FixtureRepository;
 
   constructor(builder: Builder) {
     this.apiClient = builder.ApiClient;

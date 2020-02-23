@@ -17,7 +17,7 @@ import {
 } from '../converters/fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IFixtureRepository extends BaseProviderRepository<FixtureEntity> {
+export interface FixtureRepository extends BaseProviderRepository<FixtureEntity> {
   findSelectableFixtures$(
     seasonId: string,
     gameRound: number,
@@ -30,13 +30,13 @@ export interface IFixtureRepository extends BaseProviderRepository<FixtureEntity
   ): Observable<FixtureEntity[]>;
 }
 
-export class FixtureRepository
+export class FixtureRepositoryImpl
   extends BaseProviderRepositoryImpl<FixtureEntity, FixtureDocument>
-  implements IFixtureRepository {
+  implements FixtureRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
-  ): IFixtureRepository {
-    return new FixtureRepository(FixtureConverter.getInstance(provider));
+  ): FixtureRepository {
+    return new FixtureRepositoryImpl(FixtureConverter.getInstance(provider));
   }
 
   constructor(converter: IFixtureConverter) {

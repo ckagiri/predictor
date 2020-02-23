@@ -1,7 +1,7 @@
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
 import { ISeasonRepository } from '../../db/repositories/season.repo';
 import { ITeamRepository } from '../../db/repositories/team.repo';
-import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixtureRepository } from '../../db/repositories/fixture.repo';
 import { CompetitionJob } from '../apiFootballData/competition.job';
 
 export default class Builder {
@@ -9,7 +9,7 @@ export default class Builder {
   private apiClient!: IFootballApiClient;
   private seasonRepo!: ISeasonRepository;
   private teamRepo!: ITeamRepository;
-  private fixtureRepo!: IFixtureRepository;
+  private fixtureRepo!: FixtureRepository;
 
   public build() {
     return new CompetitionJob(this);
@@ -46,7 +46,7 @@ export default class Builder {
     return this.fixtureRepo;
   }
 
-  public setFixtureRepo(value: IFixtureRepository): Builder {
+  public setFixtureRepo(value: FixtureRepository): Builder {
     this.fixtureRepo = value;
     return this;
   }

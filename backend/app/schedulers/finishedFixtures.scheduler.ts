@@ -12,7 +12,7 @@ export class FinishedFixturesScheduler extends EventEmitter
 
   constructor(
     private taskRunner: ITaskRunner,
-    // private fixtureRepo: IFixtureRepository,
+    // private fixtureRepo: FixtureRepository,
     private finishedFixturesProcessor: IFinishedFixturesProcessor,
     private eventMediator: IEventMediator,
   ) {

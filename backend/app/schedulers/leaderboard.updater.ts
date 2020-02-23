@@ -15,8 +15,8 @@ import {
 } from '../../db/repositories/user.repo';
 import { BOARD_STATUS, LeaderboardEntity } from '../../db/models/leaderboard.model';
 import {
-  ILeaderboardRepository,
   LeaderboardRepository,
+  LeaderboardRepositoryImpl,
 } from '../../db/repositories/leaderboard.repo';
 import {
   IPredictionRepository,
@@ -41,7 +41,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
   public static getInstance() {
     return new LeaderboardUpdater(
       UserRepository.getInstance(),
-      LeaderboardRepository.getInstance(),
+      LeaderboardRepositoryImpl.getInstance(),
       PredictionRepository.getInstance(),
       UserScoreRepository.getInstance(),
     ).setCacheService(new CacheService());
@@ -51,7 +51,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
 
   constructor(
     private userRepo: IUserRepository,
-    private leaderboardRepo: ILeaderboardRepository,
+    private leaderboardRepo: LeaderboardRepository,
     private predictionRepo: IPredictionRepository,
     private userScoreRepo: IUserScoreRepository,
   ) { }

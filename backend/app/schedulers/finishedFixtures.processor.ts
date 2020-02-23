@@ -8,8 +8,8 @@ import {
   PredictionProcessor,
 } from './prediction.processor';
 import {
-  IFixtureRepository,
   FixtureRepository,
+  FixtureRepositoryImpl,
 } from '../../db/repositories/fixture.repo';
 
 export interface IFinishedFixturesProcessor {
@@ -21,13 +21,13 @@ export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
   public static getInstance() {
     return new FinishedFixturesProcessor(
       PredictionProcessor.getInstance(),
-      FixtureRepository.getInstance(),
+      FixtureRepositoryImpl.getInstance(),
     );
   }
 
   constructor(
     private predictionProcessor: IPredictionProcessor,
-    private fixtureRepo: IFixtureRepository,
+    private fixtureRepo: FixtureRepository,
   ) { }
 
   public processPredictions(fixtures: FixtureEntity[]) {

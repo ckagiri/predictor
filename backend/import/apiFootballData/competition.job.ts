@@ -5,7 +5,7 @@ import { Queue } from '../queue';
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
 import { ISeasonRepository } from '../../db/repositories/season.repo';
 import { ITeamRepository } from '../../db/repositories/team.repo';
-import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixtureRepository } from '../../db/repositories/fixture.repo';
 import { FixturesJob } from './fixtures.job';
 import { TeamsJob } from './teams.job';
 import Builder from './competitionJob.builder';
@@ -15,7 +15,7 @@ export class CompetitionJob implements IJob {
   private apiClient: IFootballApiClient;
   private seasonRepo: ISeasonRepository;
   private teamRepo: ITeamRepository;
-  private fixtureRepo: IFixtureRepository;
+  private fixtureRepo: FixtureRepository;
 
   constructor(builder: Builder) {
     this.apiClient = builder.ApiClient;

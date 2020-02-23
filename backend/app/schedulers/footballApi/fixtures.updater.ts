@@ -2,8 +2,8 @@ import { from, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { FixtureEntity } from '../../../db/models/fixture.model';
 import {
-  IFixtureRepository,
   FixtureRepository,
+  FixtureRepositoryImpl,
 } from '../../../db/repositories/fixture.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
@@ -36,10 +36,10 @@ const fixtureChanged = (apiFixture: any, dbFixture: FixtureEntity) => {
 
 export class FixturesUpdater implements IFixturesUpdater {
   public static getInstance(provider: ApiProvider) {
-    return new FixturesUpdater(FixtureRepository.getInstance(provider));
+    return new FixturesUpdater(FixtureRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private fixtureRepo: IFixtureRepository) { }
+  constructor(private fixtureRepo: FixtureRepository) { }
 
   public updateGameDetails(apiFixtures: any[]) {
     const externalIdToApiFixtureMap: any = new Map<string, any>();

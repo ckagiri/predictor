@@ -1,11 +1,11 @@
 import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { IFixtureRepository } from '../../db/repositories/fixture.repo';
+import { FixtureRepository } from '../../db/repositories/fixture.repo';
 import { FixturesJob } from './fixtures.job';
 
 export default class Builder {
   private competitionId!: number | string;
   private apiClient!: IFootballApiClient;
-  private fixtureRepo!: IFixtureRepository;
+  private fixtureRepo!: FixtureRepository;
 
   public build() {
     return new FixturesJob(this);
@@ -24,7 +24,7 @@ export default class Builder {
     return this.fixtureRepo;
   }
 
-  public setFixtureRepo(value: IFixtureRepository): Builder {
+  public setFixtureRepo(value: FixtureRepository): Builder {
     this.fixtureRepo = value;
     return this;
   }

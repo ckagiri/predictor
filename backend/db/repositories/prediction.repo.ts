@@ -10,8 +10,8 @@ import {
 } from '../models/prediction.model';
 import { FixtureEntity, FixtureStatus } from '../models/fixture.model';
 import {
-  IFixtureRepository,
   FixtureRepository,
+  FixtureRepositoryImpl,
 } from '../repositories/fixture.repo';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
@@ -41,13 +41,13 @@ export class PredictionRepository
   implements IPredictionRepository {
   public static getInstance() {
     return new PredictionRepository(
-      FixtureRepository.getInstance(ApiProvider.LIGI),
+      FixtureRepositoryImpl.getInstance(ApiProvider.LIGI),
     );
   }
 
-  private fixtureRepo: IFixtureRepository;
+  private fixtureRepo: FixtureRepository;
 
-  constructor(fixtureRepo: IFixtureRepository) {
+  constructor(fixtureRepo: FixtureRepository) {
     super(Prediction);
     this.fixtureRepo = fixtureRepo;
   }

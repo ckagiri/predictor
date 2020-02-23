@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as db from '../../db/index';
 import { LeagueEntity, League } from '../../db/models/league.model';
 import { SeasonEntity, Season } from '../../db/models/season.model';
-import { LeaderboardRepository } from '../../db/repositories/leaderboard.repo';
+import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
 import {
   LeaderboardEntity,
   Leaderboard,
@@ -28,7 +28,7 @@ const epl18: SeasonEntity = {
   league: undefined,
 };
 
-const leaderboardRepo = LeaderboardRepository.getInstance();
+const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 let theSeason: any;
 
 describe('Leaderboard Repo', function () {
