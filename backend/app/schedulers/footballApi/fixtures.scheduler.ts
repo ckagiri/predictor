@@ -1,30 +1,30 @@
 import { EventEmitter } from 'events';
 import moment from 'moment';
 
-import { IScheduler } from '../../schedulers';
-import { ITaskRunner, TaskRunner } from '../taskRunner';
+import { Scheduler } from '../../schedulers';
+import { TaskRunner, TaskRunnerImpl } from '../taskRunner';
 import {
   FootballApiClient,
-  FootballApiClientImpl as ApiClient,
+  FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { IEventMediator, EventMediator } from '../../../common/eventMediator';
+import { IEventMediator, EventMediatorImpl } from '../../../common/eventMediator';
 import {
   FixtureConverter,
   FixtureConverterImpl,
 } from '../../../db/converters/fixture.converter';
 import { FixtureEntity, FixtureStatus } from '../../../db/models/fixture.model';
 
-import { IFixturesUpdater, FixturesUpdater } from './fixtures.updater';
+import { FixturesUpdater, FixturesUpdaterImpl } from './fixtures.updater';
 
-export class FixturesScheduler extends EventEmitter implements IScheduler {
+export class FixturesScheduler extends EventEmitter implements Scheduler {
   public static getInstance(provider: ApiProvider) {
     return new FixturesScheduler(
-      new TaskRunner(),
-      ApiClient.getInstance(provider),
+      new TaskRunnerImpl(),
+      FootballApiClientImpl.getInstance(provider),
       FixtureConverterImpl.getInstance(provider),
-      FixturesUpdater.getInstance(provider),
-      EventMediator.getInstance(),
+      FixturesUpdaterImpl.getInstance(provider),
+      EventMediatorImpl.getInstance(),
     );
   }
 
@@ -33,10 +33,10 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
   private _polling = false;
 
   constructor(
-    private taskRunner: ITaskRunner,
+    private taskRunner: TaskRunner,
     private apiClient: FootballApiClient,
     private fixtureConverter: FixtureConverter,
-    private fixturesUpdater: IFixturesUpdater,
+    private fixturesUpdater: FixturesUpdater,
     private eventMedidatior: IEventMediator,
   ) {
     super();

@@ -7,7 +7,7 @@ import {
 } from '../../../db/repositories/fixture.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export interface IFixturesUpdater {
+export interface FixturesUpdater {
   updateGameDetails(apiFixtures: any[]): Promise<FixtureEntity>;
 }
 
@@ -34,9 +34,9 @@ const fixtureChanged = (apiFixture: any, dbFixture: FixtureEntity) => {
   return false;
 };
 
-export class FixturesUpdater implements IFixturesUpdater {
+export class FixturesUpdaterImpl implements FixturesUpdater {
   public static getInstance(provider: ApiProvider) {
-    return new FixturesUpdater(FixtureRepositoryImpl.getInstance(provider));
+    return new FixturesUpdaterImpl(FixtureRepositoryImpl.getInstance(provider));
   }
 
   constructor(private fixtureRepo: FixtureRepository) { }

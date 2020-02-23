@@ -1,19 +1,19 @@
 import { EventEmitter } from 'events';
-import { ITaskRunner } from './taskRunner';
+import { TaskRunner } from './taskRunner';
 import { IEventMediator } from '../../common/eventMediator';
-import { IFinishedFixturesProcessor } from './finishedFixtures.processor';
-import { IScheduler } from '../schedulers';
+import { FinishedFixturesProcessor } from './finishedFixtures.processor';
+import { Scheduler } from '../schedulers';
 
 export class FinishedFixturesScheduler extends EventEmitter
-  implements IScheduler {
+  implements Scheduler {
   private _processing = false;
   private _running = false;
   private RUN_INTERVAL = 10 * 60 * 60 * 1000;
 
   constructor(
-    private taskRunner: ITaskRunner,
+    private taskRunner: TaskRunner,
     // private fixtureRepo: FixtureRepository,
-    private finishedFixturesProcessor: IFinishedFixturesProcessor,
+    private finishedFixturesProcessor: FinishedFixturesProcessor,
     private eventMediator: IEventMediator,
   ) {
     super();

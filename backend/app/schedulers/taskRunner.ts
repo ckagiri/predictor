@@ -3,12 +3,12 @@ import { IEventEmitter } from '../../common/eventEmitter';
 import { promisify } from 'util';
 const setTimeoutPromise = promisify(setTimeout);
 
-export interface ITaskRunner extends IEventEmitter {
+export interface TaskRunner extends IEventEmitter {
   run(opts: any): void;
 }
 
-export class TaskRunner extends EventEmitter implements ITaskRunner {
-  public async run({ whenToExecute, task = () => {}, context, callback }: any) {
+export class TaskRunnerImpl extends EventEmitter implements TaskRunner {
+  public async run({ whenToExecute, task = () => { }, context, callback }: any) {
     if (task && typeof task !== 'function') {
       throw new Error('Task must be a function');
     }

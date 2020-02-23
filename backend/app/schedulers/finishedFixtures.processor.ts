@@ -12,14 +12,14 @@ import {
   FixtureRepositoryImpl,
 } from '../../db/repositories/fixture.repo';
 
-export interface IFinishedFixturesProcessor {
+export interface FinishedFixturesProcessor {
   processPredictions(fixtures: FixtureEntity[]): Promise<number>;
   setToTrueAllPredictionsProcessed(fixtures: FixtureEntity[]): Promise<number>;
 }
 
-export class FinishedFixturesProcessor implements IFinishedFixturesProcessor {
+export class FinishedFixturesProcessorImpl implements FinishedFixturesProcessor {
   public static getInstance() {
-    return new FinishedFixturesProcessor(
+    return new FinishedFixturesProcessorImpl(
       PredictionProcessor.getInstance(),
       FixtureRepositoryImpl.getInstance(),
     );

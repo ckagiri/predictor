@@ -3,8 +3,8 @@ import { Job } from '../jobs/job';
 import { CompetitionJob } from './competition.job';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import {
-  FootballApiClientImpl,
   FootballApiClient,
+  FootballApiClientImpl,
 } from '../../thirdParty/footballApi/apiClient';
 import {
   SeasonRepository,

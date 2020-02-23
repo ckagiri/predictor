@@ -11,8 +11,8 @@ import { FootballApiProvider as ApiProvider } from '../../../common/footballApiP
 import { FixtureStatus, FixtureEntity } from '../../../db/models/fixture.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import {
-  IFinishedFixturesProcessor,
   FinishedFixturesProcessor,
+  FinishedFixturesProcessorImpl,
 } from '../../../app/schedulers/finishedFixtures.processor';
 
 const newFixture = (
@@ -71,7 +71,7 @@ const fixtureRepoStub: any = {
   },
 };
 
-let finishedFixturesProcessor: IFinishedFixturesProcessor;
+let finishedFixturesProcessor: FinishedFixturesProcessor;
 
 describe('Finished Fixtures', () => {
   describe('processPredictions', () => {
@@ -84,7 +84,7 @@ describe('Finished Fixtures', () => {
         .returns(of([pred3, pred4]));
 
       predictionProcessorStub.processPrediction$.returns(of(pred1));
-      finishedFixturesProcessor = new FinishedFixturesProcessor(
+      finishedFixturesProcessor = new FinishedFixturesProcessorImpl(
         predictionProcessorStub,
         fixtureRepoStub,
       );

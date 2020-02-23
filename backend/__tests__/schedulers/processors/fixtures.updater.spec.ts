@@ -9,8 +9,8 @@ import { of } from 'rxjs';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { FixtureStatus } from '../../../db/models/fixture.model';
 import {
-  IFixturesUpdater,
   FixturesUpdater,
+  FixturesUpdaterImpl,
 } from '../../../app/schedulers/footballApi/fixtures.updater';
 
 const provider = ApiProvider.API_FOOTBALL_DATA;
@@ -39,9 +39,9 @@ const dbFixtures = [dbFixture];
 const apiFixtures = [apiFixture];
 
 let fixtureRepoStub: any;
-let fixturesUpdater: IFixturesUpdater;
+let fixturesUpdater: FixturesUpdater;
 
-describe('FixturesUpdater', () => {
+describe('FixturesUpdaterImpl', () => {
   beforeEach(() => {
     fixtureRepoStub = {
       Provider: provider,
@@ -52,7 +52,7 @@ describe('FixturesUpdater', () => {
         return of(dbFixtures);
       },
     };
-    fixturesUpdater = new FixturesUpdater(fixtureRepoStub);
+    fixturesUpdater = new FixturesUpdaterImpl(fixtureRepoStub);
   });
 
   describe('Update Game Details', () => {
@@ -71,9 +71,9 @@ describe('FixturesUpdater', () => {
       fixtureRepoStub.findByIdAndUpdate$.restore();
     });
 
-    xit('should update matchOdds if changed', () => {});
+    xit('should update matchOdds if changed', () => { });
 
-    xit('should update matchStatus if changed', () => {});
+    xit('should update matchStatus if changed', () => { });
 
     xit(
       'it should not make update call if result, odds or status hasnt changed',

@@ -8,14 +8,14 @@ export interface IEventMediator {
   removeAllListeners(event?: string): IEventMediator;
 }
 
-export class EventMediator implements IEventMediator {
+export class EventMediatorImpl implements IEventMediator {
   public static getInstance() {
-    if (EventMediator.classInstance == null) {
-      EventMediator.classInstance = new EventMediator();
+    if (EventMediatorImpl.classInstance == null) {
+      EventMediatorImpl.classInstance = new EventMediatorImpl();
     }
-    return EventMediator.classInstance;
+    return EventMediatorImpl.classInstance;
   }
-  private static classInstance: EventMediator;
+  private static classInstance: EventMediatorImpl;
 
   public emitter: EventEmitter;
 
