@@ -4,8 +4,8 @@ import {
   BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
 import {
-  ILeagueConverter,
   LeagueConverter,
+  LeagueConverterImpl,
 } from '../converters/league.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
@@ -15,10 +15,10 @@ export class LeagueRepositoryImpl
   extends BaseProviderRepositoryImpl<LeagueEntity, LeagueDocument>
   implements LeagueRepository {
   public static getInstance(provider: ApiProvider): LeagueRepository {
-    return new LeagueRepositoryImpl(LeagueConverter.getInstance(provider));
+    return new LeagueRepositoryImpl(LeagueConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: ILeagueConverter) {
+  constructor(converter: LeagueConverter) {
     super(League, converter);
   }
 }

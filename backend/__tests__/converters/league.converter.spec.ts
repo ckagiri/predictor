@@ -2,12 +2,12 @@ import 'mocha';
 import { expect } from 'chai';
 import { Observable } from 'rxjs';
 
-import { ILeagueConverter } from '../../db/converters/league.converter';
-import { LeagueConverter as LigiLeagueConverter } from '../../db/converters/ligi/league.converter';
+import { LeagueConverter } from '../../db/converters/league.converter';
+import { LeagueConverterImpl as LigiLeagueConverter } from '../../db/converters/ligi/league.converter';
 
 describe('League Converter', () => {
-  describe('Ligi LeagueConverter', () => {
-    const converter: ILeagueConverter = new LigiLeagueConverter();
+  describe('Ligi LeagueConverterImpl', () => {
+    const converter: LeagueConverter = new LigiLeagueConverter();
     const league = {
       name: 'English Premier League',
       slug: 'english_premier_league',

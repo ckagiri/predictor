@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { SeasonConverter as LigiSeasonConverter } from '../../db/converters/ligi/season.converter';
-import { SeasonConverter as AfdSeasonConverter } from '../../db/converters/apiFootballData/season.converter';
+import { LigiSeasonConverter } from '../../db/converters/ligi/season.converter';
+import { AfdSeasonConverter } from '../../db/converters/apiFootballData/season.converter';
 
 describe('Season Converter', () => {
   describe.skip('Ligi SeasonConverter', () => {

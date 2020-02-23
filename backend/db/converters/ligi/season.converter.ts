@@ -8,9 +8,9 @@ import {
 } from '../../repositories/league.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class SeasonConverter implements ISeasonConverter {
+export class LigiSeasonConverter implements ISeasonConverter {
   public static getInstance(): ISeasonConverter {
-    return new SeasonConverter(
+    return new LigiSeasonConverter(
       LeagueRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }

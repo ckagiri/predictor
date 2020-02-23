@@ -4,9 +4,9 @@ import { SeasonEntity } from '../../models/season.model';
 import { ISeasonConverter } from '../season.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class SeasonConverter implements ISeasonConverter {
+export class AfdSeasonConverter implements ISeasonConverter {
   public static getInstance(): ISeasonConverter {
-    return new SeasonConverter();
+    return new AfdSeasonConverter();
   }
   public provider: ApiProvider;
 

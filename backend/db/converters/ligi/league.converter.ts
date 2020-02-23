@@ -1,12 +1,12 @@
 import { Observable, of } from 'rxjs';
 
 import { LeagueEntity } from '../../models/league.model';
-import { ILeagueConverter } from '../league.converter';
+import { LeagueConverter } from '../league.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class LeagueConverter implements ILeagueConverter {
-  public static getInstance(): ILeagueConverter {
-    return new LeagueConverter();
+export class LigiLeagueConverter implements LeagueConverter {
+  public static getInstance(): LeagueConverter {
+    return new LigiLeagueConverter();
   }
   public provider: ApiProvider;
 
