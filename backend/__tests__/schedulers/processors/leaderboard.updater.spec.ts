@@ -8,11 +8,11 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { LeaderboardUpdater } from '../../../app/schedulers/leaderboard.updater';
+import { LeaderboardUpdaterImpl } from '../../../app/schedulers/leaderboard.updater';
 import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import { BOARD_STATUS } from '../../../db/models/leaderboard.model';
-import { CacheService } from '../../../common/observableCacheService';
+import { CacheServiceImpl } from '../../../common/observableCacheService';
 
 const seasonId = '4edd40c86762e0fb12000001';
 const gameRound = 2;
@@ -118,7 +118,7 @@ const userScoreRepoStub: any = {
     return of(standing1);
   },
 };
-const leaderboardUpdater = new LeaderboardUpdater(
+const leaderboardUpdater = new LeaderboardUpdaterImpl(
   userRepoStub,
   leaderboardRepoStub,
   predictionRepoStub,
@@ -194,7 +194,7 @@ describe('Leaderboard Updater', () => {
     });
     it('should cache boards', async () => {
       const spy = leaderboardRepoStub.findSeasonBoardAndUpsert$;
-      leaderboardUpdater.setCacheService(new CacheService());
+      leaderboardUpdater.setCacheService(new CacheServiceImpl());
       await leaderboardUpdater.updateScores(finishedMatches);
 
       expect(spy).to.have.callCount(4);

@@ -30,27 +30,27 @@ import {
   UserScoreRepositoryImpl,
 } from '../../db/repositories/userScore.repo';
 import {
-  ICacheService,
   CacheService,
+  CacheServiceImpl,
 } from '../../common/observableCacheService';
 
-export interface ILeaderboardUpdater {
+export interface LeaderboardUpdater {
   updateScores(matches: MatchEntity[]): Promise<number>;
   updateRankings(seasonId: string): Promise<number>;
   markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
 }
 
-export class LeaderboardUpdater implements ILeaderboardUpdater {
+export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
   public static getInstance() {
-    return new LeaderboardUpdater(
+    return new LeaderboardUpdaterImpl(
       UserRepositoryImpl.getInstance(),
       LeaderboardRepositoryImpl.getInstance(),
       PredictionRepositoryImpl.getInstance(),
       UserScoreRepositoryImpl.getInstance(),
-    ).setCacheService(new CacheService());
+    ).setCacheService(new CacheServiceImpl());
   }
 
-  private cacheService: ICacheService | undefined;
+  private cacheService: CacheService | undefined;
 
   constructor(
     private userRepo: UserRepository,
@@ -59,7 +59,7 @@ export class LeaderboardUpdater implements ILeaderboardUpdater {
     private userScoreRepo: UserScoreRepository,
   ) {}
 
-  public setCacheService(cacheService: ICacheService) {
+  public setCacheService(cacheService: CacheService) {
     this.cacheService = cacheService;
     return this;
   }

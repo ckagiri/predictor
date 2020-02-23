@@ -4,8 +4,8 @@ import { concatMap, filter, flatMap, map, count } from 'rxjs/operators';
 import { PredictionStatus } from '../../db/models/prediction.model';
 import { MatchEntity, MatchStatus } from '../../db/models/match.model';
 import {
-  IPredictionProcessor,
   PredictionProcessor,
+  PredictionProcessorImpl,
 } from './prediction.processor';
 import {
   MatchRepository,
@@ -20,13 +20,13 @@ export interface FinishedMatchesProcessor {
 export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
   public static getInstance() {
     return new FinishedMatchesProcessorImpl(
-      PredictionProcessor.getInstance(),
+      PredictionProcessorImpl.getInstance(),
       MatchRepositoryImpl.getInstance(),
     );
   }
 
   constructor(
-    private predictionProcessor: IPredictionProcessor,
+    private predictionProcessor: PredictionProcessor,
     private matchRepo: MatchRepository,
   ) {}
 
