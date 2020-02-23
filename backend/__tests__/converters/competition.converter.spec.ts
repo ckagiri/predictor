@@ -21,10 +21,10 @@ describe('Competition Converter', () => {
 
     it('should convert correctly', done => {
       const conversion = converter.from(competition);
-      conversion.subscribe(l => {
-        expect(l.name).to.equal(competition.name);
-        expect(l.slug).to.equal(competition.slug);
-        expect(l.code).to.equal(competition.code);
+      conversion.subscribe(c => {
+        expect(c.name).to.equal(competition.name);
+        expect(c.slug).to.equal(competition.slug);
+        expect(c.code).to.equal(competition.code);
 
         done();
       });

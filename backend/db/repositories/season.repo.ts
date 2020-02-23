@@ -1,7 +1,7 @@
 import { SeasonEntity, SeasonDocument, Season } from '../models/season.model';
 import {
-  BaseProviderRepository,
-  BaseProviderRepositoryImpl,
+  BaseFootballApiRepository,
+  BaseFootballApiRepositoryImpl,
 } from './baseProvider.repo';
 import {
   SeasonConverter,
@@ -10,10 +10,10 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface SeasonRepository
-  extends BaseProviderRepository<SeasonEntity> {}
+  extends BaseFootballApiRepository<SeasonEntity> { }
 
 export class SeasonRepositoryImpl
-  extends BaseProviderRepositoryImpl<SeasonEntity, SeasonDocument>
+  extends BaseFootballApiRepositoryImpl<SeasonEntity, SeasonDocument>
   implements SeasonRepository {
   public static getInstance(provider: ApiProvider): SeasonRepository {
     return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider));

@@ -107,15 +107,15 @@ let season: any;
 let team1: any;
 let team2: any;
 
-describe('MatchRepo', function() {
+describe('MatchRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   beforeEach(done => {
     Competition.create(epl)
-      .then(l => {
-        const { name, slug, id } = l;
+      .then(c => {
+        const { name, slug, id } = c;
         const theEpl17 = {
           ...epl17,
           competition: { name, slug, id },
@@ -194,8 +194,8 @@ describe('MatchRepo', function() {
           );
         }),
       )
-      .subscribe(fs => {
-        expect(fs).to.have.length(1);
+      .subscribe(ms => {
+        expect(ms).to.have.length(1);
         done();
       });
   });

@@ -16,7 +16,7 @@ export class SeasonUpdaterImpl implements SeasonUpdater {
     return new SeasonUpdaterImpl(SeasonRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private seasonRepo: SeasonRepository) {}
+  constructor(private seasonRepo: SeasonRepository) { }
 
   public updateCurrentMatchRound(apiSeasons: any[]) {
     const externalIdToApiSeasonMap: any = new Map<string, any>();
@@ -34,7 +34,7 @@ export class SeasonUpdaterImpl implements SeasonUpdater {
       )
       .pipe(
         flatMap(dbSeason => {
-          const provider = this.seasonRepo.Provider;
+          const provider = this.seasonRepo.FootballApiProvider;
           // tslint:disable-next-line: no-string-literal
           const extId = dbSeason['externalReference'][provider]['id'];
           const extCurrentMatchRound =

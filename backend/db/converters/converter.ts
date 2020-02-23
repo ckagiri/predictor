@@ -3,6 +3,6 @@ import { Entity } from '../models/base.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface Converter {
-  provider: ApiProvider;
+  footballApiProvider: ApiProvider;
   from(data: any): Observable<Entity>;
 }

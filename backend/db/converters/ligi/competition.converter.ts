@@ -8,10 +8,10 @@ export class LigiCompetitionConverter implements CompetitionConverter {
   public static getInstance(): CompetitionConverter {
     return new LigiCompetitionConverter();
   }
-  public provider: ApiProvider;
+  public footballApiProvider: ApiProvider;
 
   constructor() {
-    this.provider = ApiProvider.API_FOOTBALL_DATA;
+    this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
   public from(data: any): Observable<CompetitionEntity> {
