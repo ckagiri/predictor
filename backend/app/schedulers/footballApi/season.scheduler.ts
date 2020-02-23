@@ -6,33 +6,24 @@ import {
   FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { ISeasonUpdater, SeasonUpdater } from './season.updater';
-import { EventMediator, EventMediatorImpl } from '../../../common/eventMediator';
-import {
-  SeasonConverter,
-  SeasonConverterImpl,
-} from '../../../db/converters/season.converter';
+import { SeasonUpdater, SeasonUpdaterImpl } from './season.updater';
 
 export class SeasonScheduler extends EventEmitter implements Scheduler {
   public static getInstance(provider: ApiProvider) {
     return new SeasonScheduler(
       new TaskRunnerImpl(),
       FootballApiClientImpl.getInstance(provider),
-      SeasonConverterImpl.getInstance(provider),
-      SeasonUpdater.getInstance(provider),
-      EventMediatorImpl.getInstance(),
+      SeasonUpdaterImpl.getInstance(provider),
     );
   }
-  private POLLING_INTERVAL = 24 * 60 * 60 * 1000;
+  private POLLING_INTERVAL = 12 * 60 * 60 * 1000;
   private _pollingInterval = 0;
   private _polling = false;
 
   constructor(
     private taskRunner: TaskRunner,
     private apiClient: FootballApiClient,
-    private seasonConverter: SeasonConverter,
-    private seasonUpdater: ISeasonUpdater,
-    private eventMediator: EventMediator,
+    private seasonUpdater: SeasonUpdater,
   ) {
     super();
   }

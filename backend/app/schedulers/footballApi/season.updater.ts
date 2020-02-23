@@ -7,13 +7,13 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { SeasonEntity } from '../../../db/models/season.model';
 
-export interface ISeasonUpdater {
+export interface SeasonUpdater {
   updateCurrentMatchRound(apiSeasons: any[]): Promise<SeasonEntity>;
 }
 
-export class SeasonUpdater implements ISeasonUpdater {
+export class SeasonUpdaterImpl implements SeasonUpdater {
   public static getInstance(provider: ApiProvider) {
-    return new SeasonUpdater(SeasonRepositoryImpl.getInstance(provider));
+    return new SeasonUpdaterImpl(SeasonRepositoryImpl.getInstance(provider));
   }
 
   constructor(private seasonRepo: SeasonRepository) { }

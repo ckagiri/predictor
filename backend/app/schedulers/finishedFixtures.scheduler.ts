@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { TaskRunner } from './taskRunner';
+import { TaskRunnerImpl } from './taskRunner';
 import { EventMediator } from '../../common/eventMediator';
 import { FinishedFixturesProcessor } from './finishedFixtures.processor';
 import { Scheduler } from '../schedulers';
@@ -11,7 +11,7 @@ export class FinishedFixturesScheduler extends EventEmitter
   private RUN_INTERVAL = 10 * 60 * 60 * 1000;
 
   constructor(
-    private taskRunner: TaskRunner,
+    private taskRunner: TaskRunnerImpl,
     // private fixtureRepo: FixtureRepository,
     private finishedFixturesProcessor: FinishedFixturesProcessor,
     private eventMediator: EventMediator,

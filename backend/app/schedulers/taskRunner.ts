@@ -1,9 +1,8 @@
 import { EventEmitter } from 'events';
-import { IEventEmitter } from '../../common/eventEmitter';
 import { promisify } from 'util';
 const setTimeoutPromise = promisify(setTimeout);
 
-export interface TaskRunner extends IEventEmitter {
+export interface TaskRunner extends EventEmitter {
   run(opts: any): void;
 }
 
