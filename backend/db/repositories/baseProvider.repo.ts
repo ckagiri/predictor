@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 
 import { BaseRepositoryImpl, BaseRepository } from '../repositories/base.repo';
 import { Entity, DocumentEntity } from '../models/base.model';
-import { IConverter } from '../converters/converter';
+import { Converter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface BaseProviderRepository<T extends Entity>
@@ -22,9 +22,9 @@ export class BaseProviderRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
   > extends BaseRepositoryImpl<T, TDocument> implements BaseProviderRepository<T> {
-  protected converter: IConverter;
+  protected converter: Converter;
 
-  constructor(SchemaModel: Model<Document>, converter: IConverter) {
+  constructor(SchemaModel: Model<Document>, converter: Converter) {
     super(SchemaModel);
     this.converter = converter;
   }

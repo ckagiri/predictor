@@ -1,7 +1,7 @@
 import { Observable, zip } from 'rxjs';
 
 import { FixtureEntity } from '../../models/fixture.model';
-import { IFixtureConverter } from '../fixture.converter';
+import { FixtureConverter } from '../fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
   SeasonRepository,
@@ -9,9 +9,9 @@ import {
 } from '../../repositories/season.repo';
 import { TeamRepository, TeamRepositoryImpl } from '../../repositories/team.repo';
 
-export class FixtureConverter implements IFixtureConverter {
-  public static getInstance(): IFixtureConverter {
-    return new FixtureConverter(
+export class LigiFixtureConverter implements FixtureConverter {
+  public static getInstance(): FixtureConverter {
+    return new LigiFixtureConverter(
       SeasonRepositoryImpl.getInstance(ApiProvider.LIGI),
       TeamRepositoryImpl.getInstance(ApiProvider.LIGI),
     );

@@ -10,8 +10,8 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { IEventMediator, EventMediator } from '../../../common/eventMediator';
 import {
-  IFixtureConverter,
   FixtureConverter,
+  FixtureConverterImpl,
 } from '../../../db/converters/fixture.converter';
 import { FixtureEntity, FixtureStatus } from '../../../db/models/fixture.model';
 
@@ -22,7 +22,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
     return new FixturesScheduler(
       new TaskRunner(),
       ApiClient.getInstance(provider),
-      FixtureConverter.getInstance(provider),
+      FixtureConverterImpl.getInstance(provider),
       FixturesUpdater.getInstance(provider),
       EventMediator.getInstance(),
     );
@@ -35,7 +35,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
   constructor(
     private taskRunner: ITaskRunner,
     private apiClient: IFootballApiClient,
-    private fixtureConverter: IFixtureConverter,
+    private fixtureConverter: FixtureConverter,
     private fixturesUpdater: IFixturesUpdater,
     private eventMedidatior: IEventMediator,
   ) {

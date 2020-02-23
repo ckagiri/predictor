@@ -12,8 +12,8 @@ import {
   BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
 import {
-  IFixtureConverter,
   FixtureConverter,
+  FixtureConverterImpl,
 } from '../converters/fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
@@ -36,10 +36,10 @@ export class FixtureRepositoryImpl
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
   ): FixtureRepository {
-    return new FixtureRepositoryImpl(FixtureConverter.getInstance(provider));
+    return new FixtureRepositoryImpl(FixtureConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: IFixtureConverter) {
+  constructor(converter: FixtureConverter) {
     super(Fixture, converter);
   }
 
@@ -76,7 +76,7 @@ export class FixtureRepositoryImpl
   }
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
-    return (this.converter as IFixtureConverter).from(obj).pipe(
+    return (this.converter as FixtureConverter).from(obj).pipe(
       flatMap(data => {
         const { season, homeTeam, awayTeam, externalReference } = data;
         const query = {

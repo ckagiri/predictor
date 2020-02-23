@@ -1,18 +1,18 @@
 import { Observable } from 'rxjs';
 
-import { FixtureConverter as LigiFixtureConverter } from '../converters/ligi/fixture.converter';
-import { FixtureConverter as AfdFixtureConverter } from '../converters/apiFootballData/fixture.converter';
-import { IConverter } from './converter';
+import { LigiFixtureConverter } from '../converters/ligi/fixture.converter';
+import { AfdFixtureConverter } from '../converters/apiFootballData/fixture.converter';
+import { Converter } from './converter';
 import { FixtureEntity } from '../models/fixture.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IFixtureConverter extends IConverter {
+export interface FixtureConverter extends Converter {
   from(data: any): Observable<FixtureEntity>;
   map(data: any[]): any[];
 }
 
-export abstract class FixtureConverter {
-  public static getInstance(provider: ApiProvider): IFixtureConverter {
+export abstract class FixtureConverterImpl {
+  public static getInstance(provider: ApiProvider): FixtureConverter {
     switch (provider) {
       case ApiProvider.LIGI:
         return LigiFixtureConverter.getInstance();

@@ -1,11 +1,11 @@
 import { Observable } from 'rxjs';
 
 import { LeagueConverter as LigiLeagueConverter } from '../converters/ligi/league.converter';
-import { IConverter } from './converter';
+import { Converter } from './converter';
 import { LeagueEntity } from '../models/league.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ILeagueConverter extends IConverter {
+export interface ILeagueConverter extends Converter {
   from(data: any): Observable<LeagueEntity>;
 }
 

@@ -2,7 +2,7 @@ import 'mocha';
 import sinon from 'sinon';
 import { expect } from 'chai';
 import { of } from 'rxjs';
-import { FixtureConverter as AfdFixtureConverter } from '../../db/converters/apiFootballData/fixture.converter';
+import { AfdFixtureConverter } from '../../db/converters/apiFootballData/fixture.converter';
 
 describe('Fixture Converter', () => {
   describe('Afd FixtureConverter', () => {

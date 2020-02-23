@@ -1,6 +1,6 @@
 import { Observable, zip } from 'rxjs';
 
-import { IFixtureConverter } from '../fixture.converter';
+import { FixtureConverter } from '../fixture.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
   SeasonRepository,
@@ -11,9 +11,9 @@ import { FixtureEntity } from '../../models/fixture.model';
 import { SeasonEntity } from '../../models/season.model';
 import { TeamEntity } from '../../models/team.model';
 
-export class FixtureConverter implements IFixtureConverter {
-  public static getInstance(): IFixtureConverter {
-    return new FixtureConverter(
+export class AfdFixtureConverter implements FixtureConverter {
+  public static getInstance(): FixtureConverter {
+    return new AfdFixtureConverter(
       SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
       TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
