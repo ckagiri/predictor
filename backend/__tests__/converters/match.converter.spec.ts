@@ -7,7 +7,7 @@ import { AfdMatchConverter } from '../../db/converters/apiFootballData/match.con
 describe('Match Converter', () => {
   describe('Afd MatchConverter', () => {
     const season = {
-      _id: '4edd40c86762e0fb12000001',
+      id: '4edd40c86762e0fb12000001',
     };
     const seasonRepoStub: any = {
       findByExternalId$: () => {
@@ -61,12 +61,12 @@ describe('Match Converter', () => {
     };
     it('should convert correctly', done => {
       const conversion = converter.from(match);
-      conversion.subscribe(f => {
-        expect(f.homeTeam!.name).to.equal(homeTeam.name);
-        expect(f.awayTeam!.name).to.equal(awayTeam.name);
-        expect(f.matchRound).to.equal(match.matchday);
-        expect(f.slug).to.equal(`${homeTeam.slug}-v-${awayTeam.slug}`);
-        expect(f.externalReference).to.deep.equal({
+      conversion.subscribe(m => {
+        expect(m.homeTeam!.name).to.equal(homeTeam.name);
+        expect(m.awayTeam!.name).to.equal(awayTeam.name);
+        expect(m.matchRound).to.equal(match.matchday);
+        expect(m.slug).to.equal(`${homeTeam.slug}-v-${awayTeam.slug}`);
+        expect(m.externalReference).to.deep.equal({
           API_FOOTBALL_DATA: { id: 233371 },
         });
 

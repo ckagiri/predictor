@@ -4,9 +4,9 @@ import {
   Competition,
 } from '../models/competition.model';
 import {
-  BaseProviderRepository,
-  BaseProviderRepositoryImpl,
-} from './baseProvider.repo';
+  BaseFootballApiRepository,
+  BaseFootballApiRepositoryImpl,
+} from './baseFootballApi.repo';
 import {
   CompetitionConverter,
   CompetitionConverterImpl,
@@ -14,10 +14,10 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface CompetitionRepository
-  extends BaseProviderRepository<CompetitionEntity> {}
+  extends BaseFootballApiRepository<CompetitionEntity> { }
 
 export class CompetitionRepositoryImpl
-  extends BaseProviderRepositoryImpl<CompetitionEntity, CompetitionDocument>
+  extends BaseFootballApiRepositoryImpl<CompetitionEntity, CompetitionDocument>
   implements CompetitionRepository {
   public static getInstance(provider: ApiProvider): CompetitionRepository {
     return new CompetitionRepositoryImpl(

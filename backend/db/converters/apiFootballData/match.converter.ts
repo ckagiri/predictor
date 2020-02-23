@@ -21,13 +21,13 @@ export class AfdMatchConverter implements MatchConverter {
       TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
-  public provider: ApiProvider;
+  public footballApiProvider: ApiProvider;
 
   constructor(
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
   ) {
-    this.provider = ApiProvider.API_FOOTBALL_DATA;
+    this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
   public from(data: any): Observable<MatchEntity> {
@@ -60,7 +60,7 @@ export class AfdMatchConverter implements MatchConverter {
           },
           odds: data.odds,
           externalReference: {
-            [this.provider]: {
+            [this.footballApiProvider]: {
               id: data.id,
             },
           },

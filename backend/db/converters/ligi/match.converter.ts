@@ -20,13 +20,13 @@ export class LigiMatchConverter implements MatchConverter {
     );
   }
 
-  public provider: ApiProvider;
+  public footballApiProvider: ApiProvider;
 
   constructor(
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
   ) {
-    this.provider = ApiProvider.LIGI;
+    this.footballApiProvider = ApiProvider.LIGI;
   }
 
   public from(data: any): Observable<MatchEntity> {
@@ -52,7 +52,7 @@ export class LigiMatchConverter implements MatchConverter {
           },
           slug: `${homeTeam.slug}-v-${awayTeam.slug}`,
           externalReference: {
-            [this.provider]: {
+            [this.footballApiProvider]: {
               id: data.id,
             },
           },

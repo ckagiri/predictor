@@ -22,7 +22,7 @@ import {
 } from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface IPredictionProcessor {
+export interface PredictionProcessor {
   getPredictions$(match: MatchEntity): Observable<PredictionEntity[]>;
   processPrediction$(
     prediction: PredictionEntity,
@@ -30,9 +30,9 @@ export interface IPredictionProcessor {
   ): Observable<PredictionEntity>;
 }
 
-export class PredictionProcessor implements IPredictionProcessor {
+export class PredictionProcessorImpl implements PredictionProcessor {
   public static getInstance() {
-    return new PredictionProcessor(
+    return new PredictionProcessorImpl(
       MatchRepositoryImpl.getInstance(ApiProvider.LIGI),
       UserRepositoryImpl.getInstance(),
       PredictionRepositoryImpl.getInstance(),

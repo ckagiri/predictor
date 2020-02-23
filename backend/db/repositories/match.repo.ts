@@ -8,16 +8,16 @@ import {
   MatchStatus,
 } from '../models/match.model';
 import {
-  BaseProviderRepository,
-  BaseProviderRepositoryImpl,
-} from './baseProvider.repo';
+  BaseFootballApiRepository,
+  BaseFootballApiRepositoryImpl,
+} from './baseFootballApi.repo';
 import {
   MatchConverter,
   MatchConverterImpl,
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface MatchRepository extends BaseProviderRepository<MatchEntity> {
+export interface MatchRepository extends BaseFootballApiRepository<MatchEntity> {
   findSelectableMatches$(
     seasonId: string,
     gameRound: number,
@@ -31,7 +31,7 @@ export interface MatchRepository extends BaseProviderRepository<MatchEntity> {
 }
 
 export class MatchRepositoryImpl
-  extends BaseProviderRepositoryImpl<MatchEntity, MatchDocument>
+  extends BaseFootballApiRepositoryImpl<MatchEntity, MatchDocument>
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,

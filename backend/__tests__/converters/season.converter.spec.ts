@@ -1,11 +1,24 @@
 import { expect } from 'chai';
+import { of } from 'rxjs';
 
 import { LigiSeasonConverter } from '../../db/converters/ligi/season.converter';
 import { AfdSeasonConverter } from '../../db/converters/apiFootballData/season.converter';
 
 describe('Season Converter', () => {
-  describe.skip('Ligi SeasonConverter', () => {
-    const converter = LigiSeasonConverter.getInstance();
+  describe('Ligi SeasonConverter', () => {
+    const competition = {
+      id: '4gdd40g86762f0fb12000001',
+      name: 'English Premier League',
+      slug: 'english_premier_league',
+      code: 'epl'
+    };
+    const competitionRepoStub: any = {
+      findById$: () => {
+        return of(competition);
+      },
+    };
+
+    const converter = new LigiSeasonConverter(competitionRepoStub);
     const season = {
       name: '2017-2018',
       slug: '17-18',
@@ -16,14 +29,18 @@ describe('Season Converter', () => {
       conversion.subscribe(s => {
         expect(s.name).to.equal(season.name);
         expect(s.slug).to.equal(season.slug);
-
+        expect(s.competition).to.deep.equal({
+          id: competition.id,
+          name: competition.name,
+          slug: competition.slug
+        })
         done();
       });
     });
   });
 
   describe('Afd SeasonConverter', () => {
-    const converter = AfdSeasonConverter.getInstance();
+    const converter = new AfdSeasonConverter();
     const season = {
       id: 2021,
       name: 'Premier League',

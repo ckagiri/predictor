@@ -8,9 +8,9 @@ import { Entity, DocumentEntity } from '../models/base.model';
 import { Converter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface BaseProviderRepository<T extends Entity>
+export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
-  Provider: ApiProvider;
+  FootballApiProvider: ApiProvider;
   save$(obj: Entity): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
@@ -18,11 +18,11 @@ export interface BaseProviderRepository<T extends Entity>
   findByExternalIds$(ids: Array<string | number>): Observable<T[]>;
 }
 
-export class BaseProviderRepositoryImpl<
+export class BaseFootballApiRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-> extends BaseRepositoryImpl<T, TDocument>
-  implements BaseProviderRepository<T> {
+  > extends BaseRepositoryImpl<T, TDocument>
+  implements BaseFootballApiRepository<T> {
   protected converter: Converter;
 
   constructor(SchemaModel: Model<Document>, converter: Converter) {
@@ -30,8 +30,8 @@ export class BaseProviderRepositoryImpl<
     this.converter = converter;
   }
 
-  get Provider() {
-    return this.converter.provider;
+  get FootballApiProvider() {
+    return this.converter.footballApiProvider;
   }
 
   public save$(obj: Entity): Observable<T> {
@@ -43,7 +43,7 @@ export class BaseProviderRepositoryImpl<
   }
 
   public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
-    const externalIdKey = `externalReference.${this.Provider}.id`;
+    const externalIdKey = `externalReference.${this.FootballApiProvider}.id`;
     if (obj === undefined) {
       obj = id;
       id = obj.id;
@@ -67,12 +67,12 @@ export class BaseProviderRepositoryImpl<
   }
 
   public findByExternalId$(id: string | number): Observable<T> {
-    const externalIdKey = `externalReference.${this.Provider}.id`;
+    const externalIdKey = `externalReference.${this.FootballApiProvider}.id`;
     return this.findOne$({ [externalIdKey]: id });
   }
 
   public findByExternalIds$(ids: Array<string | number>): Observable<T[]> {
-    const externalIdKey = `externalReference.${this.Provider}.id`;
+    const externalIdKey = `externalReference.${this.FootballApiProvider}.id`;
 
     return this.findAll$({ [externalIdKey]: { $in: ids } });
   }

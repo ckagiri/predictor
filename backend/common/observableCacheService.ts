@@ -6,7 +6,7 @@ interface CacheContent {
   value: any;
 }
 
-export interface ICacheService {
+export interface CacheService {
   get(
     key: string,
     fallback?: Observable<any>,
@@ -21,9 +21,9 @@ export interface ICacheService {
  * Cache Service is an observables based in-memory cache implementation
  * Keeps track of in-flight observables and sets a default expiry for cached values
  * @export
- * @class CacheService
+ * @class CacheServiceImpl
  */
-export class CacheService {
+export class CacheServiceImpl {
   private cache: Map<string, CacheContent> = new Map<string, CacheContent>();
   private inFlightObservables: Map<string, Subject<any>> = new Map<
     string,

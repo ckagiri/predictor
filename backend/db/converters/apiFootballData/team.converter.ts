@@ -8,10 +8,10 @@ export class AfdTeamConverter implements TeamConverter {
   public static getInstance(): TeamConverter {
     return new AfdTeamConverter();
   }
-  public provider: ApiProvider;
+  public footballApiProvider: ApiProvider;
 
   constructor() {
-    this.provider = ApiProvider.API_FOOTBALL_DATA;
+    this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
   public from(data: any): Observable<TeamEntity> {
@@ -19,7 +19,7 @@ export class AfdTeamConverter implements TeamConverter {
       name: data.name,
       crestUrl: data.crestUrl,
       externalReference: {
-        [this.provider]: {
+        [this.footballApiProvider]: {
           id: data.id,
         },
       },

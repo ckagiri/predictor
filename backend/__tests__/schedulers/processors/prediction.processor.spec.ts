@@ -11,8 +11,8 @@ import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
 import { PredictionEntity } from '../../../db/models/prediction.model';
 
 import {
-  IPredictionProcessor,
   PredictionProcessor,
+  PredictionProcessorImpl,
 } from '../../../app/schedulers/prediction.processor';
 
 const newMatch = (
@@ -82,7 +82,7 @@ const predictionCalculatorStub: any = {
     return { points: 9 };
   },
 };
-let predictionProcessor: IPredictionProcessor;
+let predictionProcessor: PredictionProcessor;
 describe('Prediction Processor', () => {
   describe('getPredictions$', async () => {
     beforeEach(() => {
@@ -93,7 +93,7 @@ describe('Prediction Processor', () => {
         .withArgs(sinon.match(kagiri.id))
         .returns(of(kagiriJoker));
       predictionRepoStub.findOneOrCreate$.returns(of(chaloPred));
-      predictionProcessor = new PredictionProcessor(
+      predictionProcessor = new PredictionProcessorImpl(
         matchRepoStub,
         userRepoStub,
         predictionRepoStub,
@@ -174,7 +174,7 @@ describe('Prediction Processor', () => {
   describe('processPrediction', () => {
     beforeEach(() => {
       predictionRepoStub.findByIdAndUpdate$.returns(of(chaloPred));
-      predictionProcessor = new PredictionProcessor(
+      predictionProcessor = new PredictionProcessorImpl(
         matchRepoStub,
         userRepoStub,
         predictionRepoStub,

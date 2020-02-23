@@ -8,10 +8,10 @@ export class AfdSeasonConverter implements SeasonConverter {
   public static getInstance(): SeasonConverter {
     return new AfdSeasonConverter();
   }
-  public provider: ApiProvider;
+  public footballApiProvider: ApiProvider;
 
   constructor() {
-    this.provider = ApiProvider.API_FOOTBALL_DATA;
+    this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
   public from(data: any): Observable<SeasonEntity> {
@@ -22,7 +22,7 @@ export class AfdSeasonConverter implements SeasonConverter {
       seasonStart: startDate,
       seasonEnd: endDate,
       externalReference: {
-        [this.provider]: {
+        [this.footballApiProvider]: {
           id,
         },
       },

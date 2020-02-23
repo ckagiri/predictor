@@ -6,49 +6,49 @@ import { MatchStatus, Match } from '../../db/models/match.model';
 describe('Match', () => {
   describe('schema', () => {
     describe('an empty match', () => {
-      const s = new Match();
+      const m = new Match();
 
       it('should have a mongoose schema', () => {
-        expect(s.schema).to.not.be.undefined;
+        expect(m.schema).to.not.be.undefined;
       });
 
       it('should require a slug', done => {
-        s.validate(err => {
+        m.validate(err => {
           expect(err.errors.slug).to.exist;
           done();
         });
       });
 
       it('should require a date', done => {
-        s.validate(err => {
+        m.validate(err => {
           expect(err.errors.date).to.exist;
           done();
         });
       });
 
       it('should require matchRound', done => {
-        s.validate(err => {
+        m.validate(err => {
           expect(err.errors.matchRound).to.exist;
           done();
         });
       });
 
       it('should require a home team', done => {
-        s.validate(err => {
+        m.validate(err => {
           expect(err.errors['homeTeam.id']).to.exist;
           done();
         });
       });
 
       it('should require an away team', done => {
-        s.validate(err => {
+        m.validate(err => {
           expect(err.errors['awayTeam.id']).to.exist;
           done();
         });
       });
 
       it('should require status', done => {
-        s.validate(err => {
+        m.validate(err => {
           expect(err.errors.status).to.exist;
           done();
         });

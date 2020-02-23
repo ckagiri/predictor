@@ -39,7 +39,7 @@ export class MatchesUpdaterImpl implements MatchesUpdater {
     return new MatchesUpdaterImpl(MatchRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private matchRepo: MatchRepository) {}
+  constructor(private matchRepo: MatchRepository) { }
 
   public updateGameDetails(apiMatches: any[]) {
     const externalIdToApiMatchMap: any = new Map<string, any>();
@@ -57,7 +57,7 @@ export class MatchesUpdaterImpl implements MatchesUpdater {
       )
       .pipe(
         flatMap(dbMatch => {
-          const provider = this.matchRepo.Provider;
+          const provider = this.matchRepo.FootballApiProvider;
           const extId = dbMatch.externalReference[provider].id;
           const apiMatch = externalIdToApiMatchMap[extId];
 
