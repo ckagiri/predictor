@@ -1,4 +1,4 @@
-import { IFootballApiClient } from '../../thirdParty/footballApi/apiClient';
+import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
 import { SeasonRepository } from '../../db/repositories/season.repo';
 import { TeamRepository } from '../../db/repositories/team.repo';
 import { FixtureRepository } from '../../db/repositories/fixture.repo';
@@ -6,7 +6,7 @@ import { CompetitionJob } from '../apiFootballData/competition.job';
 
 export default class Builder {
   private competitionId!: number | string;
-  private apiClient!: IFootballApiClient;
+  private apiClient!: FootballApiClient;
   private seasonRepo!: SeasonRepository;
   private teamRepo!: TeamRepository;
   private fixtureRepo!: FixtureRepository;
@@ -19,7 +19,7 @@ export default class Builder {
     return this.apiClient;
   }
 
-  public setApiClient(value: IFootballApiClient) {
+  public setApiClient(value: FootballApiClient) {
     this.apiClient = value;
     return this;
   }

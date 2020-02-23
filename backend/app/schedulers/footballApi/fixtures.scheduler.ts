@@ -4,8 +4,8 @@ import moment from 'moment';
 import { IScheduler } from '../../schedulers';
 import { ITaskRunner, TaskRunner } from '../taskRunner';
 import {
-  IFootballApiClient,
-  FootballApiClient as ApiClient,
+  FootballApiClient,
+  FootballApiClientImpl as ApiClient,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { IEventMediator, EventMediator } from '../../../common/eventMediator';
@@ -34,7 +34,7 @@ export class FixturesScheduler extends EventEmitter implements IScheduler {
 
   constructor(
     private taskRunner: ITaskRunner,
-    private apiClient: IFootballApiClient,
+    private apiClient: FootballApiClient,
     private fixtureConverter: FixtureConverter,
     private fixturesUpdater: IFixturesUpdater,
     private eventMedidatior: IEventMediator,

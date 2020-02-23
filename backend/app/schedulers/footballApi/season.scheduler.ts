@@ -2,8 +2,8 @@ import { EventEmitter } from 'events';
 import { IScheduler } from '../../schedulers';
 import { ITaskRunner, TaskRunner } from '../taskRunner';
 import {
-  IFootballApiClient,
-  FootballApiClient as ApiClient,
+  FootballApiClient,
+  FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { ISeasonUpdater, SeasonUpdater } from './season.updater';
@@ -17,7 +17,7 @@ export class SeasonScheduler extends EventEmitter implements IScheduler {
   public static getInstance(provider: ApiProvider) {
     return new SeasonScheduler(
       new TaskRunner(),
-      ApiClient.getInstance(provider),
+      FootballApiClientImpl.getInstance(provider),
       SeasonConverterImpl.getInstance(provider),
       SeasonUpdater.getInstance(provider),
       EventMediator.getInstance(),
@@ -29,7 +29,7 @@ export class SeasonScheduler extends EventEmitter implements IScheduler {
 
   constructor(
     private taskRunner: ITaskRunner,
-    private apiClient: IFootballApiClient,
+    private apiClient: FootballApiClient,
     private seasonConverter: SeasonConverter,
     private seasonUpdater: ISeasonUpdater,
     private eventMediator: IEventMediator,
