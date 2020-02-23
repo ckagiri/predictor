@@ -74,9 +74,9 @@ describe('Match', () => {
         },
         slug: 'arsenal-chelsea',
       };
-      const f = new Match(match);
+      const m = new Match(match);
       it('should have 0 errors', done => {
-        f.validate(err => {
+        m.validate(err => {
           expect(err).to.not.exist;
           done();
         });

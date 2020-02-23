@@ -11,7 +11,7 @@ const competition = {
   code: 'epl',
 };
 
-describe('LeagueRepo', function () {
+describe('CompetitionRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
