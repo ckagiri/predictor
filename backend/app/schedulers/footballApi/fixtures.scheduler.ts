@@ -8,7 +8,7 @@ import {
   FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { IEventMediator, EventMediatorImpl } from '../../../common/eventMediator';
+import { EventMediator, EventMediatorImpl } from '../../../common/eventMediator';
 import {
   FixtureConverter,
   FixtureConverterImpl,
@@ -37,7 +37,7 @@ export class FixturesScheduler extends EventEmitter implements Scheduler {
     private apiClient: FootballApiClient,
     private fixtureConverter: FixtureConverter,
     private fixturesUpdater: FixturesUpdater,
-    private eventMedidatior: IEventMediator,
+    private eventMedidatior: EventMediator,
   ) {
     super();
   }

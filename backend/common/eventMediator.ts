@@ -1,14 +1,14 @@
 import { EventEmitter } from 'events';
 
-export interface IEventMediator {
+export interface EventMediator {
   eventNames(): Array<string | symbol>;
   publish(event: string, ...args: any[]): boolean;
-  addListener(event: string, listener: any): IEventMediator;
-  removeListener(event: string, listener: any): IEventMediator;
-  removeAllListeners(event?: string): IEventMediator;
+  addListener(event: string, listener: any): EventMediator;
+  removeListener(event: string, listener: any): EventMediator;
+  removeAllListeners(event?: string): EventMediator;
 }
 
-export class EventMediatorImpl implements IEventMediator {
+export class EventMediatorImpl implements EventMediator {
   public static getInstance() {
     if (EventMediatorImpl.classInstance == null) {
       EventMediatorImpl.classInstance = new EventMediatorImpl();

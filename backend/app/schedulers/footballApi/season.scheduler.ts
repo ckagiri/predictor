@@ -7,7 +7,7 @@ import {
 } from '../../../thirdParty/footballApi/apiClient';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { ISeasonUpdater, SeasonUpdater } from './season.updater';
-import { IEventMediator, EventMediatorImpl } from '../../../common/eventMediator';
+import { EventMediator, EventMediatorImpl } from '../../../common/eventMediator';
 import {
   SeasonConverter,
   SeasonConverterImpl,
@@ -32,7 +32,7 @@ export class SeasonScheduler extends EventEmitter implements Scheduler {
     private apiClient: FootballApiClient,
     private seasonConverter: SeasonConverter,
     private seasonUpdater: ISeasonUpdater,
-    private eventMediator: IEventMediator,
+    private eventMediator: EventMediator,
   ) {
     super();
   }

@@ -7,7 +7,7 @@ const expect = chai.expect;
 import { FinishedFixturesScheduler } from '../../app/schedulers/finishedFixtures.scheduler';
 import { FixturesScheduler } from '../../app/schedulers/footballApi/fixtures.scheduler';
 
-import { IEventMediator, EventMediatorImpl } from '../../common/eventMediator';
+import { EventMediator, EventMediatorImpl } from '../../common/eventMediator';
 import { FixtureStatus, FixtureEntity } from '../../db/models/fixture.model';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
@@ -26,7 +26,7 @@ const fixturesProcessorStub: any = {
     });
   },
 };
-const eventMediator: IEventMediator = EventMediatorImpl.getInstance();
+const eventMediator: EventMediator = EventMediatorImpl.getInstance();
 let finishedFixturesScheduler: FinishedFixturesScheduler;
 
 describe('ApiFootballData: FinishedFixtures scheduler', () => {

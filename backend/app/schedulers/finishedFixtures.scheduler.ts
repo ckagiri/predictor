@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { TaskRunner } from './taskRunner';
-import { IEventMediator } from '../../common/eventMediator';
+import { EventMediator } from '../../common/eventMediator';
 import { FinishedFixturesProcessor } from './finishedFixtures.processor';
 import { Scheduler } from '../schedulers';
 
@@ -14,7 +14,7 @@ export class FinishedFixturesScheduler extends EventEmitter
     private taskRunner: TaskRunner,
     // private fixtureRepo: FixtureRepository,
     private finishedFixturesProcessor: FinishedFixturesProcessor,
-    private eventMediator: IEventMediator,
+    private eventMediator: EventMediator,
   ) {
     super();
     this.eventMediator.addListener(
