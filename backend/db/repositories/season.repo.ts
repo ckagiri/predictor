@@ -4,8 +4,8 @@ import {
   BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
 import {
-  ISeasonConverter,
   SeasonConverter,
+  SeasonConverterImpl,
 } from '../converters/season.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
@@ -15,10 +15,10 @@ export class SeasonRepositoryImpl
   extends BaseProviderRepositoryImpl<SeasonEntity, SeasonDocument>
   implements SeasonRepository {
   public static getInstance(provider: ApiProvider): SeasonRepository {
-    return new SeasonRepositoryImpl(SeasonConverter.getInstance(provider));
+    return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: ISeasonConverter) {
+  constructor(converter: SeasonConverter) {
     super(Season, converter);
   }
 }

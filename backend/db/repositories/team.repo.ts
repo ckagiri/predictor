@@ -5,7 +5,7 @@ import {
   BaseProviderRepository,
   BaseProviderRepositoryImpl,
 } from './baseProvider.repo';
-import { ITeamConverter, TeamConverter } from '../converters/team.converter';
+import { TeamConverter, TeamConverterImpl } from '../converters/team.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface TeamRepository extends BaseProviderRepository<TeamEntity> {
@@ -17,10 +17,10 @@ export interface TeamRepository extends BaseProviderRepository<TeamEntity> {
 export class TeamRepositoryImpl extends BaseProviderRepositoryImpl<TeamEntity, TeamDocument>
   implements TeamRepository {
   public static getInstance(provider: ApiProvider): TeamRepository {
-    return new TeamRepositoryImpl(TeamConverter.getInstance(provider));
+    return new TeamRepositoryImpl(TeamConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: ITeamConverter) {
+  constructor(converter: TeamConverter) {
     super(Team, converter);
   }
 
@@ -37,7 +37,7 @@ export class TeamRepositoryImpl extends BaseProviderRepositoryImpl<TeamEntity, T
     if (partialUpdate) {
       return super.findOneAndUpdate$(query, obj);
     }
-    return (this.converter as ITeamConverter).from(obj).pipe(
+    return (this.converter as TeamConverter).from(obj).pipe(
       flatMap(data => {
         const { externalReference } = data;
         delete obj.externalReference;

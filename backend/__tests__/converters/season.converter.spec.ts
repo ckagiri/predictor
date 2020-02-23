@@ -23,7 +23,7 @@ describe('Season Converter', () => {
   });
 
   describe('Afd SeasonConverter', () => {
-    const converter = new AfdSeasonConverter();
+    const converter = AfdSeasonConverter.getInstance();
     const season = {
       id: 2021,
       name: 'Premier League',

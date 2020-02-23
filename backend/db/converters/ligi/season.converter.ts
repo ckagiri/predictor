@@ -1,15 +1,15 @@
 import { Observable, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 import { SeasonEntity } from '../../models/season.model';
-import { ISeasonConverter } from '../season.converter';
+import { SeasonConverter } from '../season.converter';
 import {
   LeagueRepository,
   LeagueRepositoryImpl,
 } from '../../repositories/league.repo';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class LigiSeasonConverter implements ISeasonConverter {
-  public static getInstance(): ISeasonConverter {
+export class LigiSeasonConverter implements SeasonConverter {
+  public static getInstance(): SeasonConverter {
     return new LigiSeasonConverter(
       LeagueRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );

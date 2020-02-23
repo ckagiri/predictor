@@ -1,11 +1,11 @@
 import { Observable, of } from 'rxjs';
 
 import { SeasonEntity } from '../../models/season.model';
-import { ISeasonConverter } from '../season.converter';
+import { SeasonConverter } from '../season.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
-export class AfdSeasonConverter implements ISeasonConverter {
-  public static getInstance(): ISeasonConverter {
+export class AfdSeasonConverter implements SeasonConverter {
+  public static getInstance(): SeasonConverter {
     return new AfdSeasonConverter();
   }
   public provider: ApiProvider;

@@ -1,11 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import { TeamConverter as LigiTeamConverter } from '../../db/converters/ligi/team.converter';
-import { TeamConverter as AfdTeamConverter } from '../../db/converters/apiFootballData/team.converter';
+import { LigiTeamConverter } from '../../db/converters/ligi/team.converter';
+import { AfdTeamConverter } from '../../db/converters/apiFootballData/team.converter';
 
 describe('Team Converter', () => {
-  describe('Ligi TeamConverter', () => {
+  describe('Ligi TeamConverterImpl', () => {
     const converter = new LigiTeamConverter();
     const team = {
       name: 'Manchester United FC',
@@ -27,7 +27,7 @@ describe('Team Converter', () => {
     });
   });
 
-  describe('Afd TeamConverter', () => {
+  describe('Afd TeamConverterImpl', () => {
     const converter = new AfdTeamConverter();
     const team = {
       id: 66,

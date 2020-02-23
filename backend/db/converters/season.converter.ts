@@ -6,12 +6,12 @@ import { Converter } from './converter';
 import { SeasonEntity } from '../models/season.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface ISeasonConverter extends Converter {
+export interface SeasonConverter extends Converter {
   from(data: any): Observable<SeasonEntity>;
 }
 
-export abstract class SeasonConverter {
-  public static getInstance(provider: ApiProvider): ISeasonConverter {
+export abstract class SeasonConverterImpl {
+  public static getInstance(provider: ApiProvider): SeasonConverter {
     switch (provider) {
       case ApiProvider.LIGI:
         return LigiSeasonConverter.getInstance();
