@@ -2,7 +2,7 @@ import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
 import {
-  MatchEntity,
+  MatchModel,
   MatchDocument,
   Match,
   MatchStatus,
@@ -17,21 +17,21 @@ import {
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface MatchRepository extends BaseFootballApiRepository<MatchEntity> {
+export interface MatchRepository extends BaseFootballApiRepository<MatchModel> {
   findSelectableMatches$(
     seasonId: string,
     gameRound: number,
-  ): Observable<MatchEntity[]>;
-  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<MatchEntity>;
-  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<MatchEntity[]>;
+  ): Observable<MatchModel[]>;
+  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<MatchModel>;
+  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<MatchModel[]>;
   findAllFinishedWithPendingPredictions$(
     seasonId: string,
     gameRound?: number,
-  ): Observable<MatchEntity[]>;
+  ): Observable<MatchModel[]>;
 }
 
 export class MatchRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<MatchEntity, MatchDocument>
+  extends BaseFootballApiRepositoryImpl<MatchModel, MatchDocument>
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
@@ -93,7 +93,7 @@ export class MatchRepositoryImpl
   }
 
   public findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
-    const obs: Array<Observable<MatchEntity>> = [];
+    const obs: Array<Observable<MatchModel>> = [];
 
     for (const obj of objs) {
       obs.push(this.findBySeasonAndTeamsAndUpsert$(obj));

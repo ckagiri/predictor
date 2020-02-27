@@ -5,11 +5,11 @@ chai.use(sinonChai);
 const expect = chai.expect;
 
 import { MatchesScheduler } from '../../app/schedulers/footballApi/matches.scheduler';
-import { MatchStatus, MatchEntity } from '../../db/models/match.model';
+import { MatchStatus, MatchModel } from '../../db/models/match.model';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => {}, context }: any) => {
+  run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
   },
 };
@@ -25,13 +25,13 @@ const newMatch = (
     homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
     awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
     status,
-  } as MatchEntity;
+  } as MatchModel;
 };
 
-const arsVcheTd: MatchEntity = newMatch('Arsenal', 'Chelsea');
-const livVsouTd: MatchEntity = newMatch('Liverpool', 'Southampton');
-const eveVburYd: MatchEntity = newMatch('Everton', 'Burnley');
-const bouVwatTm: MatchEntity = newMatch('Bournemouth', 'Watford');
+const arsVcheTd: MatchModel = newMatch('Arsenal', 'Chelsea');
+const livVsouTd: MatchModel = newMatch('Liverpool', 'Southampton');
+const eveVburYd: MatchModel = newMatch('Everton', 'Burnley');
+const bouVwatTm: MatchModel = newMatch('Bournemouth', 'Watford');
 const apiClientStub: any = {
   getTomorrowsMatches: () => {
     return Promise.resolve({ data: { matches: [bouVwatTm] } });
@@ -54,7 +54,7 @@ const matchesUpdaterStub: any = {
   },
 };
 const eventMediatorStub: any = {
-  publish(event: string, ...args: any[]) {},
+  publish(event: string, ...args: any[]) { },
 };
 let matchesScheduler: MatchesScheduler;
 describe('ApiFootballData: Matches scheduler', () => {

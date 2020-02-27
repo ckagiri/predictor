@@ -7,8 +7,8 @@ import { of } from 'rxjs';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
-import { PredictionEntity } from '../../../db/models/prediction.model';
+import { MatchStatus, MatchModel } from '../../../db/models/match.model';
+import { PredictionModel } from '../../../db/models/prediction.model';
 
 import {
   PredictionProcessor,
@@ -33,7 +33,7 @@ const newMatch = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as MatchEntity;
+  } as MatchModel;
 };
 const chalo = {
   id: ObjectId().toHexString(),
@@ -71,7 +71,7 @@ const chaloPred = {
   user: chalo.id,
   match: arsVche.id,
   choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-} as PredictionEntity;
+} as PredictionModel;
 const predictionRepoStub: any = {
   findOrCreateJoker$: sinon.stub(),
   findOneOrCreate$: sinon.stub(),

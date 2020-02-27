@@ -1,6 +1,6 @@
 import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
-import { TeamEntity, TeamDocument, Team } from '../models/team.model';
+import { TeamModel, TeamDocument, Team } from '../models/team.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
@@ -8,14 +8,14 @@ import {
 import { TeamConverter, TeamConverterImpl } from '../converters/team.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface TeamRepository extends BaseFootballApiRepository<TeamEntity> {
-  findByNameAndUpsert$(name: any, obj?: any): Observable<TeamEntity>;
-  findEachByNameAndUpsert$(teams: any[]): Observable<TeamEntity[]>;
-  findByName$(name: string): Observable<TeamEntity>;
+export interface TeamRepository extends BaseFootballApiRepository<TeamModel> {
+  findByNameAndUpsert$(name: any, obj?: any): Observable<TeamModel>;
+  findEachByNameAndUpsert$(teams: any[]): Observable<TeamModel[]>;
+  findByName$(name: string): Observable<TeamModel>;
 }
 
 export class TeamRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<TeamEntity, TeamDocument>
+  extends BaseFootballApiRepositoryImpl<TeamModel, TeamDocument>
   implements TeamRepository {
   public static getInstance(provider: ApiProvider): TeamRepository {
     return new TeamRepositoryImpl(TeamConverterImpl.getInstance(provider));
@@ -25,7 +25,7 @@ export class TeamRepositoryImpl
     super(Team, converter);
   }
 
-  public findByNameAndUpsert$(name: any, obj?: any): Observable<TeamEntity> {
+  public findByNameAndUpsert$(name: any, obj?: any): Observable<TeamModel> {
     let partialUpdate = true;
     if (obj === undefined) {
       obj = name;
@@ -47,8 +47,8 @@ export class TeamRepositoryImpl
     );
   }
 
-  public findEachByNameAndUpsert$(teams: any[]): Observable<TeamEntity[]> {
-    const obs: Array<Observable<TeamEntity>> = [];
+  public findEachByNameAndUpsert$(teams: any[]): Observable<TeamModel[]> {
+    const obs: Array<Observable<TeamModel>> = [];
 
     for (const team of teams) {
       obs.push(this.findByNameAndUpsert$(team));
@@ -56,7 +56,7 @@ export class TeamRepositoryImpl
     return forkJoin(obs);
   }
 
-  public findByName$(name: string): Observable<TeamEntity> {
+  public findByName$(name: string): Observable<TeamModel> {
     const query = {
       $or: [{ name }, { shortName: name }, { aliases: name }],
     };

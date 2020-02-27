@@ -5,18 +5,18 @@ import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
 import {
   Competition,
-  CompetitionEntity,
+  CompetitionModel,
 } from '../../db/models/competition.model';
-import { Season, SeasonEntity } from '../../db/models/season.model';
-import { Team, TeamEntity } from '../../db/models/team.model';
-import { Match, MatchEntity, MatchStatus } from '../../db/models/match.model';
-import { Prediction, PredictionEntity } from '../../db/models/prediction.model';
+import { Season, SeasonModel } from '../../db/models/season.model';
+import { Team, TeamModel } from '../../db/models/team.model';
+import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
+import { Prediction, PredictionModel } from '../../db/models/prediction.model';
 import {
   Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
-import { UserScoreEntity } from '../../db/models/userScore.model';
+import { UserScoreModel } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
@@ -36,13 +36,13 @@ let user1Pred2: any;
 let user2Pred1: any;
 let sBoard: any;
 
-const epl: CompetitionEntity = {
+const epl: CompetitionModel = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-const epl18: SeasonEntity = {
+const epl18: SeasonModel = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -53,7 +53,7 @@ const epl18: SeasonEntity = {
   competition: undefined,
 };
 
-const manu: TeamEntity = {
+const manu: TeamModel = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -63,7 +63,7 @@ const manu: TeamEntity = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const manc: TeamEntity = {
+const manc: TeamModel = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -73,7 +73,7 @@ const manc: TeamEntity = {
   aliases: ['ManCity'],
 };
 
-const che: TeamEntity = {
+const che: TeamModel = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -82,7 +82,7 @@ const che: TeamEntity = {
   aliases: ['Chelsea'],
 };
 
-const ars: TeamEntity = {
+const ars: TeamModel = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -91,7 +91,7 @@ const ars: TeamEntity = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: MatchEntity = {
+const manuVmanc: MatchModel = {
   date: '2017-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -103,7 +103,7 @@ const manuVmanc: MatchEntity = {
   result: undefined,
 };
 
-const cheVars: MatchEntity = {
+const cheVars: MatchModel = {
   date: '2017-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -125,7 +125,7 @@ const kagiri = {
   email: 'kagiri@example.com',
 };
 
-describe('UserScore Repo', function() {
+describe('UserScore Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -185,7 +185,7 @@ describe('UserScore Repo', function() {
       .then(matches => {
         match1 = matches[0];
         match2 = matches[1];
-        const pred1: PredictionEntity = {
+        const pred1: PredictionModel = {
           user: user1.id,
           match: match1.id,
           matchSlug: match1.slug,
@@ -197,7 +197,7 @@ describe('UserScore Repo', function() {
             isComputerGenerated: true,
           },
         };
-        const pred2: PredictionEntity = {
+        const pred2: PredictionModel = {
           user: user1.id,
           match: match2.id,
           matchSlug: match2.slug,
@@ -209,7 +209,7 @@ describe('UserScore Repo', function() {
             isComputerGenerated: true,
           },
         };
-        const pred3: PredictionEntity = {
+        const pred3: PredictionModel = {
           user: user2.id,
           match: match1.id,
           matchSlug: match1.slug,
@@ -303,7 +303,7 @@ describe('UserScore Repo', function() {
       const userId = user1.id;
       let matchId = match1.id;
       let predictionId = user1Pred1.id;
-      const score1: UserScoreEntity = {
+      const score1: UserScoreModel = {
         leaderboard: leaderboardId,
         user: userId,
         points: 14,
@@ -364,7 +364,7 @@ describe('UserScore Repo', function() {
   it('should find by leaderboard and order by points', done => {
     const leaderboardId = sBoard.id;
     const matchId = match1.id;
-    const score1: UserScoreEntity = {
+    const score1: UserScoreModel = {
       leaderboard: leaderboardId,
       user: user1.id,
       points: 14,
@@ -381,7 +381,7 @@ describe('UserScore Repo', function() {
       APointsExcludingJoker: 7,
       BPointsExcludingJoker: 0,
     };
-    const score2: UserScoreEntity = {
+    const score2: UserScoreModel = {
       leaderboard: leaderboardId,
       user: user2.id,
       points: 10,
@@ -416,7 +416,7 @@ describe('UserScore Repo', function() {
     const userId = user1.id;
     const matchId = match1.id;
     const predictionId = user1Pred1.id;
-    const score1: UserScoreEntity = {
+    const score1: UserScoreModel = {
       leaderboard: leaderboardId,
       user: userId,
       points: 14,

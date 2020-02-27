@@ -2,7 +2,7 @@ import { from } from 'rxjs';
 import { concatMap, filter, flatMap, map, count } from 'rxjs/operators';
 
 import { PredictionStatus } from '../../db/models/prediction.model';
-import { MatchEntity, MatchStatus } from '../../db/models/match.model';
+import { MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   PredictionProcessor,
   PredictionProcessorImpl,
@@ -13,8 +13,8 @@ import {
 } from '../../db/repositories/match.repo';
 
 export interface FinishedMatchesProcessor {
-  processPredictions(matches: MatchEntity[]): Promise<number>;
-  setToTrueAllPredictionsProcessed(matches: MatchEntity[]): Promise<number>;
+  processPredictions(matches: MatchModel[]): Promise<number>;
+  setToTrueAllPredictionsProcessed(matches: MatchModel[]): Promise<number>;
 }
 
 export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
@@ -28,9 +28,9 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
   constructor(
     private predictionProcessor: PredictionProcessor,
     private matchRepo: MatchRepository,
-  ) {}
+  ) { }
 
-  public processPredictions(matches: MatchEntity[]) {
+  public processPredictions(matches: MatchModel[]) {
     return from(matches)
       .pipe(
         filter(match => {
@@ -71,7 +71,7 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
       .toPromise();
   }
 
-  public setToTrueAllPredictionsProcessed(matches: MatchEntity[]) {
+  public setToTrueAllPredictionsProcessed(matches: MatchModel[]) {
     return from(matches)
       .pipe(
         filter(match => {
