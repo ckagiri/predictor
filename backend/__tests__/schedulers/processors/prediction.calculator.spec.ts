@@ -3,7 +3,7 @@ import PredictionCalculator from '../../../app/schedulers/prediction.calculator'
 
 const calculator = PredictionCalculator.getInstance();
 
-describe('PredictionCalculator', () => {
+describe.only('PredictionCalculator', () => {
   describe('calculateScore for result: 3 0', () => {
     it('should be correct for choice 2 1', () => {
       const scorePoints = calculator.calculateScore(
@@ -14,11 +14,11 @@ describe('PredictionCalculator', () => {
         points: 4,
         APoints: 4,
         BPoints: 0,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
 
@@ -31,11 +31,11 @@ describe('PredictionCalculator', () => {
         points: 4,
         APoints: 5,
         BPoints: -1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 1,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 1,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -1,
       });
     });
 
@@ -48,11 +48,11 @@ describe('PredictionCalculator', () => {
         points: 5,
         APoints: 4,
         BPoints: 1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
 
@@ -65,11 +65,11 @@ describe('PredictionCalculator', () => {
         points: 3,
         APoints: 4,
         BPoints: -1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -1,
       });
     });
 
@@ -82,11 +82,11 @@ describe('PredictionCalculator', () => {
         points: 5,
         APoints: 5,
         BPoints: 0,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 1,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 1,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
 
@@ -99,11 +99,11 @@ describe('PredictionCalculator', () => {
         points: 7,
         APoints: 7,
         BPoints: 0,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 3,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 3,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
 
@@ -116,11 +116,11 @@ describe('PredictionCalculator', () => {
         points: 6,
         APoints: 7,
         BPoints: -1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 3,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 3,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -1,
       });
     });
 
@@ -133,11 +133,11 @@ describe('PredictionCalculator', () => {
         points: 10,
         APoints: 8,
         BPoints: 2,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 4,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 1,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 4,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 1,
+        SpreadTeamScorePoints: 0,
       });
     });
 
@@ -150,11 +150,11 @@ describe('PredictionCalculator', () => {
         points: 3,
         APoints: 4,
         BPoints: -1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -2,
       });
     });
   });
@@ -169,11 +169,11 @@ describe('PredictionCalculator', () => {
         points: 1,
         APoints: 1,
         BPoints: 0,
-        MatchOutcomePoints: 0,
-        TeamScorePlusPoints: 1,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 0,
+        ExactTeamScorePoints: 1,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
     it('should be correct for choice 2 0', () => {
@@ -185,11 +185,11 @@ describe('PredictionCalculator', () => {
         points: 0,
         APoints: 0,
         BPoints: 0,
-        MatchOutcomePoints: 0,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 0,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
     it('should be correct for choice 3 1', () => {
@@ -201,11 +201,11 @@ describe('PredictionCalculator', () => {
         points: 0,
         APoints: 1,
         BPoints: -1,
-        MatchOutcomePoints: 0,
-        TeamScorePlusPoints: 1,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1,
+        CorrectMatchOutcomePoints: 0,
+        ExactTeamScorePoints: 1,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -1,
       });
     });
     it('should be correct for choice 2 1', () => {
@@ -217,11 +217,11 @@ describe('PredictionCalculator', () => {
         points: 1,
         APoints: 1,
         BPoints: 0,
-        MatchOutcomePoints: 0,
-        TeamScorePlusPoints: 1,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 0,
+        ExactTeamScorePoints: 1,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
     it('should be correct for choice 2 2', () => {
@@ -233,11 +233,11 @@ describe('PredictionCalculator', () => {
         points: 5,
         APoints: 4,
         BPoints: 1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: 0,
       });
     });
     it('should be correct for choice 1 1', () => {
@@ -249,11 +249,11 @@ describe('PredictionCalculator', () => {
         points: 8,
         APoints: 6,
         BPoints: 2,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 2,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 1,
-        TeamScoreMinusPoints: 0,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 2,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 1,
+        SpreadTeamScorePoints: 0,
       });
     });
 
@@ -266,11 +266,11 @@ describe('PredictionCalculator', () => {
         points: 3,
         APoints: 4,
         BPoints: -1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -2,
       });
     });
   });
@@ -285,11 +285,11 @@ describe('PredictionCalculator', () => {
         points: 3,
         APoints: 4,
         BPoints: -1,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 1,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -2,
       });
     });
 
@@ -302,11 +302,11 @@ describe('PredictionCalculator', () => {
         points: 2,
         APoints: 4,
         BPoints: -2,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2,
+        CorrectMatchOutcomePoints: 4,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -2,
       });
     });
 
@@ -319,11 +319,11 @@ describe('PredictionCalculator', () => {
         points: -2,
         APoints: 0,
         BPoints: -2,
-        MatchOutcomePoints: 0,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -2,
+        CorrectMatchOutcomePoints: 0,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -2,
       });
     });
 
@@ -336,11 +336,11 @@ describe('PredictionCalculator', () => {
         points: -1,
         APoints: 0,
         BPoints: -1,
-        MatchOutcomePoints: 0,
-        TeamScorePlusPoints: 0,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: -1,
+        CorrectMatchOutcomePoints: 0,
+        ExactTeamScorePoints: 0,
+        ExactGoalDifferencePoints: 0,
+        ExactMatchScorePoints: 0,
+        SpreadTeamScorePoints: -1,
       });
     });
   });

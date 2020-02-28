@@ -56,8 +56,8 @@ const newPrediction = (
       points: 0,
       pointsFor: 0,
       pointsAgainst: 0,
-      MatchOutcomePoints: 0,
-      GoalDifferencePoints: 0,
+      CorrectMatchOutcomePoints: 0,
+      ExactGoalDifferencePoints: 0,
       TeamScorePoints: 0,
     },
   };

@@ -93,22 +93,22 @@ const points1 = {
   points: 10,
   APoints: 8,
   BPoints: 2,
-  MatchOutcomePoints: 4,
-  TeamScorePlusPoints: 4,
-  GoalDifferencePoints: 1,
-  ExactScorePoints: 1,
-  TeamScoreMinusPoints: 0,
+  CorrectMatchOutcomePoints: 4,
+  ExactTeamScorePoints: 4,
+  ExactGoalDifferencePoints: 1,
+  ExactMatchScorePoints: 1,
+  SpreadTeamScorePoints: 0,
 };
 
 const points2 = {
   points: 7,
   APoints: 7,
   BPoints: 0,
-  MatchOutcomePoints: 4,
-  TeamScorePlusPoints: 3,
-  GoalDifferencePoints: 0,
-  ExactScorePoints: 0,
-  TeamScoreMinusPoints: 0,
+  CorrectMatchOutcomePoints: 4,
+  ExactTeamScorePoints: 3,
+  ExactGoalDifferencePoints: 0,
+  ExactMatchScorePoints: 0,
+  SpreadTeamScorePoints: 0,
 };
 
 export default {

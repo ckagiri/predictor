@@ -12,11 +12,11 @@ export interface UserScoreModel extends Entity {
   points: number;
   APoints: number;
   BPoints: number;
-  MatchOutcomePoints: number;
-  TeamScorePlusPoints: number;
-  GoalDifferencePoints: number;
-  ExactScorePoints: number;
-  TeamScoreMinusPoints: number;
+  CorrectMatchOutcomePoints: number;
+  ExactTeamScorePoints: number;
+  ExactGoalDifferencePoints: number;
+  ExactMatchScorePoints: number;
+  SpreadTeamScorePoints: number;
   APointsExcludingJoker?: number;
   BPointsExcludingJoker?: number;
   pointsExcludingJoker?: number;
@@ -43,11 +43,12 @@ const userScoreSchema = new Schema({
   points: { type: Number },
   APoints: { type: Number },
   BPoints: { type: Number },
-  MatchOutcomePoints: { type: Number },
-  TeamScorePlusPoints: { type: Number },
-  GoalDifferencePoints: { type: Number },
-  ExactScorePoints: { type: Number },
-  TeamScoreMinusPoints: { type: Number },
+  CorrectMatchOutcomePoints: { type: Number },
+  ExactGoalDifferencePoints: { type: Number },
+  ExactMatchScorePoints: { type: Number },
+  CloseMatchScorePoints: { type: Number },
+  SpreadTeamScorePoints: { type: Number },
+  ExactTeamScorePoints: { type: Number },
   APointsExcludingJoker: { type: Number },
   BPointsExcludingJoker: { type: Number },
   pointsExcludingJoker: { type: Number },
