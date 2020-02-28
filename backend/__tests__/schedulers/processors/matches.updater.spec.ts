@@ -44,7 +44,7 @@ let matchesUpdater: MatchesUpdater;
 describe('MatchesUpdaterImpl', () => {
   beforeEach(() => {
     matchRepoStub = {
-      Provider: provider,
+      FootballApiProvider: provider,
       findByIdAndUpdate$: () => {
         return of(dbMatch);
       },
@@ -71,9 +71,9 @@ describe('MatchesUpdaterImpl', () => {
       matchRepoStub.findByIdAndUpdate$.restore();
     });
 
-    xit('should update matchOdds if changed', () => {});
+    xit('should update matchOdds if changed', () => { });
 
-    xit('should update matchStatus if changed', () => {});
+    xit('should update matchStatus if changed', () => { });
 
     xit(
       'it should not make update call if result, odds or status hasnt changed',

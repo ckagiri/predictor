@@ -35,7 +35,7 @@ let seasonUpdater: SeasonUpdaterImpl;
 describe('SeasonUpdaterImpl', () => {
   beforeEach(() => {
     seasonRepoStub = {
-      Provider: provider,
+      FootballApiProvider: provider,
       findByIdAndUpdate$: () => {
         return of(dbSeason);
       },
