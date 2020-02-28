@@ -34,7 +34,7 @@ const epl18: SeasonModel = {
 const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 let theSeason: any;
 
-describe('Leaderboard Repo', function () {
+describe('Leaderboard Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -136,7 +136,7 @@ describe('Leaderboard Repo', function () {
   });
 
   // tslint:disable-next-line: only-arrow-functions
-  describe('finders', function () {
+  describe('finders', function() {
     let lb1: LeaderboardModel;
     beforeEach(done => {
       Leaderboard.create([

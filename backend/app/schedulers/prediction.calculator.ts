@@ -54,7 +54,12 @@ export class PredictionCalculator {
       }
     }
 
-    if (homeGoalsGd === 1 && awayGoalsGd === 1 && choiceGd === 0 && resultGd === 0) {
+    if (
+      homeGoalsGd === 1 &&
+      awayGoalsGd === 1 &&
+      choiceGd === 0 &&
+      resultGd === 0
+    ) {
       scorePoints.CloseMatchScorePoints = 1;
       scorePoints.BPoints += 1;
     }

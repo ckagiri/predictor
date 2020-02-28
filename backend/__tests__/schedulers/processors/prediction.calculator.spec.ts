@@ -55,10 +55,9 @@ describe('PredictionCalculator', () => {
         ExactMatchScorePoints: 0,
         CloseMatchScorePoints: 0,
         SpreadTeamScorePoints: 1,
-        ExactTeamScorePoints: 0
+        ExactTeamScorePoints: 0,
       });
     });
-
 
     it('should be correct for choice 4 1', () => {
       const scorePoints = calculator.calculateScore(

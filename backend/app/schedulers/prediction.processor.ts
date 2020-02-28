@@ -44,7 +44,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private userRepo: UserRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
-  ) { }
+  ) {}
 
   public getPredictions$(match: MatchModel) {
     const { season: seasonId, gameRound } = match;

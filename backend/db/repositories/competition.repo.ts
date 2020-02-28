@@ -14,7 +14,7 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface CompetitionRepository
-  extends BaseFootballApiRepository<CompetitionModel> { }
+  extends BaseFootballApiRepository<CompetitionModel> {}
 
 export class CompetitionRepositoryImpl
   extends BaseFootballApiRepositoryImpl<CompetitionModel, CompetitionDocument>

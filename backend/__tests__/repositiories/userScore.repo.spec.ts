@@ -125,7 +125,7 @@ const kagiri = {
   email: 'kagiri@example.com',
 };
 
-describe('UserScore Repo', function () {
+describe('UserScore Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -274,7 +274,7 @@ describe('UserScore Repo', function () {
         ExactMatchScorePoints: 0,
         CloseMatchScorePoints: 0,
         SpreadTeamScorePoints: 0,
-        ExactTeamScorePoints: 3
+        ExactTeamScorePoints: 3,
       };
       const hasJoker = true;
       userScoreRepo
@@ -334,7 +334,7 @@ describe('UserScore Repo', function () {
               ExactMatchScorePoints: 1,
               CloseMatchScorePoints: 0,
               SpreadTeamScorePoints: 0,
-              ExactTeamScorePoints: 4
+              ExactTeamScorePoints: 4,
             };
             const hasJoker = false;
             matchId = match2.id;

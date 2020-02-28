@@ -10,7 +10,7 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface SeasonRepository
-  extends BaseFootballApiRepository<SeasonModel> { }
+  extends BaseFootballApiRepository<SeasonModel> {}
 
 export class SeasonRepositoryImpl
   extends BaseFootballApiRepositoryImpl<SeasonModel, SeasonDocument>

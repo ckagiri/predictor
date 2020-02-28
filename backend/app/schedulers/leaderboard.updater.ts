@@ -57,7 +57,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     private leaderboardRepo: LeaderboardRepository,
     private predictionRepo: PredictionRepository,
     private userScoreRepo: UserScoreRepository,
-  ) { }
+  ) {}
 
   public setCacheService(cacheService: CacheService) {
     this.cacheService = cacheService;

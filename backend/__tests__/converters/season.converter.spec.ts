@@ -10,7 +10,7 @@ describe('Season Converter', () => {
       id: '4gdd40g86762f0fb12000001',
       name: 'English Premier League',
       slug: 'english_premier_league',
-      code: 'epl'
+      code: 'epl',
     };
     const competitionRepoStub: any = {
       findById$: () => {
@@ -32,8 +32,8 @@ describe('Season Converter', () => {
         expect(s.competition).to.deep.equal({
           id: competition.id,
           name: competition.name,
-          slug: competition.slug
-        })
+          slug: competition.slug,
+        });
         done();
       });
     });

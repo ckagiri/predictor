@@ -15,9 +15,7 @@ export interface LeaderboardModel extends Entity {
   lastStatusUpdate?: Date;
 }
 
-export interface LeaderboardDocument
-  extends LeaderboardModel,
-  DocumentEntity { }
+export interface LeaderboardDocument extends LeaderboardModel, DocumentEntity {}
 
 export enum BOARD_STATUS {
   UPDATING_SCORES = 'UPDATING_SCORES',

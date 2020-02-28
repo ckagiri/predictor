@@ -13,7 +13,7 @@ export interface TeamModel extends Entity {
   externalReference?: any;
 }
 
-export interface TeamDocument extends TeamModel, DocumentEntity { }
+export interface TeamDocument extends TeamModel, DocumentEntity {}
 
 const { Mixed } = Schema.Types;
 
