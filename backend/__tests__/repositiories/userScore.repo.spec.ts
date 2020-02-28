@@ -270,10 +270,11 @@ describe('UserScore Repo', function () {
         APoints: 7,
         BPoints: 0,
         CorrectMatchOutcomePoints: 4,
-        ExactTeamScorePoints: 3,
         ExactGoalDifferencePoints: 0,
         ExactMatchScorePoints: 0,
+        CloseMatchScorePoints: 0,
         SpreadTeamScorePoints: 0,
+        ExactTeamScorePoints: 3
       };
       const hasJoker = true;
       userScoreRepo
@@ -329,10 +330,11 @@ describe('UserScore Repo', function () {
               APoints: 8,
               BPoints: 2,
               CorrectMatchOutcomePoints: 4,
-              ExactTeamScorePoints: 4,
               ExactGoalDifferencePoints: 1,
               ExactMatchScorePoints: 1,
+              CloseMatchScorePoints: 0,
               SpreadTeamScorePoints: 0,
+              ExactTeamScorePoints: 4
             };
             const hasJoker = false;
             matchId = match2.id;

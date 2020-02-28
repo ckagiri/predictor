@@ -9,10 +9,11 @@ export interface ScorePoints {
   APoints: number;
   BPoints: number;
   CorrectMatchOutcomePoints: number;
-  ExactTeamScorePoints: number;
-  ExactMatchScorePoints: number;
   ExactGoalDifferencePoints: number;
+  ExactMatchScorePoints: number;
+  CloseMatchScorePoints: number;
   SpreadTeamScorePoints: number;
+  ExactTeamScorePoints: number;
 }
 
 export interface Odds {

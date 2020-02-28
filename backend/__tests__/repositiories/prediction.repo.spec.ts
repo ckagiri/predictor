@@ -281,10 +281,11 @@ describe('Prediction repo', function () {
             APoints: 7,
             BPoints: 0,
             CorrectMatchOutcomePoints: 4,
-            ExactTeamScorePoints: 3,
             ExactGoalDifferencePoints: 0,
             ExactMatchScorePoints: 0,
+            CloseMatchScorePoints: 0,
             SpreadTeamScorePoints: 0,
+            ExactTeamScorePoints: 3
           };
           return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
         }),
