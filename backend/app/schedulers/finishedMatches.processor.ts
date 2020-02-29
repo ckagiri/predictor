@@ -43,7 +43,7 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
       .pipe(
         concatMap(match => {
           return this.predictionProcessor
-            .getPredictions$(match)
+            .getOrCreatePredictions$(match)
             .pipe(
               flatMap(predictions => {
                 return from(predictions);

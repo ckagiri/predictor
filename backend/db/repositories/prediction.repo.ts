@@ -114,7 +114,12 @@ export class PredictionRepositoryImpl
         }
         return this.matchRepo.findById$(matchId).pipe(
           flatMap(match => {
-            const { slug: matchSlug, season, gameRound, odds } = match;
+            const {
+              slug: matchSlug,
+              season,
+              gameRound,
+              odds,
+            } = match as Required<MatchModel>;
             const pred: PredictionModel = {
               user: userId,
               match: matchId,
@@ -171,7 +176,12 @@ export class PredictionRepositoryImpl
       )
       .pipe(
         flatMap((newJokerPrediction: PredictionModel) => {
-          const { slug: matchSlug, season, gameRound, odds } = newJokerMatch;
+          const {
+            slug: matchSlug,
+            season,
+            gameRound,
+            odds,
+          } = newJokerMatch as Required<MatchModel>;
           let newJoker: PredictionModel;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();

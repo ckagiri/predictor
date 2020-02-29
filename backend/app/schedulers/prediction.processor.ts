@@ -1,5 +1,5 @@
 import { Observable, from, of } from 'rxjs';
-import { map, flatMap, toArray } from 'rxjs/operators';
+import { concatMap, map, flatMap, toArray } from 'rxjs/operators';
 
 import {
   MatchRepository,
@@ -23,7 +23,7 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface PredictionProcessor {
-  getPredictions$(match: MatchModel): Observable<PredictionModel[]>;
+  getOrCreatePredictions$(match: MatchModel): Observable<PredictionModel[]>;
   processPrediction$(
     prediction: PredictionModel,
     match: MatchModel,
@@ -46,7 +46,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) {}
 
-  public getPredictions$(match: MatchModel) {
+  public getOrCreatePredictions$(match: MatchModel) {
     const { season: seasonId, gameRound } = match;
     return this.matchRepo
       .findSelectableMatches$(seasonId!, gameRound!)
@@ -100,7 +100,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
           const matchId = match.id;
           const { userId, jokerPrediction } = data;
 
-          if (jokerPrediction.match === matchId) {
+          if (jokerPrediction.match.toString() === matchId) {
             return of(jokerPrediction);
           }
           return this.predictionRepo.findOneOrCreate$({

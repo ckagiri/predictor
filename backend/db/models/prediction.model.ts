@@ -15,7 +15,7 @@ export interface PredictionModel extends Entity {
   match: string;
   matchSlug?: string;
   season?: string;
-  gameRound?: number;
+  gameRound: number;
   choice: Score;
   scorePoints?: ScorePoints;
   status?: PredictionStatus;

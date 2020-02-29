@@ -62,7 +62,7 @@ const pred3 = newPrediction(chalo, livVsou);
 const pred4 = newPrediction(kag, livVsou);
 
 const predictionProcessorStub: any = {
-  getPredictions$: sinon.stub(),
+  getOrCreatePredictions$: sinon.stub(),
   processPrediction$: sinon.stub(),
 };
 const matchRepoStub: any = {
@@ -76,10 +76,10 @@ let finishedMatchesProcessor: FinishedMatchesProcessor;
 describe('Finished Matches', () => {
   describe('processPredictions', () => {
     beforeEach(() => {
-      predictionProcessorStub.getPredictions$
+      predictionProcessorStub.getOrCreatePredictions$
         .withArgs(sinon.match(arsVche))
         .returns(of([pred1, pred2]));
-      predictionProcessorStub.getPredictions$
+      predictionProcessorStub.getOrCreatePredictions$
         .withArgs(sinon.match(livVsou))
         .returns(of([pred3, pred4]));
 
@@ -90,11 +90,11 @@ describe('Finished Matches', () => {
       );
     });
     afterEach(() => {
-      predictionProcessorStub.getPredictions$ = sinon.stub();
+      predictionProcessorStub.getOrCreatePredictions$ = sinon.stub();
       predictionProcessorStub.processPrediction$ = sinon.stub();
     });
     it('should getPredictions for FINISHED but not AllPredictionsProcessed match', async () => {
-      const spy = predictionProcessorStub.getPredictions$;
+      const spy = predictionProcessorStub.getOrCreatePredictions$;
 
       await finishedMatchesProcessor.processPredictions(finishedMatches);
 
