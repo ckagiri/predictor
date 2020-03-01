@@ -3,56 +3,63 @@ import * as chai from 'chai';
 import * as http from 'http';
 import chaiHttp = require('chai-http');
 chai.use(chaiHttp);
-import { CompetitionModel, Competition } from '../../db/models/competition.model';
+import { CompetitionModel, Competition, CompetitionDocument } from '../../db/models/competition.model';
 import axios, { AxiosInstance } from 'axios';
 import startServer from '../../app/server';
 import { expect } from 'chai';
 
-let server: http.Server, competitionsAPI: AxiosInstance, competition, baseURL: string;
+let server: http.Server, competitionsAPI: AxiosInstance, baseURL: string;
+type Sut = {
+  competitions: CompetitionModel[]
+}
+let sut: Partial<Sut> = {};
 
-function clearData(done: Function) {
+function clearData() {
   const promises: Promise<any>[] = [];
-  promises.push(Competition.remove({}).exec())
-  Promise.all(promises).then(() => done());
+  promises.push(Competition.deleteMany({}).exec())
+  return Promise.all(promises);
 }
 
-function addCompetition(aCompetition: CompetitionModel) {
+function addCompetitions(competitions: CompetitionModel[]): Promise<CompetitionModel[]> {
   return new Promise((resolve, reject) => {
-    new Competition(aCompetition).save((err: Error, competition: CompetitionModel) => {
+    Competition.insertMany(competitions, ((err: Error, data: CompetitionDocument[]) => {
+      sut.competitions = data.map(c => c.toObject());
       if (err) { return reject(err); }
-      resolve(competition);
-    })
+      resolve(competitions);
+    }));
   })
 }
 
 async function resetData() {
-  const aCompetition: CompetitionModel = {
+  const epl: CompetitionModel = {
     name: 'English Premier League',
     slug: 'english_premier_league',
     code: 'epl'
   };
-  const c = await addCompetition(aCompetition);
-  competition = c;
+  const slg: CompetitionModel = {
+    name: 'Spanish La Liga',
+    slug: 'spanish_la_liga',
+    code: 'slg'
+  };
+  await clearData();
+  return await addCompetitions([epl, slg]);
 }
 
 describe('Competitions API', function () {
-  this.timeout(5000);
+  this.timeout(9999);
   before(done => {
-    mongoose.connect(process.env.MONGO_URI!);
+    mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true, useUnifiedTopology: true });
     mongoose.connection
-      .once('open', () => clearData(done))
+      .once('open', () => done())
       .on('error', (error) => {
         console.warn('Error', error);
         done(error);
       })
   })
-  beforeEach(done => resetData().then(done));
-  afterEach(done => {
-    clearData(done);
-  });
+  beforeEach(done => { resetData().then(() => done()); });
   after(done => { mongoose.disconnect(); done() });
 
-  describe('Competitions Routes', function () {
+  describe.only('Competition Routes', function () {
     before(async () => {
       server = await startServer()
       baseURL = `http://localhost:${process.env.PORT}/api`
@@ -62,9 +69,11 @@ describe('Competitions API', function () {
     after(() => server.close())
 
     it('should respond with JSON array', async function () {
-
-      const { competitions } = await competitionsAPI.get('competitions').then(res => res.data)
-      expect(competitions).to.be.an.instanceof(Array)
+      const competitions: CompetitionModel[] = await competitionsAPI.get('competitions').then(res => res.data)
+      expect(competitions).to.be.an.instanceof(Array);
+      expect(competitions).to.have.length(2)
+      expect(competitions[0].id).to.eql(sut.competitions![0].id);
+      expect(competitions[1].id).to.eql(sut.competitions![1].id);
     })
   })
 })

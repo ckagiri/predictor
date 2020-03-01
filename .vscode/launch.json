@@ -11,6 +11,7 @@
       "program": "${workspaceFolder}/backend/app/index.ts",
       "cwd": "${workspaceFolder}",
       "envFile": "${workspaceFolder}/backend/.env.development",
+      "internalConsoleOptions": "openOnSessionStart",
       "env": {
         "NODE_ENV": "development"
       },

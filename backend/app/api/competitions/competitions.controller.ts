@@ -1,33 +1,43 @@
 import { Request, Response } from 'express';
-import { CompetitionRepositoryImpl } from '../../../db/repositories/competition.repo';
+import { CompetitionRepositoryImpl, CompetitionRepository } from '../../../db/repositories/competition.repo';
 import { isMongoId } from './utils';
 import { CompetitionModel } from 'db/models/competition.model';
 
 const competitionRepo = CompetitionRepositoryImpl.getInstance();
 
-async function getCompetitions(_req: Request, res: Response) {
-  try {
-    const competitions = await competitionRepo.findAll$().toPromise()
-    res.status(200).json(competitions)
-  } catch (error) {
-    res.status(500).send(error);
+class CompetitionsController {
+  static getInstance() {
+    return new CompetitionsController(CompetitionRepositoryImpl.getInstance())
   }
-}
 
-async function getCompetition(req: Request, res: Response) {
-  try {
-    const id = req.params.id;
-    let competition: CompetitionModel;
-    if (isMongoId(id)) {
-      competition = await competitionRepo.findById$(id).toPromise();
-    } else {
-      const slug = id;
-      competition = await competitionRepo.findOne$({ slug }).toPromise();
+  constructor(private competitionRepo: CompetitionRepository) { }
+
+  getCompetitions = async (_req: Request, res: Response) => {
+    try {
+      const competitions = await this.competitionRepo.findAll$().toPromise()
+      res.status(200).json(competitions)
+    } catch (error) {
+      res.status(500).send(error);
     }
-    res.status(200).json(competition);
-  } catch (error) {
-    res.status(500).send(error);
+  }
+
+  getCompetition = async (req: Request, res: Response) => {
+    try {
+      const id = req.params.id;
+      let competition: CompetitionModel;
+      if (isMongoId(id)) {
+        competition = await this.competitionRepo.findById$(id).toPromise();
+      } else {
+        const slug = id;
+        competition = await this.competitionRepo.findOne$({ slug }).toPromise();
+      }
+      res.status(200).json(competition);
+    } catch (error) {
+      res.status(500).send(error);
+    }
   }
 }
 
-export { getCompetitions, getCompetition }; 
+const competitionsController = CompetitionsController.getInstance();
+
+export default competitionsController;
