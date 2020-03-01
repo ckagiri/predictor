@@ -2,17 +2,17 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
 import * as db from '../../db';
-import { User, UserEntity } from '../../db/models/user.model';
+import { User, UserModel } from '../../db/models/user.model';
 import {
   Competition,
-  CompetitionEntity,
+  CompetitionModel,
 } from '../../db/models/competition.model';
-import { Season, SeasonEntity } from '../../db/models/season.model';
-import { Team, TeamEntity } from '../../db/models/team.model';
-import { Match, MatchEntity, MatchStatus } from '../../db/models/match.model';
+import { Season, SeasonModel } from '../../db/models/season.model';
+import { Team, TeamModel } from '../../db/models/team.model';
+import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
-  PredictionEntity,
+  PredictionModel,
   PredictionDocument,
 } from '../../db/models/prediction.model';
 
@@ -29,13 +29,13 @@ let user1: any,
   team4: any,
   match1: any;
 
-const epl: CompetitionEntity = {
+const epl: CompetitionModel = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-const epl18: SeasonEntity = {
+const epl18: SeasonModel = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -46,7 +46,7 @@ const epl18: SeasonEntity = {
   competition: undefined,
 };
 
-const manu: TeamEntity = {
+const manu: TeamModel = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -56,7 +56,7 @@ const manu: TeamEntity = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const manc: TeamEntity = {
+const manc: TeamModel = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -66,7 +66,7 @@ const manc: TeamEntity = {
   aliases: ['ManCity'],
 };
 
-const che: TeamEntity = {
+const che: TeamModel = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -75,7 +75,7 @@ const che: TeamEntity = {
   aliases: ['Chelsea'],
 };
 
-const ars: TeamEntity = {
+const ars: TeamModel = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -84,7 +84,7 @@ const ars: TeamEntity = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: MatchEntity = {
+const manuVmanc: MatchModel = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -96,7 +96,7 @@ const manuVmanc: MatchEntity = {
   result: undefined,
 };
 
-const cheVars: MatchEntity = {
+const cheVars: MatchModel = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -108,12 +108,12 @@ const cheVars: MatchEntity = {
   result: undefined,
 };
 
-const chalo: UserEntity = {
+const chalo: UserModel = {
   username: 'chalo',
   email: 'chalo@example.com',
 };
 
-const kagiri: UserEntity = {
+const kagiri: UserModel = {
   username: 'kagiri',
   email: 'kagiri@example.com',
 };
@@ -212,9 +212,9 @@ describe('Prediction repo', function() {
   });
 
   it('should findOne prediction by user and match', done => {
-    let prediction: PredictionEntity;
+    let prediction: PredictionModel;
     const { slug: matchSlug, season, gameRound, id: matchId } = match1;
-    const pred: PredictionEntity = {
+    const pred: PredictionModel = {
       user: user1.id,
       match: matchId,
       matchSlug,
@@ -280,17 +280,18 @@ describe('Prediction repo', function() {
             points: 7,
             APoints: 7,
             BPoints: 0,
-            MatchOutcomePoints: 4,
-            TeamScorePlusPoints: 3,
-            GoalDifferencePoints: 0,
-            ExactScorePoints: 0,
-            TeamScoreMinusPoints: 0,
+            CorrectMatchOutcomePoints: 4,
+            ExactGoalDifferencePoints: 0,
+            ExactMatchScorePoints: 0,
+            CloseMatchScorePoints: 0,
+            SpreadTeamScorePoints: 0,
+            ExactTeamScorePoints: 3,
           };
           return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
         }),
       )
       .subscribe(p => {
-        const pred = (p as PredictionDocument).toObject() as PredictionEntity;
+        const pred = (p as PredictionDocument).toObject() as PredictionModel;
         expect(pred.scorePoints).to.eql(scorePoints);
         done();
       });

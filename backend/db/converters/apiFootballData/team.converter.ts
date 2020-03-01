@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { TeamEntity } from '../../models/team.model';
+import { TeamModel } from '../../models/team.model';
 import { TeamConverter } from '../team.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
@@ -14,7 +14,7 @@ export class AfdTeamConverter implements TeamConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<TeamEntity> {
+  public from(data: any): Observable<TeamModel> {
     return of({
       name: data.name,
       crestUrl: data.crestUrl,

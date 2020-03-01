@@ -8,7 +8,7 @@ import { FinishedMatchesScheduler } from '../../app/schedulers/finishedMatches.s
 import { MatchesScheduler } from '../../app/schedulers/footballApi/matches.scheduler';
 
 import { EventMediator, EventMediatorImpl } from '../../common/eventMediator';
-import { MatchStatus, MatchEntity } from '../../db/models/match.model';
+import { MatchStatus, MatchModel } from '../../db/models/match.model';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
@@ -59,7 +59,7 @@ describe('ApiFootballData: FinishedMatches scheduler', () => {
         homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
         awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
         status,
-      } as MatchEntity;
+      } as MatchModel;
     };
     const arsVcheTd = newMatch('Arsenal', 'Chelsea');
     const livVsouTd = newMatch('Liverpool', 'Southampton');

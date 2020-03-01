@@ -13,7 +13,7 @@ export enum MatchStatus {
   FINISHED = 'FINISHED',
 }
 
-export interface MatchEntity extends Entity {
+export interface MatchModel extends Entity {
   id?: string;
   season?: string;
   slug: string;
@@ -41,7 +41,7 @@ export interface MatchEntity extends Entity {
   [key: string]: any;
 }
 
-export interface MatchDocument extends MatchEntity, DocumentEntity {}
+export interface MatchDocument extends MatchModel, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 

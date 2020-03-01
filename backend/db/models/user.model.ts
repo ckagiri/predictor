@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt-nodejs';
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface UserEntity extends Entity {
+export interface UserModel extends Entity {
   id?: string;
   email: string;
   isAdmin?: boolean;
@@ -42,7 +42,7 @@ export interface UserEntity extends Entity {
   };
 }
 
-export interface UserDocument extends UserEntity, DocumentEntity {
+export interface UserDocument extends UserModel, DocumentEntity {
   comparePassword(candidatePassword: string, cb: any): void;
 }
 

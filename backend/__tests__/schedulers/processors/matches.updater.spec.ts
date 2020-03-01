@@ -44,7 +44,7 @@ let matchesUpdater: MatchesUpdater;
 describe('MatchesUpdaterImpl', () => {
   beforeEach(() => {
     matchRepoStub = {
-      Provider: provider,
+      FootballApiProvider: provider,
       findByIdAndUpdate$: () => {
         return of(dbMatch);
       },

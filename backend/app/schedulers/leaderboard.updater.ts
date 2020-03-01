@@ -8,14 +8,14 @@ import {
   map,
 } from 'rxjs/operators';
 
-import { MatchEntity, MatchStatus } from '../../db/models/match.model';
+import { MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   UserRepository,
   UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
 import {
   BOARD_STATUS,
-  LeaderboardEntity,
+  LeaderboardModel,
 } from '../../db/models/leaderboard.model';
 import {
   LeaderboardRepository,
@@ -35,7 +35,7 @@ import {
 } from '../../common/observableCacheService';
 
 export interface LeaderboardUpdater {
-  updateScores(matches: MatchEntity[]): Promise<number>;
+  updateScores(matches: MatchModel[]): Promise<number>;
   updateRankings(seasonId: string): Promise<number>;
   markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
 }
@@ -64,7 +64,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     return this;
   }
 
-  public updateScores(matches: MatchEntity[]) {
+  public updateScores(matches: MatchModel[]) {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }
@@ -100,10 +100,10 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
           const month = date.getUTCMonth() + 1;
           const year = date.getFullYear();
 
-          const boards: Array<Observable<LeaderboardEntity>> = [];
-          let sBoard: Observable<LeaderboardEntity>;
-          let mBoard: Observable<LeaderboardEntity>;
-          let rBoard: Observable<LeaderboardEntity>;
+          const boards: Array<Observable<LeaderboardModel>> = [];
+          let sBoard: Observable<LeaderboardModel>;
+          let mBoard: Observable<LeaderboardModel>;
+          let rBoard: Observable<LeaderboardModel>;
 
           if (this.cacheService != null) {
             sBoard = this.cacheService.get(
@@ -170,13 +170,14 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
       .pipe(
         flatMap(data => {
           const { user, match, leaderboard } = data;
-          return this.predictionRepo
-            .findOne$({ userId: user.id, matchId: match.id })
-            .pipe(
-              map(prediction => {
-                return { user, match, leaderboard, prediction };
-              }),
-            );
+          const userId = user.id?.toString();
+          const matchId = match.id?.toString();
+
+          return this.predictionRepo.findOne$({ userId, matchId }).pipe(
+            map(prediction => {
+              return { user, match, leaderboard, prediction };
+            }),
+          );
         }),
       )
       .pipe(

@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
-import { SeasonEntity } from '../../models/season.model';
+import { SeasonModel } from '../../models/season.model';
 import { SeasonConverter } from '../season.converter';
 import {
   CompetitionRepository,
@@ -20,7 +20,7 @@ export class LigiSeasonConverter implements SeasonConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<SeasonEntity> {
+  public from(data: any): Observable<SeasonModel> {
     return this.competitionRepo.findById$(data.competitionId).pipe(
       flatMap(competition => {
         return of({

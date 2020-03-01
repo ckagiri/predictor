@@ -16,10 +16,8 @@
       "CorrectMatchOutcomePoints": 0,
       "ExactGoalDifferencePoints": 0,
       "ExactMatchScorePoints": 0,
-
-      "NeighbouringDrawScorePoints": 0,
-      "NeighbouringMatchScorePoints": 0,
-      "CorrectTeamScorePoints": 0,
+      "CloseMatchScorePoints": 0,
+      "SpreadTeamScorePoints": 0,
       "ExactTeamScorePoints": 0
     },
     "hasJoker": true,
@@ -43,10 +41,8 @@
       "CorrectMatchOutcomePoints": 0,
       "ExactGoalDifferencePoints": 0,
       "ExactMatchScorePoints": 0,
-
-      "NeighbouringDrawScorePoints": 0,
-      "NeighbouringMatchScorePoints": 0,
-      "CorrectTeamScorePoints": 0,
+      "CloseMatchScorePoints": 0,
+      "SpreadTeamScorePoints": 0,
       "ExactTeamScorePoints": 0
     },
     "hasJoker": false,

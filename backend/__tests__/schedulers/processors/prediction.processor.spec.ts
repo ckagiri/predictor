@@ -7,8 +7,8 @@ import { of } from 'rxjs';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
-import { PredictionEntity } from '../../../db/models/prediction.model';
+import { MatchStatus, MatchModel } from '../../../db/models/match.model';
+import { PredictionModel } from '../../../db/models/prediction.model';
 
 import {
   PredictionProcessor,
@@ -33,7 +33,7 @@ const newMatch = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as MatchEntity;
+  } as MatchModel;
 };
 const chalo = {
   id: ObjectId().toHexString(),
@@ -71,7 +71,7 @@ const chaloPred = {
   user: chalo.id,
   match: arsVche.id,
   choice: { goalsHomeTeam: 1, goalsAwayTeam: 1 },
-} as PredictionEntity;
+} as PredictionModel;
 const predictionRepoStub: any = {
   findOrCreateJoker$: sinon.stub(),
   findOneOrCreate$: sinon.stub(),
@@ -84,7 +84,7 @@ const predictionCalculatorStub: any = {
 };
 let predictionProcessor: PredictionProcessor;
 describe('Prediction Processor', () => {
-  describe('getPredictions$', async () => {
+  describe('getOrCreatePredictions$', async () => {
     beforeEach(() => {
       predictionRepoStub.findOrCreateJoker$
         .withArgs(sinon.match(chalo.id))
@@ -109,7 +109,7 @@ describe('Prediction Processor', () => {
     it('should get the selectable matches of gameRound', async () => {
       const spy = sinon.spy(matchRepoStub, 'findSelectableMatches$');
 
-      await predictionProcessor.getPredictions$(arsVche).toPromise();
+      await predictionProcessor.getOrCreatePredictions$(arsVche).toPromise();
 
       expect(spy).to.have.been.calledOnce;
     });
@@ -117,7 +117,7 @@ describe('Prediction Processor', () => {
     it('should get all users', async () => {
       const spy = sinon.spy(userRepoStub, 'findAll$');
 
-      await predictionProcessor.getPredictions$(arsVche).toPromise();
+      await predictionProcessor.getOrCreatePredictions$(arsVche).toPromise();
 
       expect(spy).to.have.been.calledOnce;
     });
@@ -125,7 +125,7 @@ describe('Prediction Processor', () => {
     it('should findOrCreate jokerPrediction for user', async () => {
       const spy = predictionRepoStub.findOrCreateJoker$;
 
-      await predictionProcessor.getPredictions$(arsVche).toPromise();
+      await predictionProcessor.getOrCreatePredictions$(arsVche).toPromise();
 
       expect(spy).to.have.been.calledTwice;
       expect(spy.firstCall).to.have.been.calledWithExactly(
@@ -145,7 +145,7 @@ describe('Prediction Processor', () => {
     it('should findOrCreate prediction if joker fixure != match passed', async () => {
       const spy = predictionRepoStub.findOneOrCreate$;
 
-      await predictionProcessor.getPredictions$(arsVche).toPromise();
+      await predictionProcessor.getOrCreatePredictions$(arsVche).toPromise();
 
       expect(spy).to.have.been.calledOnce;
       expect(spy).to.have.been.calledWith(
@@ -156,14 +156,14 @@ describe('Prediction Processor', () => {
     it('should not findOrCreate prediction if joker match == passedIn match', async () => {
       const spy = predictionRepoStub.findOneOrCreate$;
 
-      await predictionProcessor.getPredictions$(livVsou).toPromise();
+      await predictionProcessor.getOrCreatePredictions$(livVsou).toPromise();
 
       expect(spy).to.have.been.calledOnce;
     });
 
     it('should return equal number of predictions to users', async () => {
       const predictions = await predictionProcessor
-        .getPredictions$(arsVche)
+        .getOrCreatePredictions$(arsVche)
         .toPromise();
 
       expect(predictions).to.be.an('array');

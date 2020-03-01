@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { MatchStatus, MatchEntity } from '../../../db/models/match.model';
+import { MatchStatus, MatchModel } from '../../../db/models/match.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import {
   FinishedMatchesProcessor,
@@ -34,7 +34,7 @@ const newMatch = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as MatchEntity;
+  } as MatchModel;
 };
 const arsVche = newMatch(1, 'Arsenal', 'Chelsea');
 const livVsou = newMatch(2, 'Liverpool', 'Southampton');
@@ -46,7 +46,7 @@ const chalo = ObjectId().toHexString();
 const kag = ObjectId().toHexString();
 const newPrediction = (
   userId: string,
-  match: MatchEntity,
+  match: MatchModel,
   status = PredictionStatus.PENDING,
 ) => {
   return {
@@ -62,7 +62,7 @@ const pred3 = newPrediction(chalo, livVsou);
 const pred4 = newPrediction(kag, livVsou);
 
 const predictionProcessorStub: any = {
-  getPredictions$: sinon.stub(),
+  getOrCreatePredictions$: sinon.stub(),
   processPrediction$: sinon.stub(),
 };
 const matchRepoStub: any = {
@@ -76,10 +76,10 @@ let finishedMatchesProcessor: FinishedMatchesProcessor;
 describe('Finished Matches', () => {
   describe('processPredictions', () => {
     beforeEach(() => {
-      predictionProcessorStub.getPredictions$
+      predictionProcessorStub.getOrCreatePredictions$
         .withArgs(sinon.match(arsVche))
         .returns(of([pred1, pred2]));
-      predictionProcessorStub.getPredictions$
+      predictionProcessorStub.getOrCreatePredictions$
         .withArgs(sinon.match(livVsou))
         .returns(of([pred3, pred4]));
 
@@ -90,11 +90,11 @@ describe('Finished Matches', () => {
       );
     });
     afterEach(() => {
-      predictionProcessorStub.getPredictions$ = sinon.stub();
+      predictionProcessorStub.getOrCreatePredictions$ = sinon.stub();
       predictionProcessorStub.processPrediction$ = sinon.stub();
     });
     it('should getPredictions for FINISHED but not AllPredictionsProcessed match', async () => {
-      const spy = predictionProcessorStub.getPredictions$;
+      const spy = predictionProcessorStub.getOrCreatePredictions$;
 
       await finishedMatchesProcessor.processPredictions(finishedMatches);
 

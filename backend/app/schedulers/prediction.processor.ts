@@ -1,5 +1,5 @@
 import { Observable, from, of } from 'rxjs';
-import { map, flatMap, toArray } from 'rxjs/operators';
+import { concatMap, map, flatMap, toArray } from 'rxjs/operators';
 
 import {
   MatchRepository,
@@ -15,19 +15,19 @@ import {
 } from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
-import { MatchEntity } from '../../db/models/match.model';
+import { MatchModel } from '../../db/models/match.model';
 import {
-  PredictionEntity,
+  PredictionModel,
   PredictionStatus,
 } from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface PredictionProcessor {
-  getPredictions$(match: MatchEntity): Observable<PredictionEntity[]>;
+  getOrCreatePredictions$(match: MatchModel): Observable<PredictionModel[]>;
   processPrediction$(
-    prediction: PredictionEntity,
-    match: MatchEntity,
-  ): Observable<PredictionEntity>;
+    prediction: PredictionModel,
+    match: MatchModel,
+  ): Observable<PredictionModel>;
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
@@ -46,7 +46,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) {}
 
-  public getPredictions$(match: MatchEntity) {
+  public getOrCreatePredictions$(match: MatchModel) {
     const { season: seasonId, gameRound } = match;
     return this.matchRepo
       .findSelectableMatches$(seasonId!, gameRound!)
@@ -100,7 +100,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
           const matchId = match.id;
           const { userId, jokerPrediction } = data;
 
-          if (jokerPrediction.match === matchId) {
+          if (jokerPrediction.match.toString() === matchId) {
             return of(jokerPrediction);
           }
           return this.predictionRepo.findOneOrCreate$({
@@ -112,7 +112,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: PredictionEntity, match: MatchEntity) {
+  public processPrediction$(prediction: PredictionModel, match: MatchModel) {
     const { choice } = prediction;
     const { result } = match;
     const scorePoints = this.predictionCalculator.calculateScore(

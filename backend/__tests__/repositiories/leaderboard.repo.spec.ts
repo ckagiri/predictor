@@ -2,25 +2,25 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 import * as db from '../../db/index';
 import {
-  CompetitionEntity,
+  CompetitionModel,
   Competition,
 } from '../../db/models/competition.model';
-import { SeasonEntity, Season } from '../../db/models/season.model';
+import { SeasonModel, Season } from '../../db/models/season.model';
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
 import {
-  LeaderboardEntity,
+  LeaderboardModel,
   Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
 
-const epl: CompetitionEntity = {
+const epl: CompetitionModel = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-const epl18: SeasonEntity = {
+const epl18: SeasonModel = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -85,7 +85,7 @@ describe('Leaderboard Repo', function() {
     });
 
     it('should update seasonBoard if it exists', done => {
-      let leaderboard: LeaderboardEntity;
+      let leaderboard: LeaderboardModel;
       leaderboardRepo
         .findSeasonBoardAndUpsert$(theSeason.id, {
           status: BOARD_STATUS.UPDATING_SCORES,
@@ -137,7 +137,7 @@ describe('Leaderboard Repo', function() {
 
   // tslint:disable-next-line: only-arrow-functions
   describe('finders', function() {
-    let lb1: LeaderboardEntity;
+    let lb1: LeaderboardModel;
     beforeEach(done => {
       Leaderboard.create([
         {

@@ -9,13 +9,13 @@ export enum PredictionStatus {
   PROCESSED = 'PROCESSED',
 }
 
-export interface PredictionEntity extends Entity {
+export interface PredictionModel extends Entity {
   id?: string;
   user: string;
   match: string;
   matchSlug?: string;
   season?: string;
-  gameRound?: number;
+  gameRound: number;
   choice: Score;
   scorePoints?: ScorePoints;
   status?: PredictionStatus;
@@ -23,7 +23,7 @@ export interface PredictionEntity extends Entity {
   jokerAutoPicked?: boolean;
 }
 
-export interface PredictionDocument extends PredictionEntity, DocumentEntity {}
+export interface PredictionDocument extends PredictionModel, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;
@@ -44,11 +44,12 @@ const predictionSchema = new Schema({
     points: { type: Number },
     APoints: { type: Number },
     BPoints: { type: Number },
-    MatchOutcomePoints: { type: Number },
-    TeamScorePlusPoints: { type: Number },
-    GoalDifferencePoints: { type: Number },
-    ExactScorePoints: { type: Number },
-    TeamScoreMinusPoints: { type: Number },
+    CorrectMatchOutcomePoints: { type: Number },
+    ExactGoalDifferencePoints: { type: Number },
+    ExactMatchScorePoints: { type: Number },
+    CloseMatchScorePoints: { type: Number },
+    SpreadTeamScorePoints: { type: Number },
+    ExactTeamScorePoints: { type: Number },
   },
   hasJoker: { type: Boolean, default: false },
   jokerAutoPicked: { type: Boolean, default: false },

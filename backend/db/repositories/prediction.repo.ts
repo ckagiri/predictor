@@ -3,12 +3,12 @@ import { filter, first, flatMap, catchError } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import {
-  PredictionEntity,
+  PredictionModel,
   PredictionDocument,
   Prediction,
   PredictionStatus,
 } from '../models/prediction.model';
-import { MatchEntity, MatchStatus } from '../models/match.model';
+import { MatchModel, MatchStatus } from '../models/match.model';
 import {
   MatchRepository,
   MatchRepositoryImpl,
@@ -16,28 +16,28 @@ import {
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface PredictionRepository extends BaseRepository<PredictionEntity> {
+export interface PredictionRepository extends BaseRepository<PredictionModel> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<PredictionEntity>;
+  ): Observable<PredictionModel>;
   findOneOrCreate$({
     userId,
     matchId,
   }: {
     userId: string;
     matchId: string;
-  }): Observable<PredictionEntity>;
+  }): Observable<PredictionModel>;
   findOneAndUpsert$(
     { userId, matchId }: { userId: string; matchId: string },
     choice: Score,
-  ): Observable<PredictionEntity>;
+  ): Observable<PredictionModel>;
 }
 
 export class PredictionRepositoryImpl
-  extends BaseRepositoryImpl<PredictionEntity, PredictionDocument>
+  extends BaseRepositoryImpl<PredictionModel, PredictionDocument>
   implements PredictionRepository {
   public static getInstance() {
     return new PredictionRepositoryImpl(
@@ -57,7 +57,7 @@ export class PredictionRepositoryImpl
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<PredictionEntity> {
+  ): Observable<PredictionModel> {
     const query: any = {
       user: userId,
       season: seasonId,
@@ -114,8 +114,13 @@ export class PredictionRepositoryImpl
         }
         return this.matchRepo.findById$(matchId).pipe(
           flatMap(match => {
-            const { slug: matchSlug, season, gameRound, odds } = match;
-            const pred: PredictionEntity = {
+            const {
+              slug: matchSlug,
+              season,
+              gameRound,
+              odds,
+            } = match as Required<MatchModel>;
+            const pred: PredictionModel = {
               user: userId,
               match: matchId,
               matchSlug,
@@ -141,11 +146,11 @@ export class PredictionRepositoryImpl
 
   private pickJoker$(
     userId: string,
-    currentJoker: PredictionEntity,
+    currentJoker: PredictionModel,
     newJokerMatchId: string,
     autoPicked: boolean,
   ) {
-    let newJokerMatch: MatchEntity;
+    let newJokerMatch: MatchModel;
     return this.matchRepo
       .findById$(newJokerMatchId)
       .pipe(
@@ -170,9 +175,14 @@ export class PredictionRepositoryImpl
         }),
       )
       .pipe(
-        flatMap((newJokerPrediction: PredictionEntity) => {
-          const { slug: matchSlug, season, gameRound, odds } = newJokerMatch;
-          let newJoker: PredictionEntity;
+        flatMap((newJokerPrediction: PredictionModel) => {
+          const {
+            slug: matchSlug,
+            season,
+            gameRound,
+            odds,
+          } = newJokerMatch as Required<MatchModel>;
+          let newJoker: PredictionModel;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();
             newJoker = {
@@ -190,7 +200,7 @@ export class PredictionRepositoryImpl
             newJoker.hasJoker = true;
             newJoker.jokerAutoPicked = autoPicked;
           }
-          const predictionJokers: PredictionEntity[] = [newJoker];
+          const predictionJokers: PredictionModel[] = [newJoker];
           if (currentJoker) {
             currentJoker.hasJoker = false;
             predictionJokers.push(currentJoker);

@@ -3,11 +3,11 @@ import { Observable } from 'rxjs';
 import { LigiMatchConverter } from '../converters/ligi/match.converter';
 import { AfdMatchConverter } from '../converters/apiFootballData/match.converter';
 import { Converter } from './converter';
-import { MatchEntity } from '../models/match.model';
+import { MatchModel } from '../models/match.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface MatchConverter extends Converter {
-  from(data: any): Observable<MatchEntity>;
+  from(data: any): Observable<MatchModel>;
   map(data: any[]): any[];
 }
 

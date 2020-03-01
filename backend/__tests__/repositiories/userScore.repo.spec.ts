@@ -5,249 +5,152 @@ import * as db from '../../db/index';
 import { User } from '../../db/models/user.model';
 import {
   Competition,
-  CompetitionEntity,
+  CompetitionModel,
 } from '../../db/models/competition.model';
-import { Season, SeasonEntity } from '../../db/models/season.model';
-import { Team, TeamEntity } from '../../db/models/team.model';
-import { Match, MatchEntity, MatchStatus } from '../../db/models/match.model';
-import { Prediction, PredictionEntity } from '../../db/models/prediction.model';
+import { Season, SeasonModel } from '../../db/models/season.model';
+import { Team, TeamModel } from '../../db/models/team.model';
+import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
+import { Prediction, PredictionModel } from '../../db/models/prediction.model';
 import {
   Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
-import { UserScoreEntity } from '../../db/models/userScore.model';
+import { UserScoreModel } from '../../db/models/userScore.model';
 
 import { ScorePoints } from '../../common/score';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
+import testUtils, { TestUtils } from './testUtils';
+let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
 const userScoreRepo = UserScoreRepositoryImpl.getInstance();
-let user1: any;
-let user2: any;
-let theSeason: any;
-let team1: any;
-let team2: any;
-let team3: any;
-let team4: any;
-let match1: any;
-let match2: any;
-let user1Pred1: any;
-let user1Pred2: any;
-let user2Pred1: any;
-let sBoard: any;
 
-const epl: CompetitionEntity = {
-  name: 'English Premier League',
-  slug: 'english_premier_league',
-  code: 'epl',
-};
-
-const epl18: SeasonEntity = {
-  name: '2018-2019',
-  slug: '2018-19',
-  year: 2018,
-  seasonStart: '2017-08-11T00:00:00+0200',
-  seasonEnd: '2018-05-13T16:00:00+0200',
-  currentMatchRound: 20,
-  currentGameRound: 20,
-  competition: undefined,
-};
-
-const manu: TeamEntity = {
-  name: 'Manchester United FC',
-  shortName: 'Man United',
-  code: 'MUN',
-  slug: 'man_united',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-  aliases: ['ManU', 'ManUtd'],
-};
-
-const manc: TeamEntity = {
-  name: 'Manchester City FC',
-  shortName: 'Man City',
-  code: 'MCI',
-  slug: 'man_city',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
-  aliases: ['ManCity'],
-};
-
-const che: TeamEntity = {
-  name: 'Chelsea FC',
-  shortName: 'Chelsea',
-  code: 'CHE',
-  slug: 'chelsea',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Chelsea_FC.svg',
-  aliases: ['Chelsea'],
-};
-
-const ars: TeamEntity = {
-  name: 'Arsenal FC',
-  shortName: 'Arsenal',
-  code: 'ARS',
-  slug: 'arsenal',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Arsenal_FC.svg',
-  aliases: ['Arsenal'],
-};
-
-const manuVmanc: MatchEntity = {
-  date: '2017-09-10T11:30:00Z',
-  status: MatchStatus.SCHEDULED,
-  matchRound: 20,
-  gameRound: 20,
-  season: undefined,
-  homeTeam: undefined,
-  awayTeam: undefined,
-  slug: 'manu-v-manc',
-  result: undefined,
-};
-
-const cheVars: MatchEntity = {
-  date: '2017-09-10T11:30:00Z',
-  status: MatchStatus.SCHEDULED,
-  matchRound: 20,
-  gameRound: 20,
-  season: undefined,
-  homeTeam: undefined,
-  awayTeam: undefined,
-  slug: 'che-v-ars',
-  result: undefined,
-};
-
-const chalo = {
-  username: 'chalo',
-  email: 'chalo@example.com',
-};
-
-const kagiri = {
-  username: 'kagiri',
-  email: 'kagiri@example.com',
-};
-
-describe('UserScore Repo', function() {
+describe.only('UserScore Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
 
   beforeEach(done => {
-    User.create([chalo, kagiri])
+    User.create([tu.user1, tu.user2])
       .then(users => {
-        user1 = users[0];
-        user2 = users[1];
-        return Competition.create(epl);
+        tu.user1.id = users[0].id;
+        tu.user2.id = users[1].id;
+        return Competition.create(tu.league);
       })
-      .then(l => {
-        const { name, slug, id } = l;
-        epl18.competition = { name, slug, id: id! };
-        return Season.create(epl18);
+      .then(league => {
+        let { name, slug, id } = league;
+        tu.season.competition = { name, slug, id } as Required<
+          CompetitionModel
+        >;
+        return Season.create(tu.season);
       })
-      .then(s => {
-        theSeason = s;
-        return Team.create([manu, manc, che, ars]);
+      .then(season => {
+        tu.season.id = season.id;
+        return Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
       })
       .then(teams => {
-        team1 = teams[0];
-        team2 = teams[1];
-        team3 = teams[2];
-        team4 = teams[3];
-        manuVmanc.season = theSeason._id;
-        cheVars.season = theSeason._id;
-        manuVmanc.homeTeam = {
-          name: team1.name,
-          slug: team1.slug,
-          id: team1._id,
-          crestUrl: team1.crestUrl,
-        };
-        manuVmanc.awayTeam = {
-          name: team2.name,
-          slug: team2.slug,
-          id: team2._id,
-          crestUrl: team2.crestUrl,
-        };
-        manuVmanc.slug = `${team1.slug}-${team2.slug}`;
-        cheVars.homeTeam = {
-          name: team3.name,
-          slug: team3.slug,
-          id: team3._id,
-          crestUrl: team3.crestUrl,
-        };
-        cheVars.awayTeam = {
-          name: team4.name,
-          slug: team4.slug,
-          id: team4._id,
-          crestUrl: team4.crestUrl,
-        };
-        cheVars.slug = `${team3.slug}-${team4.slug}`;
-        return Match.create([manuVmanc, cheVars]);
+        tu.team1Vteam2.homeTeam = {
+          name: teams[0].name,
+          slug: teams[0].slug,
+          id: teams[0].id,
+        } as Required<TeamModel>;
+
+        tu.team1Vteam2.awayTeam = {
+          name: teams[1].name,
+          slug: teams[1].slug,
+          id: teams[1].id,
+        } as Required<TeamModel>;
+
+        tu.team1Vteam2.season = tu.season.id;
+        tu.team1Vteam2.slug = `${teams[0].slug}-${teams[1].slug}`;
+
+        tu.team3Vteam4.homeTeam = {
+          name: teams[2].name,
+          slug: teams[2].slug,
+          id: teams[2].id,
+        } as Required<TeamModel>;
+
+        tu.team3Vteam4.awayTeam = {
+          name: teams[3].name,
+          slug: teams[3].slug,
+          id: teams[3].id,
+        } as Required<TeamModel>;
+
+        tu.team3Vteam4.season = tu.season.id;
+        tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
+
+        return Match.create([tu.team1Vteam2, tu.team3Vteam4]);
       })
       .then(matches => {
-        match1 = matches[0];
-        match2 = matches[1];
-        const pred1: PredictionEntity = {
-          user: user1.id,
-          match: match1.id,
-          matchSlug: match1.slug,
-          season: theSeason.id,
-          gameRound: match1.gameRound,
-          choice: {
-            goalsHomeTeam: 1,
-            goalsAwayTeam: 0,
-            isComputerGenerated: true,
-          },
+        tu.team1Vteam2.id = matches[0].id;
+        tu.team3Vteam4.id = matches[1].id;
+
+        tu.user1_team1Vteam2 = {
+          ...tu.user1_team1Vteam2,
+          season: tu.team1Vteam2.season,
+          match: tu.team1Vteam2.id,
+          matchSlug: tu.team1Vteam2.slug,
+          gameRound: tu.team1Vteam2.gameRound,
+          user: tu.user1.id,
         };
-        const pred2: PredictionEntity = {
-          user: user1.id,
-          match: match2.id,
-          matchSlug: match2.slug,
-          season: theSeason.id,
-          gameRound: match2.gameRound,
-          choice: {
-            goalsHomeTeam: 2,
-            goalsAwayTeam: 0,
-            isComputerGenerated: true,
-          },
+        tu.user1_team3Vteam4 = {
+          ...tu.user1_team3Vteam4,
+          season: tu.team3Vteam4.season,
+          match: tu.team3Vteam4.id,
+          matchSlug: tu.team3Vteam4.slug,
+          gameRound: tu.team3Vteam4.gameRound,
+          user: tu.user1.id,
         };
-        const pred3: PredictionEntity = {
-          user: user2.id,
-          match: match1.id,
-          matchSlug: match1.slug,
-          season: theSeason.id,
-          gameRound: match1.gameRound,
-          choice: {
-            goalsHomeTeam: 3,
-            goalsAwayTeam: 0,
-            isComputerGenerated: true,
-          },
+        tu.user2_team1Vteam2 = {
+          ...tu.user2_team1Vteam2,
+          season: tu.team1Vteam2.season,
+          match: tu.team1Vteam2.id,
+          matchSlug: tu.team1Vteam2.slug,
+          gameRound: tu.team1Vteam2.gameRound,
+          user: tu.user2.id,
         };
-        return Prediction.create([pred1, pred2, pred3]);
+        tu.user2_team3Vteam4 = {
+          ...tu.user2_team3Vteam4,
+          season: tu.team3Vteam4.season,
+          match: tu.team3Vteam4.id,
+          matchSlug: tu.team3Vteam4.slug,
+          gameRound: tu.team3Vteam4.gameRound,
+          user: tu.user2.id,
+        };
+
+        return Prediction.create([
+          tu.user1_team1Vteam2,
+          tu.user1_team3Vteam4,
+          tu.user2_team1Vteam2,
+          tu.user2_team3Vteam4,
+        ]);
       })
       .then(predictions => {
-        user1Pred1 = predictions[0];
-        user1Pred2 = predictions[1];
-        user2Pred1 = predictions[2];
+        tu.user1_team1Vteam2.id = predictions[0].id;
+        tu.user1_team3Vteam4.id = predictions[1].id;
+        tu.user2_team1Vteam2.id = predictions[2].id;
+        tu.user2_team3Vteam4.id = predictions[3].id;
         return Leaderboard.create([
           {
-            status: BOARD_STATUS.UPDATING_SCORES,
-            boardType: BOARD_TYPE.GLOBAL_SEASON,
-            season: theSeason.id,
+            ...tu.season_board,
+            season: tu.season.id,
           },
           {
-            status: BOARD_STATUS.REFRESHED,
-            boardType: BOARD_TYPE.GLOBAL_ROUND,
-            season: theSeason.id,
-            gameRound: 20,
+            ...tu.round_board,
+            season: tu.season.id,
           },
         ]);
       })
       .then(leaderboards => {
-        sBoard = leaderboards[0];
+        tu.season_board = leaderboards[0];
+        tu.round_board = leaderboards[1];
         done();
       });
   });
 
   afterEach(done => {
+    tu = JSON.parse(JSON.stringify(testUtils));
     db.drop().then(() => {
       done();
     });
@@ -261,21 +164,13 @@ describe('UserScore Repo', function() {
 
   describe('find and upsert', () => {
     it('should create a userScore if it does not exist', done => {
-      const leaderboardId = sBoard.id;
-      const userId = user1.id;
-      const matchId = match1.id;
-      const predictionId = user1Pred1.id;
-      const predictionPoints: ScorePoints = {
-        points: 7,
-        APoints: 7,
-        BPoints: 0,
-        MatchOutcomePoints: 4,
-        TeamScorePlusPoints: 3,
-        GoalDifferencePoints: 0,
-        ExactScorePoints: 0,
-        TeamScoreMinusPoints: 0,
-      };
+      const leaderboardId = tu.season_board.id!;
+      const userId = tu.user1.id!;
+      const matchId = tu.team1Vteam2.id!;
+      const predictionId = tu.user1_team1Vteam2.id!;
       const hasJoker = true;
+      const predictionPoints = tu.user1_team1Vteam2_points;
+
       userScoreRepo
         .findOneAndUpsert$(
           leaderboardId,
@@ -286,57 +181,46 @@ describe('UserScore Repo', function() {
           hasJoker,
         )
         .subscribe(score => {
-          expect(score.pointsExcludingJoker).to.equal(7);
-          expect(score.APointsExcludingJoker).to.equal(7);
-          expect(score.BPointsExcludingJoker).to.equal(0);
-          expect(score.points).to.equal(14);
-          expect(score.APoints).to.equal(14);
-          expect(score.BPoints).to.equal(0);
-          expect(score.matches).to.contain(match1.id);
-          expect(score.predictions).to.contain(user1Pred1.id);
+          expect(score.pointsExcludingJoker).to.equal(4);
+          expect(score.APointsExcludingJoker).to.equal(0);
+          expect(score.BPointsExcludingJoker).to.equal(4);
+          expect(score.points).to.equal(8);
+          expect(score.APoints).to.equal(0);
+          expect(score.BPoints).to.equal(8);
+          expect(score.matches).to.contain(matchId);
+          expect(score.predictions).to.contain(predictionId);
           done();
         });
     });
 
     it('should update a userScore if it exists', done => {
-      const leaderboardId = sBoard.id;
-      const userId = user1.id;
-      let matchId = match1.id;
-      let predictionId = user1Pred1.id;
-      const score1: UserScoreEntity = {
+      const leaderboardId = tu.season_board.id!;
+      const userId = tu.user1.id!;
+      const matchId = tu.team1Vteam2.id!;
+      const predictionId = tu.user1_team1Vteam2.id!;
+      const score1 = tu.user1_team1Vteam2_points;
+      let joker_score1 = Object.keys(score1).reduce(
+        (result, key) => ({ ...result, [key]: score1[key] * 2 }),
+        score1,
+      );
+      const user1_team1Vteam2_score: UserScoreModel = {
+        ...joker_score1,
         leaderboard: leaderboardId,
         user: userId,
-        points: 14,
-        APoints: 14,
-        BPoints: 0,
-        MatchOutcomePoints: 8,
-        TeamScorePlusPoints: 6,
-        ExactScorePoints: 0,
-        GoalDifferencePoints: 0,
-        TeamScoreMinusPoints: 0,
         matches: [matchId],
         predictions: [predictionId],
-        pointsExcludingJoker: 7,
-        APointsExcludingJoker: 7,
-        BPointsExcludingJoker: 0,
+        pointsExcludingJoker: score1.points,
+        APointsExcludingJoker: score1.APoints,
+        BPointsExcludingJoker: score1.BPoints,
       };
       userScoreRepo
-        .insert$(score1)
+        .insert$(user1_team1Vteam2_score)
         .pipe(
           flatMap(_ => {
-            const predictionPoints: ScorePoints = {
-              points: 10,
-              APoints: 8,
-              BPoints: 2,
-              MatchOutcomePoints: 4,
-              TeamScorePlusPoints: 4,
-              GoalDifferencePoints: 1,
-              ExactScorePoints: 1,
-              TeamScoreMinusPoints: 0,
-            };
+            const matchId = tu.user1_team3Vteam4.id!;
+            const predictionId = tu.user1_team3Vteam4.id!;
+            const predictionPoints = tu.user1_team3Vteam4_points;
             const hasJoker = false;
-            matchId = match2.id;
-            predictionId = user1Pred2.id;
             return userScoreRepo.findOneAndUpsert$(
               leaderboardId,
               userId,
@@ -348,95 +232,91 @@ describe('UserScore Repo', function() {
           }),
         )
         .subscribe(score => {
-          expect(score.pointsExcludingJoker).to.equal(17);
-          expect(score.APointsExcludingJoker).to.equal(15);
-          expect(score.BPointsExcludingJoker).to.equal(2);
-          expect(score.points).to.equal(24);
-          expect(score.APoints).to.equal(22);
-          expect(score.BPoints).to.equal(2);
-          expect(score.matches).to.contain(match1.id, match2.id);
-          expect(score.predictions).to.contain(user1Pred1.id, user1Pred2.id);
+          const match1 = tu.team1Vteam2.id!;
+          const match2 = tu.team3Vteam4.id!;
+          const pred1 = tu.user1_team1Vteam2.id!;
+          const pred2 = tu.user1_team3Vteam4.id!;
+          expect(score.pointsExcludingJoker).to.equal(13);
+          expect(score.APointsExcludingJoker).to.equal(5);
+          expect(score.BPointsExcludingJoker).to.equal(8);
+          expect(score.points).to.equal(17);
+          expect(score.APoints).to.equal(5);
+          expect(score.BPoints).to.equal(12);
+          expect(score.matches).to.contain(match1, match2);
+          expect(score.predictions).to.contain(pred1, pred2);
           done();
         });
     });
   });
 
   it('should find by leaderboard and order by points', done => {
-    const leaderboardId = sBoard.id;
-    const matchId = match1.id;
-    const score1: UserScoreEntity = {
+    const leaderboardId = tu.season_board.id!;
+    const user1Id = tu.user1.id!;
+    const matchId = tu.team1Vteam2.id!;
+    const user1_predictionId = tu.user1_team1Vteam2.id!;
+    const user1_match1_points = tu.user1_team1Vteam2_points;
+    const user1_match1_joker_points = Object.keys(user1_match1_points).reduce(
+      (result, key) => ({ ...result, [key]: user1_match1_points[key] * 2 }),
+      user1_match1_points,
+    );
+    const user1_match1_score: UserScoreModel = {
+      ...user1_match1_joker_points,
       leaderboard: leaderboardId,
-      user: user1.id,
-      points: 14,
-      APoints: 14,
-      BPoints: 0,
-      MatchOutcomePoints: 8,
-      TeamScorePlusPoints: 6,
-      ExactScorePoints: 0,
-      GoalDifferencePoints: 0,
-      TeamScoreMinusPoints: 0,
+      user: user1Id,
       matches: [matchId],
-      predictions: [user1Pred1.id],
-      pointsExcludingJoker: 7,
-      APointsExcludingJoker: 7,
-      BPointsExcludingJoker: 0,
+      predictions: [user1_predictionId],
+      pointsExcludingJoker: user1_match1_points.points,
+      APointsExcludingJoker: user1_match1_points.APoints,
+      BPointsExcludingJoker: user1_match1_points.BPoints,
     };
-    const score2: UserScoreEntity = {
+
+    const user2Id = tu.user2.id!;
+    const user2_predictionId = tu.user2_team1Vteam2.id!;
+    const user2_match1_points = tu.user2_team1Vteam2_points;
+    const user2_match1_score: UserScoreModel = {
+      ...user2_match1_points,
       leaderboard: leaderboardId,
-      user: user2.id,
-      points: 10,
-      APoints: 8,
-      BPoints: 2,
-      MatchOutcomePoints: 4,
-      TeamScorePlusPoints: 4,
-      ExactScorePoints: 1,
-      GoalDifferencePoints: 1,
-      TeamScoreMinusPoints: 0,
+      user: user2Id,
       matches: [matchId],
-      predictions: [user2Pred1.id],
-      pointsExcludingJoker: 7,
-      APointsExcludingJoker: 7,
-      BPointsExcludingJoker: 0,
+      predictions: [user2_predictionId],
+      pointsExcludingJoker: user2_match1_points.points,
+      APointsExcludingJoker: user2_match1_points.APoints,
+      BPointsExcludingJoker: user2_match1_points.BPoints,
     };
+
     userScoreRepo
-      .insertMany$([score2, score1])
+      .insertMany$([user2_match1_score, user1_match1_score])
       .pipe(
         flatMap(_ => {
-          return userScoreRepo.findByLeaderboardOrderByPoints$(sBoard.id);
+          return userScoreRepo.findByLeaderboardOrderByPoints$(leaderboardId);
         }),
       )
       .subscribe(standings => {
-        expect(standings[0].points).to.be.at.least(standings[1].points);
+        expect(standings[1].points).to.be.lte(standings[0].points);
         done();
       });
   });
 
   it('should find by id and update positions', done => {
-    const leaderboardId = sBoard.id;
-    const userId = user1.id;
-    const matchId = match1.id;
-    const predictionId = user1Pred1.id;
-    const score1: UserScoreEntity = {
+    const leaderboardId = tu.season_board.id!;
+    const userId = tu.user1.id!;
+    const matchId = tu.team1Vteam2.id!;
+    const predictionId = tu.user1_team1Vteam2.id!;
+    const score1 = tu.user1_team1Vteam2_points;
+    const user1_match1_score: UserScoreModel = {
+      ...score1,
       leaderboard: leaderboardId,
       user: userId,
-      points: 14,
-      APoints: 14,
-      BPoints: 0,
-      MatchOutcomePoints: 8,
-      TeamScorePlusPoints: 6,
-      ExactScorePoints: 0,
-      GoalDifferencePoints: 0,
-      TeamScoreMinusPoints: 0,
       matches: [matchId],
       predictions: [predictionId],
-      pointsExcludingJoker: 7,
-      APointsExcludingJoker: 7,
-      BPointsExcludingJoker: 0,
+      pointsExcludingJoker: score1.points,
+      APointsExcludingJoker: score1.APoints,
+      BPointsExcludingJoker: score1.BPoints,
       positionNew: 1,
       positionOld: 2,
     };
     userScoreRepo
-      .insert$(score1)
+      .insert$(user1_match1_score)
       .pipe(
         flatMap(standing => {
           const prevPosition = standing.positionNew!;

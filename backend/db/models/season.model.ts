@@ -2,7 +2,7 @@ import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 import { Entity, DocumentEntity } from './base.model';
 
-export interface SeasonEntity extends Entity {
+export interface SeasonModel extends Entity {
   name?: string;
   year?: string | number;
   slug?: string;
@@ -19,7 +19,7 @@ export interface SeasonEntity extends Entity {
   externalReference?: any;
 }
 
-export interface SeasonDocument extends SeasonEntity, DocumentEntity {}
+export interface SeasonDocument extends SeasonModel, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 

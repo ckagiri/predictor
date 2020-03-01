@@ -1,6 +1,6 @@
 import { Observable, zip } from 'rxjs';
 
-import { MatchEntity } from '../../models/match.model';
+import { MatchModel } from '../../models/match.model';
 import { MatchConverter } from '../match.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
@@ -29,7 +29,7 @@ export class LigiMatchConverter implements MatchConverter {
     this.footballApiProvider = ApiProvider.LIGI;
   }
 
-  public from(data: any): Observable<MatchEntity> {
+  public from(data: any): Observable<MatchModel> {
     return zip(
       this.seasonRepo.findById$(data.seasonId),
       this.teamRepo.findById$(data.homeTeamId),

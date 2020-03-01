@@ -3,7 +3,7 @@ mongoose.set('useCreateIndex', true);
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface UserScoreEntity extends Entity {
+export interface UserScoreModel extends Entity {
   id?: string;
   leaderboard: string;
   user: string;
@@ -12,11 +12,12 @@ export interface UserScoreEntity extends Entity {
   points: number;
   APoints: number;
   BPoints: number;
-  MatchOutcomePoints: number;
-  TeamScorePlusPoints: number;
-  GoalDifferencePoints: number;
-  ExactScorePoints: number;
-  TeamScoreMinusPoints: number;
+  CorrectMatchOutcomePoints: number;
+  ExactGoalDifferencePoints: number;
+  ExactMatchScorePoints: number;
+  CloseMatchScorePoints: number;
+  SpreadTeamScorePoints: number;
+  ExactTeamScorePoints: number;
   APointsExcludingJoker?: number;
   BPointsExcludingJoker?: number;
   pointsExcludingJoker?: number;
@@ -26,7 +27,7 @@ export interface UserScoreEntity extends Entity {
   positionNew?: number;
 }
 
-export interface UserScoreDocument extends UserScoreEntity, DocumentEntity {}
+export interface UserScoreDocument extends UserScoreModel, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 
@@ -43,11 +44,12 @@ const userScoreSchema = new Schema({
   points: { type: Number },
   APoints: { type: Number },
   BPoints: { type: Number },
-  MatchOutcomePoints: { type: Number },
-  TeamScorePlusPoints: { type: Number },
-  GoalDifferencePoints: { type: Number },
-  ExactScorePoints: { type: Number },
-  TeamScoreMinusPoints: { type: Number },
+  CorrectMatchOutcomePoints: { type: Number },
+  ExactGoalDifferencePoints: { type: Number },
+  ExactMatchScorePoints: { type: Number },
+  CloseMatchScorePoints: { type: Number },
+  SpreadTeamScorePoints: { type: Number },
+  ExactTeamScorePoints: { type: Number },
   APointsExcludingJoker: { type: Number },
   BPointsExcludingJoker: { type: Number },
   pointsExcludingJoker: { type: Number },
