@@ -8,10 +8,15 @@
       "type": "node",
       "request": "launch",
       "name": "Launch Server",
-      "program": "${workspaceFolder}/backend/server/index.ts",
+      "program": "${workspaceFolder}/backend/app/index.ts",
       "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/backend/.env.development",
+      "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "NODE_ENV": "development"
+      },
       "outFiles": [
-        "${workspaceFolder}/backend/server/index.js"
+        "${workspaceFolder}/backend/build/app/index.js"
       ],
     },
     {
@@ -52,17 +57,6 @@
       },
       "outFiles": [
         "${workspaceFolder}/backend/debug/import/start.js"
-      ],
-      "sourceMaps": true
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Help out",
-      "program": "${workspaceFolder}/src/helpers/test.ts",
-      "cwd": "${workspaceFolder}",
-      "outFiles": [
-        "${workspaceFolder}/src/helpers/test.js"
       ],
       "sourceMaps": true
     },

@@ -25,7 +25,7 @@ let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
 const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 
-describe.only('UserScore Repo', function() {
+describe('UserScore Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

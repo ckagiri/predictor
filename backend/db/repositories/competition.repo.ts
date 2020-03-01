@@ -14,12 +14,12 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface CompetitionRepository
-  extends BaseFootballApiRepository<CompetitionModel> {}
+  extends BaseFootballApiRepository<CompetitionModel> { }
 
 export class CompetitionRepositoryImpl
   extends BaseFootballApiRepositoryImpl<CompetitionModel, CompetitionDocument>
   implements CompetitionRepository {
-  public static getInstance(provider: ApiProvider): CompetitionRepository {
+  public static getInstance(provider: ApiProvider = ApiProvider.LIGI): CompetitionRepository {
     return new CompetitionRepositoryImpl(
       CompetitionConverterImpl.getInstance(provider),
     );
