@@ -47,10 +47,11 @@ export class UserScoreRepositoryImpl
       APoints,
       BPoints,
       CorrectMatchOutcomePoints,
-      ExactTeamScorePoints,
-      ExactMatchScorePoints,
       ExactGoalDifferencePoints,
+      ExactMatchScorePoints,
+      CloseMatchScorePoints,
       SpreadTeamScorePoints,
+      ExactTeamScorePoints,
     } = predictionPoints;
 
     const score: UserScoreModel = {
@@ -62,8 +63,9 @@ export class UserScoreRepositoryImpl
       CorrectMatchOutcomePoints,
       ExactTeamScorePoints,
       ExactMatchScorePoints,
-      ExactGoalDifferencePoints,
+      CloseMatchScorePoints,
       SpreadTeamScorePoints,
+      ExactGoalDifferencePoints,
     };
 
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
@@ -74,15 +76,16 @@ export class UserScoreRepositoryImpl
           score.pointsExcludingJoker = points;
           score.APointsExcludingJoker = APoints;
           score.BPointsExcludingJoker = BPoints;
-          if (hasJoker && points > 0) {
+          if (hasJoker) {
             score.points *= 2;
             score.APoints *= 2;
             score.BPoints *= 2;
             score.CorrectMatchOutcomePoints *= 2;
-            score.ExactTeamScorePoints *= 2;
-            score.ExactMatchScorePoints *= 2;
             score.ExactGoalDifferencePoints *= 2;
+            score.ExactMatchScorePoints *= 2;
+            score.CloseMatchScorePoints *= 2;
             score.SpreadTeamScorePoints *= 2;
+            score.ExactTeamScorePoints *= 2;
           }
           return this.insert$(score);
         } else {
@@ -96,25 +99,27 @@ export class UserScoreRepositoryImpl
           standing.APointsExcludingJoker! += APoints;
           standing.BPointsExcludingJoker! += BPoints;
 
-          const shouldDouble = hasJoker && points > 0;
-          standing.CorrectMatchOutcomePoints += shouldDouble
+          standing.CorrectMatchOutcomePoints += hasJoker
             ? CorrectMatchOutcomePoints * 2
             : CorrectMatchOutcomePoints;
-          standing.ExactTeamScorePoints += shouldDouble
-            ? SpreadTeamScorePoints * 2
-            : ExactTeamScorePoints;
-          standing.ExactMatchScorePoints += shouldDouble
-            ? ExactMatchScorePoints * 2
-            : ExactMatchScorePoints;
-          standing.ExactGoalDifferencePoints += shouldDouble
+          standing.ExactGoalDifferencePoints += hasJoker
             ? ExactGoalDifferencePoints * 2
             : ExactGoalDifferencePoints;
-          standing.SpreadTeamScorePoints += shouldDouble
+          standing.ExactMatchScorePoints += hasJoker
+            ? ExactMatchScorePoints * 2
+            : ExactMatchScorePoints;
+          standing.ExactMatchScorePoints += hasJoker
+            ? ExactMatchScorePoints * 2
+            : ExactMatchScorePoints;
+          standing.SpreadTeamScorePoints += hasJoker
             ? SpreadTeamScorePoints * 2
             : SpreadTeamScorePoints;
-          standing.APoints += shouldDouble ? APoints * 2 : APoints;
-          standing.BPoints += shouldDouble ? BPoints * 2 : BPoints;
-          standing.points += shouldDouble ? points * 2 : points;
+          standing.ExactTeamScorePoints += hasJoker
+            ? SpreadTeamScorePoints * 2
+            : ExactTeamScorePoints;
+          standing.APoints += hasJoker ? APoints * 2 : APoints;
+          standing.BPoints += hasJoker ? BPoints * 2 : BPoints;
+          standing.points += hasJoker ? points * 2 : points;
 
           return this.findByIdAndUpdate$(standing.id!, {
             $set: {
@@ -122,10 +127,11 @@ export class UserScoreRepositoryImpl
               APoints: standing.APoints,
               BPoints: standing.BPoints,
               CorrectMatchOutcomePoints: standing.CorrectMatchOutcomePoints,
-              ExactTeamScorePoints: standing.ExactTeamScorePoints,
-              ExactMatchScorePoints: standing.ExactMatchScorePoints,
               ExactGoalDifferencePoints: standing.ExactGoalDifferencePoints,
+              ExactMatchScorePoints: standing.ExactMatchScorePoints,
+              ExactTeamScorePoints: standing.ExactTeamScorePoints,
               SpreadTeamScorePoints: standing.SpreadTeamScorePoints,
+              CloseMatchScorePoints: standing.CloseMatchScorePoints,
               pointsExcludingJoker: standing.pointsExcludingJoker,
               APointsExcludingJoker: standing.APointsExcludingJoker,
               BPointsExcludingJoker: standing.BPointsExcludingJoker,
@@ -144,9 +150,11 @@ export class UserScoreRepositoryImpl
         APoints: -1,
         BPoints: -1,
         CorrectMatchOutcomePoints: -1,
-        ExactTeamScorePoints: -1,
-        ExactMatchScorePoints: -1,
         ExactGoalDifferencePoints: -1,
+        ExactMatchScorePoints: -1,
+        CloseMatchScorePoints: -1,
+        SpreadTeamScorePoints: -1,
+        ExactTeamScorePoints: -1,
       },
     });
   }

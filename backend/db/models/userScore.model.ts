@@ -13,10 +13,11 @@ export interface UserScoreModel extends Entity {
   APoints: number;
   BPoints: number;
   CorrectMatchOutcomePoints: number;
-  ExactTeamScorePoints: number;
   ExactGoalDifferencePoints: number;
   ExactMatchScorePoints: number;
+  CloseMatchScorePoints: number;
   SpreadTeamScorePoints: number;
+  ExactTeamScorePoints: number;
   APointsExcludingJoker?: number;
   BPointsExcludingJoker?: number;
   pointsExcludingJoker?: number;

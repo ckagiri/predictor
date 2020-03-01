@@ -14,6 +14,7 @@ export interface ScorePoints {
   CloseMatchScorePoints: number;
   SpreadTeamScorePoints: number;
   ExactTeamScorePoints: number;
+  [key: string]: number;
 }
 
 export interface Odds {

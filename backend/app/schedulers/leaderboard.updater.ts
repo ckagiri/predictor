@@ -170,13 +170,14 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
       .pipe(
         flatMap(data => {
           const { user, match, leaderboard } = data;
-          return this.predictionRepo
-            .findOne$({ userId: user.id, matchId: match.id })
-            .pipe(
-              map(prediction => {
-                return { user, match, leaderboard, prediction };
-              }),
-            );
+          const userId = user.id?.toString();
+          const matchId = match.id?.toString();
+
+          return this.predictionRepo.findOne$({ userId, matchId }).pipe(
+            map(prediction => {
+              return { user, match, leaderboard, prediction };
+            }),
+          );
         }),
       )
       .pipe(

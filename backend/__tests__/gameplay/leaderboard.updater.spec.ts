@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import { User } from '../../db/models/user.model';
 import {
   CompetitionModel,
@@ -10,13 +8,19 @@ import { TeamModel, Team } from '../../db/models/team.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import { Prediction } from '../../db/models/prediction.model';
 import * as db from '../../db/index';
+import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
+import { Leaderboard } from '../../db/models/leaderboard.model';
+import { UserScore } from '../../db/models/userScore.model';
 import testUtils, { TestUtils } from './testUtils';
-import { FinishedMatchesProcessorImpl } from '../../app/schedulers/finishedMatches.processor';
+import { CacheServiceImpl } from '../../common/observableCacheService';
 
-const finishedMatchesProcessor = FinishedMatchesProcessorImpl.getInstance();
+const leaderboardUpdater = LeaderboardUpdaterImpl.getInstance().setCacheService(
+  new CacheServiceImpl(),
+);
+
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
-describe.only('Finished Matches Processor', function() {
+describe('Finished Matches Processor', function() {
   this.timeout(9999);
 
   before(done => {
@@ -51,6 +55,12 @@ describe.only('Finished Matches Processor', function() {
         } as Required<TeamModel>;
 
         tu.team1Vteam2.slug = `${teams[0].slug}-${teams[1].slug}`;
+        tu.team1Vteam2.status = MatchStatus.FINISHED;
+        tu.team1Vteam2.date = new Date('2019-04-09T00:00:00+0200');
+        tu.team1Vteam2.result = {
+          goalsHomeTeam: 0,
+          goalsAwayTeam: 0,
+        };
 
         tu.team3Vteam4.homeTeam = {
           name: teams[2].name,
@@ -65,6 +75,12 @@ describe.only('Finished Matches Processor', function() {
         } as Required<TeamModel>;
 
         tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
+        tu.team3Vteam4.status = MatchStatus.FINISHED;
+        tu.team3Vteam4.date = new Date('2019-04-13T00:00:00+0200');
+        tu.team3Vteam4.result = {
+          goalsHomeTeam: 2,
+          goalsAwayTeam: 0,
+        };
 
         return Match.create([tu.team1Vteam2, tu.team3Vteam4]);
       })
@@ -82,6 +98,21 @@ describe.only('Finished Matches Processor', function() {
           matchSlug: tu.team1Vteam2.slug,
           gameRound: tu.team1Vteam2.gameRound,
           user: users[0].id,
+          choice: {
+            goalsHomeTeam: 1,
+            goalsAwayTeam: 0,
+          },
+          scorePoints: {
+            points: 4,
+            APoints: 0,
+            BPoints: 4,
+            CorrectMatchOutcomePoints: 0,
+            ExactGoalDifferencePoints: 0,
+            ExactMatchScorePoints: 0,
+            CloseMatchScorePoints: 1,
+            SpreadTeamScorePoints: 2,
+            ExactTeamScorePoints: 1,
+          },
         };
         tu.user1_team3Vteam4 = {
           ...tu.user1_team3Vteam4,
@@ -90,6 +121,22 @@ describe.only('Finished Matches Processor', function() {
           matchSlug: tu.team3Vteam4.slug,
           gameRound: tu.team3Vteam4.gameRound,
           user: users[0].id,
+          hasJoker: true,
+          choice: {
+            goalsHomeTeam: 2,
+            goalsAwayTeam: 1,
+          },
+          scorePoints: {
+            points: 9,
+            APoints: 5,
+            BPoints: 4,
+            CorrectMatchOutcomePoints: 5,
+            ExactGoalDifferencePoints: 0,
+            ExactMatchScorePoints: 0,
+            CloseMatchScorePoints: 1,
+            SpreadTeamScorePoints: 2,
+            ExactTeamScorePoints: 1,
+          },
         };
         tu.user2_team1Vteam2 = {
           ...tu.user2_team1Vteam2,
@@ -98,6 +145,21 @@ describe.only('Finished Matches Processor', function() {
           matchSlug: tu.team1Vteam2.slug,
           gameRound: tu.team1Vteam2.gameRound,
           user: users[1].id,
+          choice: {
+            goalsHomeTeam: 2,
+            goalsAwayTeam: 2,
+          },
+          scorePoints: {
+            points: 6,
+            APoints: 6,
+            BPoints: 0,
+            CorrectMatchOutcomePoints: 5,
+            ExactGoalDifferencePoints: 1,
+            ExactMatchScorePoints: 0,
+            CloseMatchScorePoints: 0,
+            SpreadTeamScorePoints: 0,
+            ExactTeamScorePoints: 0,
+          },
         };
         tu.user2_team3Vteam4 = {
           ...tu.user2_team3Vteam4,
@@ -105,7 +167,23 @@ describe.only('Finished Matches Processor', function() {
           match: tu.team3Vteam4.id,
           matchSlug: tu.team3Vteam4.slug,
           gameRound: tu.team3Vteam4.gameRound,
+
           user: users[1].id,
+          choice: {
+            goalsHomeTeam: 3,
+            goalsAwayTeam: 1,
+          },
+          scorePoints: {
+            points: 8,
+            APoints: 6,
+            BPoints: 2,
+            CorrectMatchOutcomePoints: 5,
+            ExactGoalDifferencePoints: 1,
+            ExactMatchScorePoints: 0,
+            CloseMatchScorePoints: 0,
+            SpreadTeamScorePoints: 2,
+            ExactTeamScorePoints: 0,
+          },
         };
 
         return Prediction.create([
@@ -120,66 +198,28 @@ describe.only('Finished Matches Processor', function() {
       });
   });
   afterEach(done => {
-    tu = JSON.parse(JSON.stringify(testUtils));
-    db.drop().then(() => {
-      done();
-    });
+    // tu = JSON.parse(JSON.stringify(testUtils));
+    // db.drop().then(() => {
+    //   done();
+    // });
   });
   after(done => {
-    db.close().then(() => {
-      done();
-    });
+    // db.close().then(() => {
+    //   done();
+    // });
   });
 
-  it('should process predictions', async () => {
-    tu.team1Vteam2.status = MatchStatus.FINISHED;
-    tu.team1Vteam2.result = {
-      goalsHomeTeam: 0,
-      goalsAwayTeam: 0,
-    };
-    tu.team3Vteam4.status = MatchStatus.FINISHED;
-    tu.team3Vteam4.result = {
-      goalsHomeTeam: 2,
-      goalsAwayTeam: 0,
-    };
+  it('should update rankings => second take', async () => {
+    const c1 = await leaderboardUpdater.updateScores([tu.team1Vteam2]);
 
-    const count = await finishedMatchesProcessor.processPredictions([
-      tu.team1Vteam2,
-      tu.team3Vteam4,
-    ]);
+    const c2 = await leaderboardUpdater.updateRankings(tu.season.id!);
 
-    expect(count).to.equal(4);
+    const c3 = await leaderboardUpdater.updateScores([tu.team3Vteam4]);
 
-    const preds = await Prediction.find({}).exec();
-    expect(preds.length).to.be.greaterThan(0);
-  });
+    const c4 = await leaderboardUpdater.updateRankings(tu.season.id!);
 
-  it('should process predictions', async () => {
-    tu.team1Vteam2.status = MatchStatus.FINISHED;
-    tu.team1Vteam2.result = {
-      goalsHomeTeam: 2,
-      goalsAwayTeam: 2,
-    };
-    // tu.team3Vteam4.status = MatchStatus.FINISHED;
-    // tu.team3Vteam4.result = {
-    //   goalsHomeTeam: 3, goalsAwayTeam: 1,
-    // }
-    let count = await finishedMatchesProcessor.processPredictions([
-      tu.team1Vteam2,
-      tu.team3Vteam4,
-    ]);
-    expect(count).to.equal(4);
+    const users = await UserScore.find({}).exec();
 
-    Prediction.find({})
-      .exec()
-      .then(preds => {
-        expect(preds.length).to.equal(4);
-      });
-  });
-
-  it('should set to true allPredictionProcessed', async () => {
-    Match.find({})
-      .exec()
-      .then(() => {});
+    const boards = await Leaderboard.find({}).exec();
   });
 });
