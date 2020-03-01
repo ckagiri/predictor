@@ -3,8 +3,6 @@ import { CompetitionRepositoryImpl, CompetitionRepository } from '../../../db/re
 import { isMongoId } from './utils';
 import { CompetitionModel } from 'db/models/competition.model';
 
-const competitionRepo = CompetitionRepositoryImpl.getInstance();
-
 class CompetitionsController {
   static getInstance() {
     return new CompetitionsController(CompetitionRepositoryImpl.getInstance())
