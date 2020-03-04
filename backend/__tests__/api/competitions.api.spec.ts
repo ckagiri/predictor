@@ -1,12 +1,20 @@
 import mongoose = require('mongoose');
-import * as chai from 'chai';
 import * as http from 'http';
+import * as chai from 'chai';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
-chai.use(chaiHttp);
-import { CompetitionModel, Competition, CompetitionDocument } from '../../db/models/competition.model';
 import axios, { AxiosInstance } from 'axios';
 import startServer from '../../app/server';
-import { expect } from 'chai';
+import { setupReqRes } from './testUtils';
+import { CompetitionsController } from '../../app/api/competitions/competitions.controller'
+import { CompetitionModel, Competition, CompetitionDocument } from '../../db/models/competition.model';
+
+import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
+
+chai.use(chaiHttp);
+chai.use(sinonChai);
+const expect = chai.expect;
 
 let server: http.Server, competitionsAPI: AxiosInstance, baseURL: string;
 type Sut = {
@@ -59,7 +67,7 @@ describe('Competitions API', function () {
   beforeEach(done => { resetData().then(() => done()); });
   after(done => { mongoose.disconnect(); done() });
 
-  describe.only('Competition Routes', function () {
+  describe.skip('Competition Routes', function () {
     before(async () => {
       server = await startServer()
       baseURL = `http://localhost:${process.env.PORT}/api`
@@ -76,4 +84,22 @@ describe('Competitions API', function () {
       expect(competitions[1].id).to.eql(sut.competitions![1].id);
     })
   })
+
+  describe.only('Competitions Controller', function () {
+    const competitionRepo = CompetitionRepositoryImpl.getInstance();
+    const competitionsController = new CompetitionsController(competitionRepo);
+
+    it('getCompetitions returns all competitions in the database', async () => {
+      const { req, res } = setupReqRes()
+      await competitionsController.getCompetitions(<any>req, <any>res)
+
+      expect(res.json).to.have.been.called;
+      const firstCall = res.json.args[0]
+      const firstArg = firstCall[0]
+      const competitions = firstArg
+      expect(competitions.length).to.be.greaterThan(0)
+      const actualCompetitions = await competitionRepo.findAll$().toPromise();
+      expect(competitions).to.eql(actualCompetitions)
+    })
+  });
 })
