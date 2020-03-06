@@ -2,11 +2,7 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
 import db from '../../db';
-import { User, UserModel } from '../../db/models/user.model';
-import {
-  Competition,
-} from '../../db/models/competition.model';
-import { Season, Team } from '../../db/models';
+import { User, Competition, Season, Team } from '../../db/models';
 import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
@@ -105,12 +101,12 @@ const cheVars: MatchModel = {
   result: undefined,
 };
 
-const chalo: UserModel = {
+const chalo: User = {
   username: 'chalo',
   email: 'chalo@example.com',
 };
 
-const kagiri: UserModel = {
+const kagiri: User = {
   username: 'kagiri',
   email: 'kagiri@example.com',
 };
@@ -123,7 +119,7 @@ describe('Prediction repo', function () {
   });
 
   beforeEach(done => {
-    User.create([chalo, kagiri])
+    db.User.create([chalo, kagiri])
       .then(users => {
         user1 = users[0];
         return db.Competition.create(epl);

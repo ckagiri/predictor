@@ -1,8 +1,4 @@
-import { User } from '../../db/models/user.model';
-import {
-  Competition
-} from '../../db/models/competition.model';
-import { Team } from '../../db/models';
+import { Competition, Team } from '../../db/models';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import db from '../../db';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
@@ -84,7 +80,7 @@ describe('Finished Matches Processor', function () {
         tu.team1Vteam2.id = matches[0].id;
         tu.team3Vteam4.id = matches[1].id;
 
-        return User.create([tu.user1, tu.user2]);
+        return db.User.create([tu.user1, tu.user2]);
       })
       .then(users => {
         tu.user1_team1Vteam2 = {

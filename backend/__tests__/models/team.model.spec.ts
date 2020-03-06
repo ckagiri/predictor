@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import { TeamModel } from '../../db/models/team.model';
+import TeamModel from '../../db/models/team.model';
 
 describe('Team', () => {
   describe('schema', () => {

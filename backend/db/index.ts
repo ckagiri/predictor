@@ -4,6 +4,7 @@ import TeamModel from './models/team.model';
 import PredictionModel from './models/prediction.model';
 import SeasonModel from './models/season.model';
 import LeaderboardModel from './models/leaderboard.model';
+import UserModel from './models/user.model';
 
 export const init = (
   mongoUri: string,
@@ -38,6 +39,7 @@ export default {
   init,
   drop,
   close,
+  User: UserModel,
   Competition: CompetitionModel,
   Season: SeasonModel,
   Team: TeamModel,

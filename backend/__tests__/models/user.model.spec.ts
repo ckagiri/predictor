@@ -2,12 +2,12 @@ import 'mocha';
 import { expect } from 'chai';
 import * as bcrypt from 'bcrypt-nodejs';
 
-import { User, UserModel } from '../../db/models/user.model';
+import UserModel, { User } from '../../db/models/user.model';
 
 describe('Users', () => {
   describe('schema', () => {
     describe('an empty user', () => {
-      const u = new User();
+      const u = new UserModel();
       it('should have 1 mandatory property', done => {
         u.validate(err => {
           expect(Object.keys(err.errors)).to.have.lengthOf(1);
@@ -24,13 +24,13 @@ describe('Users', () => {
     });
 
     describe('a minimal user', () => {
-      const user: UserModel = {
+      const user: User = {
         username: 'Alpha',
         email: 'test@example.com',
         phone: '+254123456',
       };
 
-      const u = new User(user);
+      const u = new UserModel(user);
 
       it('should have 0 errors', done => {
         u.validate(err => {
@@ -64,14 +64,14 @@ describe('Users', () => {
     });
 
     describe('an admin user', () => {
-      const user: UserModel = {
+      const user: User = {
         username: 'Alpha',
         email: 'admin@example.com',
         isAdmin: true,
         phone: '+254123456',
       };
 
-      const u = new User(user);
+      const u = new UserModel(user);
 
       it('should be admin', done => {
         u.validate(err => {
@@ -85,14 +85,14 @@ describe('Users', () => {
     describe('comparePassword', () => {
       const salt = bcrypt.genSaltSync(10);
 
-      const user: UserModel = {
+      const user: User = {
         username: 'Alpha',
         email: 'user@example.com',
         phone: '+254123456',
       };
 
       it('should fail on comparePassword with empty pwd', done => {
-        const u = new User(user);
+        const u = new UserModel(user);
 
         u.validate(err => {
           expect(err).to.eql(null);
@@ -108,7 +108,7 @@ describe('Users', () => {
 
       it('should fail on incorrectly salted stored pwd', done => {
         user.local = { password: 'test' };
-        const u = new User(user);
+        const u = new UserModel(user);
 
         u.validate(err => {
           expect(err).to.eql(null);
@@ -124,7 +124,7 @@ describe('Users', () => {
 
       it('should fail on comparePassword with wrong pwd', done => {
         user.local = { password: bcrypt.hashSync('test', salt) };
-        const u = new User(user);
+        const u = new UserModel(user);
 
         u.validate(err => {
           expect(err).to.eql(null);
@@ -141,7 +141,7 @@ describe('Users', () => {
 
       it('should succeed on comparePassword with correct pwd', done => {
         user.local = { password: bcrypt.hashSync('test', salt) };
-        const u = new User(user);
+        const u = new UserModel(user);
 
         u.validate(err => {
           expect(err).to.eql(null);

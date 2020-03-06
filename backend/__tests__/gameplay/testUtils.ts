@@ -1,5 +1,5 @@
 import { MatchStatus, MatchModel } from '../../db/models/match.model';
-import { UserModel } from '../../db/models/user.model';
+import { User } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
@@ -75,12 +75,12 @@ const team3Vteam4: Partial<MatchModel> = {
   allPredictionsProcessed: false,
 };
 
-const user1: UserModel = {
+const user1: User = {
   username: 'user1',
   email: 'user1@example.com',
 };
 
-const user2: UserModel = {
+const user2: User = {
   username: 'user2',
   email: 'user2@example.com',
 };
@@ -111,8 +111,8 @@ const user2_team1Vteam2: Partial<Prediction> = {
 const user2_team3Vteam4: Partial<Prediction> = {};
 
 export interface TestUtils {
-  user1: UserModel;
-  user2: UserModel;
+  user1: User;
+  user2: User;
   league: Competition;
   season: Season;
   team1: Team;

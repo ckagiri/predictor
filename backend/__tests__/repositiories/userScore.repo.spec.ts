@@ -2,11 +2,7 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
 import db from '../../db';
-import { User } from '../../db/models/user.model';
-import {
-  Competition,
-} from '../../db/models/competition.model';
-import { Team } from '../../db/models';
+import { Competition, Team } from '../../db/models';
 import { Match } from '../../db/models/match.model';
 import { UserScoreModel } from '../../db/models/userScore.model';
 
@@ -23,7 +19,7 @@ describe('UserScore Repo', function () {
   });
 
   beforeEach(done => {
-    User.create([tu.user1, tu.user2])
+    db.User.create([tu.user1, tu.user2])
       .then(users => {
         tu.user1.id = users[0].id;
         tu.user2.id = users[1].id;

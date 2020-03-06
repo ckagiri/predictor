@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt-nodejs';
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface UserModel extends Entity {
+export interface User extends Entity {
   id?: string;
   email: string;
   isAdmin?: boolean;
@@ -42,7 +42,7 @@ export interface UserModel extends Entity {
   };
 }
 
-export interface UserDocument extends UserModel, DocumentEntity {
+export interface UserDocument extends User, DocumentEntity {
   comparePassword(candidatePassword: string, cb: any): void;
 }
 
@@ -85,7 +85,7 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
   const user = this as UserDocument;
   if (!user.isModified('local.password')) {
     return next();
@@ -122,4 +122,6 @@ userSchema.methods.comparePassword = function comparePassword(
   });
 };
 
-export const User = model<UserDocument>('User', userSchema);
+const UserModel = model<UserDocument>('User', userSchema);
+
+export default UserModel;

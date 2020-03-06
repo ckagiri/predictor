@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import { CompetitionModel } from '../../db/models/competition.model';
+import CompetitionModel from '../../db/models/competition.model';
 
 describe('Competition', () => {
   describe('schema', () => {

@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import { SeasonModel } from '../../db/models/season.model';
+import SeasonModel from '../../db/models/season.model';
 
 describe('Season', () => {
   describe('schema', () => {
