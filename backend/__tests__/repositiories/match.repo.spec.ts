@@ -4,7 +4,7 @@ import { flatMap } from 'rxjs/operators';
 
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { Competition } from '../../db/models/competition.model';
+import { CompetitionModel } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 
@@ -107,13 +107,13 @@ let season: any;
 let team1: any;
 let team2: any;
 
-describe('MatchRepo', function() {
+describe('MatchRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   beforeEach(done => {
-    Competition.create(epl)
+    CompetitionModel.create(epl)
       .then(c => {
         const { name, slug, id } = c;
         const theEpl17 = {

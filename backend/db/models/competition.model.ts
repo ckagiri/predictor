@@ -2,13 +2,13 @@ import { Schema, model } from 'mongoose';
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface CompetitionModel extends Entity {
+export interface Competition extends Entity {
   name: string;
   slug: string;
   code?: string;
 }
 
-export interface CompetitionDocument extends CompetitionModel, DocumentEntity {}
+export interface CompetitionDocument extends Competition, DocumentEntity { }
 
 export const competitionSchema = new Schema({
   name: { type: String, required: true },
@@ -16,7 +16,9 @@ export const competitionSchema = new Schema({
   code: { type: String, default: '' },
 });
 
-export const Competition = model<CompetitionDocument>(
+const CompetitionModel = model<CompetitionDocument>(
   'Competition',
   competitionSchema,
 );
+
+export default CompetitionModel;

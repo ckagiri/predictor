@@ -1,8 +1,7 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
-import * as db from '../../db/index';
+import db from '../../db';
 import {
-  CompetitionModel,
   Competition,
 } from '../../db/models/competition.model';
 import { SeasonModel, Season } from '../../db/models/season.model';
@@ -14,7 +13,7 @@ import {
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
 
-const epl: CompetitionModel = {
+const epl: Competition = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
@@ -34,14 +33,14 @@ const epl18: SeasonModel = {
 const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 let theSeason: any;
 
-describe('Leaderboard Repo', function() {
+describe('Leaderboard Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
 
   beforeEach(done => {
-    Competition.create(epl)
+    db.Competition.create(epl)
       .then(l => {
         const { name, slug, id } = l;
         epl18.competition = { name, slug, id: id! };
@@ -136,7 +135,7 @@ describe('Leaderboard Repo', function() {
   });
 
   // tslint:disable-next-line: only-arrow-functions
-  describe('finders', function() {
+  describe('finders', function () {
     let lb1: LeaderboardModel;
     beforeEach(done => {
       Leaderboard.create([

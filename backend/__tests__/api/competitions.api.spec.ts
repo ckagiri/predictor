@@ -8,7 +8,8 @@ import axios, { AxiosInstance } from 'axios';
 import startServer from '../../app/server';
 import { setupReqRes } from './testUtils';
 import { CompetitionsController } from '../../app/api/competitions/competitions.controller'
-import { CompetitionModel, Competition, CompetitionDocument } from '../../db/models/competition.model';
+import { Competition, CompetitionDocument } from '../../db/models';
+import db from '../../db';
 
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
 
@@ -18,19 +19,19 @@ const expect = chai.expect;
 
 let server: http.Server, competitionsAPI: AxiosInstance, baseURL: string;
 type Sut = {
-  competitions: CompetitionModel[]
+  competitions: Competition[]
 }
 let sut: Partial<Sut> = {};
 
 function clearData() {
   const promises: Promise<any>[] = [];
-  promises.push(Competition.deleteMany({}).exec())
+  promises.push(db.Competition.deleteMany({}).exec())
   return Promise.all(promises);
 }
 
-function addCompetitions(competitions: CompetitionModel[]): Promise<CompetitionModel[]> {
+function addCompetitions(competitions: Competition[]): Promise<Competition[]> {
   return new Promise((resolve, reject) => {
-    Competition.insertMany(competitions, ((err: Error, data: CompetitionDocument[]) => {
+    db.Competition.insertMany(competitions, ((err: Error, data: CompetitionDocument[]) => {
       sut.competitions = data.map(c => c.toObject());
       if (err) { return reject(err); }
       resolve(competitions);
@@ -39,12 +40,12 @@ function addCompetitions(competitions: CompetitionModel[]): Promise<CompetitionM
 }
 
 async function resetData() {
-  const epl: CompetitionModel = {
+  const epl: Competition = {
     name: 'English Premier League',
     slug: 'english_premier_league',
     code: 'epl'
   };
-  const slg: CompetitionModel = {
+  const slg: Competition = {
     name: 'Spanish La Liga',
     slug: 'spanish_la_liga',
     code: 'slg'
@@ -77,7 +78,7 @@ describe('Competitions API', function () {
     after(() => server.close())
 
     it('should respond with JSON array', async function () {
-      const competitions: CompetitionModel[] = await competitionsAPI.get('competitions').then(res => res.data)
+      const competitions: Competition[] = await competitionsAPI.get('competitions').then(res => res.data)
       expect(competitions).to.be.an.instanceof(Array);
       expect(competitions).to.have.length(2)
       expect(competitions[0].id).to.eql(sut.competitions![0].id);

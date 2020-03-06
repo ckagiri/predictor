@@ -2,21 +2,20 @@ import { expect } from 'chai';
 
 import { User } from '../../db/models/user.model';
 import {
-  CompetitionModel,
   Competition,
 } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
 import { TeamModel, Team } from '../../db/models/team.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import { Prediction } from '../../db/models/prediction.model';
-import * as db from '../../db/index';
+import db from '../../db';
 import testUtils, { TestUtils } from './testUtils';
 import { FinishedMatchesProcessorImpl } from '../../app/schedulers/finishedMatches.processor';
 
 const finishedMatchesProcessor = FinishedMatchesProcessorImpl.getInstance();
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
-describe('Finished Matches Processor', function() {
+describe('Finished Matches Processor', function () {
   this.timeout(5000);
 
   before(done => {
@@ -24,14 +23,14 @@ describe('Finished Matches Processor', function() {
   });
 
   beforeEach(done => {
-    Competition.create(tu.league)
+    db.Competition.create(tu.league)
       .then(league => {
         let { name, slug, id } = league;
         tu.season.competition = {
           name,
           slug,
           id,
-        } as Required<CompetitionModel>;
+        } as Required<Competition>;
         return Season.create(tu.season);
       })
       .then(season => {
@@ -163,6 +162,6 @@ describe('Finished Matches Processor', function() {
   it.skip('should set to true allPredictionProcessed', async () => {
     Match.find({})
       .exec()
-      .then(() => {});
+      .then(() => { });
   });
 });

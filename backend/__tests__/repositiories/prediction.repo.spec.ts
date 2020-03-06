@@ -1,11 +1,10 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
-import * as db from '../../db';
+import db from '../../db';
 import { User, UserModel } from '../../db/models/user.model';
 import {
   Competition,
-  CompetitionModel,
 } from '../../db/models/competition.model';
 import { Season, SeasonModel } from '../../db/models/season.model';
 import { Team, TeamModel } from '../../db/models/team.model';
@@ -29,7 +28,7 @@ let user1: any,
   team4: any,
   match1: any;
 
-const epl: CompetitionModel = {
+const epl: Competition = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
@@ -118,7 +117,7 @@ const kagiri: UserModel = {
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function() {
+describe('Prediction repo', function () {
   this.timeout(5000);
 
   before(done => {
@@ -129,7 +128,7 @@ describe('Prediction repo', function() {
     User.create([chalo, kagiri])
       .then(users => {
         user1 = users[0];
-        return Competition.create(epl);
+        return db.Competition.create(epl);
       })
       .then(l => {
         const { name, slug, id } = l;

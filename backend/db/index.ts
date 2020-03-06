@@ -1,4 +1,5 @@
 import mongoose = require('mongoose');
+import CompetitionModel from './models/competition.model';
 
 export const init = (
   mongoUri: string,
@@ -28,3 +29,10 @@ export const drop = () => {
 export const close = () => {
   return mongoose.connection.close();
 };
+
+export default {
+  init,
+  drop,
+  close,
+  Competition: CompetitionModel
+}

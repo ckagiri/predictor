@@ -1,13 +1,12 @@
 import { User } from '../../db/models/user.model';
 import {
-  CompetitionModel,
-  Competition,
+  Competition
 } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
 import { TeamModel, Team } from '../../db/models/team.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import { Prediction } from '../../db/models/prediction.model';
-import * as db from '../../db/index';
+import db from '../../db/index';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
 import { Leaderboard } from '../../db/models/leaderboard.model';
 import { UserScore } from '../../db/models/userScore.model';
@@ -20,7 +19,7 @@ const leaderboardUpdater = LeaderboardUpdaterImpl.getInstance().setCacheService(
 
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
-describe('Finished Matches Processor', function() {
+describe('Finished Matches Processor', function () {
   this.timeout(9999);
 
   before(done => {
@@ -28,11 +27,11 @@ describe('Finished Matches Processor', function() {
   });
 
   beforeEach(done => {
-    Competition.create(tu.league)
+    db.Competition.create(tu.league)
       .then(league => {
         let { name, slug, id } = league;
         tu.season.competition = { name, slug, id } as Required<
-          CompetitionModel
+          Competition
         >;
         return Season.create(tu.season);
       })

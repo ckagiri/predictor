@@ -1,11 +1,11 @@
 import { MatchStatus, MatchModel } from '../../db/models/match.model';
 import { UserModel } from '../../db/models/user.model';
-import { CompetitionModel } from '../../db/models/competition.model';
+import { Competition } from '../../db/models/competition.model';
 import { SeasonModel } from '../../db/models/season.model';
 import { TeamModel } from '../../db/models/team.model';
 import { PredictionModel } from '../../db/models/prediction.model';
 
-const league: CompetitionModel = {
+const league: Competition = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'league',
@@ -113,7 +113,7 @@ const user2_team3Vteam4: Partial<PredictionModel> = {};
 export interface TestUtils {
   user1: UserModel;
   user2: UserModel;
-  league: CompetitionModel;
+  league: Competition;
   season: SeasonModel;
   team1: TeamModel;
   team2: TeamModel;

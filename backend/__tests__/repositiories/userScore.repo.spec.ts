@@ -1,11 +1,10 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
-import * as db from '../../db/index';
+import db from '../../db';
 import { User } from '../../db/models/user.model';
 import {
   Competition,
-  CompetitionModel,
 } from '../../db/models/competition.model';
 import { Season, SeasonModel } from '../../db/models/season.model';
 import { Team, TeamModel } from '../../db/models/team.model';
@@ -36,12 +35,12 @@ describe('UserScore Repo', function () {
       .then(users => {
         tu.user1.id = users[0].id;
         tu.user2.id = users[1].id;
-        return Competition.create(tu.league);
+        return db.Competition.create(tu.league);
       })
       .then(league => {
         let { name, slug, id } = league;
         tu.season.competition = { name, slug, id } as Required<
-          CompetitionModel
+          Competition
         >;
         return Season.create(tu.season);
       })
