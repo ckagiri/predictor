@@ -3,7 +3,7 @@ mongoose.set('useCreateIndex', true);
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface UserScoreModel extends Entity {
+export interface UserScore extends Entity {
   id?: string;
   leaderboard: string;
   user: string;
@@ -27,7 +27,7 @@ export interface UserScoreModel extends Entity {
   positionNew?: number;
 }
 
-export interface UserScoreDocument extends UserScoreModel, DocumentEntity {}
+export interface UserScoreDocument extends UserScore, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 
@@ -59,4 +59,6 @@ const userScoreSchema = new Schema({
   positionNew: { type: Number },
 });
 
-export const UserScore = model<UserScoreDocument>('UserScore', userScoreSchema);
+const UserScoreModel = model<UserScoreDocument>('UserScore', userScoreSchema);
+
+export default UserScoreModel;

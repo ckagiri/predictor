@@ -8,14 +8,14 @@ import {
   map,
 } from 'rxjs/operators';
 
-import { MatchModel, MatchStatus } from '../../db/models/match.model';
+import { Match, MatchStatus } from '../../db/models/match.model';
 import {
   UserRepository,
   UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
 import {
   BOARD_STATUS,
-  LeaderboardModel,
+  Leaderboard,
 } from '../../db/models/leaderboard.model';
 import {
   LeaderboardRepository,
@@ -35,7 +35,7 @@ import {
 } from '../../common/observableCacheService';
 
 export interface LeaderboardUpdater {
-  updateScores(matches: MatchModel[]): Promise<number>;
+  updateScores(matches: Match[]): Promise<number>;
   updateRankings(seasonId: string): Promise<number>;
   markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
 }
@@ -57,14 +57,14 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     private leaderboardRepo: LeaderboardRepository,
     private predictionRepo: PredictionRepository,
     private userScoreRepo: UserScoreRepository,
-  ) {}
+  ) { }
 
   public setCacheService(cacheService: CacheService) {
     this.cacheService = cacheService;
     return this;
   }
 
-  public updateScores(matches: MatchModel[]) {
+  public updateScores(matches: Match[]) {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }
@@ -100,10 +100,10 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
           const month = date.getUTCMonth() + 1;
           const year = date.getFullYear();
 
-          const boards: Array<Observable<LeaderboardModel>> = [];
-          let sBoard: Observable<LeaderboardModel>;
-          let mBoard: Observable<LeaderboardModel>;
-          let rBoard: Observable<LeaderboardModel>;
+          const boards: Array<Observable<Leaderboard>> = [];
+          let sBoard: Observable<Leaderboard>;
+          let mBoard: Observable<Leaderboard>;
+          let rBoard: Observable<Leaderboard>;
 
           if (this.cacheService != null) {
             sBoard = this.cacheService.get(

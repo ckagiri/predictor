@@ -1,13 +1,8 @@
 import 'mocha';
 import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
-
-import * as db from '../../db/index';
+import db from '../../db';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { Competition } from '../../db/models/competition.model';
-import { Season } from '../../db/models/season.model';
-import { Team } from '../../db/models/team.model';
-
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 
 const epl = {
@@ -107,13 +102,13 @@ let season: any;
 let team1: any;
 let team2: any;
 
-describe('MatchRepo', function() {
+describe('MatchRepo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   beforeEach(done => {
-    Competition.create(epl)
+    db.Competition.create(epl)
       .then(c => {
         const { name, slug, id } = c;
         const theEpl17 = {
@@ -123,11 +118,11 @@ describe('MatchRepo', function() {
             [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
           },
         };
-        return Season.create(theEpl17);
+        return db.Season.create(theEpl17);
       })
       .then(s => {
         season = s;
-        return Team.create([manu, manc]);
+        return db.Team.create([manu, manc]);
       })
       .then(teams => {
         team1 = teams[0];

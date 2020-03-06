@@ -15,19 +15,19 @@ import {
 } from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
-import { MatchModel } from '../../db/models/match.model';
+import { Match } from '../../db/models/match.model';
 import {
-  PredictionModel,
+  Prediction,
   PredictionStatus,
 } from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface PredictionProcessor {
-  getOrCreatePredictions$(match: MatchModel): Observable<PredictionModel[]>;
+  getOrCreatePredictions$(match: Match): Observable<Prediction[]>;
   processPrediction$(
-    prediction: PredictionModel,
-    match: MatchModel,
-  ): Observable<PredictionModel>;
+    prediction: Prediction,
+    match: Match,
+  ): Observable<Prediction>;
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
@@ -44,9 +44,9 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private userRepo: UserRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
-  ) {}
+  ) { }
 
-  public getOrCreatePredictions$(match: MatchModel) {
+  public getOrCreatePredictions$(match: Match) {
     const { season: seasonId, gameRound } = match;
     return this.matchRepo
       .findSelectableMatches$(seasonId!, gameRound!)
@@ -112,7 +112,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: PredictionModel, match: MatchModel) {
+  public processPrediction$(prediction: Prediction, match: Match) {
     const { choice } = prediction;
     const { result } = match;
     const scorePoints = this.predictionCalculator.calculateScore(

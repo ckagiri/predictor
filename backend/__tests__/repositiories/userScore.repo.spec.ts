@@ -1,24 +1,8 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
-import * as db from '../../db/index';
-import { User } from '../../db/models/user.model';
-import {
-  Competition,
-  CompetitionModel,
-} from '../../db/models/competition.model';
-import { Season, SeasonModel } from '../../db/models/season.model';
-import { Team, TeamModel } from '../../db/models/team.model';
-import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
-import { Prediction, PredictionModel } from '../../db/models/prediction.model';
-import {
-  Leaderboard,
-  BOARD_STATUS,
-  BOARD_TYPE,
-} from '../../db/models/leaderboard.model';
-import { UserScoreModel } from '../../db/models/userScore.model';
-
-import { ScorePoints } from '../../common/score';
+import db from '../../db';
+import { Competition, Team, UserScore } from '../../db/models';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 import testUtils, { TestUtils } from './testUtils';
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
@@ -32,35 +16,35 @@ describe('UserScore Repo', function () {
   });
 
   beforeEach(done => {
-    User.create([tu.user1, tu.user2])
+    db.User.create([tu.user1, tu.user2])
       .then(users => {
         tu.user1.id = users[0].id;
         tu.user2.id = users[1].id;
-        return Competition.create(tu.league);
+        return db.Competition.create(tu.league);
       })
       .then(league => {
         let { name, slug, id } = league;
         tu.season.competition = { name, slug, id } as Required<
-          CompetitionModel
+          Competition
         >;
-        return Season.create(tu.season);
+        return db.Season.create(tu.season);
       })
       .then(season => {
         tu.season.id = season.id;
-        return Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
+        return db.Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
       })
       .then(teams => {
         tu.team1Vteam2.homeTeam = {
           name: teams[0].name,
           slug: teams[0].slug,
           id: teams[0].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team1Vteam2.awayTeam = {
           name: teams[1].name,
           slug: teams[1].slug,
           id: teams[1].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team1Vteam2.season = tu.season.id;
         tu.team1Vteam2.slug = `${teams[0].slug}-${teams[1].slug}`;
@@ -69,18 +53,18 @@ describe('UserScore Repo', function () {
           name: teams[2].name,
           slug: teams[2].slug,
           id: teams[2].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team3Vteam4.awayTeam = {
           name: teams[3].name,
           slug: teams[3].slug,
           id: teams[3].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team3Vteam4.season = tu.season.id;
         tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
 
-        return Match.create([tu.team1Vteam2, tu.team3Vteam4]);
+        return db.Match.create([tu.team1Vteam2, tu.team3Vteam4]);
       })
       .then(matches => {
         tu.team1Vteam2.id = matches[0].id;
@@ -119,7 +103,7 @@ describe('UserScore Repo', function () {
           user: tu.user2.id,
         };
 
-        return Prediction.create([
+        return db.Prediction.create([
           tu.user1_team1Vteam2,
           tu.user1_team3Vteam4,
           tu.user2_team1Vteam2,
@@ -131,7 +115,7 @@ describe('UserScore Repo', function () {
         tu.user1_team3Vteam4.id = predictions[1].id;
         tu.user2_team1Vteam2.id = predictions[2].id;
         tu.user2_team3Vteam4.id = predictions[3].id;
-        return Leaderboard.create([
+        return db.Leaderboard.create([
           {
             ...tu.season_board,
             season: tu.season.id,
@@ -203,7 +187,7 @@ describe('UserScore Repo', function () {
         (result, key) => ({ ...result, [key]: score1[key] * 2 }),
         score1,
       );
-      const user1_team1Vteam2_score: UserScoreModel = {
+      const user1_team1Vteam2_score: UserScore = {
         ...joker_score1,
         leaderboard: leaderboardId,
         user: userId,
@@ -259,7 +243,7 @@ describe('UserScore Repo', function () {
       (result, key) => ({ ...result, [key]: user1_match1_points[key] * 2 }),
       user1_match1_points,
     );
-    const user1_match1_score: UserScoreModel = {
+    const user1_match1_score: UserScore = {
       ...user1_match1_joker_points,
       leaderboard: leaderboardId,
       user: user1Id,
@@ -273,7 +257,7 @@ describe('UserScore Repo', function () {
     const user2Id = tu.user2.id!;
     const user2_predictionId = tu.user2_team1Vteam2.id!;
     const user2_match1_points = tu.user2_team1Vteam2_points;
-    const user2_match1_score: UserScoreModel = {
+    const user2_match1_score: UserScore = {
       ...user2_match1_points,
       leaderboard: leaderboardId,
       user: user2Id,
@@ -303,7 +287,7 @@ describe('UserScore Repo', function () {
     const matchId = tu.team1Vteam2.id!;
     const predictionId = tu.user1_team1Vteam2.id!;
     const score1 = tu.user1_team1Vteam2_points;
-    const user1_match1_score: UserScoreModel = {
+    const user1_match1_score: UserScore = {
       ...score1,
       leaderboard: leaderboardId,
       user: userId,

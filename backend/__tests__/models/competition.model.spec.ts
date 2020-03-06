@@ -1,11 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
-import { Competition } from '../../db/models/competition.model';
+import CompetitionModel from '../../db/models/competition.model';
 
 describe('Competition', () => {
   describe('schema', () => {
     describe('an empty competition', () => {
-      const c = new Competition();
+      const c = new CompetitionModel();
 
       it('should have a mongoose schema', () => {
         expect(c.schema).to.not.be.undefined;
@@ -39,7 +39,7 @@ describe('Competition', () => {
         slug: 'english_premier_league',
         code: 'epl',
       };
-      const c = new Competition(competition);
+      const c = new CompetitionModel(competition);
       it('should have 0 errors', done => {
         c.validate(err => {
           expect(err).to.eql(null);

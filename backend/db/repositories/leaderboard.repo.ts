@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
 
-import {
-  LeaderboardModel,
+import LeaderboardModel, {
   Leaderboard,
   LeaderboardDocument,
   BOARD_TYPE,
@@ -9,33 +8,33 @@ import {
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface LeaderboardRepository
-  extends BaseRepository<LeaderboardModel> {
+  extends BaseRepository<Leaderboard> {
   findSeasonBoardAndUpsert$(
     seasonId: string,
     update: any,
-  ): Observable<LeaderboardModel>;
+  ): Observable<Leaderboard>;
   findMonthBoardAndUpsert$(
     seasonId: string,
     year: number,
     month: number,
     update: any,
-  ): Observable<LeaderboardModel>;
+  ): Observable<Leaderboard>;
   findRoundBoardAndUpsert$(
     seasonId: string,
     gameRound: number,
     update: any,
-  ): Observable<LeaderboardModel>;
+  ): Observable<Leaderboard>;
 }
 
 export class LeaderboardRepositoryImpl
-  extends BaseRepositoryImpl<LeaderboardModel, LeaderboardDocument>
+  extends BaseRepositoryImpl<Leaderboard, LeaderboardDocument>
   implements LeaderboardRepository {
   public static getInstance() {
     return new LeaderboardRepositoryImpl();
   }
 
   constructor() {
-    super(Leaderboard);
+    super(LeaderboardModel);
   }
 
   public findSeasonBoardAndUpsert$(seasonId: string, update: any) {

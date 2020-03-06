@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { TeamModel } from '../../models/team.model';
+import { Team } from '../../models/team.model';
 import { TeamConverter } from '../team.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
@@ -14,7 +14,7 @@ export class LigiTeamConverter implements TeamConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<TeamModel> {
+  public from(data: any): Observable<Team> {
     return of({ ...data });
   }
 }

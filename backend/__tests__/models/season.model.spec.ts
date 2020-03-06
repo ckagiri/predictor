@@ -1,11 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
-import { Season } from '../../db/models/season.model';
+import SeasonModel from '../../db/models/season.model';
 
 describe('Season', () => {
   describe('schema', () => {
     describe('an empty season', () => {
-      const s = new Season();
+      const s = new SeasonModel();
 
       it('should have a mongoose schema', () => {
         expect(s.schema).to.not.be.undefined;
@@ -67,7 +67,7 @@ describe('Season', () => {
         seasonStart: '2017-08-11T00:00:00+0200',
         seasonEnd: '2018-05-13T16:00:00+0200',
       };
-      const s = new Season(season);
+      const s = new SeasonModel(season);
       it('should have 0 errors', done => {
         s.validate(err => {
           expect(err).to.not.exist;

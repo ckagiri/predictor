@@ -1,23 +1,23 @@
-import { MatchStatus, MatchModel } from '../../db/models/match.model';
-import { UserModel } from '../../db/models/user.model';
-import { CompetitionModel } from '../../db/models/competition.model';
-import { SeasonModel } from '../../db/models/season.model';
-import { TeamModel } from '../../db/models/team.model';
-import { PredictionModel } from '../../db/models/prediction.model';
+import { MatchStatus, Match } from '../../db/models/match.model';
+import { User } from '../../db/models/user.model';
+import { Competition } from '../../db/models/competition.model';
+import { Season } from '../../db/models/season.model';
+import { Team } from '../../db/models/team.model';
+import { Prediction } from '../../db/models/prediction.model';
 import {
-  LeaderboardModel,
+  Leaderboard,
   BOARD_TYPE,
   BOARD_STATUS,
 } from '../../db/models/leaderboard.model';
 import { ScorePoints, Score } from '../../common/score';
 
-const league: CompetitionModel = {
+const league: Competition = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'league',
 };
 
-const season: SeasonModel = {
+const season: Season = {
   name: '2018-19',
   slug: '18-19',
   year: 2019,
@@ -27,7 +27,7 @@ const season: SeasonModel = {
   currentGameRound: 20,
 };
 
-const team1: TeamModel = {
+const team1: Team = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -37,7 +37,7 @@ const team1: TeamModel = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const team2: TeamModel = {
+const team2: Team = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -47,7 +47,7 @@ const team2: TeamModel = {
   aliases: ['ManCity'],
 };
 
-const team3: TeamModel = {
+const team3: Team = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -56,7 +56,7 @@ const team3: TeamModel = {
   aliases: ['Chelsea'],
 };
 
-const team4: TeamModel = {
+const team4: Team = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -65,7 +65,7 @@ const team4: TeamModel = {
   aliases: ['Arsenal'],
 };
 
-const team1Vteam2: Partial<MatchModel> = {
+const team1Vteam2: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -77,7 +77,7 @@ const team1Vteam2: Partial<MatchModel> = {
   },
 };
 
-const team3Vteam4: Partial<MatchModel> = {
+const team3Vteam4: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.FINISHED,
   matchRound: 20,
@@ -89,17 +89,17 @@ const team3Vteam4: Partial<MatchModel> = {
   },
 };
 
-const user1: UserModel = {
+const user1: User = {
   username: 'user1',
   email: 'user1@example.com',
 };
 
-const user2: UserModel = {
+const user2: User = {
   username: 'user2',
   email: 'user2@example.com',
 };
 
-const user1_team1Vteam2: Partial<PredictionModel> = {
+const user1_team1Vteam2: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 1,
     goalsAwayTeam: 0,
@@ -119,7 +119,7 @@ const user1_team1Vteam2_points: ScorePoints = {
   ExactTeamScorePoints: 1,
 };
 
-const user1_team3Vteam4: Partial<PredictionModel> = {
+const user1_team3Vteam4: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 2,
     goalsAwayTeam: 0,
@@ -139,7 +139,7 @@ const user1_team3Vteam4_points: ScorePoints = {
   ExactTeamScorePoints: 1,
 };
 
-const user2_team1Vteam2: Partial<PredictionModel> = {
+const user2_team1Vteam2: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 2,
     goalsAwayTeam: 2,
@@ -159,7 +159,7 @@ const user2_team1Vteam2_points: ScorePoints = {
   ExactTeamScorePoints: 0,
 };
 
-const user2_team3Vteam4: Partial<PredictionModel> = {
+const user2_team3Vteam4: Partial<Prediction> = {
   hasJoker: true,
   choice: {
     goalsHomeTeam: 2,
@@ -180,38 +180,38 @@ const user2_team3Vteam4_points: ScorePoints = {
   ExactTeamScorePoints: 2,
 };
 
-const season_board: Partial<LeaderboardModel> = {
+const season_board: Partial<Leaderboard> = {
   status: BOARD_STATUS.UPDATING_SCORES,
   boardType: BOARD_TYPE.GLOBAL_SEASON,
 };
 
-const round_board: Partial<LeaderboardModel> = {
+const round_board: Partial<Leaderboard> = {
   status: BOARD_STATUS.REFRESHED,
   boardType: BOARD_TYPE.GLOBAL_ROUND,
   gameRound: 20,
 };
 
 export interface TestUtils {
-  user1: UserModel;
-  user2: UserModel;
-  league: CompetitionModel;
-  season: SeasonModel;
-  team1: TeamModel;
-  team2: TeamModel;
-  team3: TeamModel;
-  team4: TeamModel;
-  team1Vteam2: MatchModel;
-  team3Vteam4: MatchModel;
-  user1_team1Vteam2: Partial<PredictionModel>;
-  user1_team3Vteam4: Partial<PredictionModel>;
-  user2_team1Vteam2: Partial<PredictionModel>;
-  user2_team3Vteam4: Partial<PredictionModel>;
+  user1: User;
+  user2: User;
+  league: Competition;
+  season: Season;
+  team1: Team;
+  team2: Team;
+  team3: Team;
+  team4: Team;
+  team1Vteam2: Match;
+  team3Vteam4: Match;
+  user1_team1Vteam2: Partial<Prediction>;
+  user1_team3Vteam4: Partial<Prediction>;
+  user2_team1Vteam2: Partial<Prediction>;
+  user2_team3Vteam4: Partial<Prediction>;
   user1_team1Vteam2_points: ScorePoints;
   user1_team3Vteam4_points: ScorePoints;
   user2_team1Vteam2_points: ScorePoints;
   user2_team3Vteam4_points: ScorePoints;
-  season_board: LeaderboardModel;
-  round_board: LeaderboardModel;
+  season_board: Leaderboard;
+  round_board: Leaderboard;
 }
 
 export default {

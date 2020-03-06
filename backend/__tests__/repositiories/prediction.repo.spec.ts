@@ -1,18 +1,11 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
-import * as db from '../../db';
-import { User, UserModel } from '../../db/models/user.model';
-import {
-  Competition,
-  CompetitionModel,
-} from '../../db/models/competition.model';
-import { Season, SeasonModel } from '../../db/models/season.model';
-import { Team, TeamModel } from '../../db/models/team.model';
-import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
+import db from '../../db';
+import { User, Competition, Season, Team } from '../../db/models';
+import { Match, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
-  PredictionModel,
   PredictionDocument,
 } from '../../db/models/prediction.model';
 
@@ -29,13 +22,13 @@ let user1: any,
   team4: any,
   match1: any;
 
-const epl: CompetitionModel = {
+const epl: Competition = {
   name: 'English Premier League',
   slug: 'english_premier_league',
   code: 'epl',
 };
 
-const epl18: SeasonModel = {
+const epl18: Season = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -46,7 +39,7 @@ const epl18: SeasonModel = {
   competition: undefined,
 };
 
-const manu: TeamModel = {
+const manu: Team = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -56,7 +49,7 @@ const manu: TeamModel = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const manc: TeamModel = {
+const manc: Team = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -66,7 +59,7 @@ const manc: TeamModel = {
   aliases: ['ManCity'],
 };
 
-const che: TeamModel = {
+const che: Team = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -75,7 +68,7 @@ const che: TeamModel = {
   aliases: ['Chelsea'],
 };
 
-const ars: TeamModel = {
+const ars: Team = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -84,7 +77,7 @@ const ars: TeamModel = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: MatchModel = {
+const manuVmanc: Match = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -96,7 +89,7 @@ const manuVmanc: MatchModel = {
   result: undefined,
 };
 
-const cheVars: MatchModel = {
+const cheVars: Match = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -108,17 +101,17 @@ const cheVars: MatchModel = {
   result: undefined,
 };
 
-const chalo: UserModel = {
+const chalo: User = {
   username: 'chalo',
   email: 'chalo@example.com',
 };
 
-const kagiri: UserModel = {
+const kagiri: User = {
   username: 'kagiri',
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function() {
+describe('Prediction repo', function () {
   this.timeout(5000);
 
   before(done => {
@@ -126,19 +119,19 @@ describe('Prediction repo', function() {
   });
 
   beforeEach(done => {
-    User.create([chalo, kagiri])
+    db.User.create([chalo, kagiri])
       .then(users => {
         user1 = users[0];
-        return Competition.create(epl);
+        return db.Competition.create(epl);
       })
       .then(l => {
         const { name, slug, id } = l;
         epl18.competition = { name, slug, id: id! };
-        return Season.create(epl18);
+        return db.Season.create(epl18);
       })
       .then(s => {
         theSeason = s;
-        return Team.create([manu, manc, che, ars]);
+        return db.Team.create([manu, manc, che, ars]);
       })
       .then(teams => {
         team1 = teams[0];
@@ -174,7 +167,7 @@ describe('Prediction repo', function() {
         };
         cheVars.slug = `${team3.slug}-${team4.slug}`;
 
-        return Match.create([manuVmanc, cheVars]);
+        return db.Match.create([manuVmanc, cheVars]);
       })
       .then(matches => {
         match1 = matches[0];
@@ -212,9 +205,9 @@ describe('Prediction repo', function() {
   });
 
   it('should findOne prediction by user and match', done => {
-    let prediction: PredictionModel;
+    let prediction: Prediction;
     const { slug: matchSlug, season, gameRound, id: matchId } = match1;
-    const pred: PredictionModel = {
+    const pred: Prediction = {
       user: user1.id,
       match: matchId,
       matchSlug,
@@ -222,7 +215,7 @@ describe('Prediction repo', function() {
       gameRound,
       choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
     };
-    Prediction.create(pred)
+    db.Prediction.create(pred)
       .then(p => {
         prediction = p;
         return predictionRepo
@@ -291,7 +284,7 @@ describe('Prediction repo', function() {
         }),
       )
       .subscribe(p => {
-        const pred = (p as PredictionDocument).toObject() as PredictionModel;
+        const pred = (p as PredictionDocument).toObject() as Prediction;
         expect(pred.scorePoints).to.eql(scorePoints);
         done();
       });

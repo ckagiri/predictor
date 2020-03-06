@@ -10,9 +10,9 @@ import {
   TeamRepository,
   TeamRepositoryImpl,
 } from '../../repositories/team.repo';
-import { MatchModel } from '../../models/match.model';
-import { SeasonModel } from '../../models/season.model';
-import { TeamModel } from '../../models/team.model';
+import { Match } from '../../models/match.model';
+import { Season } from '../../models/season.model';
+import { Team } from '../../models/team.model';
 
 export class AfdMatchConverter implements MatchConverter {
   public static getInstance(): MatchConverter {
@@ -30,12 +30,12 @@ export class AfdMatchConverter implements MatchConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<MatchModel> {
+  public from(data: any): Observable<Match> {
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.name),
       this.teamRepo.findByName$(data.awayTeam.name),
-      (season: SeasonModel, homeTeam: TeamModel, awayTeam: TeamModel) => {
+      (season: Season, homeTeam: Team, awayTeam: Team) => {
         return {
           season: season.id,
           date: data.utcDate,

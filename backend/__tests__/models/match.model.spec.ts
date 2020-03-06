@@ -1,12 +1,12 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import { MatchStatus, Match } from '../../db/models/match.model';
+import MatchModel, { MatchStatus } from '../../db/models/match.model';
 
 describe('Match', () => {
   describe('schema', () => {
     describe('an empty match', () => {
-      const m = new Match();
+      const m = new MatchModel();
 
       it('should have a mongoose schema', () => {
         expect(m.schema).to.not.be.undefined;
@@ -74,7 +74,7 @@ describe('Match', () => {
         },
         slug: 'arsenal-chelsea',
       };
-      const m = new Match(match);
+      const m = new MatchModel(match);
       it('should have 0 errors', done => {
         m.validate(err => {
           expect(err).to.not.exist;

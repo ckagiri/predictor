@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 
 import { Entity, DocumentEntity } from './base.model';
 
-export interface TeamModel extends Entity {
+export interface Team extends Entity {
   id?: string;
   name: string;
   slug?: string;
@@ -13,7 +13,7 @@ export interface TeamModel extends Entity {
   externalReference?: any;
 }
 
-export interface TeamDocument extends TeamModel, DocumentEntity {}
+export interface TeamDocument extends Team, DocumentEntity { }
 
 const { Mixed } = Schema.Types;
 
@@ -27,4 +27,6 @@ export const teamSchema = new Schema({
   externalReference: { type: Mixed },
 });
 
-export const Team = model<TeamDocument>('Team', teamSchema);
+const TeamModel = model<TeamDocument>('Team', teamSchema);
+
+export default TeamModel;

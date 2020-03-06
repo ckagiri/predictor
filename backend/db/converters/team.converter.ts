@@ -3,11 +3,11 @@ import { Observable } from 'rxjs';
 import { LigiTeamConverter } from '../converters/ligi/team.converter';
 import { AfdTeamConverter } from '../converters/apiFootballData/team.converter';
 import { Converter } from './converter';
-import { TeamModel } from '../models/team.model';
+import { Team } from '../models/team.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface TeamConverter extends Converter {
-  from(data: any): Observable<TeamModel>;
+  from(data: any): Observable<Team>;
 }
 
 export abstract class TeamConverterImpl {

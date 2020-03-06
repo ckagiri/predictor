@@ -1,18 +1,18 @@
 import { expect } from 'chai';
 
-import { User } from '../../db/models/user.model';
+import UserModel from '../../db/models/user.model';
 import { UserRepositoryImpl } from '../../db/repositories/user.repo';
 import * as db from '../../db/index';
 
 const userRepo = UserRepositoryImpl.getInstance();
 
-describe('User Repo', function() {
+describe('User Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   beforeEach(done => {
-    const user1 = new User({
+    const user1 = new UserModel({
       username: 'chalo',
       email: 'chalo@example.com',
       local: { password: 'chalo' },
@@ -21,7 +21,7 @@ describe('User Repo', function() {
       username: 'kagiri',
       email: 'kagiri@example.com',
     };
-    Promise.all([user1.save(), User.create(user2)]).then(() => done());
+    Promise.all([user1.save(), UserModel.create(user2)]).then(() => done());
   });
   afterEach(done => {
     db.drop().then(() => {

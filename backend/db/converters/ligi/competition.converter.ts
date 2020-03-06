@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 
-import { CompetitionModel } from '../../models/competition.model';
+import { Competition } from '../../models/competition.model';
 import { CompetitionConverter } from '../competition.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
@@ -14,7 +14,7 @@ export class LigiCompetitionConverter implements CompetitionConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<CompetitionModel> {
+  public from(data: any): Observable<Competition> {
     return of({
       ...data,
     });

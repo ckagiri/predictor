@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { CompetitionRepositoryImpl, CompetitionRepository } from '../../../db/repositories/competition.repo';
 import { isMongoId } from './utils';
-import { CompetitionModel } from 'db/models/competition.model';
+import { Competition } from 'db/models/competition.model';
 
-class CompetitionsController {
+export class CompetitionsController {
   static getInstance() {
     return new CompetitionsController(CompetitionRepositoryImpl.getInstance())
   }
@@ -22,7 +22,7 @@ class CompetitionsController {
   getCompetition = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let competition: CompetitionModel;
+      let competition: Competition;
       if (isMongoId(id)) {
         competition = await this.competitionRepo.findById$(id).toPromise();
       } else {

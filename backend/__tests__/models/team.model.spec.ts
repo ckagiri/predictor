@@ -1,11 +1,11 @@
 import 'mocha';
 import { expect } from 'chai';
-import { Team } from '../../db/models/team.model';
+import TeamModel from '../../db/models/team.model';
 
 describe('Team', () => {
   describe('schema', () => {
     describe('an empty team', () => {
-      const t = new Team();
+      const t = new TeamModel();
 
       it('should have a mongoose schema', () => {
         expect(t.schema).to.not.be.undefined;
@@ -36,7 +36,7 @@ describe('Team', () => {
           'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
         aliases: ['ManU', 'ManUtd'],
       };
-      const t = new Team(team);
+      const t = new TeamModel(team);
       it('should have 0 errors', done => {
         t.validate(err => {
           expect(err).to.not.exist;
