@@ -5,7 +5,7 @@ import { flatMap } from 'rxjs/operators';
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { CompetitionModel } from '../../db/models/competition.model';
-import { Season } from '../../db/models/season.model';
+import { SeasonModel } from '../../db/models/season.model';
 import { TeamModel } from '../../db/models/team.model';
 
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
@@ -123,7 +123,7 @@ describe('MatchRepo', function () {
             [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
           },
         };
-        return Season.create(theEpl17);
+        return SeasonModel.create(theEpl17);
       })
       .then(s => {
         season = s;

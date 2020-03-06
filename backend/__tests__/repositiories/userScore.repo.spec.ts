@@ -6,8 +6,7 @@ import { User } from '../../db/models/user.model';
 import {
   Competition,
 } from '../../db/models/competition.model';
-import { Season } from '../../db/models/season.model';
-import { Team } from '../../db/models/team.model';
+import { Team } from '../../db/models';
 import { Match } from '../../db/models/match.model';
 import {
   Leaderboard,
@@ -38,7 +37,7 @@ describe('UserScore Repo', function () {
         tu.season.competition = { name, slug, id } as Required<
           Competition
         >;
-        return Season.create(tu.season);
+        return db.Season.create(tu.season);
       })
       .then(season => {
         tu.season.id = season.id;

@@ -2,8 +2,7 @@ import { User } from '../../db/models/user.model';
 import {
   Competition
 } from '../../db/models/competition.model';
-import { Season } from '../../db/models/season.model';
-import { Team } from '../../db/models/team.model';
+import { Team } from '../../db/models';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import db from '../../db';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
@@ -32,7 +31,7 @@ describe('Finished Matches Processor', function () {
         tu.season.competition = { name, slug, id } as Required<
           Competition
         >;
-        return Season.create(tu.season);
+        return db.Season.create(tu.season);
       })
       .then(season => {
         tu.team1Vteam2.season = season.id;

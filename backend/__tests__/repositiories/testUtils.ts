@@ -1,7 +1,7 @@
 import { MatchStatus, MatchModel } from '../../db/models/match.model';
 import { UserModel } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
-import { SeasonModel } from '../../db/models/season.model';
+import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 import { Prediction } from '../../db/models/prediction.model';
 import {
@@ -17,7 +17,7 @@ const league: Competition = {
   code: 'league',
 };
 
-const season: SeasonModel = {
+const season: Season = {
   name: '2018-19',
   slug: '18-19',
   year: 2019,
@@ -195,7 +195,7 @@ export interface TestUtils {
   user1: UserModel;
   user2: UserModel;
   league: Competition;
-  season: SeasonModel;
+  season: Season;
   team1: Team;
   team2: Team;
   team3: Team;

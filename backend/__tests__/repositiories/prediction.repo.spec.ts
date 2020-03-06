@@ -6,8 +6,7 @@ import { User, UserModel } from '../../db/models/user.model';
 import {
   Competition,
 } from '../../db/models/competition.model';
-import { Season, SeasonModel } from '../../db/models/season.model';
-import { Team } from '../../db/models/team.model';
+import { Season, Team } from '../../db/models';
 import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
@@ -33,7 +32,7 @@ const epl: Competition = {
   code: 'epl',
 };
 
-const epl18: SeasonModel = {
+const epl18: Season = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -132,7 +131,7 @@ describe('Prediction repo', function () {
       .then(l => {
         const { name, slug, id } = l;
         epl18.competition = { name, slug, id: id! };
-        return Season.create(epl18);
+        return db.Season.create(epl18);
       })
       .then(s => {
         theSeason = s;

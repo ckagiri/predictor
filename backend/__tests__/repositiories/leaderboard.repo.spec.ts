@@ -4,7 +4,7 @@ import db from '../../db';
 import {
   Competition,
 } from '../../db/models/competition.model';
-import { SeasonModel, Season } from '../../db/models/season.model';
+import { Season } from '../../db/models';
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
 import {
   LeaderboardModel,
@@ -19,7 +19,7 @@ const epl: Competition = {
   code: 'epl',
 };
 
-const epl18: SeasonModel = {
+const epl18: Season = {
   name: '2018-2019',
   slug: '2018-19',
   year: 2018,
@@ -44,7 +44,7 @@ describe('Leaderboard Repo', function () {
       .then(l => {
         const { name, slug, id } = l;
         epl18.competition = { name, slug, id: id! };
-        return Season.create(epl18);
+        return db.Season.create(epl18);
       })
       .then(s => {
         theSeason = s;
