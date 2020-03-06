@@ -11,7 +11,6 @@ import { Team } from '../../db/models/team.model';
 import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
-  PredictionModel,
   PredictionDocument,
 } from '../../db/models/prediction.model';
 
@@ -211,9 +210,9 @@ describe('Prediction repo', function () {
   });
 
   it('should findOne prediction by user and match', done => {
-    let prediction: PredictionModel;
+    let prediction: Prediction;
     const { slug: matchSlug, season, gameRound, id: matchId } = match1;
-    const pred: PredictionModel = {
+    const pred: Prediction = {
       user: user1.id,
       match: matchId,
       matchSlug,
@@ -221,7 +220,7 @@ describe('Prediction repo', function () {
       gameRound,
       choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
     };
-    Prediction.create(pred)
+    db.Prediction.create(pred)
       .then(p => {
         prediction = p;
         return predictionRepo
@@ -290,7 +289,7 @@ describe('Prediction repo', function () {
         }),
       )
       .subscribe(p => {
-        const pred = (p as PredictionDocument).toObject() as PredictionModel;
+        const pred = (p as PredictionDocument).toObject() as Prediction;
         expect(pred.scorePoints).to.eql(scorePoints);
         done();
       });

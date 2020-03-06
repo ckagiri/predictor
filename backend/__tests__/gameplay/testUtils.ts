@@ -3,7 +3,7 @@ import { UserModel } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
 import { SeasonModel } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
-import { PredictionModel } from '../../db/models/prediction.model';
+import { Prediction } from '../../db/models/prediction.model';
 
 const league: Competition = {
   name: 'English Premier League',
@@ -85,7 +85,7 @@ const user2: UserModel = {
   email: 'user2@example.com',
 };
 
-const user1_team1Vteam2: Partial<PredictionModel> = {
+const user1_team1Vteam2: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 1,
     goalsAwayTeam: 0,
@@ -93,14 +93,14 @@ const user1_team1Vteam2: Partial<PredictionModel> = {
   },
 };
 
-const user1_team3Vteam4: Partial<PredictionModel> = {
+const user1_team3Vteam4: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 2,
     goalsAwayTeam: 1,
   },
 };
 
-const user2_team1Vteam2: Partial<PredictionModel> = {
+const user2_team1Vteam2: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 3,
     goalsAwayTeam: 0,
@@ -108,7 +108,7 @@ const user2_team1Vteam2: Partial<PredictionModel> = {
   },
 };
 
-const user2_team3Vteam4: Partial<PredictionModel> = {};
+const user2_team3Vteam4: Partial<Prediction> = {};
 
 export interface TestUtils {
   user1: UserModel;
@@ -121,10 +121,10 @@ export interface TestUtils {
   team4: Team;
   team1Vteam2: MatchModel;
   team3Vteam4: MatchModel;
-  user1_team1Vteam2: Partial<PredictionModel>;
-  user1_team3Vteam4: Partial<PredictionModel>;
-  user2_team1Vteam2: Partial<PredictionModel>;
-  user2_team3Vteam4: Partial<PredictionModel>;
+  user1_team1Vteam2: Partial<Prediction>;
+  user1_team3Vteam4: Partial<Prediction>;
+  user2_team1Vteam2: Partial<Prediction>;
+  user2_team3Vteam4: Partial<Prediction>;
 }
 
 export default {

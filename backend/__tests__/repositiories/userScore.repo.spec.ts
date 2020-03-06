@@ -6,18 +6,14 @@ import { User } from '../../db/models/user.model';
 import {
   Competition,
 } from '../../db/models/competition.model';
-import { Season, SeasonModel } from '../../db/models/season.model';
+import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
-import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
-import { Prediction, PredictionModel } from '../../db/models/prediction.model';
+import { Match } from '../../db/models/match.model';
 import {
   Leaderboard,
-  BOARD_STATUS,
-  BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
 import { UserScoreModel } from '../../db/models/userScore.model';
 
-import { ScorePoints } from '../../common/score';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 import testUtils, { TestUtils } from './testUtils';
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
@@ -118,7 +114,7 @@ describe('UserScore Repo', function () {
           user: tu.user2.id,
         };
 
-        return Prediction.create([
+        return db.Prediction.create([
           tu.user1_team1Vteam2,
           tu.user1_team3Vteam4,
           tu.user2_team1Vteam2,

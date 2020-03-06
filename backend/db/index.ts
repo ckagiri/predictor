@@ -1,6 +1,7 @@
 import mongoose = require('mongoose');
 import CompetitionModel from './models/competition.model';
 import TeamModel from './models/team.model';
+import PredictionModel from './models/prediction.model';
 
 export const init = (
   mongoUri: string,
@@ -36,5 +37,6 @@ export default {
   drop,
   close,
   Competition: CompetitionModel,
-  Team: TeamModel
+  Team: TeamModel,
+  Prediction: PredictionModel
 }

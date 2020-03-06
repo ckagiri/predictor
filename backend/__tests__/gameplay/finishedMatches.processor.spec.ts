@@ -7,7 +7,6 @@ import {
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
-import { Prediction } from '../../db/models/prediction.model';
 import db from '../../db';
 import testUtils, { TestUtils } from './testUtils';
 import { FinishedMatchesProcessorImpl } from '../../app/schedulers/finishedMatches.processor';
@@ -109,7 +108,7 @@ describe('Finished Matches Processor', function () {
           user: users[1].id,
         };
 
-        return Prediction.create([
+        return db.Prediction.create([
           tu.user1_team1Vteam2,
           tu.user1_team3Vteam4,
           tu.user2_team1Vteam2,
@@ -155,7 +154,7 @@ describe('Finished Matches Processor', function () {
 
     expect(count).to.equal(4);
 
-    const preds = await Prediction.find({}).exec();
+    const preds = await db.Prediction.find({}).exec();
     expect(preds.length).to.be.greaterThan(0);
   });
 

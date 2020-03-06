@@ -3,7 +3,7 @@ import { UserModel } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
 import { SeasonModel } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
-import { PredictionModel } from '../../db/models/prediction.model';
+import { Prediction } from '../../db/models/prediction.model';
 import {
   LeaderboardModel,
   BOARD_TYPE,
@@ -99,7 +99,7 @@ const user2: UserModel = {
   email: 'user2@example.com',
 };
 
-const user1_team1Vteam2: Partial<PredictionModel> = {
+const user1_team1Vteam2: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 1,
     goalsAwayTeam: 0,
@@ -119,7 +119,7 @@ const user1_team1Vteam2_points: ScorePoints = {
   ExactTeamScorePoints: 1,
 };
 
-const user1_team3Vteam4: Partial<PredictionModel> = {
+const user1_team3Vteam4: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 2,
     goalsAwayTeam: 0,
@@ -139,7 +139,7 @@ const user1_team3Vteam4_points: ScorePoints = {
   ExactTeamScorePoints: 1,
 };
 
-const user2_team1Vteam2: Partial<PredictionModel> = {
+const user2_team1Vteam2: Partial<Prediction> = {
   choice: {
     goalsHomeTeam: 2,
     goalsAwayTeam: 2,
@@ -159,7 +159,7 @@ const user2_team1Vteam2_points: ScorePoints = {
   ExactTeamScorePoints: 0,
 };
 
-const user2_team3Vteam4: Partial<PredictionModel> = {
+const user2_team3Vteam4: Partial<Prediction> = {
   hasJoker: true,
   choice: {
     goalsHomeTeam: 2,
@@ -202,10 +202,10 @@ export interface TestUtils {
   team4: Team;
   team1Vteam2: MatchModel;
   team3Vteam4: MatchModel;
-  user1_team1Vteam2: Partial<PredictionModel>;
-  user1_team3Vteam4: Partial<PredictionModel>;
-  user2_team1Vteam2: Partial<PredictionModel>;
-  user2_team3Vteam4: Partial<PredictionModel>;
+  user1_team1Vteam2: Partial<Prediction>;
+  user1_team3Vteam4: Partial<Prediction>;
+  user2_team1Vteam2: Partial<Prediction>;
+  user2_team3Vteam4: Partial<Prediction>;
   user1_team1Vteam2_points: ScorePoints;
   user1_team3Vteam4_points: ScorePoints;
   user2_team1Vteam2_points: ScorePoints;

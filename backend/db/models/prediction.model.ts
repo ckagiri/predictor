@@ -9,7 +9,7 @@ export enum PredictionStatus {
   PROCESSED = 'PROCESSED',
 }
 
-export interface PredictionModel extends Entity {
+export interface Prediction extends Entity {
   id?: string;
   user: string;
   match: string;
@@ -23,7 +23,7 @@ export interface PredictionModel extends Entity {
   jokerAutoPicked?: boolean;
 }
 
-export interface PredictionDocument extends PredictionModel, DocumentEntity {}
+export interface PredictionDocument extends Prediction, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;
@@ -60,7 +60,9 @@ const predictionSchema = new Schema({
   },
 });
 
-export const Prediction = model<PredictionDocument>(
+const PredictionModel = model<PredictionDocument>(
   'Prediction',
   predictionSchema,
 );
+
+export default PredictionModel;

@@ -17,17 +17,17 @@ import { PredictionCalculator } from './prediction.calculator';
 
 import { MatchModel } from '../../db/models/match.model';
 import {
-  PredictionModel,
+  Prediction,
   PredictionStatus,
 } from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface PredictionProcessor {
-  getOrCreatePredictions$(match: MatchModel): Observable<PredictionModel[]>;
+  getOrCreatePredictions$(match: MatchModel): Observable<Prediction[]>;
   processPrediction$(
-    prediction: PredictionModel,
+    prediction: Prediction,
     match: MatchModel,
-  ): Observable<PredictionModel>;
+  ): Observable<Prediction>;
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
@@ -44,7 +44,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private userRepo: UserRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
-  ) {}
+  ) { }
 
   public getOrCreatePredictions$(match: MatchModel) {
     const { season: seasonId, gameRound } = match;
@@ -112,7 +112,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: PredictionModel, match: MatchModel) {
+  public processPrediction$(prediction: Prediction, match: MatchModel) {
     const { choice } = prediction;
     const { result } = match;
     const scorePoints = this.predictionCalculator.calculateScore(

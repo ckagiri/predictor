@@ -2,10 +2,9 @@ import { Observable, of, from, throwError } from 'rxjs';
 import { filter, first, flatMap, catchError } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-import {
-  PredictionModel,
-  PredictionDocument,
+import PredictionModel, {
   Prediction,
+  PredictionDocument,
   PredictionStatus,
 } from '../models/prediction.model';
 import { MatchModel, MatchStatus } from '../models/match.model';
@@ -16,28 +15,28 @@ import {
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface PredictionRepository extends BaseRepository<PredictionModel> {
+export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<PredictionModel>;
+  ): Observable<Prediction>;
   findOneOrCreate$({
     userId,
     matchId,
   }: {
     userId: string;
     matchId: string;
-  }): Observable<PredictionModel>;
+  }): Observable<Prediction>;
   findOneAndUpsert$(
     { userId, matchId }: { userId: string; matchId: string },
     choice: Score,
-  ): Observable<PredictionModel>;
+  ): Observable<Prediction>;
 }
 
 export class PredictionRepositoryImpl
-  extends BaseRepositoryImpl<PredictionModel, PredictionDocument>
+  extends BaseRepositoryImpl<Prediction, PredictionDocument>
   implements PredictionRepository {
   public static getInstance() {
     return new PredictionRepositoryImpl(
@@ -48,7 +47,7 @@ export class PredictionRepositoryImpl
   private matchRepo: MatchRepository;
 
   constructor(matchRepo: MatchRepository) {
-    super(Prediction);
+    super(PredictionModel);
     this.matchRepo = matchRepo;
   }
 
@@ -57,7 +56,7 @@ export class PredictionRepositoryImpl
     seasonId: string,
     gameRound: number,
     pick: string | string[],
-  ): Observable<PredictionModel> {
+  ): Observable<Prediction> {
     const query: any = {
       user: userId,
       season: seasonId,
@@ -120,7 +119,7 @@ export class PredictionRepositoryImpl
               gameRound,
               odds,
             } = match as Required<MatchModel>;
-            const pred: PredictionModel = {
+            const pred: Prediction = {
               user: userId,
               match: matchId,
               matchSlug,
@@ -146,7 +145,7 @@ export class PredictionRepositoryImpl
 
   private pickJoker$(
     userId: string,
-    currentJoker: PredictionModel,
+    currentJoker: Prediction,
     newJokerMatchId: string,
     autoPicked: boolean,
   ) {
@@ -175,14 +174,14 @@ export class PredictionRepositoryImpl
         }),
       )
       .pipe(
-        flatMap((newJokerPrediction: PredictionModel) => {
+        flatMap((newJokerPrediction: Prediction) => {
           const {
             slug: matchSlug,
             season,
             gameRound,
             odds,
           } = newJokerMatch as Required<MatchModel>;
-          let newJoker: PredictionModel;
+          let newJoker: Prediction;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();
             newJoker = {
@@ -200,7 +199,7 @@ export class PredictionRepositoryImpl
             newJoker.hasJoker = true;
             newJoker.jokerAutoPicked = autoPicked;
           }
-          const predictionJokers: PredictionModel[] = [newJoker];
+          const predictionJokers: Prediction[] = [newJoker];
           if (currentJoker) {
             currentJoker.hasJoker = false;
             predictionJokers.push(currentJoker);

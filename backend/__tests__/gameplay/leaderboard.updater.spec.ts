@@ -5,8 +5,7 @@ import {
 import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
-import { Prediction } from '../../db/models/prediction.model';
-import db from '../../db/index';
+import db from '../../db';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
 import { Leaderboard } from '../../db/models/leaderboard.model';
 import { UserScore } from '../../db/models/userScore.model';
@@ -185,7 +184,7 @@ describe('Finished Matches Processor', function () {
           },
         };
 
-        return Prediction.create([
+        return db.Prediction.create([
           tu.user1_team1Vteam2,
           tu.user1_team3Vteam4,
           tu.user2_team1Vteam2,
