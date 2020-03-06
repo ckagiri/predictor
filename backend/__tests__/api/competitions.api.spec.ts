@@ -10,6 +10,7 @@ import { setupReqRes } from './testUtils';
 import { CompetitionsController } from '../../app/api/competitions/competitions.controller'
 import { Competition, CompetitionDocument } from '../../db/models';
 import db from '../../db';
+import memoryDb from '../memoryDb';
 
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
 
@@ -54,19 +55,15 @@ async function resetData() {
   return await addCompetitions([epl, slg]);
 }
 
-describe('Competitions API', function () {
+describe.only('Competitions API', function () {
   this.timeout(9999);
-  before(done => {
-    mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true, useUnifiedTopology: true });
-    mongoose.connection
-      .once('open', () => done())
-      .on('error', (error) => {
-        console.warn('Error', error);
-        done(error);
-      })
+  before(async function () {
+    await memoryDb.connect();
   })
   beforeEach(done => { resetData().then(() => done()); });
-  after(done => { mongoose.disconnect(); done() });
+  after(async function () {
+    await memoryDb.close();
+  });
 
   describe('Competition Routes', function () {
     before(async () => {
