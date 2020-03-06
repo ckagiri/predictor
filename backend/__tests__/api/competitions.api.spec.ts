@@ -68,7 +68,7 @@ describe('Competitions API', function () {
   beforeEach(done => { resetData().then(() => done()); });
   after(done => { mongoose.disconnect(); done() });
 
-  describe.skip('Competition Routes', function () {
+  describe('Competition Routes', function () {
     before(async () => {
       server = await startServer()
       baseURL = `http://localhost:${process.env.PORT}/api`
@@ -86,7 +86,7 @@ describe('Competitions API', function () {
     })
   })
 
-  describe.only('Competitions Controller', function () {
+  describe('Competitions Controller', function () {
     const competitionRepo = CompetitionRepositoryImpl.getInstance();
     const competitionsController = new CompetitionsController(competitionRepo);
 

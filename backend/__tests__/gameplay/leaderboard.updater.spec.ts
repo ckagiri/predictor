@@ -189,15 +189,14 @@ describe('Finished Matches Processor', function () {
       });
   });
   afterEach(done => {
-    // tu = JSON.parse(JSON.stringify(testUtils));
-    // db.drop().then(() => {
-    //   done();
-    // });
+    db.drop().then(() => {
+      done();
+    });
   });
   after(done => {
-    // db.close().then(() => {
-    //   done();
-    // });
+    db.close().then(() => {
+      done();
+    });
   });
 
   it('should update rankings => second take', async () => {
