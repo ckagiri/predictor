@@ -4,11 +4,9 @@ import db from '../../db';
 import {
   Competition,
 } from '../../db/models/competition.model';
-import { Season } from '../../db/models';
+import { Season, Leaderboard } from '../../db/models';
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
 import {
-  LeaderboardModel,
-  Leaderboard,
   BOARD_STATUS,
   BOARD_TYPE,
 } from '../../db/models/leaderboard.model';
@@ -84,7 +82,7 @@ describe('Leaderboard Repo', function () {
     });
 
     it('should update seasonBoard if it exists', done => {
-      let leaderboard: LeaderboardModel;
+      let leaderboard: Leaderboard;
       leaderboardRepo
         .findSeasonBoardAndUpsert$(theSeason.id, {
           status: BOARD_STATUS.UPDATING_SCORES,
@@ -136,9 +134,9 @@ describe('Leaderboard Repo', function () {
 
   // tslint:disable-next-line: only-arrow-functions
   describe('finders', function () {
-    let lb1: LeaderboardModel;
+    let lb1: Leaderboard;
     beforeEach(done => {
-      Leaderboard.create([
+      db.Leaderboard.create([
         {
           status: BOARD_STATUS.UPDATING_SCORES,
           boardType: BOARD_TYPE.GLOBAL_SEASON,
@@ -164,7 +162,7 @@ describe('Leaderboard Repo', function () {
     });
 
     afterEach(done => {
-      Leaderboard.deleteMany({}).then(() => done());
+      db.Leaderboard.deleteMany({}).then(() => done());
     });
 
     it('should find all by season and status', done => {

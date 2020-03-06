@@ -8,9 +8,6 @@ import {
 } from '../../db/models/competition.model';
 import { Team } from '../../db/models';
 import { Match } from '../../db/models/match.model';
-import {
-  Leaderboard,
-} from '../../db/models/leaderboard.model';
 import { UserScoreModel } from '../../db/models/userScore.model';
 
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
@@ -125,7 +122,7 @@ describe('UserScore Repo', function () {
         tu.user1_team3Vteam4.id = predictions[1].id;
         tu.user2_team1Vteam2.id = predictions[2].id;
         tu.user2_team3Vteam4.id = predictions[3].id;
-        return Leaderboard.create([
+        return db.Leaderboard.create([
           {
             ...tu.season_board,
             season: tu.season.id,

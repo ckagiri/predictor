@@ -3,6 +3,7 @@ import CompetitionModel from './models/competition.model';
 import TeamModel from './models/team.model';
 import PredictionModel from './models/prediction.model';
 import SeasonModel from './models/season.model';
+import LeaderboardModel from './models/leaderboard.model';
 
 export const init = (
   mongoUri: string,
@@ -40,5 +41,6 @@ export default {
   Competition: CompetitionModel,
   Season: SeasonModel,
   Team: TeamModel,
-  Prediction: PredictionModel
+  Prediction: PredictionModel,
+  Leaderboard: LeaderboardModel
 }

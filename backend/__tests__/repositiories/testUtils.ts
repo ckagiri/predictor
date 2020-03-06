@@ -5,7 +5,7 @@ import { Season } from '../../db/models/season.model';
 import { Team } from '../../db/models/team.model';
 import { Prediction } from '../../db/models/prediction.model';
 import {
-  LeaderboardModel,
+  Leaderboard,
   BOARD_TYPE,
   BOARD_STATUS,
 } from '../../db/models/leaderboard.model';
@@ -180,12 +180,12 @@ const user2_team3Vteam4_points: ScorePoints = {
   ExactTeamScorePoints: 2,
 };
 
-const season_board: Partial<LeaderboardModel> = {
+const season_board: Partial<Leaderboard> = {
   status: BOARD_STATUS.UPDATING_SCORES,
   boardType: BOARD_TYPE.GLOBAL_SEASON,
 };
 
-const round_board: Partial<LeaderboardModel> = {
+const round_board: Partial<Leaderboard> = {
   status: BOARD_STATUS.REFRESHED,
   boardType: BOARD_TYPE.GLOBAL_ROUND,
   gameRound: 20,
@@ -210,8 +210,8 @@ export interface TestUtils {
   user1_team3Vteam4_points: ScorePoints;
   user2_team1Vteam2_points: ScorePoints;
   user2_team3Vteam4_points: ScorePoints;
-  season_board: LeaderboardModel;
-  round_board: LeaderboardModel;
+  season_board: Leaderboard;
+  round_board: Leaderboard;
 }
 
 export default {

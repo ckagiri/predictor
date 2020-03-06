@@ -6,7 +6,6 @@ import { Team } from '../../db/models';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import db from '../../db';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
-import { Leaderboard } from '../../db/models/leaderboard.model';
 import { UserScore } from '../../db/models/userScore.model';
 import testUtils, { TestUtils } from './testUtils';
 import { CacheServiceImpl } from '../../common/observableCacheService';
@@ -217,6 +216,6 @@ describe('Finished Matches Processor', function () {
 
     const users = await UserScore.find({}).exec();
 
-    const boards = await Leaderboard.find({}).exec();
+    const boards = await db.Leaderboard.find({}).exec();
   });
 });
