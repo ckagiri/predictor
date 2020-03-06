@@ -4,3 +4,4 @@ export { Season, SeasonDocument } from './season.model';
 export { Team, TeamDocument } from './team.model';
 export { Prediction, PredictionDocument } from './prediction.model';
 export { Leaderboard, LeaderboardDocument } from './leaderboard.model';
+export { UserScore, UserScoreDocument } from './userScore.model';

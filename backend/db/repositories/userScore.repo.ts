@@ -2,14 +2,13 @@ import { Observable, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
 import { ScorePoints } from '../../common/score';
-import {
-  UserScoreModel,
-  UserScoreDocument,
+import UserScoreModel, {
   UserScore,
+  UserScoreDocument,
 } from '../models/userScore.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface UserScoreRepository extends BaseRepository<UserScoreModel> {
+export interface UserScoreRepository extends BaseRepository<UserScore> {
   findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
@@ -17,21 +16,21 @@ export interface UserScoreRepository extends BaseRepository<UserScoreModel> {
     predictionId: string,
     predictionPoints: ScorePoints,
     hasJoker: boolean,
-  ): Observable<UserScoreModel>;
+  ): Observable<UserScore>;
   findByLeaderboardOrderByPoints$(
     leaderboardId: string,
-  ): Observable<UserScoreModel[]>;
+  ): Observable<UserScore[]>;
 }
 
 export class UserScoreRepositoryImpl
-  extends BaseRepositoryImpl<UserScoreModel, UserScoreDocument>
+  extends BaseRepositoryImpl<UserScore, UserScoreDocument>
   implements UserScoreRepository {
   public static getInstance() {
     return new UserScoreRepositoryImpl();
   }
 
   constructor() {
-    super(UserScore);
+    super(UserScoreModel);
   }
 
   public findOneAndUpsert$(
@@ -54,7 +53,7 @@ export class UserScoreRepositoryImpl
       ExactTeamScorePoints,
     } = predictionPoints;
 
-    const score: UserScoreModel = {
+    const score: UserScore = {
       leaderboard: leaderboardId,
       user: userId,
       points,

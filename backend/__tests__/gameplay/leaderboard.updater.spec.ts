@@ -2,7 +2,6 @@ import { Competition, Team } from '../../db/models';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import db from '../../db';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
-import { UserScore } from '../../db/models/userScore.model';
 import testUtils, { TestUtils } from './testUtils';
 import { CacheServiceImpl } from '../../common/observableCacheService';
 
@@ -210,7 +209,7 @@ describe('Finished Matches Processor', function () {
 
     const c4 = await leaderboardUpdater.updateRankings(tu.season.id!);
 
-    const users = await UserScore.find({}).exec();
+    const users = await db.UserScore.find({}).exec();
 
     const boards = await db.Leaderboard.find({}).exec();
   });

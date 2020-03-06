@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import db from '../../db';
 import { Competition, Team } from '../../db/models';
 import { Match } from '../../db/models/match.model';
-import { UserScoreModel } from '../../db/models/userScore.model';
+import { UserScore } from '../../db/models/userScore.model';
 
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 import testUtils, { TestUtils } from './testUtils';
@@ -190,7 +190,7 @@ describe('UserScore Repo', function () {
         (result, key) => ({ ...result, [key]: score1[key] * 2 }),
         score1,
       );
-      const user1_team1Vteam2_score: UserScoreModel = {
+      const user1_team1Vteam2_score: UserScore = {
         ...joker_score1,
         leaderboard: leaderboardId,
         user: userId,
@@ -246,7 +246,7 @@ describe('UserScore Repo', function () {
       (result, key) => ({ ...result, [key]: user1_match1_points[key] * 2 }),
       user1_match1_points,
     );
-    const user1_match1_score: UserScoreModel = {
+    const user1_match1_score: UserScore = {
       ...user1_match1_joker_points,
       leaderboard: leaderboardId,
       user: user1Id,
@@ -260,7 +260,7 @@ describe('UserScore Repo', function () {
     const user2Id = tu.user2.id!;
     const user2_predictionId = tu.user2_team1Vteam2.id!;
     const user2_match1_points = tu.user2_team1Vteam2_points;
-    const user2_match1_score: UserScoreModel = {
+    const user2_match1_score: UserScore = {
       ...user2_match1_points,
       leaderboard: leaderboardId,
       user: user2Id,
@@ -290,7 +290,7 @@ describe('UserScore Repo', function () {
     const matchId = tu.team1Vteam2.id!;
     const predictionId = tu.user1_team1Vteam2.id!;
     const score1 = tu.user1_team1Vteam2_points;
-    const user1_match1_score: UserScoreModel = {
+    const user1_match1_score: UserScore = {
       ...score1,
       leaderboard: leaderboardId,
       user: userId,

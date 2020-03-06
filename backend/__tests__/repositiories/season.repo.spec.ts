@@ -2,9 +2,8 @@ import 'mocha';
 import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
-import * as db from '../../db/index';
+import db from '../../db';
 import {
-  CompetitionModel,
   CompetitionDocument,
 } from '../../db/models/competition.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
@@ -71,7 +70,7 @@ describe('seasonRepo', function () {
     db.init(process.env.MONGO_URI!, done, { drop: true });
   });
   beforeEach(done => {
-    CompetitionModel.create(epl).then(l => {
+    db.Competition.create(epl).then(l => {
       aCompetition = l;
       done();
     });

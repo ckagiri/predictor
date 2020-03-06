@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { UserModel } from '../../db/models/user.model';
+import UserModel from '../../db/models/user.model';
 import { UserRepositoryImpl } from '../../db/repositories/user.repo';
 import * as db from '../../db/index';
 
