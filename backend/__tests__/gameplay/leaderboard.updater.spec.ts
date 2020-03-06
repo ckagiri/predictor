@@ -3,7 +3,7 @@ import {
   Competition
 } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
-import { TeamModel, Team } from '../../db/models/team.model';
+import { Team } from '../../db/models/team.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import { Prediction } from '../../db/models/prediction.model';
 import db from '../../db/index';
@@ -38,20 +38,20 @@ describe('Finished Matches Processor', function () {
       .then(season => {
         tu.team1Vteam2.season = season.id;
         tu.team3Vteam4.season = season.id;
-        return Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
+        return db.Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
       })
       .then(teams => {
         tu.team1Vteam2.homeTeam = {
           name: teams[0].name,
           slug: teams[0].slug,
           id: teams[0].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team1Vteam2.awayTeam = {
           name: teams[1].name,
           slug: teams[1].slug,
           id: teams[1].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team1Vteam2.slug = `${teams[0].slug}-${teams[1].slug}`;
         tu.team1Vteam2.status = MatchStatus.FINISHED;
@@ -65,13 +65,13 @@ describe('Finished Matches Processor', function () {
           name: teams[2].name,
           slug: teams[2].slug,
           id: teams[2].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team3Vteam4.awayTeam = {
           name: teams[3].name,
           slug: teams[3].slug,
           id: teams[3].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
         tu.team3Vteam4.status = MatchStatus.FINISHED;

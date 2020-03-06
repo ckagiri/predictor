@@ -7,7 +7,7 @@ import {
   Competition,
 } from '../../db/models/competition.model';
 import { Season, SeasonModel } from '../../db/models/season.model';
-import { Team, TeamModel } from '../../db/models/team.model';
+import { Team } from '../../db/models/team.model';
 import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
@@ -45,7 +45,7 @@ const epl18: SeasonModel = {
   competition: undefined,
 };
 
-const manu: TeamModel = {
+const manu: Team = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -55,7 +55,7 @@ const manu: TeamModel = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const manc: TeamModel = {
+const manc: Team = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -65,7 +65,7 @@ const manc: TeamModel = {
   aliases: ['ManCity'],
 };
 
-const che: TeamModel = {
+const che: Team = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -74,7 +74,7 @@ const che: TeamModel = {
   aliases: ['Chelsea'],
 };
 
-const ars: TeamModel = {
+const ars: Team = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -137,7 +137,7 @@ describe('Prediction repo', function () {
       })
       .then(s => {
         theSeason = s;
-        return Team.create([manu, manc, che, ars]);
+        return db.Team.create([manu, manc, che, ars]);
       })
       .then(teams => {
         team1 = teams[0];

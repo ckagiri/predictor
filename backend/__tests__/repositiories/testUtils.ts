@@ -2,7 +2,7 @@ import { MatchStatus, MatchModel } from '../../db/models/match.model';
 import { UserModel } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
 import { SeasonModel } from '../../db/models/season.model';
-import { TeamModel } from '../../db/models/team.model';
+import { Team } from '../../db/models/team.model';
 import { PredictionModel } from '../../db/models/prediction.model';
 import {
   LeaderboardModel,
@@ -27,7 +27,7 @@ const season: SeasonModel = {
   currentGameRound: 20,
 };
 
-const team1: TeamModel = {
+const team1: Team = {
   name: 'Manchester United FC',
   shortName: 'Man United',
   code: 'MUN',
@@ -37,7 +37,7 @@ const team1: TeamModel = {
   aliases: ['ManU', 'ManUtd'],
 };
 
-const team2: TeamModel = {
+const team2: Team = {
   name: 'Manchester City FC',
   shortName: 'Man City',
   code: 'MCI',
@@ -47,7 +47,7 @@ const team2: TeamModel = {
   aliases: ['ManCity'],
 };
 
-const team3: TeamModel = {
+const team3: Team = {
   name: 'Chelsea FC',
   shortName: 'Chelsea',
   code: 'CHE',
@@ -56,7 +56,7 @@ const team3: TeamModel = {
   aliases: ['Chelsea'],
 };
 
-const team4: TeamModel = {
+const team4: Team = {
   name: 'Arsenal FC',
   shortName: 'Arsenal',
   code: 'ARS',
@@ -196,10 +196,10 @@ export interface TestUtils {
   user2: UserModel;
   league: Competition;
   season: SeasonModel;
-  team1: TeamModel;
-  team2: TeamModel;
-  team3: TeamModel;
-  team4: TeamModel;
+  team1: Team;
+  team2: Team;
+  team3: Team;
+  team4: Team;
   team1Vteam2: MatchModel;
   team3Vteam4: MatchModel;
   user1_team1Vteam2: Partial<PredictionModel>;

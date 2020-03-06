@@ -6,7 +6,7 @@ import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { CompetitionModel } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
-import { Team } from '../../db/models/team.model';
+import { TeamModel } from '../../db/models/team.model';
 
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 
@@ -127,7 +127,7 @@ describe('MatchRepo', function () {
       })
       .then(s => {
         season = s;
-        return Team.create([manu, manc]);
+        return TeamModel.create([manu, manc]);
       })
       .then(teams => {
         team1 = teams[0];

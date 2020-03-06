@@ -7,7 +7,7 @@ import {
   Competition,
 } from '../../db/models/competition.model';
 import { Season, SeasonModel } from '../../db/models/season.model';
-import { Team, TeamModel } from '../../db/models/team.model';
+import { Team } from '../../db/models/team.model';
 import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
 import { Prediction, PredictionModel } from '../../db/models/prediction.model';
 import {
@@ -46,20 +46,20 @@ describe('UserScore Repo', function () {
       })
       .then(season => {
         tu.season.id = season.id;
-        return Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
+        return db.Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
       })
       .then(teams => {
         tu.team1Vteam2.homeTeam = {
           name: teams[0].name,
           slug: teams[0].slug,
           id: teams[0].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team1Vteam2.awayTeam = {
           name: teams[1].name,
           slug: teams[1].slug,
           id: teams[1].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team1Vteam2.season = tu.season.id;
         tu.team1Vteam2.slug = `${teams[0].slug}-${teams[1].slug}`;
@@ -68,13 +68,13 @@ describe('UserScore Repo', function () {
           name: teams[2].name,
           slug: teams[2].slug,
           id: teams[2].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team3Vteam4.awayTeam = {
           name: teams[3].name,
           slug: teams[3].slug,
           id: teams[3].id,
-        } as Required<TeamModel>;
+        } as Required<Team>;
 
         tu.team3Vteam4.season = tu.season.id;
         tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
