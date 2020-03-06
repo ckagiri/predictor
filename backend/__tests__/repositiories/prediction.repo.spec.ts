@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 import db from '../../db';
 import { User, Competition, Season, Team } from '../../db/models';
-import { Match, MatchModel, MatchStatus } from '../../db/models/match.model';
+import { Match, MatchStatus } from '../../db/models/match.model';
 import {
   Prediction,
   PredictionDocument,
@@ -77,7 +77,7 @@ const ars: Team = {
   aliases: ['Arsenal'],
 };
 
-const manuVmanc: MatchModel = {
+const manuVmanc: Match = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -89,7 +89,7 @@ const manuVmanc: MatchModel = {
   result: undefined,
 };
 
-const cheVars: MatchModel = {
+const cheVars: Match = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -167,7 +167,7 @@ describe('Prediction repo', function () {
         };
         cheVars.slug = `${team3.slug}-${team4.slug}`;
 
-        return Match.create([manuVmanc, cheVars]);
+        return db.Match.create([manuVmanc, cheVars]);
       })
       .then(matches => {
         match1 = matches[0];

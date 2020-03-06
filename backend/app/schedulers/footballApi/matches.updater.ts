@@ -1,6 +1,6 @@
 import { from, of } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
-import { MatchModel } from '../../../db/models/match.model';
+import { Match } from '../../../db/models/match.model';
 import {
   MatchRepository,
   MatchRepositoryImpl,
@@ -8,10 +8,10 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 export interface MatchesUpdater {
-  updateGameDetails(apiMatches: any[]): Promise<MatchModel>;
+  updateGameDetails(apiMatches: any[]): Promise<Match>;
 }
 
-const matchChanged = (apiMatch: any, dbMatch: MatchModel) => {
+const matchChanged = (apiMatch: any, dbMatch: Match) => {
   if (apiMatch.status !== dbMatch.status) {
     return true;
   }
@@ -39,7 +39,7 @@ export class MatchesUpdaterImpl implements MatchesUpdater {
     return new MatchesUpdaterImpl(MatchRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private matchRepo: MatchRepository) {}
+  constructor(private matchRepo: MatchRepository) { }
 
   public updateGameDetails(apiMatches: any[]) {
     const externalIdToApiMatchMap: any = new Map<string, any>();

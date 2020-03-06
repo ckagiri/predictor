@@ -9,7 +9,7 @@ const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import { LeaderboardUpdaterImpl } from '../../../app/schedulers/leaderboard.updater';
-import { MatchStatus, MatchModel } from '../../../db/models/match.model';
+import { MatchStatus, Match } from '../../../db/models/match.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import { BOARD_STATUS } from '../../../db/models/leaderboard.model';
 import { CacheServiceImpl } from '../../../common/observableCacheService';
@@ -35,14 +35,14 @@ const newMatch = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as MatchModel;
+  } as Match;
 };
 const arsVche = newMatch(1, 'Arsenal', 'Chelsea');
 const livVsou = newMatch(2, 'Liverpool', 'Southampton');
 const eveVwat = newMatch(3, 'Everton', 'Watford', MatchStatus.IN_PLAY);
 const newPrediction = (
   userId: string,
-  match: MatchModel,
+  match: Match,
   status = PredictionStatus.PENDING,
 ) => {
   return {

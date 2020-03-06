@@ -2,10 +2,7 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
 import db from '../../db';
-import { Competition, Team } from '../../db/models';
-import { Match } from '../../db/models/match.model';
-import { UserScore } from '../../db/models/userScore.model';
-
+import { Competition, Team, UserScore } from '../../db/models';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 import testUtils, { TestUtils } from './testUtils';
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
@@ -67,7 +64,7 @@ describe('UserScore Repo', function () {
         tu.team3Vteam4.season = tu.season.id;
         tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
 
-        return Match.create([tu.team1Vteam2, tu.team3Vteam4]);
+        return db.Match.create([tu.team1Vteam2, tu.team3Vteam4]);
       })
       .then(matches => {
         tu.team1Vteam2.id = matches[0].id;

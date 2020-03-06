@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { Competition, Team } from '../../db/models';
-import { Match, MatchStatus } from '../../db/models/match.model';
+import { MatchStatus } from '../../db/models/match.model';
 import db from '../../db';
 import testUtils, { TestUtils } from './testUtils';
 import { FinishedMatchesProcessorImpl } from '../../app/schedulers/finishedMatches.processor';
@@ -61,7 +61,7 @@ describe('Finished Matches Processor', function () {
 
         tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
 
-        return Match.create([tu.team1Vteam2, tu.team3Vteam4]);
+        return db.Match.create([tu.team1Vteam2, tu.team3Vteam4]);
       })
       .then(matches => {
         tu.team1Vteam2.id = matches[0].id;
@@ -154,7 +154,7 @@ describe('Finished Matches Processor', function () {
   });
 
   it.skip('should set to true allPredictionProcessed', async () => {
-    Match.find({})
+    db.Match.find({})
       .exec()
       .then(() => { });
   });

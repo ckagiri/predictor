@@ -15,7 +15,7 @@ import {
 } from '../../db/repositories/prediction.repo';
 import { PredictionCalculator } from './prediction.calculator';
 
-import { MatchModel } from '../../db/models/match.model';
+import { Match } from '../../db/models/match.model';
 import {
   Prediction,
   PredictionStatus,
@@ -23,10 +23,10 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface PredictionProcessor {
-  getOrCreatePredictions$(match: MatchModel): Observable<Prediction[]>;
+  getOrCreatePredictions$(match: Match): Observable<Prediction[]>;
   processPrediction$(
     prediction: Prediction,
-    match: MatchModel,
+    match: Match,
   ): Observable<Prediction>;
 }
 
@@ -46,7 +46,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) { }
 
-  public getOrCreatePredictions$(match: MatchModel) {
+  public getOrCreatePredictions$(match: Match) {
     const { season: seasonId, gameRound } = match;
     return this.matchRepo
       .findSelectableMatches$(seasonId!, gameRound!)
@@ -112,7 +112,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
       .pipe(toArray());
   }
 
-  public processPrediction$(prediction: Prediction, match: MatchModel) {
+  public processPrediction$(prediction: Prediction, match: Match) {
     const { choice } = prediction;
     const { result } = match;
     const scorePoints = this.predictionCalculator.calculateScore(

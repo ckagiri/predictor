@@ -1,5 +1,5 @@
 import { Competition, Team } from '../../db/models';
-import { Match, MatchStatus } from '../../db/models/match.model';
+import { MatchStatus } from '../../db/models/match.model';
 import db from '../../db';
 import { LeaderboardUpdaterImpl } from '../../app/schedulers/leaderboard.updater';
 import testUtils, { TestUtils } from './testUtils';
@@ -73,7 +73,7 @@ describe('Finished Matches Processor', function () {
           goalsAwayTeam: 0,
         };
 
-        return Match.create([tu.team1Vteam2, tu.team3Vteam4]);
+        return db.Match.create([tu.team1Vteam2, tu.team3Vteam4]);
       })
       .then(matches => {
         tu.team1Vteam2.id = matches[0].id;

@@ -10,7 +10,7 @@ import {
   TeamRepository,
   TeamRepositoryImpl,
 } from '../../repositories/team.repo';
-import { MatchModel } from '../../models/match.model';
+import { Match } from '../../models/match.model';
 import { Season } from '../../models/season.model';
 import { Team } from '../../models/team.model';
 
@@ -30,7 +30,7 @@ export class AfdMatchConverter implements MatchConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public from(data: any): Observable<MatchModel> {
+  public from(data: any): Observable<Match> {
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.name),

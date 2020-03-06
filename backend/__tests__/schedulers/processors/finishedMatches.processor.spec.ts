@@ -8,7 +8,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { MatchStatus, MatchModel } from '../../../db/models/match.model';
+import { MatchStatus, Match } from '../../../db/models/match.model';
 import { PredictionStatus } from '../../../db/models/prediction.model';
 import {
   FinishedMatchesProcessor,
@@ -34,7 +34,7 @@ const newMatch = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as MatchModel;
+  } as Match;
 };
 const arsVche = newMatch(1, 'Arsenal', 'Chelsea');
 const livVsou = newMatch(2, 'Liverpool', 'Southampton');
@@ -46,7 +46,7 @@ const chalo = ObjectId().toHexString();
 const kag = ObjectId().toHexString();
 const newPrediction = (
   userId: string,
-  match: MatchModel,
+  match: Match,
   status = PredictionStatus.PENDING,
 ) => {
   return {
@@ -110,5 +110,5 @@ describe('Finished Matches', () => {
     });
   });
 
-  describe('setToTrueAllPredictionsProcessed', () => {});
+  describe('setToTrueAllPredictionsProcessed', () => { });
 });

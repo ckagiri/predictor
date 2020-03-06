@@ -8,7 +8,7 @@ import {
   map,
 } from 'rxjs/operators';
 
-import { MatchModel, MatchStatus } from '../../db/models/match.model';
+import { Match, MatchStatus } from '../../db/models/match.model';
 import {
   UserRepository,
   UserRepositoryImpl,
@@ -35,7 +35,7 @@ import {
 } from '../../common/observableCacheService';
 
 export interface LeaderboardUpdater {
-  updateScores(matches: MatchModel[]): Promise<number>;
+  updateScores(matches: Match[]): Promise<number>;
   updateRankings(seasonId: string): Promise<number>;
   markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
 }
@@ -64,7 +64,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     return this;
   }
 
-  public updateScores(matches: MatchModel[]) {
+  public updateScores(matches: Match[]) {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }

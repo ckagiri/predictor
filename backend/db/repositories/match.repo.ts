@@ -1,10 +1,9 @@
 import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
 
-import {
-  MatchModel,
-  MatchDocument,
+import MatchModel, {
   Match,
+  MatchDocument,
   MatchStatus,
 } from '../models/match.model';
 import {
@@ -17,21 +16,21 @@ import {
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
-export interface MatchRepository extends BaseFootballApiRepository<MatchModel> {
+export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findSelectableMatches$(
     seasonId: string,
     gameRound: number,
-  ): Observable<MatchModel[]>;
-  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<MatchModel>;
-  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<MatchModel[]>;
+  ): Observable<Match[]>;
+  findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
+  findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   findAllFinishedWithPendingPredictions$(
     seasonId: string,
     gameRound?: number,
-  ): Observable<MatchModel[]>;
+  ): Observable<Match[]>;
 }
 
 export class MatchRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<MatchModel, MatchDocument>
+  extends BaseFootballApiRepositoryImpl<Match, MatchDocument>
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
@@ -40,7 +39,7 @@ export class MatchRepositoryImpl
   }
 
   constructor(converter: MatchConverter) {
-    super(Match, converter);
+    super(MatchModel, converter);
   }
 
   public findSelectableMatches$(seasonId: string, gameRound: number) {
@@ -93,7 +92,7 @@ export class MatchRepositoryImpl
   }
 
   public findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
-    const obs: Array<Observable<MatchModel>> = [];
+    const obs: Array<Observable<Match>> = [];
 
     for (const obj of objs) {
       obs.push(this.findBySeasonAndTeamsAndUpsert$(obj));

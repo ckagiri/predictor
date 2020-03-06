@@ -1,4 +1,4 @@
-import { MatchStatus, MatchModel } from '../../db/models/match.model';
+import { MatchStatus, Match } from '../../db/models/match.model';
 import { User } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
@@ -65,7 +65,7 @@ const team4: Team = {
   aliases: ['Arsenal'],
 };
 
-const team1Vteam2: Partial<MatchModel> = {
+const team1Vteam2: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
   matchRound: 20,
@@ -77,7 +77,7 @@ const team1Vteam2: Partial<MatchModel> = {
   },
 };
 
-const team3Vteam4: Partial<MatchModel> = {
+const team3Vteam4: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.FINISHED,
   matchRound: 20,
@@ -200,8 +200,8 @@ export interface TestUtils {
   team2: Team;
   team3: Team;
   team4: Team;
-  team1Vteam2: MatchModel;
-  team3Vteam4: MatchModel;
+  team1Vteam2: Match;
+  team3Vteam4: Match;
   user1_team1Vteam2: Partial<Prediction>;
   user1_team3Vteam4: Partial<Prediction>;
   user2_team1Vteam2: Partial<Prediction>;

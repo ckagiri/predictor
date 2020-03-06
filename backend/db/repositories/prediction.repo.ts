@@ -7,7 +7,7 @@ import PredictionModel, {
   PredictionDocument,
   PredictionStatus,
 } from '../models/prediction.model';
-import { MatchModel, MatchStatus } from '../models/match.model';
+import { Match, MatchStatus } from '../models/match.model';
 import {
   MatchRepository,
   MatchRepositoryImpl,
@@ -118,7 +118,7 @@ export class PredictionRepositoryImpl
               season,
               gameRound,
               odds,
-            } = match as Required<MatchModel>;
+            } = match as Required<Match>;
             const pred: Prediction = {
               user: userId,
               match: matchId,
@@ -149,7 +149,7 @@ export class PredictionRepositoryImpl
     newJokerMatchId: string,
     autoPicked: boolean,
   ) {
-    let newJokerMatch: MatchModel;
+    let newJokerMatch: Match;
     return this.matchRepo
       .findById$(newJokerMatchId)
       .pipe(
@@ -180,7 +180,7 @@ export class PredictionRepositoryImpl
             season,
             gameRound,
             odds,
-          } = newJokerMatch as Required<MatchModel>;
+          } = newJokerMatch as Required<Match>;
           let newJoker: Prediction;
           if (!newJokerPrediction) {
             const randomMatchScore = this.getRandomMatchScore();

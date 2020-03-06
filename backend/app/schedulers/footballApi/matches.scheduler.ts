@@ -16,7 +16,7 @@ import {
   MatchConverter,
   MatchConverterImpl,
 } from '../../../db/converters/match.converter';
-import { MatchModel, MatchStatus } from '../../../db/models/match.model';
+import { Match, MatchStatus } from '../../../db/models/match.model';
 
 import { MatchesUpdater, MatchesUpdaterImpl } from './matches.updater';
 
@@ -109,7 +109,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
     });
   };
 
-  public calculateNextUpdate = (matchList: MatchModel[]) => {
+  public calculateNextUpdate = (matchList: Match[]) => {
     let nextUpdate = moment().add(12, 'hours');
     const matches = matchList.filter(f => f.status !== MatchStatus.FINISHED);
     let hasLiveMatch = false;

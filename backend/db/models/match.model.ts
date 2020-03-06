@@ -13,7 +13,7 @@ export enum MatchStatus {
   FINISHED = 'FINISHED',
 }
 
-export interface MatchModel extends Entity {
+export interface Match extends Entity {
   id?: string;
   season?: string;
   slug: string;
@@ -41,7 +41,7 @@ export interface MatchModel extends Entity {
   [key: string]: any;
 }
 
-export interface MatchDocument extends MatchModel, DocumentEntity {}
+export interface MatchDocument extends Match, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -89,4 +89,6 @@ export const matchSchema = new Schema({
   externalReference: { type: Mixed },
 });
 
-export const Match = model<MatchDocument>('Match', matchSchema);
+const MatchModel = model<MatchDocument>('Match', matchSchema);
+
+export default MatchModel;

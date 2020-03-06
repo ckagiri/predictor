@@ -7,7 +7,7 @@ import { of } from 'rxjs';
 import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
-import { MatchStatus, MatchModel } from '../../../db/models/match.model';
+import { MatchStatus, Match } from '../../../db/models/match.model';
 import { Prediction } from '../../../db/models/prediction.model';
 
 import {
@@ -33,7 +33,7 @@ const newMatch = (
     externalReference: {
       [ApiProvider.API_FOOTBALL_DATA]: { id },
     },
-  } as MatchModel;
+  } as Match;
 };
 const chalo = {
   id: ObjectId().toHexString(),
