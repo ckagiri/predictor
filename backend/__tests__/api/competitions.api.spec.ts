@@ -13,6 +13,7 @@ import db from '../../db';
 import memoryDb from '../memoryDb';
 
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
+import { async } from 'rxjs/internal/scheduler/async';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -57,11 +58,16 @@ async function resetData() {
 
 describe.only('Competitions API', function () {
   this.timeout(9999);
-  before(async function () {
+
+  before(async () => {
     await memoryDb.connect();
   })
-  beforeEach(done => { resetData().then(() => done()); });
-  after(async function () {
+
+  beforeEach(async () => {
+    await resetData()
+  });
+
+  after(async () => {
     await memoryDb.close();
   });
 
@@ -70,9 +76,11 @@ describe.only('Competitions API', function () {
       server = await startServer()
       baseURL = `http://localhost:${process.env.PORT}/api`
       competitionsAPI = axios.create({ baseURL })
-    })
+    });
 
-    after(() => server.close())
+    after(async () => {
+      await server.close()
+    });
 
     it('should respond with JSON array', async function () {
       const competitions: Competition[] = await competitionsAPI.get('competitions').then(res => res.data)

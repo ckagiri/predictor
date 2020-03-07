@@ -29,17 +29,20 @@ async function startServer(): Promise<http.Server> {
   //   publicPath: '/',
   // });
 
-  await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
-  const db = mongoose.connection;
+  if (process.env.NODE_ENV !== 'test') {
 
-  db.on('error', (err: Error) => {
-    console.error(`ERROR CONNECTING TO MONGO: ${err}`);
-    console.error(`Please make sure that ${mongoUri} is running.`);
-  });
+    await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+    const db = mongoose.connection;
 
-  db.once('open', () => {
-    console.info(`Connected to MongoDB: ${mongoUri}`);
-  });
+    db.on('error', (err: Error) => {
+      console.error(`ERROR CONNECTING TO MONGO: ${err}`);
+      console.error(`Please make sure that ${mongoUri} is running.`);
+    });
+
+    db.once('open', () => {
+      console.info(`Connected to MongoDB: ${mongoUri}`);
+    });
+  }
 
   return new Promise(resolve => {
     const server = app.listen(port, () => {
