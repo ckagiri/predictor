@@ -21,19 +21,21 @@ const manutd = a.team.name('Manchester Utd').slug('man_utd');
 const arsenal = a.team.name('Arsenal').slug('arsenal');
 const sunderland = a.team.name('Sunderland').slug('sunderland');
 
-const premierLeague2019 = a.season
+const englishPremierLeague = a.competition
+  .name('English Premier League')
+  .slug('english-premier-league')
+  .code('epl')
+
+const englishPremierLeague2019 = a.season
+  .withCompetition(
+    englishPremierLeague
+  )
   .name('2018-19')
   .slug('18-19')
   .year(2019)
   .currentMatchRound(20)
   .seasonStart('2018-08-11T00:00:00+0200')
-  .seasonEnd('2019-05-13T16:00:00+0200')
-  .withCompetition(
-    a.competition
-      .name('English Premier League')
-      .slug('english-premier-league')
-      .code('epl')
-  );
+  .seasonEnd('2019-05-13T16:00:00+0200');
 
 const chelseaFan = a.user
   .username("chelseafan")
@@ -51,8 +53,11 @@ async function setupSimpleGame() {
     .withTeams(
       liverpool, arsenal, chelsea, manutd, sunderland
     )
+    .withCompetitions(
+      englishPremierLeague
+    )
     .withSeasons(
-      premierLeague2019
+      englishPremierLeague2019
         .withTeams(liverpool, arsenal, chelsea, manutd)
         .withMatches(
           a.match
