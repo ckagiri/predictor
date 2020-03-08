@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { CompetitionRepositoryImpl, CompetitionRepository } from '../../../db/repositories/competition.repo';
-import { isMongoId } from './utils';
+import { isMongoId } from '../utils';
 import { Competition } from 'db/models/competition.model';
 
 export class CompetitionsController {

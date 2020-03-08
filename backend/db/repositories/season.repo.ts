@@ -15,7 +15,7 @@ export interface SeasonRepository
 export class SeasonRepositoryImpl
   extends BaseFootballApiRepositoryImpl<Season, SeasonDocument>
   implements SeasonRepository {
-  public static getInstance(provider: ApiProvider): SeasonRepository {
+  public static getInstance(provider: ApiProvider = ApiProvider.LIGI): SeasonRepository {
     return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider));
   }
 

@@ -4,7 +4,7 @@ import { Entity, DocumentEntity } from './base.model';
 
 export interface Season extends Entity {
   name?: string;
-  year?: string | number;
+  year?: number;
   slug?: string;
   competition?: {
     name: string;

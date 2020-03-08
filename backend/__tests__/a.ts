@@ -149,8 +149,7 @@ class SeasonBuilder implements Builder<Season> {
   }
 
   async build(): Promise<Season> {
-    const competition = await this.competitionBuilder?.build();
-    const { name, slug, id } = competition as Required<Competition>;
+    const { name, slug, id } = this.getCompetition() as Required<Competition>;
     this.built.competition = { name, slug, id };
     this.season = await db.Season.create(this.built);
     const matches = await Promise.all(this.matchBuilders.map(async builder => {
@@ -400,8 +399,8 @@ class GameBuilder implements Builder<GameData> {
       const team = await builder.build();
       return team;
     }))
-    this.competitions = await Promise.all(this.competitionBuilders.map(async Builder => {
-      const competition = await Builder.build();
+    this.competitions = await Promise.all(this.competitionBuilders.map(async builder => {
+      const competition = await builder.build();
       return competition;
     }));
     this.seasons = await Promise.all(this.seasonBuilders.map(async builder => {

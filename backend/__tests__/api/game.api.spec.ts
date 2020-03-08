@@ -2,18 +2,18 @@ import * as http from 'http';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
-import axios, { AxiosInstance } from 'axios';
-import startServer from '../../app/server';
-import { Competition, Season, Team } from '../../db/models';
-import db from '../../db';
 import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';
+import { setupReqRes } from './testUtils';
+import { GameController } from '../../app/api/game/game.controller';
+import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
+import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
+import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
+import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
 const expect = chai.expect;
-
-let server: http.Server, gameAPI: AxiosInstance, baseURL: string;
 
 const liverpool = a.team.name('Liverpool').slug('liverpool');
 const chelsea = a.team.name('Chelsea').slug('chelsea');
@@ -96,7 +96,7 @@ async function setupSimpleGame() {
   return game;
 }
 
-describe('Game API', function () {
+describe.only('Game Controller', function () {
   this.timeout(9999);
   let simpleGame: GameData;
 
@@ -104,29 +104,67 @@ describe('Game API', function () {
     await memoryDb.connect();
   })
 
-  beforeEach(async () => {
-    await memoryDb.dropDb();
-    simpleGame = await setupSimpleGame();
-  });
-
   after(async () => {
     await memoryDb.close();
   });
 
-  describe('Competition Routes', function () {
+  describe('get game data', function () {
+    let response: { competitions?: any; selectedCompetition?: any; selectedSeason?: any; };
     before(async () => {
-      server = await startServer()
-      baseURL = `http://localhost:${process.env.PORT}/api`
-      gameAPI = axios.create({ baseURL })
+      await memoryDb.dropDb();
+      simpleGame = await setupSimpleGame();
+      const gameController = new GameController(
+        CompetitionRepositoryImpl.getInstance(),
+        SeasonRepositoryImpl.getInstance(),
+        TeamRepositoryImpl.getInstance(),
+        MatchRepositoryImpl.getInstance()
+      );
+      const { req, res } = setupReqRes();
+      await gameController.getGameData(<any>req, <any>res);
+      const firstCall = res.json.args[0]
+      response = firstCall[0]
     });
 
-    after(async () => {
-      await server.close()
-    });
+    it('should have competitions', () => {
 
-    it('should respond with JSON array', async function () {
-      const competitions: Competition[] = await gameAPI.get('competitions').then(res => res.data)
-      expect(simpleGame).to.be.not.null;
+      const { competitions } = response
+      expect(competitions).to.be.an.instanceof(Array);
+      expect(competitions).to.have.length(1)
+    })
+
+    it('should have a selected competition', () => {
+      const { selectedCompetition } = response
+      expect(selectedCompetition).to.be.an('object');
+    })
+
+    it('should have a selected season', () => {
+      const { selectedSeason } = response;
+      expect(selectedSeason).to.be.an('object')
+    })
+
+    it('should have a current game round in selected season', () => {
+      const { selectedSeason } = response;
+      const currentGameRound = selectedSeason;
+      expect(currentGameRound).to.exist;
+    })
+
+
+    it('should have a selected season record', () => {
+      const { selectedSeason } = response;
+      const { record } = selectedSeason;
+      expect(record).to.be.an('object');
+    })
+
+    it('should have teams in selected season', () => {
+      const { selectedSeason } = response;
+      const { matches } = selectedSeason;
+      expect(matches).to.be.an.instanceof(Array);
+    })
+
+    it('should have matches in selected season', () => {
+      const { selectedSeason } = response;
+      const { matches } = selectedSeason;
+      expect(matches).to.be.an.instanceof(Array);
     })
   })
 })
