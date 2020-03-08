@@ -154,7 +154,7 @@ class SeasonBuilder implements Builder<Season> {
     this.built.competition = { name, slug, id };
     this.season = await db.Season.create(this.built);
     const matches = await Promise.all(this.matchBuilders.map(async builder => {
-      builder.setSeason(this);
+      builder.season(this);
       const match = builder.build();
       return match;
     }))
@@ -200,8 +200,9 @@ class MatchBuilder implements Builder<Match>  {
   private predictionBuilders: PredictionBuilder[] = [];
   private match?: Match;
 
-  setSeason(season: SeasonBuilder) {
+  season(season: SeasonBuilder) {
     this.seasonBuilder = season;
+    return this;
   }
 
   homeTeam(team: TeamBuilder) {
@@ -262,7 +263,7 @@ class MatchBuilder implements Builder<Match>  {
     this.built.slug = `${htSlug}-${atSlug}`;
     this.match = await db.Match.create(this.built);
     const predictions = await Promise.all(this.predictionBuilders.map(async builder => {
-      builder.setMatch(this);
+      builder.match(this);
       const prediction = builder.build();
       return prediction;
     }))
@@ -331,7 +332,8 @@ class PredictionBuilder implements Builder<Prediction> {
   }
 
   computerPick(isComputerPick: boolean) {
-    this.built.choice.isComputerGenerated = isComputerPick
+    this.built.choice.isComputerGenerated = isComputerPick;
+    return this;
   }
 
   joker(isJoker: boolean) {
@@ -339,8 +341,9 @@ class PredictionBuilder implements Builder<Prediction> {
     return this;
   }
 
-  setMatch(match: MatchBuilder) {
+  match(match: MatchBuilder) {
     this.matchBuilder = match;
+    return this;
   }
 
   async build(): Promise<Prediction> {
@@ -386,10 +389,6 @@ class GameBuilder implements Builder<GameData> {
   withSeasons(...seasons: SeasonBuilder[]) {
     this.seasonBuilders = seasons;
     return this;
-  }
-
-  season(season: Season) {
-    if (!season) return this;
   }
 
   async build(): Promise<Game> {

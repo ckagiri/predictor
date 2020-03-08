@@ -8,8 +8,6 @@ async function getCompetitions(_req: Request, res: Response) {
     const seasons = data.getSeasons();
     const selectedSeason = seasons[0];
     const teams = data.getTeams();
-    const rounds = data.getRounds();
-    const selectedRound = rounds[0];
     const matches = data.getMatches();
     const predictions = data.getPredictions();
 
@@ -20,10 +18,8 @@ async function getCompetitions(_req: Request, res: Response) {
       selectedSeason: {
         record: selectedSeason,
         teams,
-        rounds,
         matches,
         predictions,
-        selectedRound,
       },
     });
   } catch (error) {
@@ -62,14 +58,12 @@ async function getSeason(req: Request, res: Response) {
       );
     })[0];
     const teams = data.getTeams();
-    const rounds = data.getRounds();
     const matches = data.getMatches();
     const predictions = data.getPredictions();
 
     res.status(200).json({
       season,
       teams,
-      rounds,
       matches,
       predictions,
     });

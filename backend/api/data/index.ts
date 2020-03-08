@@ -7,7 +7,6 @@ const competitions = jsonFileService.getJsonFromFile(
 const seasons = jsonFileService.getJsonFromFile(`${dataPath}seasons.json`);
 const teams = jsonFileService.getJsonFromFile(`${dataPath}teams.json`);
 const matches = jsonFileService.getJsonFromFile(`${dataPath}matches.json`);
-const rounds = jsonFileService.getJsonFromFile(`${dataPath}gamerounds.json`);
 const predictions = jsonFileService.getJsonFromFile(
   `${dataPath}predictions.json`,
 );
@@ -24,10 +23,6 @@ const getTeams = () => {
   return teams as any[];
 };
 
-const getRounds = () => {
-  return rounds as any[];
-};
-
 const getMatches = () => {
   return matches as any[];
 };
@@ -40,7 +35,6 @@ export {
   getCompetitions,
   getSeasons,
   getTeams,
-  getRounds,
   getMatches,
   getPredictions,
 };

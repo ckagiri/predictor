@@ -21,15 +21,13 @@ const manutd = a.team.name('Manchester Utd').slug('man_utd');
 const arsenal = a.team.name('Arsenal').slug('arsenal');
 const sunderland = a.team.name('Sunderland').slug('sunderland');
 
-const englishPremierLeague = a.competition
+const epl = a.competition
   .name('English Premier League')
   .slug('english-premier-league')
   .code('epl')
 
-const englishPremierLeague2019 = a.season
-  .withCompetition(
-    englishPremierLeague
-  )
+const epl2019 = a.season
+  .withCompetition(epl)
   .name('2018-19')
   .slug('18-19')
   .year(2019)
@@ -54,10 +52,10 @@ async function setupSimpleGame() {
       liverpool, arsenal, chelsea, manutd, sunderland
     )
     .withCompetitions(
-      englishPremierLeague
+      epl
     )
     .withSeasons(
-      englishPremierLeague2019
+      epl2019
         .withTeams(liverpool, arsenal, chelsea, manutd)
         .withMatches(
           a.match
