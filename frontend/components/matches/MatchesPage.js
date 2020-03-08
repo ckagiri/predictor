@@ -14,7 +14,7 @@ function MatchesPage(props) {
   }, [props.match.params]);
   return (
     <div>
-      Ligi Predictor MatchList
+      Ligi Predictor Matches
       <br />
       <ul>
         {props.matches.map(m => (

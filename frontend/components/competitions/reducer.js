@@ -20,7 +20,6 @@ export const initialState = {
   matches: {},
   predictions: {},
   teams: {},
-  gameRounds: {},
   selectedGameRound: null,
 };
 
@@ -62,7 +61,7 @@ function gameReducer(state = initialState, action) {
       return { ...state, selectedSeason: seasonId };
     }
     case SET_SEASON_DATA: {
-      const { seasonId, matches, teams, predictions, rounds } = action.payload;
+      const { seasonId, matches, teams, predictions } = action.payload;
       return {
         ...state,
         teams: {
@@ -76,10 +75,6 @@ function gameReducer(state = initialState, action) {
         predictions: {
           ...state.predictions,
           [seasonId]: predictions,
-        },
-        gameRounds: {
-          ...state.gameRounds,
-          [seasonId]: rounds,
         },
       };
     }
