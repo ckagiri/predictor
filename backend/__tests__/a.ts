@@ -5,6 +5,7 @@ import { MatchStatus } from '../db/models/match.model';
 interface Game {
   users: User[];
   teams: Team[];
+  competitions: Competition[];
   seasons: Season[];
   matches: Match[];
   predictions: Prediction[]
@@ -13,12 +14,14 @@ interface Game {
 export class GameData {
   users: User[];
   teams: Team[];
+  competitions: Competition[];
   seasons: Season[];
   matches: Match[];
   predictions: Prediction[];
-  constructor({ users, teams, seasons, matches, predictions }: Game) {
+  constructor({ users, teams, competitions, seasons, matches, predictions }: Game) {
     this.users = users;
     this.teams = teams;
+    this.competitions = competitions;
     this.seasons = seasons;
     this.matches = matches;
     this.predictions = predictions;
@@ -31,6 +34,7 @@ interface Builder<T> {
 
 class CompetitionBuilder implements Builder<Competition> {
   private built = {} as Competition;
+  private competition?: Competition;
 
   name(value: string) {
     this.built.name = value;
@@ -47,9 +51,13 @@ class CompetitionBuilder implements Builder<Competition> {
     return this;
   }
 
+  getSlug() {
+    return this.competition?.slug;
+  }
+
   async build(): Promise<Competition> {
-    const competition: Competition = await db.Competition.create(this.built);
-    return competition;
+    this.competition = await db.Competition.create(this.built);
+    return this.competition;
   }
 }
 
@@ -123,6 +131,12 @@ class SeasonBuilder implements Builder<Season> {
 
   addPredictions(predictions: Prediction[]) {
     this.predictions = [...this.predictions, ...predictions];
+  }
+
+  getCompetition() {
+    const competition = this.gameBuilder.competitions.find(gameCompetition =>
+      gameCompetition.slug === this.competitionBuilder?.getSlug())
+    return competition;
   }
 
   getSeason() {
@@ -345,9 +359,11 @@ class PredictionBuilder implements Builder<Prediction> {
 class GameBuilder implements Builder<GameData> {
   private userBuilders: UserBuilder[] = [];
   private teamBuilders: TeamBuilder[] = [];
+  private competitionBuilders: CompetitionBuilder[] = [];
   private seasonBuilders: SeasonBuilder[] = [];
   public users: User[] = [];
   public teams: Team[] = [];
+  public competitions: Competition[] = [];
   public seasons: Season[] = [];
   public matches: Match[] = [];
   public predictions: Prediction[] = [];
@@ -359,6 +375,11 @@ class GameBuilder implements Builder<GameData> {
 
   withTeams(...teams: TeamBuilder[]) {
     this.teamBuilders = teams;
+    return this;
+  }
+
+  withCompetitions(...competitions: CompetitionBuilder[]) {
+    this.competitionBuilders = competitions;
     return this;
   }
 
@@ -380,6 +401,10 @@ class GameBuilder implements Builder<GameData> {
       const team = await builder.build();
       return team;
     }))
+    this.competitions = await Promise.all(this.competitionBuilders.map(async Builder => {
+      const competition = await Builder.build();
+      return competition;
+    }));
     this.seasons = await Promise.all(this.seasonBuilders.map(async builder => {
       const season = await builder.build();
       return season;
@@ -387,6 +412,7 @@ class GameBuilder implements Builder<GameData> {
     const game = new GameData({
       users: this.users,
       teams: this.teams,
+      competitions: this.competitions,
       seasons: this.seasons,
       matches: this.matches,
       predictions: this.predictions
