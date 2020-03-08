@@ -1,7 +1,5 @@
-import mongoose = require('mongoose');
 import * as http from 'http';
 import * as chai from 'chai';
-import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
@@ -11,9 +9,7 @@ import { CompetitionsController } from '../../app/api/competitions/competitions.
 import { Competition, CompetitionDocument } from '../../db/models';
 import db from '../../db';
 import memoryDb from '../memoryDb';
-
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
-import { async } from 'rxjs/internal/scheduler/async';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -56,7 +52,7 @@ async function resetData() {
   return await addCompetitions([epl, slg]);
 }
 
-describe.only('Competitions API', function () {
+describe('Competitions API', function () {
   this.timeout(9999);
 
   before(async () => {

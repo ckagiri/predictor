@@ -48,8 +48,8 @@ const { ObjectId, Mixed } = Schema.Types;
 export const matchSchema = new Schema({
   season: { type: ObjectId, ref: 'Season', index: true, required: true },
   slug: { type: String, required: true, trim: true },
-  matchRound: { type: Number, required: true },
-  gameRound: { type: Number },
+  matchRound: { type: Number },
+  gameRound: { type: Number, required: true },
   date: { type: Date, required: true },
   homeTeam: {
     name: { type: String, required: true },

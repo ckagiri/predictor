@@ -1,9 +1,10 @@
 
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { async } from 'rxjs/internal/scheduler/async';
 const mongod = new MongoMemoryServer();
 
-export const connect = async () => {
+const connect = async () => {
   const uri = await mongod.getConnectionString();
 
   const mongooseOpts = {
@@ -14,7 +15,11 @@ export const connect = async () => {
   await mongoose.connect(uri, mongooseOpts);
 }
 
-export const close = async () => {
+const dropDb = async () => {
+  await mongoose.connection.dropDatabase();
+}
+
+const close = async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongod.stop();
@@ -22,5 +27,6 @@ export const close = async () => {
 
 export default {
   connect,
+  dropDb,
   close
 }
