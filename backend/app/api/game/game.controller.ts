@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import { CompetitionRepository, CompetitionRepositoryImpl } from '../../../db/repositories/competition.repo';
 import { flatMap, map } from 'rxjs/operators';
 import { Season } from 'db/models';
 import { zip } from 'rxjs';
-import { SeasonRepository, SeasonRepositoryImpl } from 'db/repositories/season.repo';
-import { TeamRepository, TeamRepositoryImpl } from 'db/repositories/team.repo';
-import { MatchRepository, MatchRepositoryImpl } from 'db/repositories/match.repo';
+import { SeasonRepository, SeasonRepositoryImpl } from '../../../db/repositories/season.repo';
+import { TeamRepository, TeamRepositoryImpl } from '../../../db/repositories/team.repo';
+import { MatchRepository, MatchRepositoryImpl } from '../../../db/repositories/match.repo';
+import { CompetitionRepositoryImpl, CompetitionRepository } from '../../../db/repositories/competition.repo';
 
 export class GameController {
 
