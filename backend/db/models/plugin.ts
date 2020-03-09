@@ -5,23 +5,6 @@ export default function (schema: Schema, _options?: any) {
   schema.virtual("id").get(function (this: { _id: Types.ObjectId }) {
     return this._id.toHexString();
   });
-
-  schema.set("toJSON", {
-    virtuals: true,
-    transform: function (_doc: any, ret: any) {
-      delete ret._id;
-      delete ret.__v;
-    }
-  });
-
-  schema.set("toObject", {
-    virtuals: true,
-    transform: function (_doc: any, ret: any) {
-      delete ret._id;
-      delete ret.__v;
-    }
-  });
-
   schema.post('find', attachId);
   schema.post('findOne', attachId);
   schema.post('findOneAndUpdate', attachId);
@@ -42,6 +25,7 @@ function attachId(res: any) {
         }
         if (v._id) {
           v.id = v._id.toString();
+          delete v._id;
         }
         Object.keys(v).map(k => {
           if (Array.isArray(v[k])) {
