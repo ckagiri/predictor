@@ -111,7 +111,7 @@ const kagiri: User = {
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function () {
+describe('Prediction repo', function() {
   this.timeout(5000);
 
   before(done => {

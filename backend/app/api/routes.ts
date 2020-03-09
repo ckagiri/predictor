@@ -5,6 +5,6 @@ import { gameRouter } from './game/game.router';
 const router = express.Router();
 
 router.use('/competitions', competitionsRouter);
-router.use('/game', gameRouter)
+router.use('/game', gameRouter);
 
 export default router;

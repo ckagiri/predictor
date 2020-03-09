@@ -85,7 +85,7 @@ const userSchema = schema({
   },
 });
 
-userSchema.pre('save', function (next) {
+userSchema.pre('save', function(next) {
   const user = this as UserDocument;
   if (!user.isModified('local.password')) {
     return next();

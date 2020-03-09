@@ -31,10 +31,4 @@ const getPredictions = () => {
   return predictions as any[];
 };
 
-export {
-  getCompetitions,
-  getSeasons,
-  getTeams,
-  getMatches,
-  getPredictions,
-};
+export { getCompetitions, getSeasons, getTeams, getMatches, getPredictions };

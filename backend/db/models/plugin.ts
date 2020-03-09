@@ -1,8 +1,8 @@
 import { Schema, Types } from 'mongoose';
 
-export default function (schema: Schema, _options?: any) {
+export default function(schema: Schema, _options?: any) {
   schema.set('timestamps', true);
-  schema.virtual("id").get(function (this: { _id: Types.ObjectId }) {
+  schema.virtual('id').get(function(this: { _id: Types.ObjectId }) {
     return this._id.toHexString();
   });
   schema.post('find', attachId);
@@ -12,10 +12,10 @@ export default function (schema: Schema, _options?: any) {
 
 function attachId(res: any) {
   if (res == null) {
-    return
+    return;
   }
 
-  replaceId(res)
+  replaceId(res);
 
   function replaceId(res: any) {
     if (Array.isArray(res)) {
@@ -54,7 +54,11 @@ function isObjectId(v: any) {
     return false;
   }
   const proto = Object.getPrototypeOf(v);
-  if (proto == null || proto.constructor == null || proto.constructor.name !== 'ObjectID') {
+  if (
+    proto == null ||
+    proto.constructor == null ||
+    proto.constructor.name !== 'ObjectID'
+  ) {
     return false;
   }
   return v._bsontype === 'ObjectID';

@@ -102,7 +102,7 @@ let season: any;
 let team1: any;
 let team2: any;
 
-describe('MatchRepo', function () {
+describe('MatchRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

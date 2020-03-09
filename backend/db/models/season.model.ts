@@ -19,7 +19,7 @@ export interface Season extends Entity {
   externalReference?: any;
 }
 
-export interface SeasonDocument extends Season, DocumentEntity { }
+export interface SeasonDocument extends Season, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -45,4 +45,3 @@ export const seasonSchema = schema({
 const SeasonModel = model<SeasonDocument>('Season', seasonSchema);
 
 export default SeasonModel;
-

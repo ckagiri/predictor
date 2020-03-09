@@ -28,7 +28,7 @@ export const seasonMatchesSelector = createSelector(
   },
 );
 
-export const selectedRoundSelector = state => state.selectedGameRound
+export const selectedRoundSelector = state => state.selectedGameRound;
 export const roundMatchesSelector = createSelector(
   [seasonMatchesSelector, selectedRoundSelector],
   (matches, round) => matches.filter(m => m.gameRound === round),

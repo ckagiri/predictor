@@ -16,7 +16,7 @@ export class SeasonUpdaterImpl implements SeasonUpdater {
     return new SeasonUpdaterImpl(SeasonRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private seasonRepo: SeasonRepository) { }
+  constructor(private seasonRepo: SeasonRepository) {}
 
   public updateCurrentMatchRound(apiSeasons: any[]) {
     const externalIdToApiSeasonMap: any = new Map<string, any>();

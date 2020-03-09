@@ -30,8 +30,10 @@ async function startServer(): Promise<http.Server> {
   // });
 
   if (process.env.NODE_ENV !== 'test') {
-
-    await mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     const db = mongoose.connection;
 
     db.on('error', (err: Error) => {
@@ -51,13 +53,13 @@ async function startServer(): Promise<http.Server> {
       // @ts-ignore
       server.close = () => {
         return new Promise(resolveClose => {
-          originalClose(resolveClose)
-        })
-      }
+          originalClose(resolveClose);
+        });
+      };
 
-      resolve(server)
-    })
-  })
+      resolve(server);
+    });
+  });
 }
 
 export default startServer;

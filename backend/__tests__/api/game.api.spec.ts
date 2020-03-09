@@ -24,7 +24,7 @@ const sunderland = a.team.name('Sunderland').slug('sunderland');
 const epl = a.competition
   .name('English Premier League')
   .slug('english-premier-league')
-  .code('epl')
+  .code('epl');
 
 const epl2019 = a.season
   .withCompetition(epl)
@@ -35,81 +35,75 @@ const epl2019 = a.season
   .seasonStart('2018-08-11T00:00:00+0200')
   .seasonEnd('2019-05-13T16:00:00+0200');
 
-const chelseaFan = a.user
-  .username("chelseafan")
-  .email("chelseafan@gmail.com");
+const chelseaFan = a.user.username('chelseafan').email('chelseafan@gmail.com');
 
 const liverpoolFan = a.user
-  .username("liverpoolfan")
-  .email("liverpoolfan@gmail.com");
+  .username('liverpoolfan')
+  .email('liverpoolfan@gmail.com');
 
 async function setupSimpleGame() {
   const game = await a.game
-    .withUsers(
-      chelseaFan, liverpoolFan
-    )
-    .withTeams(
-      liverpool, arsenal, chelsea, manutd, sunderland
-    )
-    .withCompetitions(
-      epl
-    )
+    .withUsers(chelseaFan, liverpoolFan)
+    .withTeams(liverpool, arsenal, chelsea, manutd, sunderland)
+    .withCompetitions(epl)
     .withSeasons(
-      epl2019
-        .withTeams(liverpool, arsenal, chelsea, manutd)
-        .withMatches(
-          a.match
-            .homeTeam(chelsea)
-            .awayTeam(manutd)
-            .date('2019-02-10T11:30:00Z')
-            .gameRound(20)
-            .withPredictions(
-              a.prediction
-                .user(chelseaFan)
-                .homeScore(3)
-                .awayScore(0)
-                .joker(true),
-              a.prediction
-                .user(liverpoolFan)
-                .homeScore(1)
-                .awayScore(1)
-            ),
-          a.match
-            .homeTeam(liverpool)
-            .awayTeam(arsenal)
-            .date('2019-07-10T11:30:00Z')
-            .gameRound(21)
-            .withPredictions(
-              a.prediction
-                .user(chelseaFan)
-                .homeScore(1)
-                .awayScore(0),
-              a.prediction
-                .user(liverpoolFan)
-                .homeScore(2)
-                .awayScore(0)
-                .joker(true)
-            )
-        )
+      epl2019.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
+        a.match
+          .homeTeam(chelsea)
+          .awayTeam(manutd)
+          .date('2019-02-10T11:30:00Z')
+          .gameRound(20)
+          .withPredictions(
+            a.prediction
+              .user(chelseaFan)
+              .homeScore(3)
+              .awayScore(0)
+              .joker(true),
+            a.prediction
+              .user(liverpoolFan)
+              .homeScore(1)
+              .awayScore(1),
+          ),
+        a.match
+          .homeTeam(liverpool)
+          .awayTeam(arsenal)
+          .date('2019-07-10T11:30:00Z')
+          .gameRound(21)
+          .withPredictions(
+            a.prediction
+              .user(chelseaFan)
+              .homeScore(1)
+              .awayScore(0),
+            a.prediction
+              .user(liverpoolFan)
+              .homeScore(2)
+              .awayScore(0)
+              .joker(true),
+          ),
+      ),
     )
     .build();
   return game;
 }
 
-describe.only('Game Controller', function () {
+describe.only('Game Controller', function() {
   this.timeout(9999);
   let simpleGame: GameData;
 
   before(async () => {
     await memoryDb.connect();
-  })
+  });
 
   after(async () => {
     await memoryDb.close();
   });
 
-  describe('get game data', function () {
-    let response: { competitions?: any; selectedCompetition?: any; selectedSeason?: any; };
+  describe('get game data', function() {
+    let response: {
+      competitions?: any;
+      selectedCompetition?: any;
+      selectedSeason?: any;
+    };
     before(async () => {
       await memoryDb.dropDb();
       simpleGame = await setupSimpleGame();
@@ -117,54 +111,52 @@ describe.only('Game Controller', function () {
         CompetitionRepositoryImpl.getInstance(),
         SeasonRepositoryImpl.getInstance(),
         TeamRepositoryImpl.getInstance(),
-        MatchRepositoryImpl.getInstance()
+        MatchRepositoryImpl.getInstance(),
       );
       const { req, res } = setupReqRes();
       await gameController.getGameData(<any>req, <any>res);
-      const firstCall = res.json.args[0]
-      response = firstCall[0]
+      const firstCall = res.json.args[0];
+      response = firstCall[0];
     });
 
     it('should have competitions', () => {
-
-      const { competitions } = response
+      const { competitions } = response;
       expect(competitions).to.be.an.instanceof(Array);
-      expect(competitions).to.have.length(1)
-    })
+      expect(competitions).to.have.length(1);
+    });
 
     it('should have a selected competition', () => {
-      const { selectedCompetition } = response
+      const { selectedCompetition } = response;
       expect(selectedCompetition).to.be.an('object');
-    })
+    });
 
     it('should have a selected season', () => {
       const { selectedSeason } = response;
-      expect(selectedSeason).to.be.an('object')
-    })
+      expect(selectedSeason).to.be.an('object');
+    });
 
     it('should have a current game round in selected season', () => {
       const { selectedSeason } = response;
       const currentGameRound = selectedSeason;
       expect(currentGameRound).to.exist;
-    })
-
+    });
 
     it('should have a selected season record', () => {
       const { selectedSeason } = response;
       const { record } = selectedSeason;
       expect(record).to.be.an('object');
-    })
+    });
 
     it('should have teams in selected season', () => {
       const { selectedSeason } = response;
       const { matches } = selectedSeason;
       expect(matches).to.be.an.instanceof(Array);
-    })
+    });
 
     it('should have matches in selected season', () => {
       const { selectedSeason } = response;
       const { matches } = selectedSeason;
       expect(matches).to.be.an.instanceof(Array);
-    })
-  })
-})
+    });
+  });
+});

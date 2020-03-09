@@ -9,7 +9,7 @@ let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
 const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 
-describe('UserScore Repo', function () {
+describe('UserScore Repo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -24,9 +24,7 @@ describe('UserScore Repo', function () {
       })
       .then(league => {
         let { name, slug, id } = league;
-        tu.season.competition = { name, slug, id } as Required<
-          Competition
-        >;
+        tu.season.competition = { name, slug, id } as Required<Competition>;
         return db.Season.create(tu.season);
       })
       .then(season => {

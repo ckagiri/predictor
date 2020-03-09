@@ -1,4 +1,3 @@
-
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { async } from 'rxjs/internal/scheduler/async';
@@ -9,24 +8,24 @@ const connect = async () => {
 
   const mongooseOpts = {
     useUnifiedTopology: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
   };
 
   await mongoose.connect(uri, mongooseOpts);
-}
+};
 
 const dropDb = async () => {
   await mongoose.connection.dropDatabase();
-}
+};
 
 const close = async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongod.stop();
-}
+};
 
 export default {
   connect,
   dropDb,
-  close
-}
+  close,
+};

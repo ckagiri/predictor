@@ -27,7 +27,7 @@ export interface UserScore extends Entity {
   positionNew?: number;
 }
 
-export interface UserScoreDocument extends UserScore, DocumentEntity { }
+export interface UserScoreDocument extends UserScore, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 

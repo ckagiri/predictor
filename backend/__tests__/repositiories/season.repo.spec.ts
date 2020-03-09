@@ -3,9 +3,7 @@ import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
 import db from '../../db';
-import {
-  CompetitionDocument,
-} from '../../db/models/competition.model';
+import { CompetitionDocument } from '../../db/models/competition.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 
@@ -64,7 +62,7 @@ const afdEpl16 = {
 
 let aCompetition: CompetitionDocument;
 
-describe('seasonRepo', function () {
+describe('seasonRepo', function() {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });

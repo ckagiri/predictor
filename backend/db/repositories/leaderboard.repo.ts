@@ -7,8 +7,7 @@ import LeaderboardModel, {
 } from '../models/leaderboard.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface LeaderboardRepository
-  extends BaseRepository<Leaderboard> {
+export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
   findSeasonBoardAndUpsert$(
     seasonId: string,
     update: any,

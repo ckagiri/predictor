@@ -32,10 +32,7 @@ export const selectSeason = seasonId => ({
   payload: seasonId,
 });
 
-export const setSeasonData = (
-  seasonId,
-  { teams, matches, predictions },
-) => ({
+export const setSeasonData = (seasonId, { teams, matches, predictions }) => ({
   type: ActionTypes.SET_SEASON_DATA,
   payload: {
     seasonId,
