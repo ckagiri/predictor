@@ -28,8 +28,8 @@ export const seasonMatchesSelector = createSelector(
   },
 );
 
-export const selectedRoundIdSelector = state => state.selectedGameRound;
+export const selectedRoundSelector = state => state.selectedGameRound;
 export const roundMatchesSelector = createSelector(
-  [seasonMatchesSelector, selectedRoundIdSelector],
+  [seasonMatchesSelector, selectedRoundSelector],
   (matches, round) => matches.filter(m => m.gameRound === round),
 );

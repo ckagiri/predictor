@@ -39,7 +39,7 @@ export class MatchesUpdaterImpl implements MatchesUpdater {
     return new MatchesUpdaterImpl(MatchRepositoryImpl.getInstance(provider));
   }
 
-  constructor(private matchRepo: MatchRepository) { }
+  constructor(private matchRepo: MatchRepository) {}
 
   public updateGameDetails(apiMatches: any[]) {
     const externalIdToApiMatchMap: any = new Map<string, any>();

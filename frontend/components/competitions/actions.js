@@ -32,23 +32,19 @@ export const selectSeason = seasonId => ({
   payload: seasonId,
 });
 
-export const setSeasonData = (
-  seasonId,
-  { teams, matches, predictions, rounds },
-) => ({
+export const setSeasonData = (seasonId, { teams, matches, predictions }) => ({
   type: ActionTypes.SET_SEASON_DATA,
   payload: {
     seasonId,
     teams,
     matches,
     predictions,
-    rounds,
   },
 });
 
-export const selectGameRound = (seasonId, round) => ({
+export const selectGameRound = gameRound => ({
   type: ActionTypes.SELECT_GAME_ROUND,
-  payload: { seasonId, round },
+  payload: gameRound,
 });
 
 export const loadMatchesPage = () => ({ type: ActionTypes.LOAD_MATCHES_PAGE });

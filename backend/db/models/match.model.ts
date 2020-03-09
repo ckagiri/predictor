@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { Entity, DocumentEntity } from './base.model';
+import { Entity, DocumentEntity, schema } from './base.model';
 import { Score, Odds } from '../../common/score';
 
 export enum MatchStatus {
@@ -41,15 +41,15 @@ export interface Match extends Entity {
   [key: string]: any;
 }
 
-export interface MatchDocument extends Match, DocumentEntity { }
+export interface MatchDocument extends Match, DocumentEntity {}
 
 const { ObjectId, Mixed } = Schema.Types;
 
-export const matchSchema = new Schema({
+export const matchSchema = schema({
   season: { type: ObjectId, ref: 'Season', index: true, required: true },
   slug: { type: String, required: true, trim: true },
-  matchRound: { type: Number, required: true },
-  gameRound: { type: Number },
+  matchRound: { type: Number },
+  gameRound: { type: Number, required: true },
   date: { type: Date, required: true },
   homeTeam: {
     name: { type: String, required: true },

@@ -13,10 +13,7 @@ import {
   UserRepository,
   UserRepositoryImpl,
 } from '../../db/repositories/user.repo';
-import {
-  BOARD_STATUS,
-  Leaderboard,
-} from '../../db/models/leaderboard.model';
+import { BOARD_STATUS, Leaderboard } from '../../db/models/leaderboard.model';
 import {
   LeaderboardRepository,
   LeaderboardRepositoryImpl,
@@ -57,7 +54,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     private leaderboardRepo: LeaderboardRepository,
     private predictionRepo: PredictionRepository,
     private userScoreRepo: UserScoreRepository,
-  ) { }
+  ) {}
 
   public setCacheService(cacheService: CacheService) {
     this.cacheService = cacheService;

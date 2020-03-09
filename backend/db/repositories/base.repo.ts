@@ -111,12 +111,12 @@ export class BaseRepositoryImpl<
 
   public findAll$(
     conditions?: any,
-    projection?: any,
+    _projection?: any, // Todo: figure out
     options?: any,
   ): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
-      this.findAll(conditions, projection, options).then(
-        (result: T[]) => {
+      this.findAll(conditions, '-__v -externalReference', options).then(
+        (result: TDocument[]) => {
           observer.next(result);
           observer.complete();
         },

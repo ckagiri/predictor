@@ -16,10 +16,7 @@ import {
 import { PredictionCalculator } from './prediction.calculator';
 
 import { Match } from '../../db/models/match.model';
-import {
-  Prediction,
-  PredictionStatus,
-} from '../../db/models/prediction.model';
+import { Prediction, PredictionStatus } from '../../db/models/prediction.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface PredictionProcessor {
@@ -44,7 +41,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private userRepo: UserRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
-  ) { }
+  ) {}
 
   public getOrCreatePredictions$(match: Match) {
     const { season: seasonId, gameRound } = match;

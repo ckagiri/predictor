@@ -26,9 +26,9 @@ describe('Match', () => {
         });
       });
 
-      it('should require matchRound', done => {
+      it('should require gameRound', done => {
         m.validate(err => {
-          expect(err.errors.matchRound).to.exist;
+          expect(err.errors.gameRound).to.exist;
           done();
         });
       });

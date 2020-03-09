@@ -17,7 +17,9 @@ export interface TeamRepository extends BaseFootballApiRepository<Team> {
 export class TeamRepositoryImpl
   extends BaseFootballApiRepositoryImpl<Team, TeamDocument>
   implements TeamRepository {
-  public static getInstance(provider: ApiProvider): TeamRepository {
+  public static getInstance(
+    provider: ApiProvider = ApiProvider.LIGI,
+  ): TeamRepository {
     return new TeamRepositoryImpl(TeamConverterImpl.getInstance(provider));
   }
 

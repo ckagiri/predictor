@@ -11,7 +11,7 @@ const leaderboardUpdater = LeaderboardUpdaterImpl.getInstance().setCacheService(
 
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
-describe('Finished Matches Processor', function () {
+describe('Finished Matches Processor', function() {
   this.timeout(9999);
 
   before(done => {
@@ -22,9 +22,7 @@ describe('Finished Matches Processor', function () {
     db.Competition.create(tu.league)
       .then(league => {
         let { name, slug, id } = league;
-        tu.season.competition = { name, slug, id } as Required<
-          Competition
-        >;
+        tu.season.competition = { name, slug, id } as Required<Competition>;
         return db.Season.create(tu.season);
       })
       .then(season => {

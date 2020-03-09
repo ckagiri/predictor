@@ -28,7 +28,7 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
   constructor(
     private predictionProcessor: PredictionProcessor,
     private matchRepo: MatchRepository,
-  ) { }
+  ) {}
 
   public processPredictions(matches: Match[]) {
     return from(matches)

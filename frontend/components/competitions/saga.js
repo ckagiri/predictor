@@ -20,21 +20,11 @@ function* prime() {
     const competitionSlug = selectedCompetition.slug;
     yield put(actions.selectCompetition(competitionSlug));
     yield put(actions.getSeasonsComplete(competitionSlug, competitionSeasons));
-    const {
-      record,
-      teams,
-      matches,
-      predictions,
-      rounds,
-      selectedRound,
-    } = selectedSeason;
-    const seasonId = record.id;
+    const { record, teams, matches, predictions } = selectedSeason;
+    const { id: seasonId, currentGameRound } = record;
+    yield put(actions.setSeasonData(seasonId, { teams, matches, predictions }));
     yield put(actions.selectSeason(seasonId));
-    yield put(
-      actions.setSeasonData(seasonId, { teams, matches, predictions, rounds }),
-    );
-    const roundSlug = selectedRound.slug;
-    yield put(actions.selectGameRound(seasonId, roundSlug));
+    yield put(actions.selectGameRound(currentGameRound));
     yield put(actions.primeComplete());
   } catch (error) {
     yield put(actions.primeError(error));

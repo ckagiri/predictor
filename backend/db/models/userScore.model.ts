@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { Entity, DocumentEntity } from './base.model';
+import { Entity, DocumentEntity, schema } from './base.model';
 
 export interface UserScore extends Entity {
   id?: string;
@@ -27,11 +27,11 @@ export interface UserScore extends Entity {
   positionNew?: number;
 }
 
-export interface UserScoreDocument extends UserScore, DocumentEntity { }
+export interface UserScoreDocument extends UserScore, DocumentEntity {}
 
 const { ObjectId } = Schema.Types;
 
-const userScoreSchema = new Schema({
+const userScoreSchema = schema({
   user: { type: ObjectId, ref: 'User', required: true, index: true },
   leaderboard: {
     type: ObjectId,

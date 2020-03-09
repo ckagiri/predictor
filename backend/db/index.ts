@@ -48,5 +48,5 @@ export default {
   Match: MatchModel,
   Prediction: PredictionModel,
   Leaderboard: LeaderboardModel,
-  UserScore: UserScoreModel
-}
+  UserScore: UserScoreModel,
+};

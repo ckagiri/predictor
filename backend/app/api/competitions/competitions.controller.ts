@@ -1,23 +1,26 @@
 import { Request, Response } from 'express';
-import { CompetitionRepositoryImpl, CompetitionRepository } from '../../../db/repositories/competition.repo';
-import { isMongoId } from './utils';
+import {
+  CompetitionRepositoryImpl,
+  CompetitionRepository,
+} from '../../../db/repositories/competition.repo';
+import { isMongoId } from '../utils';
 import { Competition } from 'db/models/competition.model';
 
 export class CompetitionsController {
   static getInstance() {
-    return new CompetitionsController(CompetitionRepositoryImpl.getInstance())
+    return new CompetitionsController(CompetitionRepositoryImpl.getInstance());
   }
 
-  constructor(private competitionRepo: CompetitionRepository) { }
+  constructor(private competitionRepo: CompetitionRepository) {}
 
   getCompetitions = async (_req: Request, res: Response) => {
     try {
-      const competitions = await this.competitionRepo.findAll$().toPromise()
-      res.status(200).json(competitions)
+      const competitions = await this.competitionRepo.findAll$().toPromise();
+      res.status(200).json(competitions);
     } catch (error) {
       res.status(500).send(error);
     }
-  }
+  };
 
   getCompetition = async (req: Request, res: Response) => {
     try {
@@ -33,7 +36,7 @@ export class CompetitionsController {
     } catch (error) {
       res.status(500).send(error);
     }
-  }
+  };
 }
 
 const competitionsController = CompetitionsController.getInstance();

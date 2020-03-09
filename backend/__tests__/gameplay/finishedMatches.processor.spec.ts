@@ -9,7 +9,7 @@ import { FinishedMatchesProcessorImpl } from '../../app/schedulers/finishedMatch
 const finishedMatchesProcessor = FinishedMatchesProcessorImpl.getInstance();
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
-describe('Finished Matches Processor', function () {
+describe('Finished Matches Processor', function() {
   this.timeout(5000);
 
   before(done => {
@@ -156,6 +156,6 @@ describe('Finished Matches Processor', function () {
   it.skip('should set to true allPredictionProcessed', async () => {
     db.Match.find({})
       .exec()
-      .then(() => { });
+      .then(() => {});
   });
 });

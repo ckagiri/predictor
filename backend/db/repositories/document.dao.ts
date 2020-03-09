@@ -32,9 +32,9 @@ export class DocumentDao<T extends Document> {
     projection?: any,
     options?: any,
   ): Promise<T[]> {
-    return this.Model.find(conditions, projection, options).exec() as Promise<
-      T[]
-    >;
+    return this.Model.find(conditions, projection, options)
+      .lean()
+      .exec() as Promise<T[]>;
   }
 
   public findOne(conditions: any, projection?: any) {
