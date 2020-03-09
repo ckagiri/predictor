@@ -1,13 +1,23 @@
 import { Request, Response } from 'express';
-import { CompetitionRepository } from '../../../db/repositories/competition.repo';
+import { CompetitionRepository, CompetitionRepositoryImpl } from '../../../db/repositories/competition.repo';
 import { flatMap, map } from 'rxjs/operators';
-import { Competition } from 'db/models';
-import { zip, from } from 'rxjs';
-import { SeasonRepository } from 'db/repositories/season.repo';
-import { TeamRepository } from 'db/repositories/team.repo';
-import { MatchRepository } from 'db/repositories/match.repo';
+import { Season } from 'db/models';
+import { zip } from 'rxjs';
+import { SeasonRepository, SeasonRepositoryImpl } from 'db/repositories/season.repo';
+import { TeamRepository, TeamRepositoryImpl } from 'db/repositories/team.repo';
+import { MatchRepository, MatchRepositoryImpl } from 'db/repositories/match.repo';
 
 export class GameController {
+
+  static getInstance() {
+    return new GameController(
+      CompetitionRepositoryImpl.getInstance(),
+      SeasonRepositoryImpl.getInstance(),
+      TeamRepositoryImpl.getInstance(),
+      MatchRepositoryImpl.getInstance()
+    );
+  }
+
   constructor(
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
@@ -43,14 +53,24 @@ export class GameController {
         .pipe(
           flatMap(({ competitions, selectedCompetition, competitionSeasons }) => {
             //Todo: global-config
-            const selectedSeason = competitionSeasons.find(s => s.year === 2019);
+            let selectedSeason = competitionSeasons.find(s => s.year === 2019);
             // Todo: season-teams
             return zip(
               this.teamRepo.findAll$(),
               this.matchRepo.findAll$({ season: selectedSeason?.id }),
               (teams, matches) => {
+                const seasonMatches = matches.map(m => {
+                  const homeTeamId = m.homeTeam?.id.toString();
+                  const awayTeamId = m.awayTeam?.id.toString();
+                  const seasonId = m.season?.toString();
+                  delete m.homeTeam;
+                  delete m.awayTeam;
+                  return {
+                    ...m, seasonId, homeTeamId, awayTeamId
+                  }
+                })
                 return {
-                  seasonTeams: teams, seasonMatches: matches
+                  seasonTeams: teams, seasonMatches
                 }
               })
               .pipe(
@@ -72,12 +92,17 @@ export class GameController {
             competitions, selectedCompetition, competitionSeasons,
             selectedSeason, seasonTeams, seasonMatches
           }) => {
+            const competitionId = selectedCompetition?.id?.toString();
+            function mapSeason(season: Season | undefined) {
+              delete season?.competition;
+              return { ...season, competitionId }
+            }
             return {
-              competitions,
+              competitions: competitions,
               selectedCompetition,
-              competitionSeasons,
+              competitionSeasons: competitionSeasons.map(mapSeason),
               selectedSeason: {
-                record: selectedSeason,
+                record: mapSeason(selectedSeason),
                 teams: seasonTeams,
                 matches: seasonMatches,
               },
@@ -91,3 +116,8 @@ export class GameController {
     }
   }
 }
+
+
+const gameController = GameController.getInstance();
+
+export default gameController;

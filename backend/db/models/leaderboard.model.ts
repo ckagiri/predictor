@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
 
-import { Entity, DocumentEntity } from './base.model';
+import { Entity, DocumentEntity, schema } from './base.model';
 
 export interface Leaderboard extends Entity {
   id?: string;
@@ -33,7 +33,7 @@ export enum BOARD_TYPE {
 const { ObjectId } = Schema.Types;
 const STATUS = BOARD_STATUS;
 
-const leaderboardSchema = new Schema({
+const leaderboardSchema = schema({
   season: { type: ObjectId, ref: 'Season', index: true },
   gameRound: { type: Number, index: true },
   year: { type: Number, index: true },

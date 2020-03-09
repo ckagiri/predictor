@@ -1,6 +1,6 @@
 import mongoose, { Schema, model } from 'mongoose';
 mongoose.set('useCreateIndex', true);
-import { Entity, DocumentEntity } from './base.model';
+import { Entity, DocumentEntity, schema } from './base.model';
 
 export interface Season extends Entity {
   name?: string;
@@ -23,7 +23,7 @@ export interface SeasonDocument extends Season, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
-export const seasonSchema = new Schema({
+export const seasonSchema = schema({
   competition: {
     name: { type: String, required: true },
     slug: { type: String, required: true },

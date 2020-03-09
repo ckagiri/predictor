@@ -1,6 +1,5 @@
-import { Schema, model } from 'mongoose';
-
-import { Entity, DocumentEntity } from './base.model';
+import { model } from 'mongoose';
+import { Entity, DocumentEntity, schema } from './base.model';
 
 export interface Competition extends Entity {
   name: string;
@@ -10,7 +9,7 @@ export interface Competition extends Entity {
 
 export interface CompetitionDocument extends Competition, DocumentEntity { }
 
-export const competitionSchema = new Schema({
+const competitionSchema = schema({
   name: { type: String, required: true },
   slug: { type: String, required: true },
   code: { type: String, default: '' },

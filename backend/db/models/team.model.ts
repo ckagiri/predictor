@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-import { Entity, DocumentEntity } from './base.model';
+import { Entity, DocumentEntity, schema } from './base.model';
 
 export interface Team extends Entity {
   id?: string;
@@ -17,7 +17,7 @@ export interface TeamDocument extends Team, DocumentEntity { }
 
 const { Mixed } = Schema.Types;
 
-export const teamSchema = new Schema({
+export const teamSchema = schema({
   name: { type: String, required: true, trim: true },
   slug: { type: String, required: true, trim: true },
   shortName: { type: String, trim: true },
