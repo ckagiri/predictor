@@ -17,9 +17,10 @@ export interface Season extends Entity {
   seasonStart?: any;
   seasonEnd?: any;
   externalReference?: any;
+  teams?: string[];
 }
 
-export interface SeasonDocument extends Season, DocumentEntity {}
+export interface SeasonDocument extends Season, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -39,6 +40,10 @@ export const seasonSchema = schema({
   numberOfRounds: { type: Number },
   numberOfTeams: { type: Number },
   numberOfGames: { type: Number },
+  teams: [{
+    type: ObjectId,
+    ref: "Team"
+  }],
   externalReference: { type: Mixed },
 });
 

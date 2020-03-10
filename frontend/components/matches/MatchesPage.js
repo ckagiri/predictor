@@ -12,16 +12,25 @@ function MatchesPage(props) {
       props.loadMatchesPage();
     }
   }, [props.match.params]);
+  console.log(props.matches)
   return (
     <div>
       Ligi Predictor Matches
       <br />
       <ul>
-        {props.matches.map(m => (
-          <li key={m.id}>
-            <span>{m.slug}</span>
-          </li>
-        ))}
+        {props.matches
+          .sort((m1, m2) => (m1.matchRound > m2.matchRound) ? 1 : -1)
+          .map(m => (
+            <li key={m.id}>
+              <span>{m.matchRound}</span>{' '}
+              <span>{m.slug}</span>{' '}
+              {m.status === 'FINISHED' && (
+                <span>
+                  {`${m.result.goalsHomeTeam} - ${m.result.goalsAwayTeam}`}
+                </span>
+              )}
+            </li>
+          ))}
       </ul>
     </div>
   );

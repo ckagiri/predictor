@@ -8,7 +8,7 @@ import * as actions from './actions';
 function* prime() {
   try {
     // fromRouter competition, season, round
-    const requestUrl = '/api/game/competitions';
+    const requestUrl = '/api/game';
     const data = yield call(request, requestUrl);
     const {
       competitions,

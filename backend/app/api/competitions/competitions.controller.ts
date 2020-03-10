@@ -4,14 +4,14 @@ import {
   CompetitionRepository,
 } from '../../../db/repositories/competition.repo';
 import { isMongoId } from '../utils';
-import { Competition } from 'db/models/competition.model';
+import { Competition } from '../../../db/models/competition.model';
 
 export class CompetitionsController {
   static getInstance() {
     return new CompetitionsController(CompetitionRepositoryImpl.getInstance());
   }
 
-  constructor(private competitionRepo: CompetitionRepository) {}
+  constructor(private competitionRepo: CompetitionRepository) { }
 
   getCompetitions = async (_req: Request, res: Response) => {
     try {

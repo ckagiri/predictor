@@ -7,7 +7,6 @@ import a, { GameData } from '../a';
 import { setupReqRes } from './testUtils';
 import { GameController } from '../../app/api/game/game.controller';
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
-import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 
@@ -26,14 +25,14 @@ const epl = a.competition
   .slug('english-premier-league')
   .code('epl');
 
-const epl2019 = a.season
+const epl2020 = a.season
   .withCompetition(epl)
-  .name('2018-19')
-  .slug('18-19')
-  .year(2019)
+  .name('2019-2020')
+  .slug('2019-20')
+  .year(2020)
   .currentMatchRound(20)
-  .seasonStart('2018-08-11T00:00:00+0200')
-  .seasonEnd('2019-05-13T16:00:00+0200');
+  .seasonStart('2019-08-09T00:00:00+0200')
+  .seasonEnd('2020-05-17T16:00:00+0200');
 
 const chelseaFan = a.user.username('chelseafan').email('chelseafan@gmail.com');
 
@@ -47,11 +46,11 @@ async function setupSimpleGame() {
     .withTeams(liverpool, arsenal, chelsea, manutd, sunderland)
     .withCompetitions(epl)
     .withSeasons(
-      epl2019.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
+      epl2020.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
         a.match
           .homeTeam(chelsea)
           .awayTeam(manutd)
-          .date('2019-02-10T11:30:00Z')
+          .date('2020-02-10T11:30:00Z')
           .gameRound(20)
           .withPredictions(
             a.prediction
@@ -67,7 +66,7 @@ async function setupSimpleGame() {
         a.match
           .homeTeam(liverpool)
           .awayTeam(arsenal)
-          .date('2019-07-10T11:30:00Z')
+          .date('2020-02-14T11:30:00Z')
           .gameRound(21)
           .withPredictions(
             a.prediction
@@ -86,7 +85,7 @@ async function setupSimpleGame() {
   return game;
 }
 
-describe.only('Game Controller', function() {
+describe.only('Game Controller', function () {
   this.timeout(9999);
   let simpleGame: GameData;
 
@@ -98,7 +97,7 @@ describe.only('Game Controller', function() {
     await memoryDb.close();
   });
 
-  describe('get game data', function() {
+  describe('get game data', function () {
     let response: {
       competitions?: any;
       selectedCompetition?: any;
@@ -110,7 +109,6 @@ describe.only('Game Controller', function() {
       const gameController = new GameController(
         CompetitionRepositoryImpl.getInstance(),
         SeasonRepositoryImpl.getInstance(),
-        TeamRepositoryImpl.getInstance(),
         MatchRepositoryImpl.getInstance(),
       );
       const { req, res } = setupReqRes();

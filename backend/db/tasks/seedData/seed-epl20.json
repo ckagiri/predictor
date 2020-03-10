@@ -3,10 +3,10 @@
     "_model": "Competition",
     "epl": {
       "name": "English Premier League",
-      "code": "PL",
-      "slug": "premier-league",
+      "code": "EPL",
+      "slug": "english-premier-league",
       "aliases": [
-        "EPL"
+        "english-first-division"
       ]
     }
   },
@@ -137,7 +137,7 @@
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/8/8c/Norwich_City.svg",
       "aliases": []
     },
-    "sheffield": {
+    "sheffield_utd": {
       "name": "Sheffield United FC",
       "shortName": "Sheffield Utd",
       "code": "SHE",
@@ -228,7 +228,7 @@
   },
   "seasons": {
     "_model": "Season",
-    "epl_18": {
+    "epl_20": {
       "externalReference": {
         "API_FOOTBALL_DATA": {
           "id": 468
@@ -239,36 +239,35 @@
         "name": "->competitions.epl.name",
         "slug": "->competitions.epl.slug"
       },
-      "name": "2018-2019",
-      "slug": "2018-19",
-      "year": "2018",
+      "name": "2019-2020",
+      "slug": "2019-20",
+      "year": "2020",
       "teams": [
         "->teams.arsenal",
+        "->teams.aston_villa",
         "->teams.bournemouth",
         "->teams.brighton",
         "->teams.burnley",
         "->teams.chelsea",
         "->teams.crystal_palace",
         "->teams.everton",
-        "->teams.huddersfield",
         "->teams.leicester_city",
         "->teams.liverpool",
         "->teams.man_city",
         "->teams.man_united",
         "->teams.newcastle",
+        "->teams.norwich",
+        "->teams.sheffield_utd",
         "->teams.southampton",
         "->teams.tottenham",
         "->teams.watford",
         "->teams.west_ham",
-        "->teams.cardiff",
-        "->teams.fulham",
         "->teams.wolves"
       ],
-      "currentMatchRound": 26,
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
-      "seasonStart": "=new Date('2018-08-09T00:00:00+0200')",
+      "seasonStart": "=new Date('2019-08-09T00:00:00+0200')",
       "seasonEnd": "=new Date('2020-05-17T00:00:00+0200')"
     }
   }

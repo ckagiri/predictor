@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { flatMap, map } from 'rxjs/operators';
-import { Season } from 'db/models';
+import { Season } from '../../../db/models';
 import { zip } from 'rxjs';
 import {
   SeasonRepository,
@@ -24,7 +24,6 @@ export class GameController {
     return new GameController(
       CompetitionRepositoryImpl.getInstance(),
       SeasonRepositoryImpl.getInstance(),
-      TeamRepositoryImpl.getInstance(),
       MatchRepositoryImpl.getInstance(),
     );
   }
@@ -32,9 +31,8 @@ export class GameController {
   constructor(
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
-    private teamRepo: TeamRepository,
     private matchRepo: MatchRepository,
-  ) {}
+  ) { }
 
   getGameData = async (_req: Request, res: Response) => {
     try {
@@ -73,11 +71,11 @@ export class GameController {
             ({ competitions, selectedCompetition, competitionSeasons }) => {
               //Todo: global-config
               let selectedSeason = competitionSeasons.find(
-                s => s.year === 2019,
+                s => s.year === 2020,
               );
               // Todo: season-teams
               return zip(
-                this.teamRepo.findAll$(),
+                this.seasonRepo.getTeamsFor$(selectedSeason?.id),
                 this.matchRepo.findAll$({ season: selectedSeason?.id }),
                 (teams, matches) => {
                   const seasonMatches = matches.map(m => {
@@ -126,6 +124,7 @@ export class GameController {
               const competitionId = selectedCompetition?.id?.toString();
               function mapSeason(season: Season | undefined) {
                 delete season?.competition;
+                delete season?.teams;
                 return { ...season, competitionId };
               }
               return {
