@@ -124,6 +124,7 @@ export class GameController {
               const competitionId = selectedCompetition?.id?.toString();
               function mapSeason(season: Season | undefined) {
                 delete season?.competition;
+                delete season?.teams;
                 return { ...season, competitionId };
               }
               return {

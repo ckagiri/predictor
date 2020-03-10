@@ -35,8 +35,8 @@ export class SeasonRepositoryImpl
     }
     return from(
       new Promise((resolve: (value?: Team[]) => void, reject: (reason?: Error) => void) => {
-        this.Model.findOne({ _id: seasonId })
-          .populate('teams')
+        SeasonModel.findOne({ _id: seasonId })
+          .populate({ path: 'teams', model: 'Team' })
           .lean()
           .exec(function (err, season) {
             if (err) reject(err);

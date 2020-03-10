@@ -17,6 +17,7 @@ export interface Season extends Entity {
   seasonStart?: any;
   seasonEnd?: any;
   externalReference?: any;
+  teams?: string[];
 }
 
 export interface SeasonDocument extends Season, DocumentEntity { }

@@ -83,7 +83,7 @@ class SeasonBuilder implements Builder<Season> {
   private season?: Season;
   private predictions: Prediction[] = [];
 
-  constructor(private gameBuilder: GameBuilder) {}
+  constructor(private gameBuilder: GameBuilder) { }
 
   name(value: string) {
     this.built.name = value;
@@ -166,6 +166,7 @@ class SeasonBuilder implements Builder<Season> {
   async build(): Promise<Season> {
     const { name, slug, id } = this.getCompetition() as Required<Competition>;
     this.built.competition = { name, slug, id };
+    this.built.teams = this.getTeams().map((t: any) => t._id as any);
     this.season = await db.Season.create(this.built);
     const matches = await Promise.all(
       this.matchBuilders.map(async builder => {
