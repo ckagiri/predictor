@@ -1,4 +1,4 @@
-import seedData from '../tasks/seedData/seed-epl19.json';
+import seedData from '../tasks/seedData/seed-epl20.json';
 
 import mongooseSeeder = require('mais-mongoose-seeder');
 import mongoose = require('mongoose');

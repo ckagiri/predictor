@@ -84,6 +84,9 @@ export class MatchRepositoryImpl
           'awayTeam.id': awayTeam && awayTeam.id,
         };
         delete data.externalReference;
+        if (obj.gameRound) {
+          data.gameRound = obj.gameRound;
+        }
         Object.keys(data).forEach(key => data[key] == null && delete data[key]);
 
         return this._findOneAndUpsert$(query, data, externalReference);

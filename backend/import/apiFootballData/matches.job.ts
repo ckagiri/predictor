@@ -27,7 +27,8 @@ export class MatchesJob implements Job {
     return from(this.apiClient.getMatches(this.competitionId))
       .pipe(
         flatMap((response: any) => {
-          const matches = response.data.matches;
+          let matches: any[] = response.data.matches || [];
+          matches = matches.map(m => ({ ...m, gameRound: m.matchday }));
           return this.matchRepo.findEachBySeasonAndTeamsAndUpsert$(matches);
         }),
       )
