@@ -20,7 +20,7 @@ export interface BaseRepository<T extends Entity> {
 export class BaseRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-> extends DocumentDao<TDocument> implements BaseRepository<T> {
+  > extends DocumentDao<TDocument> implements BaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(
