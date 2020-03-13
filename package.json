@@ -44,6 +44,7 @@
   "homepage": "https://github.com/ckagiri/predictor#readme",
   "dependencies": {},
   "devDependencies": {
+    "@storybook/react": "^5.3.14",
     "concurrently": "^5.1.0",
     "dotenv": "^7.0.0",
     "dotenv-flow": "^3.1.0",

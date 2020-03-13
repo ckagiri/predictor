@@ -8,7 +8,9 @@
     "lint:css": "stylelint **/*.js",
     "lint:js": "eslint -- . ",
     "lint:fix": "eslint --fix .",
-    "prettify": "prettier --write"
+    "prettify": "prettier --write",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +21,12 @@
   ],
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
+    "@storybook/addon-actions": "^5.3.14",
+    "@storybook/addon-knobs": "^5.3.14",
+    "@storybook/addon-links": "^5.3.14",
+    "@storybook/addons": "^5.3.14",
+    "@storybook/preset-typescript": "^2.1.0",
+    "@storybook/react": "^5.3.14",
     "connected-react-router": "^6.7.0",
     "fontfaceobserver": "^2.1.0",
     "history": "^4.10.1",
