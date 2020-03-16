@@ -14,6 +14,7 @@ const Logout = (props) => {
   return (
     <DropdownButton
       onClick={handleClick}
+      title="Dropdown button"
       {...rest}
     >
       <Dropdown.Item as="button">Logout</Dropdown.Item>
