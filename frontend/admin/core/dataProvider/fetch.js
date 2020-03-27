@@ -20,7 +20,7 @@ export const createHeadersFromOptions = options => {
   return requestHeaders;
 };
 
-export const fetchJson = (url, options) => {
+export const fetchJson = (url, options = {}) => {
   const requestHeaders = createHeadersFromOptions(options);
 
   return fetch(url, { ...options, headers: requestHeaders })
