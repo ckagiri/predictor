@@ -61,7 +61,6 @@ const Admin = ({
   authProvider,
   catchAll,
   children,
-  customReducers,
   customRoutes = [],
   customSagas,
   dashboard,
@@ -100,7 +99,6 @@ const Admin = ({
       dataProvider={dataProvider}
       i18nProvider={i18nProvider}
       history={history}
-      customReducers={customReducers}
       customSagas={customSagas}
       initialState={initialState}
     >

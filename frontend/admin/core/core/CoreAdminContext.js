@@ -14,7 +14,6 @@ const CoreAdminContext = ({
   i18nProvider,
   children,
   history,
-  customReducers,
   customSagas,
   initialState,
 }) => {
@@ -55,7 +54,6 @@ React-admin uses this history for its own ConnectedRouter.`);
       <Provider
         store={createAdminStore({
           authProvider: finalAuthProvider,
-          customReducers,
           customSagas,
           dataProvider: finalDataProvider,
           initialState,

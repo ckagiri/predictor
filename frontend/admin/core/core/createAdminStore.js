@@ -10,13 +10,12 @@ import { CLEAR_STATE } from '../actions/clearActions';
 export default ({
   dataProvider,
   history,
-  customReducers = {},
   authProvider = null,
   customSagas = [],
   initialState,
 }) => {
   //todo hack
-  const appReducer = createAppReducer(customReducers, history);
+  const appReducer = createAppReducer(history);
 
   const resettableAppReducer = (state, action) =>
     appReducer(

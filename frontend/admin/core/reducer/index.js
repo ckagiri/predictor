@@ -6,11 +6,10 @@ import admin, {
   getPossibleReferenceValues as adminGetPossibleReferenceValues,
 } from './admin';
 export { getNotification } from './admin/notifications';
-export default (customReducers, history) =>
+export default (history) =>
   combineReducers({
     admin,
     router: connectRouter(history),
-    ...customReducers,
   });
 
 export const getPossibleReferenceValues = (state, props) =>
