@@ -11,7 +11,6 @@ export default ({
   dataProvider,
   history,
   authProvider = null,
-  customSagas = [],
   initialState,
 }) => {
   //todo hack
@@ -36,7 +35,7 @@ export default ({
     );
   const saga = function* rootSaga() {
     yield all(
-      [adminSaga(dataProvider, authProvider), ...customSagas].map(fork)
+      [adminSaga(dataProvider, authProvider)].map(fork)
     );
   };
   const sagaMiddleware = createSagaMiddleware();

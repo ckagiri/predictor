@@ -14,7 +14,6 @@ const CoreAdminContext = ({
   i18nProvider,
   children,
   history,
-  customSagas,
   initialState,
 }) => {
   const reduxIsAlreadyInitialized = !!useContext(ReactReduxContext);
@@ -54,7 +53,6 @@ React-admin uses this history for its own ConnectedRouter.`);
       <Provider
         store={createAdminStore({
           authProvider: finalAuthProvider,
-          customSagas,
           dataProvider: finalDataProvider,
           initialState,
           history: finalHistory,

@@ -62,7 +62,6 @@ const Admin = ({
   catchAll,
   children,
   customRoutes = [],
-  customSagas,
   dashboard,
   dataProvider,
   history,
@@ -99,7 +98,6 @@ const Admin = ({
       dataProvider={dataProvider}
       i18nProvider={i18nProvider}
       history={history}
-      customSagas={customSagas}
       initialState={initialState}
     >
       <AdminUI
