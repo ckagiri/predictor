@@ -1,6 +1,6 @@
 import omit from 'lodash/omit';
 
-export default (props: object): object =>
+export default props =>
   omit(props, [
     'addLabel',
     'allowEmpty',

@@ -1,5 +1,5 @@
 import { stringify } from 'query-string';
-import { fetchUtils, DataProvider } from './core';
+import { fetchUtils } from './core';
 
 /**
  * Maps react-admin queries to a json-server powered REST API
@@ -33,7 +33,7 @@ import { fetchUtils, DataProvider } from './core';
  *
  * export default App;
  */
-export default (apiUrl, httpClient = fetchUtils.fetchJson): DataProvider => ({
+export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
   getList: (resource, params) => {
     const { page, perPage } = params.pagination;
     const { field, order } = params.sort;

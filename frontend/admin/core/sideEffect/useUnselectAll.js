@@ -11,10 +11,10 @@ import { warning } from '../util';
  * const unselectAll = useUnselectAll('posts');
  * unselectAll();
  */
-const useUnselectAll = (resource1?: string) => {
+const useUnselectAll = resource1 => {
   const dispatch = useDispatch();
   return useCallback(
-    (resource2?: string) => {
+    resource2 => {
       warning(
         !resource2 && !resource1,
         "You didn't specify the resource at initialization (useUnselectAll('posts')) nor when using the callback (unselectAll('posts'))"

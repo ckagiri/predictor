@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import get from 'lodash/get';
 import pure from 'recompose/pure';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import Typography from '@material-ui/core/Typography';
 
 import sanitizeRestProps from './sanitizeRestProps';
-import { FieldProps, InjectedFieldProps, fieldPropTypes } from './types';
+import { fieldPropTypes } from './types';
 
 const TextField = ({ className, source, record = {}, ...rest }) => {
   const value = get(record, source);

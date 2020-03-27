@@ -1,10 +1,10 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import pure from 'recompose/pure';
-import Typography, { TypographyProps } from '@material-ui/core/Typography';
+import Typography from '@material-ui/core/Typography';
 import sanitizeRestProps from './sanitizeRestProps';
-import { InjectedFieldProps, FieldProps, fieldPropTypes } from './types';
+import { fieldPropTypes } from './types';
 
 export const removeTags = input =>
   input ? input.replace(/<[^>]+>/gm, '') : '';

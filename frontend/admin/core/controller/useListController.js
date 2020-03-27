@@ -1,6 +1,5 @@
-import { isValidElement, ReactElement, useEffect, useMemo } from 'react';
+import { isValidElement, useEffect, useMemo } from 'react';
 import inflection from 'inflection';
-import { Location } from 'history';
 import { useSelector, shallowEqual } from 'react-redux';
 
 import { useCheckMinimumRequiredProps } from './checkMinimumRequiredProps';
@@ -9,9 +8,8 @@ import useRecordSelection from './useRecordSelection';
 import useVersion from './useVersion';
 import { useTranslate } from '../i18n';
 import { SORT_ASC } from '../reducer/admin/resource/list/queryReducer';
-import { CRUD_GET_LIST, ListParams } from '../actions';
+import { CRUD_GET_LIST } from '../actions';
 import { useNotify } from '../sideEffect';
-import { Sort, RecordMap, Identifier, ReduxState } from '../types';
 import useQueryWithStore from '../dataProvider/useQueryWithStore';
 
 const defaultSort = {
