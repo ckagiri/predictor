@@ -7,13 +7,15 @@
     {
       "type": "chrome",
       "request": "launch",
-      "name": "Launch Chrome Debugger",
-      "port": 9222,
-      "url": "http://localhost:8080/",
-      "webRoot": "${workspaceRoot}/frontend",
-      "timeout": 15000,
-      "trace": "verbose" //,
+      "name": "Launch Chrome",
+      "url": "http://localhost:3000",
+      "sourceMaps": true,
+      "webRoot": "${workspaceRoot}",
+      //"trace": "verbose",
       //"preLaunchTask": "start_server_task"
+      "sourceMapPathOverrides": {
+        "webpack:///./*": "${webRoot}/*"
+      }
     },
     {
       "type": "node",
@@ -29,6 +31,25 @@
       "outFiles": [
         "${workspaceFolder}/backend/build/app/index.js"
       ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Server(ts-node)",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register",
+      ],
+      "args": [
+        "${workspaceFolder}/backend/app/index.ts",
+      ],
+      "envFile": "${workspaceFolder}/backend/.env.development",
+      "env": {
+        "NODE_ENV": "development",
+        "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
+      },
     },
     {
       "name": "Current Mocha File",
