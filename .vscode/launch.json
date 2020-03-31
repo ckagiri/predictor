@@ -22,7 +22,7 @@
       "request": "launch",
       "name": "Launch Server",
       "program": "${workspaceFolder}/backend/app/index.ts",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/backend",
       "envFile": "${workspaceFolder}/backend/.env.development",
       "internalConsoleOptions": "openOnSessionStart",
       "env": {
@@ -42,6 +42,7 @@
         "-r",
         "tsconfig-paths/register",
       ],
+      "cwd": "${workspaceFolder}/backend",
       "args": [
         "${workspaceFolder}/backend/app/index.ts",
       ],

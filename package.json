@@ -25,6 +25,7 @@
     "typecheck": "cd backend && npm run typecheck",
     "serve": "serve -s dist",
     "test": "cd backend && npm run test",
+    "bfs": "npm run build:frontend:dev && npm run serve",
     "lb": "cd backend && npm run lint",
     "lf": "cd frontend && npm run lint",
     "lfb": "cd backend && npm run lint:fix",

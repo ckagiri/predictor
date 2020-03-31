@@ -113,38 +113,4 @@ describe('<CoreAdminRouter>', () => {
     });
   });
 
-  it('should render the custom routes with and without layout', () => {
-    const history = createMemoryHistory();
-    const { getByText, queryByText } = renderWithRedux(
-      <Router history={history}>
-        <CoreAdminRouter
-          layout={Layout}
-          customRoutes={[
-            <Route
-              key="foo"
-              noLayout
-              exact
-              path="/foo"
-              render={() => <div>Foo</div>}
-            />,
-            <Route
-              key="bar"
-              exact
-              path="/bar"
-              component={() => <div>Bar</div>}
-            />,
-          ]}
-          location={{ pathname: '/custom' }}
-        >
-          <Resource name="posts" />
-        </CoreAdminRouter>
-      </Router>
-    );
-    history.push('/foo');
-    expect(queryByText('Layout')).toBeNull();
-    expect(getByText('Foo')).toBeDefined();
-    history.push('/bar');
-    expect(getByText('Layout')).toBeDefined();
-    expect(getByText('Bar')).toBeDefined();
-  });
 });

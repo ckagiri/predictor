@@ -2,25 +2,48 @@
 import '@babel/polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import PostIcon from '@material-ui/icons/Book';
 // Load the favicon
 // import '!file-loader?name=[name].[ext]!./images/favicon.ico';
+import { createHashHistory } from 'history';
+import { ConnectedRouter } from 'connected-react-router';
+
 import { Resource } from './admin/core';
-import Admin from './admin/admin/Admin';
 
 import { PostList, PostShow } from './admin/posts';
 import authProvider from './admin/authProvider';
 import jsonServerProvider from './admin/jsonServerProvider';
+import defaultI18nProvider from './admin/admin/defaultI18nProvider';
+import { AuthContext } from './admin/core/auth';
+import { DataProviderContext } from './admin/core/dataProvider';
+import createAdminStore from './admin/core/core/createAdminStore';
+import TranslationProvider from './admin/core/i18n/TranslationProvider';
+import CoreAdminRouter from './admin/core/core/CoreAdminRouter';
+import { Layout } from './admin/materialui/layout';
 
+const history = createHashHistory();
+const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 const MOUNT_NODE = document.getElementById('app');
 
 const renderCore = () => {
   return (
-    <AuthContext.Provider value={finalAuthProvider}>
-      <DataProviderContext.Provider value={finalDataProvider}>
-        <TranslationProvider i18nProvider={i18nProvider}>
-          <ConnectedRouter history={finalHistory}>
-
+    <AuthContext.Provider value={authProvider}>
+      <DataProviderContext.Provider value={dataProvider}>
+        <TranslationProvider i18nProvider={defaultI18nProvider}>
+          <ConnectedRouter history={history}>
+            <CoreAdminRouter
+              layout={Layout}
+              title="Another One"
+              catchall={() => null}
+            >
+              <Resource
+                name="posts"
+                icon={PostIcon}
+                list={PostList}
+                show={PostShow}
+              />
+            </CoreAdminRouter>
           </ConnectedRouter>
         </TranslationProvider>
       </DataProviderContext.Provider>
@@ -33,20 +56,13 @@ const render = () => {
     <Provider
       store={createAdminStore({
         authProvider: authProvider,
-        dataProvider: jsonServerProvider('https://jsonplaceholder.typicode.com'),
-        initialState,
-        history: finalHistory,
+        dataProvider: dataProvider,
+        initialState: {},
+        history: history,
       })}
     >
       {renderCore()}
-    </Provider>
-
-    <Admin
-      dataProvider=
-      authProvider={}
-    >
-
-    </Admin>,
+    </Provider>,
     MOUNT_NODE,
   );
 };

@@ -10,20 +10,17 @@ import WithPermissions from '../auth/WithPermissions';
 const RoutesWithLayout = ({
   catchAll,
   children,
-  customRoutes,
   dashboard,
   title,
 }) => {
   const childrenAsArray = React.Children.toArray(children);
   const firstChild =
     childrenAsArray.length > 0
-      ? childrenAsArray[0]
+      ? childrenAsArray[ 0 ]
       : null;
 
   return (
     <Switch>
-      {customRoutes &&
-        customRoutes.map((route, key) => cloneElement(route, { key }))}
       {Children.map(children, child => (
         <Route
           key={child.props.name}

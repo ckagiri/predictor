@@ -15,12 +15,12 @@ const CoreAdminRouter = props => {
   const doLogout = useLogout();
   const { authenticated } = useAuthState();
   const oneSecondHasPassed = useTimeout(1000);
-  const [computedChildren, setComputedChildren] = useSafeSetState([]);
+  const [ computedChildren, setComputedChildren ] = useSafeSetState([]);
   useEffect(() => {
     if (typeof props.children === 'function') {
       initializeResources();
     }
-  }, [authenticated]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ authenticated ]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initializeResources = async () => {
     try {
@@ -28,44 +28,12 @@ const CoreAdminRouter = props => {
       const resolveChildren = props.children;
 
       const childrenFuncResult = resolveChildren(permissions);
-      if (childrenFuncResult.then) {
-        childrenFuncResult.then(
-          resolvedChildren =>
-            setComputedChildren(
-              resolvedChildren
-                .filter(child => child)
-                .map(child => ({
-                  ...child,
-                  props: {
-                    ...child.props,
-                    key: child.props.name,
-                  },
-                }))
-            )
-        );
-      } else {
-        setComputedChildren(
-          childrenFuncResult.filter(child => child)
-        );
-      }
+      setComputedChildren(
+        childrenFuncResult.filter(child => child)
+      );
     } catch (error) {
       console.error(error);
       doLogout();
-    }
-  };
-
-  const renderCustomRoutesWithoutLayout = (route, routeProps) => {
-    if (route.props.render) {
-      return route.props.render({
-        ...routeProps,
-        title: props.title,
-      });
-    }
-    if (route.props.component) {
-      return createElement(route.props.component, {
-        ...routeProps,
-        title: props.title,
-      });
     }
   };
 
@@ -73,7 +41,6 @@ const CoreAdminRouter = props => {
     layout,
     catchAll,
     children,
-    customRoutes,
     dashboard,
     loading,
     logout,
@@ -120,15 +87,6 @@ const CoreAdminRouter = props => {
             })
         )}
       <Switch>
-        {customRoutes
-          .filter(route => route.props.noLayout)
-          .map((route, key) =>
-            cloneElement(route, {
-              key,
-              render: routeProps =>
-                renderCustomRoutesWithoutLayout(route, routeProps),
-            })
-          )}
         <Route
           path="/"
           render={() =>
@@ -143,9 +101,6 @@ const CoreAdminRouter = props => {
               },
               <RoutesWithLayout
                 catchAll={catchAll}
-                customRoutes={customRoutes.filter(
-                  route => !route.props.noLayout
-                )}
                 dashboard={dashboard}
                 title={title}
               >
@@ -164,10 +119,6 @@ const CoreAdminRouter = props => {
       </Switch>
     </div>
   );
-};
-
-CoreAdminRouter.defaultProps = {
-  customRoutes: [],
 };
 
 export default CoreAdminRouter;
