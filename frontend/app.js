@@ -14,13 +14,38 @@ import jsonServerProvider from './admin/jsonServerProvider';
 
 const MOUNT_NODE = document.getElementById('app');
 
+const renderCore = () => {
+  return (
+    <AuthContext.Provider value={finalAuthProvider}>
+      <DataProviderContext.Provider value={finalDataProvider}>
+        <TranslationProvider i18nProvider={i18nProvider}>
+          <ConnectedRouter history={finalHistory}>
+
+          </ConnectedRouter>
+        </TranslationProvider>
+      </DataProviderContext.Provider>
+    </AuthContext.Provider>
+  );
+};
+
 const render = () => {
   ReactDOM.render(
-    <Admin
-      dataProvider={jsonServerProvider('https://jsonplaceholder.typicode.com')}
-      authProvider={authProvider}
+    <Provider
+      store={createAdminStore({
+        authProvider: authProvider,
+        dataProvider: jsonServerProvider('https://jsonplaceholder.typicode.com'),
+        initialState,
+        history: finalHistory,
+      })}
     >
-      <Resource name="posts" icon={PostIcon} list={PostList} show={PostShow} />
+      {renderCore()}
+    </Provider>
+
+    <Admin
+      dataProvider=
+      authProvider={}
+    >
+
     </Admin>,
     MOUNT_NODE,
   );
@@ -32,7 +57,7 @@ if (module.hot) {
   // Hot reloadable React components
   // modules.hot.accept does not accept dynamic dependencies,
   // have to be constants at compile-time
-  module.hot.accept(['admin/admin/Admin'], () => {
+  module.hot.accept([ 'admin/admin/Admin' ], () => {
     ReactDOM.unmountComponentAtNode(MOUNT_NODE);
     render();
   });

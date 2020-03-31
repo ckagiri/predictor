@@ -4,7 +4,7 @@ require('raf/polyfill');
  * As jsDom do not support mutationobserver and
  * quill requires mutationobserver, thus a shim is needed
  */
-require('mutationobserver-shim');
+require('@sheerun/mutationobserver-shim');
 
 /**
  * Mock PopperJS
