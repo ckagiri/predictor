@@ -1,6 +1,8 @@
 import { isValidElement, useEffect, useMemo } from 'react';
 import inflection from 'inflection';
-import { useSelector, shallowEqual } from 'react-redux';
+import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import get from 'lodash/get';
 
 import { useCheckMinimumRequiredProps } from './checkMinimumRequiredProps';
 import useListParams from './useListParams';
@@ -10,12 +12,14 @@ import { useTranslate } from '../i18n';
 import { SORT_ASC } from '../reducer/admin/resource/list/queryReducer';
 import { CRUD_GET_LIST } from '../actions';
 import { useNotify } from '../sideEffect';
-import useQueryWithStore from '../dataProvider/useQueryWithStore';
+import useGetList from '../dataProvider/useGetList';
 
 const defaultSort = {
   field: 'id',
   order: SORT_ASC,
 };
+
+const defaultData = {};
 
 /**
  * Prepare data for the List view
@@ -35,17 +39,12 @@ const defaultSort = {
  * }
  */
 const useListController = props => {
-  useCheckMinimumRequiredProps(
-    'List',
-    ['basePath', 'location', 'resource'],
-    props
-  );
+  useCheckMinimumRequiredProps('List', [ 'basePath', 'resource' ], props);
 
   const {
     basePath,
     resource,
     hasCreate,
-    location,
     filterDefaultValues,
     sort = defaultSort,
     perPage = 10,
@@ -58,11 +57,13 @@ const useListController = props => {
       '<List> received a React element as `filter` props. If you intended to set the list filter elements, use the `filters` (with an s) prop instead. The `filter` prop is internal and should not be set by the developer.'
     );
   }
+
+  const location = useLocation();
   const translate = useTranslate();
   const notify = useNotify();
   const version = useVersion();
 
-  const [query, queryModifiers] = useListParams({
+  const [ query, queryModifiers ] = useListParams({
     resource,
     location,
     filterDefaultValues,
@@ -71,30 +72,20 @@ const useListController = props => {
     debounce,
   });
 
-  const [selectedIds, selectionModifiers] = useRecordSelection(resource);
+  const [ selectedIds, selectionModifiers ] = useRecordSelection(resource);
 
   /**
-   * We don't use useGetList() here because we want the list of ids to be
-   * always available for optimistic rendering, and therefore we need a
-   * custom action (CRUD_GET_LIST), a custom reducer for ids and total
-   * (admin.resources.[resource].list.ids and admin.resources.[resource].list.total)
-   * and a custom selector for these reducers.
-   * Also we don't want that calls to useGetList() in userland change
-   * the list of ids in the main List view.
+   * We want the list of ids to be always available for optimistic rendering,
+   * and therefore we need a custom action (CRUD_GET_LIST) that will be used.
    */
-  const { data: ids, total, loading, loaded } = useQueryWithStore(
+  const { ids, total, loading, loaded } = useGetList(
+    resource,
     {
-      type: 'getList',
-      resource,
-      payload: {
-        pagination: {
-          page: query.page,
-          perPage: query.perPage,
-        },
-        sort: { field: query.sort, order: query.order },
-        filter: { ...query.filter, ...filter },
-      },
+      page: query.page,
+      perPage: query.perPage,
     },
+    { field: query.sort, order: query.order },
+    { ...query.filter, ...filter },
     {
       action: CRUD_GET_LIST,
       version,
@@ -105,22 +96,25 @@ const useListController = props => {
             : error.message || 'ra.notification.http_error',
           'warning'
         ),
-    },
-    state =>
-      state.admin.resources[resource]
-        ? state.admin.resources[resource].list.ids
-        : null,
-    state =>
-      state.admin.resources[resource]
-        ? state.admin.resources[resource].list.total
-        : null
+    }
   );
+
   const data = useSelector(
     state =>
-      state.admin.resources[resource]
-        ? state.admin.resources[resource].data
-        : null,
-    shallowEqual
+      get(state.admin.resources, [ resource, 'data' ], defaultData)
+  );
+
+  // When the user changes the page/sort/filter, this controller runs the
+  // useGetList hook again. While the result of this new call is loading,
+  // the ids and total are empty. To avoid rendering an empty list at that
+  // moment, we override the ids and total with the latest loaded ones.
+  const defaultIds = useSelector(
+    state =>
+      get(state.admin.resources, [ resource, 'list', 'ids' ], [])
+  );
+  const defaultTotal = useSelector(
+    state =>
+      get(state.admin.resources, [ resource, 'list', 'total' ], 0)
   );
 
   useEffect(() => {
@@ -131,14 +125,14 @@ const useListController = props => {
       // query for a page that doesn't exist, set page to 1
       queryModifiers.setPage(1);
     }
-  }, [loading, query.page, ids, queryModifiers]);
+  }, [ loading, query.page, ids, queryModifiers ]);
 
   const currentSort = useMemo(
     () => ({
       field: query.sort,
       order: query.order,
     }),
-    [query.sort, query.order]
+    [ query.sort, query.order ]
   );
 
   const resourceName = translate(`resources.${resource}.name`, {
@@ -157,9 +151,10 @@ const useListController = props => {
     displayedFilters: query.displayedFilters,
     filterValues: query.filterValues,
     hasCreate,
-    ids,
+    hideFilter: queryModifiers.hideFilter,
+    ids: typeof total === 'undefined' ? defaultIds : ids,
+    loaded: loaded || defaultIds.length > 0,
     loading,
-    loaded,
     onSelect: selectionModifiers.select,
     onToggleItem: selectionModifiers.toggle,
     onUnselectItems: selectionModifiers.clearSelection,
@@ -168,12 +163,11 @@ const useListController = props => {
     resource,
     selectedIds,
     setFilters: queryModifiers.setFilters,
-    hideFilter: queryModifiers.hideFilter,
-    showFilter: queryModifiers.showFilter,
     setPage: queryModifiers.setPage,
     setPerPage: queryModifiers.setPerPage,
     setSort: queryModifiers.setSort,
-    total,
+    showFilter: queryModifiers.showFilter,
+    total: typeof total === 'undefined' ? defaultTotal : total,
     version,
   };
 };
@@ -213,7 +207,7 @@ export const injectedProps = [
  * This is an implementation of pick()
  */
 export const getListControllerProps = props =>
-  injectedProps.reduce((acc, key) => ({ ...acc, [key]: props[key] }), {});
+  injectedProps.reduce((acc, key) => ({ ...acc, [ key ]: props[ key ] }), {});
 
 /**
  * Select the props not injected by the useListController hook
@@ -223,6 +217,6 @@ export const getListControllerProps = props =>
 export const sanitizeListRestProps = props =>
   Object.keys(props)
     .filter(propName => !injectedProps.includes(propName))
-    .reduce((acc, key) => ({ ...acc, [key]: props[key] }), {});
+    .reduce((acc, key) => ({ ...acc, [ key ]: props[ key ] }), {});
 
 export default useListController;
