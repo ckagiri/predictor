@@ -48,7 +48,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe.only('Seasons API', function () {
+describe('Seasons API', function () {
   let gameData: GameData;
 
   before(async () => {
@@ -92,7 +92,7 @@ describe.only('Seasons API', function () {
     });
   });
 
-  describe('Competition Routes', function () {
+  describe('Season Routes', function () {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -104,7 +104,6 @@ describe.only('Seasons API', function () {
     });
 
     it('should respond with JSON array', async function () {
-
       const seasons: Season[] = await seasonsAPI
         .get(`seasons/?competitionId=${gameData.competitions[0].id}`)
         .then(res => res.data);
