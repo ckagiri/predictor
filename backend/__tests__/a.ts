@@ -293,7 +293,7 @@ class MatchBuilder implements Builder<Match> {
       slug: htSlug,
       crestUrl: '',
     };
-    var {
+    let {
       name: atName,
       id: atId,
       slug: atSlug,

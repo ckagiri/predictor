@@ -24,6 +24,7 @@ export class GameController {
     return new GameController(
       CompetitionRepositoryImpl.getInstance(),
       SeasonRepositoryImpl.getInstance(),
+      TeamRepositoryImpl.getInstance(),
       MatchRepositoryImpl.getInstance(),
     );
   }
@@ -31,6 +32,7 @@ export class GameController {
   constructor(
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
+    private teamRepo: TeamRepository,
     private matchRepo: MatchRepository,
   ) { }
 
@@ -75,7 +77,7 @@ export class GameController {
               );
               // Todo: season-teams
               return zip(
-                this.seasonRepo.getTeamsFor$(selectedSeason?.id),
+                this.teamRepo.getAllBySeason$(selectedSeason?.id),
                 this.matchRepo.findAll$({ season: selectedSeason?.id }),
                 (teams, matches) => {
                   const seasonMatches = matches.map(m => {

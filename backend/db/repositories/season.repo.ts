@@ -13,7 +13,7 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface SeasonRepository extends BaseFootballApiRepository<Season> {
-  getTeamsFor$(seasonId: string | undefined): Observable<Team[]>
+  getTeamsForSeason$(seasonId: string | undefined): Observable<Team[]>
 }
 
 export class SeasonRepositoryImpl
@@ -29,7 +29,7 @@ export class SeasonRepositoryImpl
     super(SeasonModel, converter);
   }
 
-  getTeamsFor$(seasonId: string | undefined) {
+  getTeamsForSeason$(seasonId: string | undefined) {
     if (!seasonId) {
       throwError('seasonId cannot be empty')
     }

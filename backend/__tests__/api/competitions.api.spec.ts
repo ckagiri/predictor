@@ -57,7 +57,7 @@ async function resetData() {
   return await addCompetitions([epl, slg]);
 }
 
-describe('Competitions API', function() {
+describe('Competitions API', function () {
   this.timeout(9999);
 
   before(async () => {
@@ -72,29 +72,7 @@ describe('Competitions API', function() {
     await memoryDb.close();
   });
 
-  describe('Competition Routes', function() {
-    before(async () => {
-      server = await startServer();
-      baseURL = `http://localhost:${process.env.PORT}/api`;
-      competitionsAPI = axios.create({ baseURL });
-    });
-
-    after(async () => {
-      await server.close();
-    });
-
-    it('should respond with JSON array', async function() {
-      const competitions: Competition[] = await competitionsAPI
-        .get('competitions')
-        .then(res => res.data);
-      expect(competitions).to.be.an.instanceof(Array);
-      expect(competitions).to.have.length(2);
-      expect(competitions[0].id).to.eql(sut.competitions![0].id);
-      expect(competitions[1].id).to.eql(sut.competitions![1].id);
-    });
-  });
-
-  describe('Competitions Controller', function() {
+  describe('Competitions Controller', function () {
     const competitionRepo = CompetitionRepositoryImpl.getInstance();
     const competitionsController = new CompetitionsController(competitionRepo);
 
@@ -109,6 +87,28 @@ describe('Competitions API', function() {
       expect(competitions.length).to.be.greaterThan(0);
       const actualCompetitions = await competitionRepo.findAll$().toPromise();
       expect(competitions).to.eql(actualCompetitions);
+    });
+  });
+
+  describe('Competition Routes', function () {
+    before(async () => {
+      server = await startServer();
+      baseURL = `http://localhost:${process.env.PORT}/api`;
+      competitionsAPI = axios.create({ baseURL });
+    });
+
+    after(async () => {
+      await server.close();
+    });
+
+    it('should respond with JSON array', async function () {
+      const competitions: Competition[] = await competitionsAPI
+        .get('competitions')
+        .then(res => res.data);
+      expect(competitions).to.be.an.instanceof(Array);
+      expect(competitions).to.have.length(2);
+      expect(competitions[0].id).to.eql(sut.competitions![0].id);
+      expect(competitions[1].id).to.eql(sut.competitions![1].id);
     });
   });
 });
