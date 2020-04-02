@@ -235,14 +235,12 @@ class MatchBuilder implements Builder<Match> {
   }
 
   getHomeTeam() {
-    return this.seasonBuilder
-      ?.getTeams()
+    return this.seasonBuilder?.getTeams()
       .find(team => team.slug === this.homeTeamBuilder?.getSlug());
   }
 
   getAwayTeam() {
-    return this.seasonBuilder
-      ?.getTeams()
+    return this.seasonBuilder?.getTeams()
       .find(team => team.slug === this.awayTeamBuilder?.getSlug());
   }
 
@@ -442,6 +440,15 @@ class GameBuilder implements Builder<GameData> {
     return this;
   }
 
+  private clearGameData() {
+    this.users = [];
+    this.teams = [];
+    this.competitions = [];
+    this.seasons = [];
+    this.matches = [];
+    this.predictions = [];
+  }
+
   async build(): Promise<Game> {
     this.users = await Promise.all(
       this.userBuilders.map(async builder => {
@@ -449,24 +456,28 @@ class GameBuilder implements Builder<GameData> {
         return user;
       }),
     );
+
     this.teams = await Promise.all(
       this.teamBuilders.map(async builder => {
         const team = await builder.build();
         return team;
       }),
     );
+
     this.competitions = await Promise.all(
       this.competitionBuilders.map(async builder => {
         const competition = await builder.build();
         return competition;
       }),
     );
+
     this.seasons = await Promise.all(
       this.seasonBuilders.map(async builder => {
         const season = await builder.build();
         return season;
       }),
     );
+
     const game = new GameData({
       users: this.users,
       teams: this.teams,
@@ -475,6 +486,9 @@ class GameBuilder implements Builder<GameData> {
       matches: this.matches,
       predictions: this.predictions,
     });
+
+    this.clearGameData();
+
     return game;
   }
 }
@@ -493,12 +507,15 @@ class a {
   static get team() {
     return new TeamBuilder();
   }
+
   static get match() {
     return new MatchBuilder();
   }
+
   static get user() {
     return new UserBuilder();
   }
+
   static get prediction() {
     return new PredictionBuilder();
   }

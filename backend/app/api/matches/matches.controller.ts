@@ -13,9 +13,13 @@ export class MatchesController {
 
   constructor(private matchRepo: MatchRepository) { }
 
-  getMatches = async (_req: Request, res: Response) => {
+  getMatches = async (req: Request, res: Response) => {
     try {
-      const matches = await this.matchRepo.findAll$().toPromise();
+      const seasonId = req.query.seasonId;
+      if (!seasonId) {
+        throw new Error('seasonId is required');
+      }
+      const matches = await this.matchRepo.findAll$({ 'season': seasonId }).toPromise();
       res.status(200).json(matches);
     } catch (error) {
       res.status(500).send(error);
