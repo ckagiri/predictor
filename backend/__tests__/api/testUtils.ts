@@ -9,12 +9,14 @@ export type Res = {
 export type Req = {
   params?: any;
   body?: any;
+  query?: any;
 };
 
 export const setupReqRes = () => {
   const req: Req = {
     params: {},
     body: {},
+    query: {},
   };
   const res: Res = {};
 

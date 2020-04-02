@@ -5,12 +5,15 @@ import { flatMap } from 'rxjs/operators';
 import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
+import TeamModel from '../../db/models/team.model';
+import SeasonModel from '../../db/models/season.model';
+import memoryDb from '../memoryDb';
 
 const manu = {
   id: undefined,
   name: 'Manchester United FC',
   shortName: 'Man United',
-  code: 'MUN',
+  code: 'mun',
   slug: 'man_united',
   crestUrl:
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
@@ -21,10 +24,20 @@ const manc = {
   id: undefined,
   name: 'Manchester City FC',
   shortName: 'Man City',
-  code: 'MCI',
+  code: 'mci',
   slug: 'man_city',
   crestUrl:
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
+  aliases: ['ManCity'],
+};
+
+const brazil = {
+  id: undefined,
+  name: 'Brazil National Team',
+  shortName: 'Brazil',
+  code: 'bra',
+  slug: 'brazil',
+  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Brasil.svg',
   aliases: ['ManCity'],
 };
 
@@ -47,19 +60,16 @@ const afdManc = {
 };
 
 describe('teamRepo', function() {
-  this.timeout(5000);
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+  before(async () => {
+    await memoryDb.connect();
   });
-  afterEach(done => {
-    db.drop().then(() => {
-      done();
-    });
+
+  afterEach(async () => {
+    await memoryDb.dropDb();
   });
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
+
+  after(async () => {
+    await memoryDb.close();
   });
 
   it('should save a new Team', done => {
@@ -228,5 +238,31 @@ describe('teamRepo', function() {
           done();
         },
       );
+  });
+
+  it.only('should findAll by season', async () => {
+    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
+    const teams = await Promise.all([
+      new TeamModel(manu).save(),
+      new TeamModel(manc).save(),
+      new TeamModel(brazil).save(),
+    ]);
+    const season = new SeasonModel({
+      name: '2017-2018',
+      slug: '17-18',
+      year: 2017,
+      competition: {
+        name: 'English Premier League',
+        slug: 'english_premier_league',
+        id: '4edd40c86762e0fb12000003',
+      },
+      seasonStart: '2017-08-11T00:00:00+0200',
+      seasonEnd: '2018-05-13T16:00:00+0200',
+      teams: teams.filter(t => t.code !== 'bra').map(t => t._id),
+    });
+    await season.save();
+
+    const seasonTeams = await teamRepo.getAllBySeason$(season.id).toPromise();
+    expect(seasonTeams).to.have.length(2);
   });
 });

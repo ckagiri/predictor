@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, Form as FinalForm } from 'react-final-form';
 import { useLogin, useSafeSetState } from '../../core';
-import { Form, Button } from 'react-bootstrap'
+import { Form, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons/faCircleNotch';
 
@@ -11,18 +11,20 @@ const Input = ({
   input: { ...inputProps }, // eslint-disable-line react/prop-types
   ...props
 }) => (
-    <Form.Group color={touched && error ? 'danger' : ''}>
-      <Form.Label>{props.label}</Form.Label>
-      <Form.Control {...inputProps} {...props} />
-      {!!(touched && error) && <Form.Control.Feedback>{touched && error}</Form.Control.Feedback>}
-    </Form.Group>
-  );
+  <Form.Group color={touched && error ? 'danger' : ''}>
+    <Form.Label>{props.label}</Form.Label>
+    <Form.Control {...inputProps} {...props} />
+    {!!(touched && error) && (
+      <Form.Control.Feedback>{touched && error}</Form.Control.Feedback>
+    )}
+  </Form.Group>
+);
 
 const LoginForm = ({ redirectTo }) => {
   const [loading, setLoading] = useSafeSetState(false);
   const login = useLogin();
 
-  const validate = (values) => {
+  const validate = values => {
     const errors = { username: undefined, password: undefined };
 
     if (!values.username) {

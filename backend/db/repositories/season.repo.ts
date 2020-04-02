@@ -13,7 +13,7 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface SeasonRepository extends BaseFootballApiRepository<Season> {
-  getTeamsFor$(seasonId: string | undefined): Observable<Team[]>
+  getTeamsForSeason$(seasonId: string | undefined): Observable<Team[]>;
 }
 
 export class SeasonRepositoryImpl
@@ -29,20 +29,27 @@ export class SeasonRepositoryImpl
     super(SeasonModel, converter);
   }
 
-  getTeamsFor$(seasonId: string | undefined) {
+  getTeamsForSeason$(seasonId: string | undefined) {
     if (!seasonId) {
-      throwError('seasonId cannot be empty')
+      throwError('seasonId cannot be empty');
     }
     return from(
-      new Promise((resolve: (value?: Team[]) => void, reject: (reason?: Error) => void) => {
-        SeasonModel.findOne({ _id: seasonId })
-          .populate('teams', '-__v -externalReference')
-          .lean()
-          .exec(function (err, season) {
-            if (err) reject(err);
-            if (!season) reject(new Error('Failed to load Season ' + seasonId));
-            return resolve(season.teams as Team[]);
-          });
-      }));
+      new Promise(
+        (
+          resolve: (value?: Team[]) => void,
+          reject: (reason?: Error) => void,
+        ) => {
+          SeasonModel.findOne({ _id: seasonId })
+            .populate('teams', '-__v -externalReference')
+            .lean()
+            .exec(function(err, season) {
+              if (err) reject(err);
+              if (!season)
+                reject(new Error('Failed to load Season ' + seasonId));
+              return resolve(season.teams as Team[]);
+            });
+        },
+      ),
+    );
   }
 }

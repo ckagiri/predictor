@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { async } from 'rxjs/internal/scheduler/async';
 const mongod = new MongoMemoryServer();
 
 const connect = async () => {

@@ -3,95 +3,49 @@ import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
-import startServer from '../../app/server';
 import { setupReqRes } from './testUtils';
 import { CompetitionsController } from '../../app/api/competitions/competitions.controller';
-import { Competition, CompetitionDocument } from '../../db/models';
-import db from '../../db';
+import { Competition } from '../../db/models';
 import memoryDb from '../memoryDb';
+import a, { GameData } from '../a';
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
+import startServer from '../../app/server';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
 const expect = chai.expect;
 
 let server: http.Server, competitionsAPI: AxiosInstance, baseURL: string;
-type Sut = {
-  competitions: Competition[];
-};
-let sut: Partial<Sut> = {};
 
-function clearData() {
-  const promises: Promise<any>[] = [];
-  promises.push(db.Competition.deleteMany({}).exec());
-  return Promise.all(promises);
-}
+const epl = a.competition
+  .name('English Premier League')
+  .slug('english-premier-league')
+  .code('epl');
 
-function addCompetitions(competitions: Competition[]): Promise<Competition[]> {
-  return new Promise((resolve, reject) => {
-    db.Competition.insertMany(
-      competitions,
-      (err: Error, data: CompetitionDocument[]) => {
-        sut.competitions = data.map(c => c.toObject());
-        if (err) {
-          return reject(err);
-        }
-        resolve(competitions);
-      },
-    );
-  });
-}
+const slg = a.competition
+  .name('Spanish La Liga')
+  .slug('spanish_la_liga')
+  .code('slg');
 
-async function resetData() {
-  const epl: Competition = {
-    name: 'English Premier League',
-    slug: 'english_premier_league',
-    code: 'epl',
-  };
-  const slg: Competition = {
-    name: 'Spanish La Liga',
-    slug: 'spanish_la_liga',
-    code: 'slg',
-  };
-  await clearData();
-  return await addCompetitions([epl, slg]);
+async function setupGameData() {
+  const gameData = await a.game.withCompetitions(epl, slg).build();
+  return gameData;
 }
 
 describe('Competitions API', function() {
-  this.timeout(9999);
+  let gameData: GameData;
 
   before(async () => {
     await memoryDb.connect();
   });
 
   beforeEach(async () => {
-    await resetData();
+    await memoryDb.dropDb();
+    gameData = await setupGameData();
   });
 
   after(async () => {
     await memoryDb.close();
-  });
-
-  describe('Competition Routes', function() {
-    before(async () => {
-      server = await startServer();
-      baseURL = `http://localhost:${process.env.PORT}/api`;
-      competitionsAPI = axios.create({ baseURL });
-    });
-
-    after(async () => {
-      await server.close();
-    });
-
-    it('should respond with JSON array', async function() {
-      const competitions: Competition[] = await competitionsAPI
-        .get('competitions')
-        .then(res => res.data);
-      expect(competitions).to.be.an.instanceof(Array);
-      expect(competitions).to.have.length(2);
-      expect(competitions[0].id).to.eql(sut.competitions![0].id);
-      expect(competitions[1].id).to.eql(sut.competitions![1].id);
-    });
   });
 
   describe('Competitions Controller', function() {
@@ -109,6 +63,32 @@ describe('Competitions API', function() {
       expect(competitions.length).to.be.greaterThan(0);
       const actualCompetitions = await competitionRepo.findAll$().toPromise();
       expect(competitions).to.eql(actualCompetitions);
+    });
+  });
+
+  describe('Competition Routes', function() {
+    before(async () => {
+      server = await startServer();
+      baseURL = `http://localhost:${process.env.PORT}/api`;
+      competitionsAPI = axios.create({ baseURL });
+    });
+
+    after(() => {
+      server.close();
+    });
+
+    it('should respond with JSON array', async function() {
+      const competitions: Competition[] = await competitionsAPI
+        .get('competitions')
+        .then(res => res.data);
+      expect(competitions).to.be.an.instanceof(Array);
+      expect(competitions).to.have.length(2);
+      expect(competitions.map(c => c.id)).to.contain(
+        gameData.competitions[0].id,
+      );
+      expect(competitions.map(c => c.id)).to.contain(
+        gameData.competitions[1].id,
+      );
     });
   });
 });

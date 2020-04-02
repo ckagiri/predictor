@@ -1,4 +1,3 @@
-import * as http from 'http';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
@@ -9,6 +8,7 @@ import { GameController } from '../../app/api/game/game.controller';
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
+import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -85,8 +85,7 @@ async function setupSimpleGame() {
   return game;
 }
 
-describe.only('Game Controller', function () {
-  this.timeout(9999);
+describe('Game Controller', function() {
   let simpleGame: GameData;
 
   before(async () => {
@@ -97,7 +96,7 @@ describe.only('Game Controller', function () {
     await memoryDb.close();
   });
 
-  describe('get game data', function () {
+  describe('get game data', function() {
     let response: {
       competitions?: any;
       selectedCompetition?: any;
@@ -109,6 +108,7 @@ describe.only('Game Controller', function () {
       const gameController = new GameController(
         CompetitionRepositoryImpl.getInstance(),
         SeasonRepositoryImpl.getInstance(),
+        TeamRepositoryImpl.getInstance(),
         MatchRepositoryImpl.getInstance(),
       );
       const { req, res } = setupReqRes();
