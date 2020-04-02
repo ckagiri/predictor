@@ -11,7 +11,7 @@ export class MatchesController {
     return new MatchesController(MatchRepositoryImpl.getInstance());
   }
 
-  constructor(private matchRepo: MatchRepository) { }
+  constructor(private matchRepo: MatchRepository) {}
 
   getMatches = async (req: Request, res: Response) => {
     try {
@@ -19,7 +19,9 @@ export class MatchesController {
       if (!seasonId) {
         throw new Error('seasonId is required');
       }
-      const matches = await this.matchRepo.findAll$({ 'season': seasonId }).toPromise();
+      const matches = await this.matchRepo
+        .findAll$({ season: seasonId })
+        .toPromise();
       res.status(200).json(matches);
     } catch (error) {
       res.status(500).send(error);

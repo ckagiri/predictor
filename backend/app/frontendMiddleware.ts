@@ -13,7 +13,7 @@ interface SetupOptions {
  */
 export default (app: Application, options: SetupOptions) => {
   const isProd = process.env.NODE_ENV === 'production';
-  const isTest = process.env.NODE_ENV === 'test'
+  const isTest = process.env.NODE_ENV === 'test';
 
   if (isProd || isTest) {
     addProdMiddlewares(app, options);

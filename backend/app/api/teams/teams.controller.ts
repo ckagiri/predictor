@@ -11,7 +11,7 @@ export class TeamsController {
     return new TeamsController(TeamRepositoryImpl.getInstance());
   }
 
-  constructor(private teamRepo: TeamRepository) { }
+  constructor(private teamRepo: TeamRepository) {}
 
   getTeams = async (req: Request, res: Response) => {
     try {

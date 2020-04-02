@@ -28,13 +28,11 @@ const slg = a.competition
   .code('slg');
 
 async function setupGameData() {
-  const gameData = await a.game
-    .withCompetitions(epl, slg)
-    .build();
+  const gameData = await a.game.withCompetitions(epl, slg).build();
   return gameData;
 }
 
-describe('Competitions API', function () {
+describe('Competitions API', function() {
   let gameData: GameData;
 
   before(async () => {
@@ -50,7 +48,7 @@ describe('Competitions API', function () {
     await memoryDb.close();
   });
 
-  describe('Competitions Controller', function () {
+  describe('Competitions Controller', function() {
     const competitionRepo = CompetitionRepositoryImpl.getInstance();
     const competitionsController = new CompetitionsController(competitionRepo);
 
@@ -68,7 +66,7 @@ describe('Competitions API', function () {
     });
   });
 
-  describe('Competition Routes', function () {
+  describe('Competition Routes', function() {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -79,14 +77,18 @@ describe('Competitions API', function () {
       server.close();
     });
 
-    it('should respond with JSON array', async function () {
+    it('should respond with JSON array', async function() {
       const competitions: Competition[] = await competitionsAPI
         .get('competitions')
         .then(res => res.data);
       expect(competitions).to.be.an.instanceof(Array);
       expect(competitions).to.have.length(2);
-      expect(competitions.map(c => c.id)).to.contain(gameData.competitions[0].id);
-      expect(competitions.map(c => c.id)).to.contain(gameData.competitions[1].id);
+      expect(competitions.map(c => c.id)).to.contain(
+        gameData.competitions[0].id,
+      );
+      expect(competitions.map(c => c.id)).to.contain(
+        gameData.competitions[1].id,
+      );
     });
   });
 });

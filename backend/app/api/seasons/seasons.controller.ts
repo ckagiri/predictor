@@ -11,7 +11,7 @@ export class SeasonsController {
     return new SeasonsController(SeasonRepositoryImpl.getInstance());
   }
 
-  constructor(private seasonRepo: SeasonRepository) { }
+  constructor(private seasonRepo: SeasonRepository) {}
 
   getSeasons = async (req: Request, res: Response) => {
     try {
@@ -19,7 +19,9 @@ export class SeasonsController {
       if (!competitionId) {
         throw new Error('competitionId is required');
       }
-      const seasons = await this.seasonRepo.findAll$({ 'competition.id': competitionId }).toPromise();
+      const seasons = await this.seasonRepo
+        .findAll$({ 'competition.id': competitionId })
+        .toPromise();
       return res.status(200).json(seasons);
     } catch (error) {
       return res.status(500).send(error);

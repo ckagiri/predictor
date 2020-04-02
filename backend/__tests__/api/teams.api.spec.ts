@@ -44,7 +44,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Teams API', function () {
+describe('Teams API', function() {
   let gameData: GameData;
 
   before(async () => {
@@ -60,7 +60,7 @@ describe('Teams API', function () {
     await memoryDb.close();
   });
 
-  describe('Teams Controller', function () {
+  describe('Teams Controller', function() {
     const teamRepo = TeamRepositoryImpl.getInstance();
     const teamsController = new TeamsController(teamRepo);
 
@@ -93,7 +93,7 @@ describe('Teams API', function () {
     });
   });
 
-  describe('Team Routes', function () {
+  describe('Team Routes', function() {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -104,15 +104,13 @@ describe('Teams API', function () {
       server.close();
     });
 
-    it('should respond with JSON array for all teams', async function () {
-      const teams: Team[] = await teamsAPI
-        .get('teams')
-        .then(res => res.data);
+    it('should respond with JSON array for all teams', async function() {
+      const teams: Team[] = await teamsAPI.get('teams').then(res => res.data);
       expect(teams).to.be.an.instanceof(Array);
       expect(teams).to.have.length(3);
     });
 
-    it('should respond with JSON array for season teams', async function () {
+    it('should respond with JSON array for season teams', async function() {
       const teams: Team[] = await teamsAPI
         .get(`teams/?seasonId=${gameData.seasons[0].id}`)
         .then(res => res.data);

@@ -48,7 +48,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Seasons API', function () {
+describe('Seasons API', function() {
   let gameData: GameData;
 
   before(async () => {
@@ -64,7 +64,7 @@ describe('Seasons API', function () {
     await memoryDb.close();
   });
 
-  describe('Seasons Controller', function () {
+  describe('Seasons Controller', function() {
     const seasonRepo = SeasonRepositoryImpl.getInstance();
     const seasonsController = new SeasonsController(seasonRepo);
 
@@ -79,7 +79,7 @@ describe('Seasons API', function () {
 
     it('getSeasons returns all seasons in the database', async () => {
       const { req, res } = setupReqRes();
-      req.query.competitionId = gameData.competitions[0].id
+      req.query.competitionId = gameData.competitions[0].id;
       await seasonsController.getSeasons(<any>req, <any>res);
 
       expect(res.json).to.have.been.called;
@@ -92,7 +92,7 @@ describe('Seasons API', function () {
     });
   });
 
-  describe('Season Routes', function () {
+  describe('Season Routes', function() {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -103,7 +103,7 @@ describe('Seasons API', function () {
       server.close();
     });
 
-    it('should respond with JSON array', async function () {
+    it('should respond with JSON array', async function() {
       const seasons: Season[] = await seasonsAPI
         .get(`seasons/?competitionId=${gameData.competitions[0].id}`)
         .then(res => res.data);

@@ -83,7 +83,7 @@ class SeasonBuilder implements Builder<Season> {
   private season?: Season;
   private predictions: Prediction[] = [];
 
-  constructor(private gameBuilder: GameBuilder) { }
+  constructor(private gameBuilder: GameBuilder) {}
 
   name(value: string) {
     this.built.name = value;
@@ -235,12 +235,14 @@ class MatchBuilder implements Builder<Match> {
   }
 
   getHomeTeam() {
-    return this.seasonBuilder?.getTeams()
+    return this.seasonBuilder
+      ?.getTeams()
       .find(team => team.slug === this.homeTeamBuilder?.getSlug());
   }
 
   getAwayTeam() {
-    return this.seasonBuilder?.getTeams()
+    return this.seasonBuilder
+      ?.getTeams()
       .find(team => team.slug === this.awayTeamBuilder?.getSlug());
   }
 

@@ -21,7 +21,7 @@ export interface BaseFootballApiRepository<T extends Entity>
 export class BaseFootballApiRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-  > extends BaseRepositoryImpl<T, TDocument>
+> extends BaseRepositoryImpl<T, TDocument>
   implements BaseFootballApiRepository<T> {
   protected converter: Converter;
 

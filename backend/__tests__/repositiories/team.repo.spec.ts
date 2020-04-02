@@ -37,8 +37,7 @@ const brazil = {
   shortName: 'Brazil',
   code: 'bra',
   slug: 'brazil',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Brasil.svg',
+  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Brasil.svg',
   aliases: ['ManCity'],
 };
 
@@ -60,9 +59,9 @@ const afdManc = {
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
 };
 
-describe('teamRepo', function () {
+describe('teamRepo', function() {
   before(async () => {
-    await memoryDb.connect()
+    await memoryDb.connect();
   });
 
   afterEach(async () => {
@@ -243,7 +242,11 @@ describe('teamRepo', function () {
 
   it.only('should findAll by season', async () => {
     const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
-    const teams = await Promise.all([new TeamModel(manu).save(), new TeamModel(manc).save(), new TeamModel(brazil).save()])
+    const teams = await Promise.all([
+      new TeamModel(manu).save(),
+      new TeamModel(manc).save(),
+      new TeamModel(brazil).save(),
+    ]);
     const season = new SeasonModel({
       name: '2017-2018',
       slug: '17-18',
@@ -255,7 +258,7 @@ describe('teamRepo', function () {
       },
       seasonStart: '2017-08-11T00:00:00+0200',
       seasonEnd: '2018-05-13T16:00:00+0200',
-      teams: teams.filter(t => t.code !== 'bra').map(t => t._id)
+      teams: teams.filter(t => t.code !== 'bra').map(t => t._id),
     });
     await season.save();
 

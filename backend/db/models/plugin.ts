@@ -1,23 +1,23 @@
 import { Schema, Types } from 'mongoose';
 
-export default function (schema: Schema, _options?: any) {
+export default function(schema: Schema, _options?: any) {
   schema.set('timestamps', true);
-  schema.virtual('id').get(function (this: { _id: Types.ObjectId }) {
+  schema.virtual('id').get(function(this: { _id: Types.ObjectId }) {
     return this._id.toHexString();
   });
-  schema.set("toJSON", {
+  schema.set('toJSON', {
     virtuals: true,
-    transform: function (doc: any, ret: any, game: any) {
+    transform: function(doc: any, ret: any, game: any) {
       delete ret._id;
       delete ret.__v;
-    }
+    },
   });
-  schema.set("toObject", {
+  schema.set('toObject', {
     virtuals: true,
-    transform: function (doc: any, ret: any, game: any) {
+    transform: function(doc: any, ret: any, game: any) {
       delete ret._id;
       delete ret.__v;
-    }
+    },
   });
   schema.post('find', attachId);
   schema.post('findOne', attachId);

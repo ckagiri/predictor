@@ -11,7 +11,7 @@ export class CompetitionsController {
     return new CompetitionsController(CompetitionRepositoryImpl.getInstance());
   }
 
-  constructor(private competitionRepo: CompetitionRepository) { }
+  constructor(private competitionRepo: CompetitionRepository) {}
 
   getCompetitions = async (_req: Request, res: Response) => {
     try {

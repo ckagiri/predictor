@@ -85,7 +85,7 @@ async function setupSimpleGame() {
   return game;
 }
 
-describe('Game Controller', function () {
+describe('Game Controller', function() {
   let simpleGame: GameData;
 
   before(async () => {
@@ -96,7 +96,7 @@ describe('Game Controller', function () {
     await memoryDb.close();
   });
 
-  describe('get game data', function () {
+  describe('get game data', function() {
     let response: {
       competitions?: any;
       selectedCompetition?: any;

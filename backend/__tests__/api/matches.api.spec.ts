@@ -41,26 +41,24 @@ async function setupGameData() {
     .withTeams(liverpool, arsenal, chelsea, manutd)
     .withCompetitions(epl)
     .withSeasons(
-      epl2020
-        .withTeams(liverpool, arsenal, chelsea, manutd)
-        .withMatches(
-          a.match
-            .homeTeam(chelsea)
-            .awayTeam(manutd)
-            .date('2020-02-10T11:30:00Z')
-            .gameRound(20),
-          a.match
-            .homeTeam(liverpool)
-            .awayTeam(arsenal)
-            .date('2020-02-14T11:30:00Z')
-            .gameRound(21)
-        ),
+      epl2020.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
+        a.match
+          .homeTeam(chelsea)
+          .awayTeam(manutd)
+          .date('2020-02-10T11:30:00Z')
+          .gameRound(20),
+        a.match
+          .homeTeam(liverpool)
+          .awayTeam(arsenal)
+          .date('2020-02-14T11:30:00Z')
+          .gameRound(21),
+      ),
     )
     .build();
   return gameData;
 }
 
-describe('Matches API', function () {
+describe('Matches API', function() {
   let gameData: GameData;
 
   before(async () => {
@@ -76,7 +74,7 @@ describe('Matches API', function () {
     await memoryDb.close();
   });
 
-  describe('Matches Controller', function () {
+  describe('Matches Controller', function() {
     const matchRepo = MatchRepositoryImpl.getInstance();
     const matchesController = new MatchesController(matchRepo);
 
@@ -91,7 +89,7 @@ describe('Matches API', function () {
 
     it('getMatches returns all season-matches in the database', async () => {
       const { req, res } = setupReqRes();
-      req.query.seasonId = gameData.seasons[0].id
+      req.query.seasonId = gameData.seasons[0].id;
       await matchesController.getMatches(<any>req, <any>res);
 
       expect(res.json).to.have.been.called;
@@ -103,7 +101,7 @@ describe('Matches API', function () {
     });
   });
 
-  describe('Match Routes', function () {
+  describe('Match Routes', function() {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -114,7 +112,7 @@ describe('Matches API', function () {
       server.close();
     });
 
-    it('should respond with JSON array', async function () {
+    it('should respond with JSON array', async function() {
       const matches: Match[] = await matchsAPI
         .get(`matches/?seasonId=${gameData.seasons[0].id}`)
         .then(res => res.data);

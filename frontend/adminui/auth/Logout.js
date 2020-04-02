@@ -1,10 +1,9 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useLogout } from '../../core';
-import { DropdownButton } from 'react-bootstrap'
+import { DropdownButton } from 'react-bootstrap';
 
-
-const Logout = (props) => {
+const Logout = props => {
   const { className, redirectTo, ...rest } = props;
   const logout = useLogout();
   const handleClick = useCallback(() => logout(redirectTo), [
@@ -12,11 +11,7 @@ const Logout = (props) => {
     logout,
   ]);
   return (
-    <DropdownButton
-      onClick={handleClick}
-      title="Dropdown button"
-      {...rest}
-    >
+    <DropdownButton onClick={handleClick} title="Dropdown button" {...rest}>
       <Dropdown.Item as="button">Logout</Dropdown.Item>
       {/* <ExitIcon /> */}
     </DropdownButton>

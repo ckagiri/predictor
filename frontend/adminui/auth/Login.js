@@ -4,11 +4,11 @@ import Card from 'react-bootstrap/Card';
 import DefaultLoginForm from './LoginForm';
 
 const Wrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    align-items: center;
-    justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: flex-start;
 `;
 
 const Login = ({ children, ...rest }) => {
@@ -17,21 +17,17 @@ const Login = ({ children, ...rest }) => {
   useEffect(() => {
     checkAuth({}, false)
       .then(() => {
-        history.push('/')
+        history.push('/');
       })
-      .catch(() => {
-
-      });
+      .catch(() => {});
   }, [checkAuth, history]);
 
   return (
     <Wrapper {...rest}>
-      <Card>
-        {children}
-      </Card>
+      <Card>{children}</Card>
     </Wrapper>
   );
-}
+};
 
 Login.propTypes = {
   children: PropTypes.node,

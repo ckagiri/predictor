@@ -34,7 +34,7 @@ export class GameController {
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
     private matchRepo: MatchRepository,
-  ) { }
+  ) {}
 
   getGameData = async (_req: Request, res: Response) => {
     try {
