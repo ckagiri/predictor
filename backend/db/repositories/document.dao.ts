@@ -1,4 +1,4 @@
-import mongoose, { Model, Types, Document } from 'mongoose';
+import mongoose, { Model, Document } from 'mongoose';
 mongoose.set('useFindAndModify', false);
 
 import { Entity } from '../models/base.model';
@@ -64,7 +64,7 @@ export class DocumentDao<T extends Document> {
                   [k]: new RegExp(q, 'i')
                 };
               case 'ObjectID':
-                return Types.ObjectId.isValid(q)
+                return mongoose.Types.ObjectId.isValid(q)
                   ? {
                     [k]: q
                   }
@@ -88,10 +88,10 @@ export class DocumentDao<T extends Document> {
           const needle = search[key];
           if (Array.isArray(needle)) {
             return {
-              [isId ? '_id' : key]: { $in: needle.map(n => (isId ? Types.ObjectId(n) : n)) }
+              [isId ? '_id' : key]: { $in: needle.map(n => (isId ? mongoose.Types.ObjectId(n) : n)) }
             };
           }
-          return { [isId ? '_id' : key]: isId ? Types.ObjectId(needle) : needle };
+          return { [isId ? '_id' : key]: isId ? mongoose.Types.ObjectId(needle) : needle };
         });
         if (combinedAnd.length > 0) {
           conditions['$and'] = combinedAnd;

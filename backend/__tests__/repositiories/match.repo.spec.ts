@@ -130,7 +130,7 @@ describe('MatchRepo', function () {
           done();
         });
     });
-    
+
     it('should find finished matches with pending predictions', done => {
       ligiMatchRepo
         .save$(team1Vteam2)
@@ -145,7 +145,7 @@ describe('MatchRepo', function () {
           done();
         });
     });
-    
+
     it('should find selectable matches for game round', done => {
       ligiMatchRepo
         .save$(team1Vteam2)
@@ -159,10 +159,10 @@ describe('MatchRepo', function () {
           expect(ms).to.have.length(1);
           done();
         });
-    })    
+    })
   })
 
-  describe.only('filter', function() {
+  describe.only('filter', function () {
     const liverpool = a.team.name('Liverpool').slug('liverpool');
     const chelsea = a.team.name('Chelsea').slug('chelsea');
     const manutd = a.team.name('Manchester United').slug('man-utd');
@@ -182,7 +182,7 @@ describe('MatchRepo', function () {
               a.match
                 .homeTeam(chelsea)
                 .awayTeam(manutd)
-                .date('2020-02-10T11:30:00Z')
+                .date('2020-02-11T11:30:00Z')
                 .gameRound(20),
               a.match
                 .homeTeam(liverpool)
@@ -192,14 +192,14 @@ describe('MatchRepo', function () {
               a.match
                 .homeTeam(everton)
                 .awayTeam(mancity)
-                .date('2020-02-14T11:30:00Z')
+                .date('2020-02-15T11:30:00Z')
                 .gameRound(21),
               a.match
                 .homeTeam(chelsea)
                 .awayTeam(liverpool)
                 .date('2020-02-14T11:30:00Z')
                 .gameRound(21),
-          ),
+            ),
         )
         .build();
       return gameData;
@@ -215,7 +215,47 @@ describe('MatchRepo', function () {
       }).subscribe(({ result: matches, count }) => {
         expect(matches).to.have.length(2);
         expect(count).to.equal(2)
-        done();
+      });
+
+      ligiMatchRepo.find$({
+        filter: JSON.stringify({ 'homeTeam.slug': ["chelsea", "everton"] })
+      }).subscribe(({ result: matches, count }) => {
+        expect(matches).to.have.length(3);
+        expect(count).to.equal(3)
+      });
+
+      ligiMatchRepo.find$({
+        filter: JSON.stringify({ 'homeTeam.slug': ["chelsea", "everton"], gameRound: 20 })
+      }).subscribe(({ result: matches, count }) => {
+        expect(matches).to.have.length(1);
+        expect(count).to.equal(1)
+      });
+
+      ligiMatchRepo.find$({
+        filter: JSON.stringify({ 'q': "man" })
+      }).subscribe(({ result: matches, count }) => {
+        expect(matches).to.have.length(2);
+        expect(count).to.equal(2)
+      });
+
+      ligiMatchRepo.find$({
+        sort: JSON.stringify(["date", "ASC"]),
+      }).subscribe(({ result: matches }) => {
+        expect(matches[0].homeTeam?.slug).to.equal('liverpool');
+        expect(matches[0].awayTeam?.slug).to.equal('arsenal')
+      });
+
+      ligiMatchRepo.find$({
+        sort: JSON.stringify(["date", "ASC"]),
+        range: JSON.stringify([0, 2])
+      }).subscribe(({ result: matches, count }) => {
+        expect(count).to.equal(4);
+        expect(matches.length).to.equal(2);
+        expect(matches[0].homeTeam?.slug).to.equal('liverpool');
+        expect(matches[0].awayTeam?.slug).to.equal('arsenal')
+        expect(matches[1].homeTeam?.slug).to.equal('chelsea');
+        expect(matches[1].awayTeam?.slug).to.equal('man-utd')
+        done()
       });
     });
   });
