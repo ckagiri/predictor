@@ -73,7 +73,7 @@ describe('MatchRepo', function () {
     await memoryDb.close();
   });
 
-  describe('create update', function () {
+  describe('create | update', function () {
     let season: Season;
     let team1: Team;
     let team2: Team;
@@ -162,7 +162,7 @@ describe('MatchRepo', function () {
     })
   })
 
-  describe.only('filter', function () {
+  describe('filter | sort | page', function () {
     const liverpool = a.team.name('Liverpool').slug('liverpool');
     const chelsea = a.team.name('Chelsea').slug('chelsea');
     const manutd = a.team.name('Manchester United').slug('man-utd');
@@ -209,42 +209,80 @@ describe('MatchRepo', function () {
       await memoryDb.dropDb();
     })
 
+    it('should filter matches by id', done => {
+      const id = gameData.matches[0].id;
+      ligiMatchRepo.find$({
+        filter: JSON.stringify({ id })
+      }).subscribe(({ result: matches, count }) => {
+        expect(count).to.equal(1)
+        expect(matches[0].id).to.equal(id);
+        done();
+      })
+    });
+
     it('should filter matches by team', done => {
+      const chelseaId = gameData.teams.find(t => t.slug === 'chelsea')?.id;
+      ligiMatchRepo.find$({
+        filter: JSON.stringify({ 'homeTeam.id': chelseaId })
+      }).subscribe(({ result: matches, count }) => {
+        expect(matches[0].homeTeam?.id.toString()).to.equal(chelseaId);
+        expect(matches[1].homeTeam?.id.toString()).to.equal(chelseaId);
+        expect(count).to.equal(2)
+        done();
+      })
+    });
+
+    it('should filter matches by slug', done => {
       ligiMatchRepo.find$({
         filter: JSON.stringify({ 'homeTeam.slug': ["chelsea"] })
       }).subscribe(({ result: matches, count }) => {
         expect(matches).to.have.length(2);
         expect(count).to.equal(2)
+        done()
       });
+    });
 
+    it('should filter matches by multiple slug', done => {
       ligiMatchRepo.find$({
         filter: JSON.stringify({ 'homeTeam.slug': ["chelsea", "everton"] })
       }).subscribe(({ result: matches, count }) => {
         expect(matches).to.have.length(3);
         expect(count).to.equal(3)
+        done();
       });
+    });
 
+    it('should filter matches by gameRound', done => {
       ligiMatchRepo.find$({
         filter: JSON.stringify({ 'homeTeam.slug': ["chelsea", "everton"], gameRound: 20 })
       }).subscribe(({ result: matches, count }) => {
         expect(matches).to.have.length(1);
         expect(count).to.equal(1)
+        done();
       });
+    });
 
+    it('should filter matches by search term', done => {
       ligiMatchRepo.find$({
         filter: JSON.stringify({ 'q': "man" })
       }).subscribe(({ result: matches, count }) => {
         expect(matches).to.have.length(2);
         expect(count).to.equal(2)
+        done();
       });
+    });
 
+    it('should sort matches by date', done => {
       ligiMatchRepo.find$({
         sort: JSON.stringify(["date", "ASC"]),
       }).subscribe(({ result: matches }) => {
         expect(matches[0].homeTeam?.slug).to.equal('liverpool');
-        expect(matches[0].awayTeam?.slug).to.equal('arsenal')
+        expect(matches[0].awayTeam?.slug).to.equal('arsenal');
+        done();
       });
+    });
 
+    it('should paginate matches', done => {
       ligiMatchRepo.find$({
         sort: JSON.stringify(["date", "ASC"]),
         range: JSON.stringify([0, 2])
