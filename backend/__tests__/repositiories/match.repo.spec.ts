@@ -4,6 +4,7 @@ import { flatMap } from 'rxjs/operators';
 import db from '../../db';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
+import memoryDb from '../memoryDb';
 
 const epl = {
   name: 'English Premier League',
@@ -102,11 +103,12 @@ let season: any;
 let team1: any;
 let team2: any;
 
-describe('MatchRepo', function() {
-  this.timeout(5000);
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+describe('MatchRepo', function () {
+
+  before(async () => {
+    await memoryDb.connect();
   });
+
   beforeEach(done => {
     db.Competition.create(epl)
       .then(c => {
@@ -127,24 +129,22 @@ describe('MatchRepo', function() {
       .then(teams => {
         team1 = teams[0];
         team2 = teams[1];
+        manuVmanc.seasonId = season.id;
+        manuVmanc.homeTeamId = team1.id;
+        manuVmanc.awayTeamId = team2.id;
         done();
       });
   });
-  afterEach(done => {
-    db.drop().then(() => {
-      done();
-    });
-  });
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
-  });
-  it('should save a match', done => {
-    manuVmanc.seasonId = season.id;
-    manuVmanc.homeTeamId = team1.id;
-    manuVmanc.awayTeamId = team2.id;
 
+  afterEach(async () => {
+    await memoryDb.dropDb()
+  });
+
+  after(async () => {
+    await memoryDb.close();
+  });
+
+  it('should save a match', done => {
     ligiMatchRepo.save$(manuVmanc).subscribe(match => {
       expect(match.season!.toString()).to.equal(season.id);
       expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
@@ -153,32 +153,33 @@ describe('MatchRepo', function() {
   });
 
   it('should findEach By SeasonAndTeams AndUpdateOrCreate', done => {
-    matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc).subscribe(match => {
-      expect(match.season!.toString()).to.equal(season.id);
-      expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
-      done();
-    });
+    ligiMatchRepo
+      .save$(manuVmanc)
+      .pipe(
+        flatMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc))
+      ).subscribe(match => {
+        expect(match.season!.toString()).to.equal(season.id);
+        expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+        done();
+      });
   });
 
   it('should find finished matches with pending predictions', done => {
-    matchRepo
-      .findBySeasonAndTeamsAndUpsert$(afdManuVmanc)
+    ligiMatchRepo
+      .save$(manuVmanc)
       .pipe(
-        flatMap(_ => {
-          return matchRepo.findAllFinishedWithPendingPredictions$(season.id);
-        }),
+        flatMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc))
       )
-      .subscribe(fs => {
-        expect(fs).to.have.length(1);
+      .pipe(
+        flatMap(_ => matchRepo.findAllFinishedWithPendingPredictions$(season.id)),
+      )
+      .subscribe(ms => {
+        expect(ms).to.have.length(1);
         done();
       });
   });
 
   it('should find selectable matches for game round', done => {
-    manuVmanc.seasonId = season.id;
-    manuVmanc.homeTeamId = team1.id;
-    manuVmanc.awayTeamId = team2.id;
-
     ligiMatchRepo
       .save$(manuVmanc)
       .pipe(
