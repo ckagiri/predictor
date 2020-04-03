@@ -1,78 +1,45 @@
 import 'mocha';
 import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
-import db from '../../db';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import memoryDb from '../memoryDb';
+import a, { GameData } from '../a';
+import { Match, Season, Team } from '../../db/models';
+import { MatchStatus } from '../../db/models/match.model';
 
-const epl = {
-  name: 'English Premier League',
-  slug: 'english_premier_league',
-  code: 'epl',
-};
+const epl = a.competition
+  .name('English Premier League')
+  .slug('english-premier-league')
+  .code('epl');
 
-const epl17 = {
-  name: '2017-2018',
-  slug: '17-18',
-  year: 2017,
-  seasonStart: '2017-08-11T00:00:00+0200',
-  seasonEnd: '2018-05-13T16:00:00+0200',
-  currentMatchRound: 20,
-  currentGameRound: 20,
-  competition: null,
-  externalReference: null,
-};
+const epl2020 = a.season
+  .withCompetition(epl)
+  .name('2019-2020')
+  .slug('2019-20')
+  .year(2020)
+  .currentMatchRound(20)
+  .currentGameRound(20)
+  .externalReference({
+    [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
+  })
+  .seasonStart('2019-08-09T00:00:00+0200')
+  .seasonEnd('2020-05-17T16:00:00+0200');
 
-const afdEpl17 = {
-  id: 445,
-  caption: 'Premier League 2017/18',
-  competition: 'PL',
-  year: '2017',
-  currentMatchday: 20,
-  numberOfMatchdays: 38,
-  numberOfTeams: 20,
-  numberOfGames: 380,
-};
+const liverpool = a.team.name('Liverpool').slug('liverpool');
+const chelsea = a.team.name('Chelsea').slug('chelsea');
+const manutd = a.team.name('Manchester United').slug('man-utd');
+const arsenal = a.team.name('Arsenal').slug('arsenal');
+const everton = a.team.name('Everton').slug('everton');
+const mancity = a.team.name('Manchester City').slug('man-city')
 
-const manu = {
-  name: 'Manchester United FC',
-  shortName: 'Man United',
-  code: 'MUN',
-  slug: 'man_united',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-  aliases: ['ManU', 'ManUtd'],
-};
 
-const manc = {
-  name: 'Manchester City FC',
-  shortName: 'Man City',
-  code: 'MCI',
-  slug: 'man_city',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
-  aliases: ['ManCity'],
-};
-
-const manuVmanc = {
-  id: undefined,
-  season: {},
-  seasonId: undefined,
-  date: '2017-09-10T11:30:00Z',
-  status: 'SCHEDULED',
-  matchRound: 20,
-  gameRound: 20,
-  homeTeamId: null,
-  awayTeamId: null,
-  result: {},
-};
 const afdManuVmanc = {
   id: 233371,
   season: {
     id: 445,
   },
-  utcDate: '2019-04-20T14:00:00Z',
+  utcDate: '2020-04-20T14:00:00Z',
   status: 'FINISHED',
   matchday: 35,
   score: {
@@ -83,11 +50,11 @@ const afdManuVmanc = {
   },
   homeTeam: {
     id: 66,
-    name: 'Manchester United FC',
+    name: 'Manchester United',
   },
   awayTeam: {
     id: 65,
-    name: 'Manchester City FC',
+    name: 'Manchester City',
   },
   odds: {
     homeWin: 2.3,
@@ -95,45 +62,19 @@ const afdManuVmanc = {
     awayWin: 3.4,
   },
 };
+
 const matchRepo = MatchRepositoryImpl.getInstance(
   ApiProvider.API_FOOTBALL_DATA,
 );
+
 const ligiMatchRepo = MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
-let season: any;
-let team1: any;
-let team2: any;
 
 describe('MatchRepo', function () {
+  this.timeout(5 * 60 * 1000)
+  let gameData: GameData;
 
   before(async () => {
     await memoryDb.connect();
-  });
-
-  beforeEach(done => {
-    db.Competition.create(epl)
-      .then(c => {
-        const { name, slug, id } = c;
-        const theEpl17 = {
-          ...epl17,
-          competition: { name, slug, id },
-          externalReference: {
-            [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
-          },
-        };
-        return db.Season.create(theEpl17);
-      })
-      .then(s => {
-        season = s;
-        return db.Team.create([manu, manc]);
-      })
-      .then(teams => {
-        team1 = teams[0];
-        team2 = teams[1];
-        manuVmanc.seasonId = season.id;
-        manuVmanc.homeTeamId = team1.id;
-        manuVmanc.awayTeamId = team2.id;
-        done();
-      });
   });
 
   afterEach(async () => {
@@ -144,55 +85,85 @@ describe('MatchRepo', function () {
     await memoryDb.close();
   });
 
-  it('should save a match', done => {
-    ligiMatchRepo.save$(manuVmanc).subscribe(match => {
-      expect(match.season!.toString()).to.equal(season.id);
-      expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
-      done();
+  describe('create update', function () {
+    let season: Season;
+    let team1: Team;
+    let team2: Team;
+    let team1Vteam2: Partial<Match>;
+
+    beforeEach(async () => {
+      gameData = await a.game
+        .withTeams(manutd, mancity)
+        .withCompetitions(epl)
+        .withSeasons(epl2020.withTeams(manutd, mancity))
+        .build();
+
+      season = gameData.seasons[0];
+      team1 = gameData.teams.filter(t => t.slug === manutd.getSlug())[0];
+      team2 = gameData.teams.filter(t => t.slug === mancity.getSlug())[0];
+      team1Vteam2 = {
+        id: undefined,
+        seasonId: season.id,
+        date: '2019-09-10T11:30:00Z',
+        status: MatchStatus.SCHEDULED,
+        matchRound: 20,
+        gameRound: 20,
+        homeTeamId: team1.id,
+        awayTeamId: team2.id,
+        result: undefined,
+      };
     });
-  });
 
-  it('should findEach By SeasonAndTeams AndUpdateOrCreate', done => {
-    ligiMatchRepo
-      .save$(manuVmanc)
-      .pipe(
-        flatMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc))
-      ).subscribe(match => {
-        expect(match.season!.toString()).to.equal(season.id);
-        expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
-        done();
-      });
-  });
+    it('should save a match', done => {
+      ligiMatchRepo
+        .save$(team1Vteam2)
+        .subscribe(match => {
+          expect(match.season!.toString()).to.equal(season.id);
+          expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+          done();
+        });
+    });
 
-  it('should find finished matches with pending predictions', done => {
-    ligiMatchRepo
-      .save$(manuVmanc)
-      .pipe(
-        flatMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc))
-      )
-      .pipe(
-        flatMap(_ => matchRepo.findAllFinishedWithPendingPredictions$(season.id)),
-      )
-      .subscribe(ms => {
-        expect(ms).to.have.length(1);
-        done();
-      });
-  });
-
-  it('should find selectable matches for game round', done => {
-    ligiMatchRepo
-      .save$(manuVmanc)
-      .pipe(
-        flatMap(_ => {
-          return matchRepo.findSelectableMatches$(
-            season.id,
-            season.currentGameRound,
-          );
-        }),
-      )
-      .subscribe(ms => {
-        expect(ms).to.have.length(1);
-        done();
-      });
-  });
+    it('should findEach By SeasonAndTeams AndUpdateOrCreate', done => {
+      ligiMatchRepo
+        .save$(team1Vteam2)
+        .pipe(
+          flatMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc))
+        ).subscribe(match => {
+          expect(match.season!.toString()).to.equal(season.id);
+          expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+          done();
+        });
+    });
+    
+    it('should find finished matches with pending predictions', done => {
+      ligiMatchRepo
+        .save$(team1Vteam2)
+        .pipe(
+          flatMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVmanc))
+        )
+        .pipe(
+          flatMap(_ => matchRepo.findAllFinishedWithPendingPredictions$(season.id!)),
+        )
+        .subscribe(ms => {
+          expect(ms).to.have.length(1);
+          done();
+        });
+    });
+    
+    it('should find selectable matches for game round', done => {
+      ligiMatchRepo
+        .save$(team1Vteam2)
+        .pipe(
+          flatMap(_ => matchRepo.findSelectableMatches$(
+            season.id!,
+            season.currentGameRound!,
+          )),
+        )
+        .subscribe(ms => {
+          expect(ms).to.have.length(1);
+          done();
+        });
+    })    
+  })
 });
