@@ -26,14 +26,6 @@ const epl2020 = a.season
   .seasonStart('2019-08-09T00:00:00+0200')
   .seasonEnd('2020-05-17T16:00:00+0200');
 
-const liverpool = a.team.name('Liverpool').slug('liverpool');
-const chelsea = a.team.name('Chelsea').slug('chelsea');
-const manutd = a.team.name('Manchester United').slug('man-utd');
-const arsenal = a.team.name('Arsenal').slug('arsenal');
-const everton = a.team.name('Everton').slug('everton');
-const mancity = a.team.name('Manchester City').slug('man-city')
-
-
 const afdManuVmanc = {
   id: 233371,
   season: {
@@ -77,10 +69,6 @@ describe('MatchRepo', function () {
     await memoryDb.connect();
   });
 
-  afterEach(async () => {
-    await memoryDb.dropDb()
-  });
-
   after(async () => {
     await memoryDb.close();
   });
@@ -90,6 +78,9 @@ describe('MatchRepo', function () {
     let team1: Team;
     let team2: Team;
     let team1Vteam2: Partial<Match>;
+
+    const manutd = a.team.name('Manchester United').slug('man-utd');
+    const mancity = a.team.name('Manchester City').slug('man-city')
 
     beforeEach(async () => {
       gameData = await a.game
@@ -113,6 +104,10 @@ describe('MatchRepo', function () {
         result: undefined,
       };
     });
+
+    afterEach(async () => {
+      await memoryDb.dropDb();
+    })
 
     it('should save a match', done => {
       ligiMatchRepo
@@ -166,4 +161,62 @@ describe('MatchRepo', function () {
         });
     })    
   })
+
+  describe.only('filter', function() {
+    const liverpool = a.team.name('Liverpool').slug('liverpool');
+    const chelsea = a.team.name('Chelsea').slug('chelsea');
+    const manutd = a.team.name('Manchester United').slug('man-utd');
+    const arsenal = a.team.name('Arsenal').slug('arsenal');
+    const everton = a.team.name('Everton').slug('everton');
+    const mancity = a.team.name('Manchester City').slug('man-city')
+
+    const teams = [liverpool, arsenal, chelsea, manutd, mancity, everton]
+
+    beforeEach(async () => {
+      gameData = await a.game
+        .withTeams(...teams)
+        .withCompetitions(epl)
+        .withSeasons(
+          epl2020.withTeams(...teams)
+            .withMatches(
+              a.match
+                .homeTeam(chelsea)
+                .awayTeam(manutd)
+                .date('2020-02-10T11:30:00Z')
+                .gameRound(20),
+              a.match
+                .homeTeam(liverpool)
+                .awayTeam(arsenal)
+                .date('2020-02-10T11:30:00Z')
+                .gameRound(20),
+              a.match
+                .homeTeam(everton)
+                .awayTeam(mancity)
+                .date('2020-02-14T11:30:00Z')
+                .gameRound(21),
+              a.match
+                .homeTeam(chelsea)
+                .awayTeam(liverpool)
+                .date('2020-02-14T11:30:00Z')
+                .gameRound(21),
+          ),
+        )
+        .build();
+      return gameData;
+    });
+
+    afterEach(async () => {
+      await memoryDb.dropDb();
+    })
+
+    it('should filter matches by team', done => {
+      ligiMatchRepo.find$({
+        filter: JSON.stringify({ 'homeTeam.slug': ["chelsea"] })
+      }).subscribe(({ result: matches, count }) => {
+        expect(matches).to.have.length(2);
+        expect(count).to.equal(2)
+        done();
+      });
+    });
+  });
 });

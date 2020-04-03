@@ -131,7 +131,6 @@ class SeasonBuilder implements Builder<Season> {
     return this;
   }
 
-
   withCompetition(competition: CompetitionBuilder) {
     this.competitionBuilder = competition;
     return this;
