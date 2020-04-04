@@ -1,23 +1,11 @@
-import React, {
-  Children,
-  cloneElement,
-  createElement,
-} from 'react';
+import React, { Children, cloneElement, createElement } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import WithPermissions from '../auth/WithPermissions';
 
-const RoutesWithLayout = ({
-  catchAll,
-  children,
-  dashboard,
-  title,
-}) => {
+const RoutesWithLayout = ({ catchAll, children, dashboard, title }) => {
   const childrenAsArray = React.Children.toArray(children);
-  const firstChild =
-    childrenAsArray.length > 0
-      ? childrenAsArray[ 0 ]
-      : null;
+  const firstChild = childrenAsArray.length > 0 ? childrenAsArray[0] : null;
 
   return (
     <Switch>

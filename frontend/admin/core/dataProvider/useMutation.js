@@ -135,13 +135,10 @@ const useMutation = (query, options) => {
 
   /* eslint-disable react-hooks/exhaustive-deps */
   const mutate = useCallback(
-    (
-      callTimeQuery,
-      callTimeOptions
-    ) => {
+    (callTimeQuery, callTimeOptions) => {
       const finalDataProvider = hasDeclarativeSideEffectsSupport(
         options,
-        callTimeOptions
+        callTimeOptions,
       )
         ? dataProviderWithDeclarativeSideEffects
         : dataProvider;
@@ -149,7 +146,7 @@ const useMutation = (query, options) => {
         query,
         callTimeQuery,
         options,
-        callTimeOptions
+        callTimeOptions,
       );
 
       setState(prevState => ({ ...prevState, loading: true }));
@@ -157,7 +154,7 @@ const useMutation = (query, options) => {
       finalDataProvider[params.type](
         params.resource,
         params.payload,
-        params.options
+        params.options,
       )
         .then(({ data, total }) => {
           setState({
@@ -181,7 +178,7 @@ const useMutation = (query, options) => {
       dataProvider,
       dataProviderWithDeclarativeSideEffects,
       setState,
-    ]
+    ],
     /* eslint-enable react-hooks/exhaustive-deps */
   );
 
@@ -225,7 +222,7 @@ const mergeDefinitionAndCallTimeParameters = (
   query,
   callTimeQuery,
   options,
-  callTimeOptions
+  callTimeOptions,
 ) => {
   if (!query && (!callTimeQuery || callTimeQuery instanceof Event)) {
     throw new Error('Missing query either at definition or at call time');
@@ -256,10 +253,7 @@ const mergeDefinitionAndCallTimeParameters = (
   };
 };
 
-const hasDeclarativeSideEffectsSupport = (
-  options,
-  callTimeOptions
-) => {
+const hasDeclarativeSideEffectsSupport = (options, callTimeOptions) => {
   if (!options && !callTimeOptions) return false;
   if (callTimeOptions && callTimeOptions.withDeclarativeSideEffectsSupport)
     return true;

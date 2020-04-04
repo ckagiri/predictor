@@ -5,10 +5,7 @@ import {
 
 const initialState = {};
 
-const possibleValuesreducer = (
-  previousState = initialState,
-  action
-) => {
+const possibleValuesreducer = (previousState = initialState, action) => {
   switch (action.type) {
     case CRUD_GET_MATCHING_SUCCESS:
       return {
@@ -32,7 +29,7 @@ export const getPossibleReferenceValues = (state, props) => {
 export const getPossibleReferences = (
   referenceState,
   possibleValues,
-  selectedIds = []
+  selectedIds = [],
 ) => {
   if (!possibleValues) {
     return null;
@@ -44,7 +41,7 @@ export const getPossibleReferences = (
   possibleValues = Array.from(possibleValues);
   selectedIds.forEach(
     id =>
-      possibleValues.some(value => value === id) || possibleValues.unshift(id)
+      possibleValues.some(value => value === id) || possibleValues.unshift(id),
   );
   return possibleValues
     .map(id => referenceState.data[id])

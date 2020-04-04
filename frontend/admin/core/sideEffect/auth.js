@@ -48,11 +48,11 @@ const getErrorMessage = (error, defaultMessage) =>
   typeof error === 'string'
     ? error
     : typeof error === 'undefined' || !error.message
-      ? defaultMessage
-      : error.message;
+    ? defaultMessage
+    : error.message;
 
 export const handleLogin = authProvider =>
-  function* (action) {
+  function*(action) {
     const { payload, meta } = action;
     try {
       yield put({ type: USER_LOGIN_LOADING });
@@ -75,7 +75,7 @@ export const handleLogin = authProvider =>
   };
 
 export const handleCheck = authProvider =>
-  function* (action) {
+  function*(action) {
     const { payload, meta } = action;
     try {
       yield call([authProvider, 'checkAuth'], payload);
@@ -85,7 +85,7 @@ export const handleCheck = authProvider =>
         replace({
           pathname: (error && error.redirectTo) || redirectTo || '/login',
           state: { nextPathname: meta.pathName },
-        })
+        }),
       );
       // Clear the state before showing a notification as it would be dismissed immediately otherwise
       yield put(clearState());
@@ -96,7 +96,7 @@ export const handleCheck = authProvider =>
   };
 
 export const handleLogout = authProvider =>
-  function* (action) {
+  function*(action) {
     const { payload } = action;
     const redirectTo = yield call([authProvider, 'logout'], undefined);
     yield put(push((payload && payload.redirectTo) || redirectTo || '/login'));
@@ -104,7 +104,7 @@ export const handleLogout = authProvider =>
   };
 
 export const handleFetchError = authProvider =>
-  function* (action) {
+  function*(action) {
     const { error } = action;
     try {
       yield call([authProvider, 'checkError'], error);
@@ -115,7 +115,7 @@ export const handleFetchError = authProvider =>
         push({
           pathname: redirectTo || '/login',
           state: { nextPathname },
-        })
+        }),
       );
       // Clear the state before showing a notification as it would be dismissed immediately otherwise
       yield put(clearState());

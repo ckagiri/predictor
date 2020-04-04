@@ -49,7 +49,7 @@ const UserMenu = props => {
             ? cloneElement(menuItem, {
                 onClick: handleClose,
               })
-            : null
+            : null,
         )}
         {logout}
       </Menu>

@@ -15,7 +15,7 @@ const useStyles = makeStyles(
     },
     hellip: { padding: '1.2em' },
   }),
-  { name: 'RaPaginationActions' }
+  { name: 'RaPaginationActions' },
 );
 
 function PaginationActions({
@@ -90,7 +90,7 @@ function PaginationActions({
       throw new Error(
         translate('ra.navigation.page_out_of_boundaries', {
           page: page + 1,
-        })
+        }),
       );
     }
     onChangePage(event, page);
@@ -113,7 +113,7 @@ function PaginationActions({
         >
           {pageNum}
         </Button>
-      )
+      ),
     );
   };
 

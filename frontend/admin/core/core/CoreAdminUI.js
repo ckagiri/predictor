@@ -3,9 +3,7 @@ import { Switch, Route } from 'react-router-dom';
 
 import CoreAdminRouter from './CoreAdminRouter';
 
-const DefaultLayout = ({ children }) => (
-  <>{children}</>
-);
+const DefaultLayout = ({ children }) => <>{children}</>;
 
 const CoreAdminUI = ({
   catchAll = Noop,

@@ -106,19 +106,13 @@ import useLogoutIfAccessDenied from '../auth/useLogoutIfAccessDenied';
 const useDataProvider = () => {
   const dispatch = useDispatch();
   const dataProvider = useContext(DataProviderContext) || defaultDataProvider;
-  const isOptimistic = useSelector(
-    state => state.admin.ui.optimistic
-  );
+  const isOptimistic = useSelector(state => state.admin.ui.optimistic);
   const logoutIfAccessDenied = useLogoutIfAccessDenied();
 
   const dataProviderProxy = useMemo(() => {
     return new Proxy(dataProvider, {
       get: (target, name) => {
-        return (
-          resource,
-          payload,
-          options
-        ) => {
+        return (resource, payload, options) => {
           const type = name.toString();
           const {
             action = 'CUSTOM_FETCH',
@@ -139,7 +133,7 @@ const useDataProvider = () => {
           }
           if (undoable && !onSuccess) {
             throw new Error(
-              'You must pass an onSuccess callback calling notify() to use the undoable mode'
+              'You must pass an onSuccess callback calling notify() to use the undoable mode',
             );
           }
           if (isOptimistic) {

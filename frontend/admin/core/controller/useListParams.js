@@ -86,7 +86,7 @@ const useListParams = ({
 
   const { params } = useSelector(
     reduxState => reduxState.admin.resources[resource].list,
-    shallowEqual
+    shallowEqual,
   );
 
   const requestSignature = [
@@ -107,7 +107,7 @@ const useListParams = ({
         sort,
         perPage,
       }),
-    requestSignature // eslint-disable-line react-hooks/exhaustive-deps
+    requestSignature, // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const changeParams = useCallback(action => {
@@ -122,20 +122,18 @@ const useListParams = ({
   }, requestSignature); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setSort = useCallback(
-    newSort =>
-      changeParams({ type: SET_SORT, payload: { sort: newSort } }),
-    requestSignature // eslint-disable-line react-hooks/exhaustive-deps
+    newSort => changeParams({ type: SET_SORT, payload: { sort: newSort } }),
+    requestSignature, // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const setPage = useCallback(
     newPage => changeParams({ type: SET_PAGE, payload: newPage }),
-    requestSignature // eslint-disable-line react-hooks/exhaustive-deps
+    requestSignature, // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const setPerPage = useCallback(
-    newPerPage =>
-      changeParams({ type: SET_PER_PAGE, payload: newPerPage }),
-    requestSignature // eslint-disable-line react-hooks/exhaustive-deps
+    newPerPage => changeParams({ type: SET_PER_PAGE, payload: newPerPage }),
+    requestSignature, // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const filterValues = query.filter || emptyObject;
@@ -146,12 +144,12 @@ const useListParams = ({
         type: SET_FILTER,
         payload: removeEmpty(newFilters),
       }),
-    debounce
+    debounce,
   );
 
   const setFilters = useCallback(
     filters => debouncedSetFilters(filters),
-    requestSignature // eslint-disable-line react-hooks/exhaustive-deps
+    requestSignature, // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const hideFilter = useCallback(filterName => {
@@ -200,7 +198,7 @@ export const validQueryParams = ['page', 'perPage', 'sort', 'order', 'filter'];
 export const parseQueryFromLocation = ({ search }) => {
   const query = pickBy(
     parse(search),
-    (v, k) => validQueryParams.indexOf(k) !== -1
+    (v, k) => validQueryParams.indexOf(k) !== -1,
   );
   if (query.filter && typeof query.filter === 'string') {
     try {
@@ -255,8 +253,8 @@ export const getQuery = ({
     Object.keys(queryFromLocation).length > 0
       ? queryFromLocation
       : hasCustomParams(params)
-        ? { ...params }
-        : { filter: filterDefaultValues || {} };
+      ? { ...params }
+      : { filter: filterDefaultValues || {} };
 
   if (!query.sort) {
     query.sort = sort.field;
@@ -275,10 +273,7 @@ export const getQuery = ({
   };
 };
 
-export const getNumberOrDefault = (
-  possibleNumber,
-  defaultValue
-) =>
+export const getNumberOrDefault = (possibleNumber, defaultValue) =>
   (typeof possibleNumber === 'string'
     ? parseInt(possibleNumber, 10)
     : possibleNumber) || defaultValue;

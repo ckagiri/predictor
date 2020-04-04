@@ -4,12 +4,7 @@ import pure from 'recompose/pure';
 import useTranslate from '../i18n/useTranslate';
 import getFieldLabelTranslationArgs from './getFieldLabelTranslationArgs';
 
-export const FieldTitle = ({
-  resource,
-  source,
-  label,
-  isRequired,
-}) => {
+export const FieldTitle = ({ resource, source, label, isRequired }) => {
   const translate = useTranslate();
   return (
     <span>
@@ -18,7 +13,7 @@ export const FieldTitle = ({
           label,
           resource,
           source,
-        })
+        }),
       )}
       {isRequired && ' *'}
     </span>

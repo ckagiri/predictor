@@ -11,7 +11,7 @@ const useStyles = makeStyles(
       color: theme.palette.primary.main,
     },
   }),
-  { name: 'RaLink' }
+  { name: 'RaLink' },
 );
 
 const Link = ({

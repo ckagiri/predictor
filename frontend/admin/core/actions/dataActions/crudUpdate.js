@@ -7,7 +7,7 @@ export const crudUpdate = (
   previousData,
   basePath,
   redirectTo = 'show',
-  refresh = true
+  refresh = true,
 ) => ({
   type: CRUD_UPDATE,
   payload: { id, data, previousData },

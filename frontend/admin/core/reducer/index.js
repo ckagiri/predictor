@@ -6,7 +6,7 @@ import admin, {
   getPossibleReferenceValues as adminGetPossibleReferenceValues,
 } from './admin';
 export { getNotification } from './admin/notifications';
-export default (history) =>
+export default history =>
   combineReducers({
     admin,
     router: connectRouter(history),

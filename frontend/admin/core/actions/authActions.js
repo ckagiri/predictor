@@ -3,10 +3,7 @@ export const USER_LOGIN_LOADING = 'RA/USER_LOGIN_LOADING';
 export const USER_LOGIN_FAILURE = 'RA/USER_LOGIN_FAILURE';
 export const USER_LOGIN_SUCCESS = 'RA/USER_LOGIN_SUCCESS';
 
-export const userLogin = (
-  payload,
-  pathName
-) => ({
+export const userLogin = (payload, pathName) => ({
   type: USER_LOGIN,
   payload,
   meta: { auth: true, pathName },
@@ -14,11 +11,7 @@ export const userLogin = (
 
 export const USER_CHECK = 'RA/USER_CHECK';
 export const USER_CHECK_SUCCESS = 'RA/USER_CHECK_SUCCESS';
-export const userCheck = (
-  payload,
-  pathName,
-  routeParams = {}
-) => ({
+export const userCheck = (payload, pathName, routeParams = {}) => ({
   type: USER_CHECK,
   payload: {
     ...payload,

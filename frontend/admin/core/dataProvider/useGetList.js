@@ -43,13 +43,7 @@ const defaultData = {};
  *     )}</ul>;
  * };
  */
-const useGetList = (
-  resource,
-  pagination,
-  sort,
-  filter,
-  options
-) => {
+const useGetList = (resource, pagination, sort, filter, options) => {
   const requestSignature = JSON.stringify({ pagination, sort, filter });
 
   const { data: ids, total, error, loading, loaded } = useQueryWithStore(
@@ -59,8 +53,8 @@ const useGetList = (
     state =>
       get(
         state.admin.resources,
-        [ resource, 'list', 'cachedRequests', requestSignature, 'ids' ],
-        []
+        [resource, 'list', 'cachedRequests', requestSignature, 'ids'],
+        [],
       ),
     // total selector (may return undefined)
     state =>
@@ -70,21 +64,21 @@ const useGetList = (
         'cachedRequests',
         requestSignature,
         'total',
-      ])
+      ]),
   );
 
   const data = useSelector(state => {
     if (!ids) return defaultData;
     const allResourceData = get(
       state.admin.resources,
-      [ resource, 'data' ],
-      defaultData
+      [resource, 'data'],
+      defaultData,
     );
     return ids
-      .map(id => allResourceData[ id ])
+      .map(id => allResourceData[id])
       .reduce((acc, record) => {
         if (!record) return acc;
-        acc[ record.id ] = record;
+        acc[record.id] = record;
         return acc;
       }, {});
   }, shallowEqual);

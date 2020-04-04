@@ -114,7 +114,7 @@ const useStyles = makeStyles(
       color: theme.palette.primary.main,
     },
   }),
-  { name: 'RaReferenceField' }
+  { name: 'RaReferenceField' },
 );
 
 // useful to prevent click bubbling in a datagrid with rowClick
@@ -163,7 +163,7 @@ export const ReferenceFieldView = ({
         {cloneElement(Children.only(children), {
           className: classnames(
             children.props.className,
-            classes.link // force color override for Typography components
+            classes.link, // force color override for Typography components
           ),
           record: referenceRecord,
           resource: reference,

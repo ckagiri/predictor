@@ -53,7 +53,7 @@ const useStyles = makeStyles(
       transform: 'rotate(0deg)',
     },
   }),
-  { name: 'RaDatagrid' }
+  { name: 'RaDatagrid' },
 );
 
 /**
@@ -123,7 +123,7 @@ function Datagrid({ classes: classesOverride, ...props }) {
       event.stopPropagation();
       setSort(event.currentTarget.dataset.sort);
     },
-    [setSort]
+    [setSort],
   );
 
   const handleSelectAll = useCallback(
@@ -131,13 +131,13 @@ function Datagrid({ classes: classesOverride, ...props }) {
       if (event.target.checked) {
         const all = ids.concat(selectedIds.filter(id => !ids.includes(id)));
         onSelect(
-          isRowSelectable ? all.filter(id => isRowSelectable(data[id])) : all
+          isRowSelectable ? all.filter(id => isRowSelectable(data[id])) : all,
         );
       } else {
         onSelect([]);
       }
     },
-    [data, ids, onSelect, isRowSelectable, selectedIds]
+    [data, ids, onSelect, isRowSelectable, selectedIds],
   );
 
   /**
@@ -215,7 +215,7 @@ function Datagrid({ classes: classesOverride, ...props }) {
                 resource={resource}
                 updateSort={updateSort}
               />
-            ) : null
+            ) : null,
           )}
         </TableRow>
       </TableHead>
@@ -238,7 +238,7 @@ function Datagrid({ classes: classesOverride, ...props }) {
           isRowSelectable,
           version,
         },
-        children
+        children,
       )}
     </Table>
   );

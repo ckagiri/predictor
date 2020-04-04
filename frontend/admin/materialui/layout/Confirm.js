@@ -35,7 +35,7 @@ const useStyles = makeStyles(
       paddingRight: '0.5em',
     },
   }),
-  { name: 'RaConfirm' }
+  { name: 'RaConfirm' },
 );
 
 /**
@@ -78,7 +78,7 @@ const Confirm = ({
       e.stopPropagation();
       onConfirm();
     },
-    [onConfirm]
+    [onConfirm],
   );
 
   const handleClick = useCallback(e => {

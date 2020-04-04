@@ -25,7 +25,7 @@ const useStyles = makeStyles(
       minHeight: theme.spacing(8),
       height: theme.spacing(8),
       transition: `${theme.transitions.create(
-        'height'
+        'height',
       )}, ${theme.transitions.create('min-height')}`,
     },
     buttons: {},
@@ -38,7 +38,7 @@ const useStyles = makeStyles(
       flex: '0 0 auto',
     },
   }),
-  { name: 'RaBulkActionsToolbar' }
+  { name: 'RaBulkActionsToolbar' },
 );
 
 const BulkActionsToolbar = ({
@@ -77,7 +77,7 @@ const BulkActionsToolbar = ({
             filterValues,
             resource,
             selectedIds,
-          })
+          }),
         )}
       </TopToolbar>
     </Toolbar>

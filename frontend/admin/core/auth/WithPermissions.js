@@ -1,7 +1,4 @@
-import {
-  Children,
-  createElement,
-} from 'react';
+import { Children, createElement } from 'react';
 
 import warning from '../util/warning';
 import useAuthenticated from './useAuthenticated';
@@ -53,9 +50,9 @@ const WithPermissions = ({
 }) => {
   warning(
     (render && children && !isEmptyChildren(children)) ||
-    (render && component) ||
-    (component && children && !isEmptyChildren(children)),
-    'You should only use one of the `component`, `render` and `children` props in <WithPermissions>'
+      (render && component) ||
+      (component && children && !isEmptyChildren(children)),
+    'You should only use one of the `component`, `render` and `children` props in <WithPermissions>',
   );
 
   useAuthenticated(authParams);

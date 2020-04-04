@@ -34,7 +34,7 @@ const useGetPermissions = () => {
   const authProvider = useAuthProvider();
   const getPermissions = useCallback(
     (params = {}) => authProvider.getPermissions(params),
-    [authProvider]
+    [authProvider],
   );
 
   return authProvider ? getPermissions : getPermissionsWithoutProvider;

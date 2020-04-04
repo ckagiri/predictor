@@ -28,7 +28,7 @@ const getFetchedAt = (
   newRecordIds = [],
   oldRecordFetchedAt = {},
   now = new Date(),
-  cacheDuration = defaultCacheDuration
+  cacheDuration = defaultCacheDuration,
 ) => {
   // prepare new records and timestamp them
   const newFetchedAt = {};
@@ -40,7 +40,7 @@ const getFetchedAt = (
 
   const stillValidFetchedAt = pickBy(
     oldRecordFetchedAt,
-    date => date > latestValidDate
+    date => date > latestValidDate,
   );
 
   return {

@@ -7,10 +7,7 @@ import { DELETE, DELETE_MANY } from '../../../../core';
 
 const initialState = [];
 
-const selectedIdsReducer = (
-  previousState = initialState,
-  action
-) => {
+const selectedIdsReducer = (previousState = initialState, action) => {
   if (action.type === SET_LIST_SELECTED_IDS) {
     return action.payload;
   }

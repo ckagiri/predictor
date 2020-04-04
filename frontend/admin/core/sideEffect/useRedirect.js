@@ -24,12 +24,7 @@ const useRedirect = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   return useCallback(
-    (
-      redirectTo,
-      basePath = '',
-      id,
-      data
-    ) => {
+    (redirectTo, basePath = '', id, data) => {
       if (!redirectTo) {
         dispatch(refreshView());
         return;
@@ -37,7 +32,7 @@ const useRedirect = () => {
 
       history.push(resolveRedirectTo(redirectTo, basePath, id, data));
     },
-    [dispatch, history]
+    [dispatch, history],
   );
 };
 

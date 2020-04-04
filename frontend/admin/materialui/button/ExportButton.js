@@ -37,8 +37,8 @@ const ExportButton = ({
               data,
               fetchRelatedRecords(dataProvider),
               dataProvider,
-              resource
-            )
+              resource,
+            ),
         )
         .catch(error => {
           console.error(error);
@@ -57,7 +57,7 @@ const ExportButton = ({
       onClick,
       resource,
       sort,
-    ]
+    ],
   );
 
   return (
@@ -70,11 +70,7 @@ const ExportButton = ({
 const defaultIcon = <DownloadIcon />;
 const defaultFilter = {};
 
-const sanitizeRestProps = ({
-  basePath,
-  exporter,
-  ...rest
-}) => rest;
+const sanitizeRestProps = ({ basePath, exporter, ...rest }) => rest;
 
 ExportButton.propTypes = {
   basePath: PropTypes.string,

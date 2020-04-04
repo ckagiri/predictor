@@ -32,9 +32,7 @@ import getFetchedAt from '../../../util/getFetchedAt';
 /**
  * Make the fetchedAt property non enumerable
  */
-export const hideFetchedAt = (
-  records
-) => {
+export const hideFetchedAt = records => {
   Object.defineProperty(records, 'fetchedAt', {
     enumerable: false,
     configurable: false,
@@ -50,16 +48,13 @@ export const hideFetchedAt = (
  * The cached data is displayed before fetching, and stale data is removed
  * only once fresh data is fetched.
  */
-export const addRecords = (
-  newRecords = [],
-  oldRecords
-) => {
+export const addRecords = (newRecords = [], oldRecords) => {
   const newRecordsById = {};
   newRecords.forEach(record => (newRecordsById[record.id] = record));
 
   const newFetchedAt = getFetchedAt(
     newRecords.map(({ id }) => id),
-    oldRecords.fetchedAt
+    oldRecords.fetchedAt,
   );
 
   const records = { fetchedAt: newFetchedAt };
@@ -69,7 +64,7 @@ export const addRecords = (
         ? isEqual(newRecordsById[id], oldRecords[id])
           ? oldRecords[id] // do not change the record to avoid a redraw
           : newRecordsById[id]
-        : oldRecords[id])
+        : oldRecords[id]),
   );
 
   return hideFetchedAt(records);
@@ -78,10 +73,7 @@ export const addRecords = (
 /**
  * Remove records from the pool
  */
-const removeRecords = (
-  removedRecordIds = [],
-  oldRecords
-) => {
+const removeRecords = (removedRecordIds = [], oldRecords) => {
   const records = Object.entries(oldRecords)
     .filter(([key]) => !removedRecordIds.includes(key))
     .reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {
@@ -96,10 +88,7 @@ const removeRecords = (
 
 const initialState = hideFetchedAt({ fetchedAt: {} });
 
-const dataReducer = (
-  previousState = initialState,
-  { payload, meta }
-) => {
+const dataReducer = (previousState = initialState, { payload, meta }) => {
   if (meta && meta.optimistic) {
     if (meta.fetch === UPDATE) {
       const updatedRecord = {

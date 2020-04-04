@@ -24,16 +24,10 @@ describe('<CoreAdminRouter>', () => {
       const { getByText } = renderWithRedux(
         <Router history={history}>
           <CoreAdminRouter {...defaultProps} layout={Layout}>
-            <Resource
-              name="posts"
-              list={() => <span>PostList</span>}
-            />
-            <Resource
-              name="comments"
-              list={() => <span>CommentList</span>}
-            />
+            <Resource name="posts" list={() => <span>PostList</span>} />
+            <Resource name="comments" list={() => <span>CommentList</span>} />
           </CoreAdminRouter>
-        </Router>
+        </Router>,
       );
       expect(getByText('Layout')).toBeDefined();
       history.push('/posts');
@@ -50,17 +44,14 @@ describe('<CoreAdminRouter>', () => {
         <Router history={history}>
           <CoreAdminRouter {...defaultProps} layout={Layout}>
             {() => [
-              <Resource
-                name="posts"
-                list={() => <span>PostList</span>}
-              />,
+              <Resource name="posts" list={() => <span>PostList</span>} />,
               <Resource
                 name="comments"
                 list={() => <span>CommentList</span>}
               />,
             ]}
           </CoreAdminRouter>
-        </Router>
+        </Router>,
       );
       await new Promise(resolve => setTimeout(resolve, 10));
       expect(getByText('Layout')).toBeDefined();
@@ -101,10 +92,10 @@ describe('<CoreAdminRouter>', () => {
               ]}
             </CoreAdminRouter>
           </Router>
-        </AuthContext.Provider>
+        </AuthContext.Provider>,
       );
       // Timeout needed because of the authProvider call
-      await waitFor(() => { });
+      await waitFor(() => {});
       expect(getByText('Layout')).toBeDefined();
       history.push('/posts');
       expect(getByText('PostList')).toBeDefined();
@@ -112,5 +103,4 @@ describe('<CoreAdminRouter>', () => {
       expect(getByText('CommentList')).toBeDefined();
     });
   });
-
 });

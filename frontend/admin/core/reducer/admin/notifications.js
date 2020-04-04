@@ -4,10 +4,7 @@ import {
 } from '../../actions/notificationActions';
 import { UNDO } from '../../actions/undoActions';
 
-const notificationsReducer = (
-  previousState = [],
-  action
-) => {
+const notificationsReducer = (previousState = [], action) => {
   switch (action.type) {
     case SHOW_NOTIFICATION:
       return previousState.concat(action.payload);

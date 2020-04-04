@@ -29,12 +29,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-const Notification = ({
-  type,
-  className,
-  autoHideDuration,
-  ...rest
-}) => {
+const Notification = ({ type, className, autoHideDuration, ...rest }) => {
   const [open, setOpen] = useState(false);
   const notification = useSelector(getNotification);
   const dispatch = useDispatch();
@@ -79,7 +74,7 @@ const Notification = ({
       ContentProps={{
         className: classnames(
           styles[(notification && notification.type) || type],
-          className
+          className,
         ),
       }}
       action={

@@ -23,7 +23,7 @@ const useStyles = makeStyles(
       marginRight: theme.spacing(1),
     },
   }),
-  { name: 'RaLoginForm' }
+  { name: 'RaLoginForm' },
 );
 
 const Input = ({
@@ -31,14 +31,14 @@ const Input = ({
   input: inputProps, // eslint-disable-line react/prop-types
   ...props
 }) => (
-    <TextField
-      error={!!(touched && error)}
-      helperText={touched && error}
-      {...inputProps}
-      {...props}
-      fullWidth
-    />
-  );
+  <TextField
+    error={!!(touched && error)}
+    helperText={touched && error}
+    {...inputProps}
+    {...props}
+    fullWidth
+  />
+);
 
 const LoginForm = ({ redirectTo }) => {
   const [loading, setLoading] = useSafeSetState(false);
@@ -71,9 +71,9 @@ const LoginForm = ({ redirectTo }) => {
           typeof error === 'string'
             ? error
             : typeof error === 'undefined' || !error.message
-              ? 'ra.auth.sign_in_error'
-              : error.message,
-          'warning'
+            ? 'ra.auth.sign_in_error'
+            : error.message,
+          'warning',
         );
       });
   };

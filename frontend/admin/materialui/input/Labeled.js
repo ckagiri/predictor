@@ -59,7 +59,7 @@ export const Labeled = ({
     const name = children && children.type && children.type.name;
 
     throw new Error(
-      `Cannot create label for component <${name}>: You must set either the label or source props. You can also disable automated label insertion by setting 'addLabel: false' in the component default props`
+      `Cannot create label for component <${name}>: You must set either the label or source props. You can also disable automated label insertion by setting 'addLabel: false' in the component default props`,
     );
   }
   const restProps = fullWidth ? { ...rest, fullWidth } : rest;
@@ -82,10 +82,10 @@ export const Labeled = ({
       <div className={classes.value}>
         {children && typeof children.type !== 'string'
           ? React.cloneElement(children, {
-            input,
-            resource,
-            ...restProps,
-          })
+              input,
+              resource,
+              ...restProps,
+            })
           : children}
       </div>
     </FormControl>

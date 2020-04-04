@@ -42,9 +42,7 @@ const fetchMap = {
  *
  * @returns {Object} A dataProvider that react-admin can use
  */
-const convertLegacyDataProvider = (
-  legacyDataProvider
-) => {
+const convertLegacyDataProvider = legacyDataProvider => {
   const proxy = new Proxy(defaultDataProvider, {
     get(_, name) {
       return (resource, params) => {

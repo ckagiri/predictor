@@ -53,22 +53,22 @@ class TestContext extends Component {
 
     this.storeWithDefault = enableReducers
       ? createAdminStore({
-        initialState: merge({}, defaultStore, initialState),
-        dataProvider: convertLegacyDataProvider(() =>
-          Promise.resolve(dataProviderDefaultResponse)
-        ),
-        history: createMemoryHistory(),
-      })
+          initialState: merge({}, defaultStore, initialState),
+          dataProvider: convertLegacyDataProvider(() =>
+            Promise.resolve(dataProviderDefaultResponse),
+          ),
+          history: createMemoryHistory(),
+        })
       : createStore(() => merge({}, defaultStore, initialState));
   }
 
   renderChildren = () => {
     const { children } = this.props;
     return typeof children === 'function'
-      ? (children)({
-        store: this.storeWithDefault,
-        history: this.history,
-      })
+      ? children({
+          store: this.storeWithDefault,
+          history: this.history,
+        })
       : children;
   };
 

@@ -52,8 +52,8 @@ const DatagridBody = ({
           selected: selectedIds.includes(id),
           style: rowStyle ? rowStyle(data[id], rowIndex) : null,
         },
-        children
-      )
+        children,
+      ),
     )}
   </TableBody>
 );

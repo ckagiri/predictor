@@ -6,7 +6,7 @@ export const crudDelete = (
   previousData,
   basePath,
   redirectTo = 'list',
-  refresh = true
+  refresh = true,
 ) => ({
   type: CRUD_DELETE,
   payload: { id, previousData },

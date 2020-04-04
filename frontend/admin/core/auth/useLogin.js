@@ -36,7 +36,7 @@ const useLogin = () => {
         history.push(nextPathName || pathName);
         return ret;
       }),
-    [authProvider, history, nextPathName]
+    [authProvider, history, nextPathName],
   );
 
   const loginWithoutProvider = useCallback(
@@ -44,7 +44,7 @@ const useLogin = () => {
       history.push(defaultAuthParams.afterLoginUrl);
       return Promise.resolve();
     },
-    [history]
+    [history],
   );
 
   return authProvider ? login : loginWithoutProvider;

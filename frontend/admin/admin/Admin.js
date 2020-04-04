@@ -78,17 +78,17 @@ const Admin = ({
 }) => {
   if (appLayout) {
     console.warn(
-      'You are using deprecated prop "appLayout", it was replaced by "layout", see https://github.com/marmelab/react-admin/issues/2918'
+      'You are using deprecated prop "appLayout", it was replaced by "layout", see https://github.com/marmelab/react-admin/issues/2918',
     );
   }
   if (loginPage === true && process.env.NODE_ENV !== 'production') {
     console.warn(
-      'You passed true to the loginPage prop. You must either pass false to disable it or a component class to customize it'
+      'You passed true to the loginPage prop. You must either pass false to disable it or a component class to customize it',
     );
   }
   if (locale) {
     console.warn(
-      'You are using deprecated prop "locale". You must now pass the initial locale to your i18nProvider'
+      'You are using deprecated prop "locale". You must now pass the initial locale to your i18nProvider',
     );
   }
 

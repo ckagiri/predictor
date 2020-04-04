@@ -1,11 +1,6 @@
 import { GET_LIST } from '../../core';
 
-export const crudGetList = (
-  resource,
-  pagination,
-  sort,
-  filter
-) => ({
+export const crudGetList = (resource, pagination, sort, filter) => ({
   type: CRUD_GET_LIST,
   payload: { pagination, sort, filter },
   meta: {

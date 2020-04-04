@@ -12,9 +12,9 @@ function* handleCallback({
   yield call(callback, { payload, requestPayload, error });
 }
 
-export default function* () {
+export default function*() {
   yield takeEvery(
     action => action.meta && action.meta.callback,
-    handleCallback
+    handleCallback,
   );
 }

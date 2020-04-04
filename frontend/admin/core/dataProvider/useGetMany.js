@@ -61,17 +61,11 @@ const DataProviderOptions = { action: CRUD_GET_MANY };
  *      );
  * };
  */
-const useGetMany = (
-  resource,
-  ids,
-  options = {}
-) => {
+const useGetMany = (resource, ids, options = {}) => {
   // we can't use useQueryWithStore here because we're aggregating queries first
   // therefore part of the useQueryWithStore logic will have to be repeated below
   const selectMany = useMemo(makeGetManySelector, []);
-  const data = useSelector(state =>
-    selectMany(state, resource, ids)
-  );
+  const data = useSelector(state => selectMany(state, resource, ids));
   const [state, setState] = useSafeSetState({
     data,
     error: null,
@@ -130,7 +124,7 @@ const makeGetManySelector = () =>
     (resources, resource, ids) =>
       resources[resource]
         ? ids.map(id => resources[resource].data[id])
-        : ids.map(id => undefined)
+        : ids.map(id => undefined),
   );
 
 /**
@@ -176,20 +170,20 @@ const callQueries = debounce(() => {
             }));
             if (onSuccess) {
               const subData = ids.map(
-                id => response.data.find(datum => datum.id == id) // eslint-disable-line eqeqeq
+                id => response.data.find(datum => datum.id == id), // eslint-disable-line eqeqeq
               );
               onSuccess({ data: subData });
             }
-          })
-        )
+          }),
+        ),
       )
       .catch(error =>
         ReactDOM.unstable_batchedUpdates(() =>
           queries.forEach(({ setState, onFailure }) => {
             setState({ error, loading: false, loaded: false });
             onFailure && onFailure(error);
-          })
-        )
+          }),
+        ),
       );
     delete queriesToCall[resource];
   });

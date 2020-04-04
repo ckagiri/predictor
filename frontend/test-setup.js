@@ -18,9 +18,9 @@ jest.mock('popper.js', () => {
   class Popper {
     constructor() {
       return {
-        destroy: () => { },
-        scheduleUpdate: () => { },
-        update: () => { },
+        destroy: () => {},
+        scheduleUpdate: () => {},
+        update: () => {},
       };
     }
   }
@@ -49,7 +49,7 @@ jest.mock('popper.js', () => {
 // https://github.com/facebook/react/issues/14769
 const originalError = console.error;
 jest.spyOn(console, 'error').mockImplementation((...args) => {
-  if (/Warning.*not wrapped in act/.test(args[ 0 ])) {
+  if (/Warning.*not wrapped in act/.test(args[0])) {
     return;
   }
   originalError.call(console, ...args);

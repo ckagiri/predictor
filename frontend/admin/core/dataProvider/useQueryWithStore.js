@@ -16,8 +16,8 @@ const isEmptyList = data =>
   Array.isArray(data)
     ? data.length === 0
     : data &&
-    Object.keys(data).length === 0 &&
-    data.hasOwnProperty('fetchedAt');
+      Object.keys(data).length === 0 &&
+      data.hasOwnProperty('fetchedAt');
 
 /**
  * Default cache selector. Allows to cache responses by default.
@@ -84,7 +84,7 @@ const useQueryWithStore = (
   query,
   options = { action: 'CUSTOM_QUERY' },
   dataSelector = defaultDataSelector(query),
-  totalSelector = defaultTotalSelector
+  totalSelector = defaultTotalSelector,
 ) => {
   const { type, resource, payload } = query;
   const data = useSelector(dataSelector);

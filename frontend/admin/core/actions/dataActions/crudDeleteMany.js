@@ -1,11 +1,6 @@
 import { DELETE_MANY } from '../../core';
 
-export const crudDeleteMany = (
-  resource,
-  ids,
-  basePath,
-  refresh = true
-) => ({
+export const crudDeleteMany = (resource, ids, basePath, refresh = true) => ({
   type: CRUD_DELETE_MANY,
   payload: { ids },
   meta: {

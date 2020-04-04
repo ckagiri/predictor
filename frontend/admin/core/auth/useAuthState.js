@@ -48,10 +48,10 @@ const useAuthState = params => {
   useEffect(() => {
     checkAuth(params, false)
       .then(() =>
-        setState({ loading: false, loaded: true, authenticated: true })
+        setState({ loading: false, loaded: true, authenticated: true }),
       )
       .catch(() =>
-        setState({ loading: false, loaded: true, authenticated: false })
+        setState({ loading: false, loaded: true, authenticated: false }),
       );
   }, [checkAuth, params, setState]);
   return state;

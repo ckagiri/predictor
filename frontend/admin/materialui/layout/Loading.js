@@ -30,7 +30,7 @@ const useStyles = makeStyles(
       margin: '0 1em',
     },
   }),
-  { name: 'RaLoading' }
+  { name: 'RaLoading' },
 );
 
 const Loading = ({

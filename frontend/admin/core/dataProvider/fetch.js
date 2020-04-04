@@ -2,10 +2,11 @@ import HttpError from './HttpError';
 import { stringify } from 'query-string';
 
 export const createHeadersFromOptions = options => {
-  const requestHeaders = (options.headers ||
+  const requestHeaders =
+    options.headers ||
     new Headers({
       Accept: 'application/json',
-    }));
+    });
   if (
     !requestHeaders.has('Content-Type') &&
     !(options && (!options.method || options.method === 'GET')) &&
@@ -30,7 +31,7 @@ export const fetchJson = (url, options = {}) => {
         statusText: response.statusText,
         headers: response.headers,
         body: text,
-      }))
+      })),
     )
     .then(({ status, statusText, headers, body }) => {
       let json;
@@ -41,7 +42,7 @@ export const fetchJson = (url, options = {}) => {
       }
       if (status < 200 || status >= 300) {
         return Promise.reject(
-          new HttpError((json && json.message) || statusText, status, json)
+          new HttpError((json && json.message) || statusText, status, json),
         );
       }
       return Promise.resolve({ status, headers, body, json });
@@ -68,8 +69,8 @@ export const flattenObject = (value, path = []) => {
     return Object.assign(
       {},
       ...Object.keys(value).map(key =>
-        flattenObject(value[key], path.concat([key]))
-      )
+        flattenObject(value[key], path.concat([key])),
+      ),
     );
   } else {
     return path.length ? { [path.join('.')]: value } : value;

@@ -49,7 +49,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
     return httpClient(url).then(({ headers, json }) => {
       if (!headers.has('x-total-count')) {
         throw new Error(
-          'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
+          'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?',
         );
       }
       return {
@@ -59,7 +59,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
             .get('x-total-count')
             .split('/')
             .pop(),
-          10
+          10,
         ),
       };
     });
@@ -94,7 +94,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
     return httpClient(url).then(({ headers, json }) => {
       if (!headers.has('x-total-count')) {
         throw new Error(
-          'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?'
+          'The X-Total-Count header is missing in the HTTP Response. The jsonServer Data Provider expects responses for lists of resources to contain this header with the total number of results to build the pagination. If you are using CORS, did you declare X-Total-Count in the Access-Control-Expose-Headers header?',
         );
       }
       return {
@@ -104,7 +104,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
             .get('x-total-count')
             .split('/')
             .pop(),
-          10
+          10,
         ),
       };
     });
@@ -123,8 +123,8 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
         httpClient(`${apiUrl}/${resource}/${id}`, {
           method: 'PUT',
           body: JSON.stringify(params.data),
-        })
-      )
+        }),
+      ),
     ).then(responses => ({ data: responses.map(({ json }) => json.id) })),
 
   create: (resource, params) =>
@@ -146,7 +146,7 @@ export default (apiUrl, httpClient = fetchUtils.fetchJson) => ({
       params.ids.map(id =>
         httpClient(`${apiUrl}/${resource}/${id}`, {
           method: 'DELETE',
-        })
-      )
+        }),
+      ),
     ).then(responses => ({ data: responses.map(({ json }) => json.id) })),
 });

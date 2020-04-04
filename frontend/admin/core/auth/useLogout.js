@@ -53,7 +53,7 @@ const useLogout = () => {
         });
         return redirectToFromProvider;
       }),
-    [authProvider, history, dispatch]
+    [authProvider, history, dispatch],
   );
 
   const logoutWithoutProvider = useCallback(
@@ -67,7 +67,7 @@ const useLogout = () => {
       dispatch(clearState());
       return Promise.resolve();
     },
-    [dispatch, history]
+    [dispatch, history],
   );
 
   return authProvider ? logout : logoutWithoutProvider;

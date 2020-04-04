@@ -12,10 +12,7 @@ const defaultState = {
   viewVersion: 0,
 };
 
-const uiReducer = (
-  previousState = defaultState,
-  action
-) => {
+const uiReducer = (previousState = defaultState, action) => {
   switch (action.type) {
     case TOGGLE_SIDEBAR:
       return {

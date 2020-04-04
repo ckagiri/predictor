@@ -178,10 +178,10 @@ const mapStateToProps = state => ({
 const EnhancedLayout = compose(
   connect(
     mapStateToProps,
-    {} // Avoid connect passing dispatch in props
+    {}, // Avoid connect passing dispatch in props
   ),
   withRouter,
-  withStyles(styles)
+  withStyles(styles),
 )(Layout);
 
 const LayoutWithTheme = ({ theme: themeOverride, ...props }) => {

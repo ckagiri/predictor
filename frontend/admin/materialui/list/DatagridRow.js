@@ -47,7 +47,7 @@ const DatagridRow = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [nbColumns, setNbColumns] = useState(
-    computeNbColumns(expand, children, hasBulkActions)
+    computeNbColumns(expand, children, hasBulkActions),
   );
   useEffect(() => {
     // Fields can be hidden dynamically based on permissions;
@@ -66,14 +66,14 @@ const DatagridRow = ({
       setExpanded(!expanded);
       event.stopPropagation();
     },
-    [expanded]
+    [expanded],
   );
   const handleToggleSelection = useCallback(
     event => {
       onToggleItem(id);
       event.stopPropagation();
     },
-    [id, onToggleItem]
+    [id, onToggleItem],
   );
   const handleClick = useCallback(
     async event => {
@@ -110,7 +110,7 @@ const DatagridRow = ({
       id,
       record,
       rowClick,
-    ]
+    ],
   );
 
   return (
@@ -151,12 +151,12 @@ const DatagridRow = ({
               key={`${id}-${field.props.source || index}`}
               className={classnames(
                 `column-${field.props.source}`,
-                classes.rowCell
+                classes.rowCell,
               )}
               record={record}
               {...{ field, basePath, resource }}
             />
-          ) : null
+          ) : null,
         )}
       </TableRow>
       {expand && expanded && (

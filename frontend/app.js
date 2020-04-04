@@ -73,7 +73,7 @@ if (module.hot) {
   // Hot reloadable React components
   // modules.hot.accept does not accept dynamic dependencies,
   // have to be constants at compile-time
-  module.hot.accept([ 'admin/admin/Admin' ], () => {
+  module.hot.accept(['admin/admin/Admin'], () => {
     ReactDOM.unmountComponentAtNode(MOUNT_NODE);
     render();
   });

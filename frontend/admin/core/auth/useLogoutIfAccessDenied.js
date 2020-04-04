@@ -47,13 +47,13 @@ const useLogoutIfAccessDenied = () => {
             e && e.redirectTo
               ? e.redirectTo
               : error && error.redirectTo
-                ? error.redirectto
-                : undefined;
+              ? error.redirectto
+              : undefined;
           logout({}, redirectTo);
           notify('Your session has ended, please reconnect.', 'warning');
           return true;
         }),
-    [authProvider, logout, notify]
+    [authProvider, logout, notify],
   );
   return authProvider
     ? logoutIfAccessDenied

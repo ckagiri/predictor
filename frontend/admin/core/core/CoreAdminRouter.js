@@ -1,9 +1,4 @@
-import React, {
-  Children,
-  useEffect,
-  cloneElement,
-  createElement,
-} from 'react';
+import React, { Children, useEffect, cloneElement, createElement } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import RoutesWithLayout from './RoutesWithLayout';
@@ -15,12 +10,12 @@ const CoreAdminRouter = props => {
   const doLogout = useLogout();
   const { authenticated } = useAuthState();
   const oneSecondHasPassed = useTimeout(1000);
-  const [ computedChildren, setComputedChildren ] = useSafeSetState([]);
+  const [computedChildren, setComputedChildren] = useSafeSetState([]);
   useEffect(() => {
     if (typeof props.children === 'function') {
       initializeResources();
     }
-  }, [ authenticated ]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [authenticated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const initializeResources = async () => {
     try {
@@ -28,9 +23,7 @@ const CoreAdminRouter = props => {
       const resolveChildren = props.children;
 
       const childrenFuncResult = resolveChildren(permissions);
-      setComputedChildren(
-        childrenFuncResult.filter(child => child)
-      );
+      setComputedChildren(childrenFuncResult.filter(child => child));
     } catch (error) {
       console.error(error);
       doLogout();
@@ -68,24 +61,21 @@ const CoreAdminRouter = props => {
     }
   }
 
-  const childrenToRender = typeof children === 'function'
-    ? computedChildren
-    : children;
+  const childrenToRender =
+    typeof children === 'function' ? computedChildren : children;
 
   return (
     <div>
       {// Render every resources children outside the React Router Switch
-        // as we need all of them and not just the one rendered
-        Children.map(
-          childrenToRender,
-          child =>
-            cloneElement(child, {
-              key: child.props.name,
-              // The context prop instructs the Resource component to not render anything
-              // but simply to register itself as a known resource
-              intent: 'registration',
-            })
-        )}
+      // as we need all of them and not just the one rendered
+      Children.map(childrenToRender, child =>
+        cloneElement(child, {
+          key: child.props.name,
+          // The context prop instructs the Resource component to not render anything
+          // but simply to register itself as a known resource
+          intent: 'registration',
+        }),
+      )}
       <Switch>
         <Route
           path="/"
@@ -104,15 +94,13 @@ const CoreAdminRouter = props => {
                 dashboard={dashboard}
                 title={title}
               >
-                {Children.map(
-                  childrenToRender,
-                  child =>
-                    cloneElement(child, {
-                      key: child.props.name,
-                      intent: 'route',
-                    })
+                {Children.map(childrenToRender, child =>
+                  cloneElement(child, {
+                    key: child.props.name,
+                    intent: 'route',
+                  }),
                 )}
-              </RoutesWithLayout>
+              </RoutesWithLayout>,
             )
           }
         />

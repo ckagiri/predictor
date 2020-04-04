@@ -1,16 +1,7 @@
-import React, {
-  useRef,
-  useEffect,
-  useMemo,
-} from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {
-  Card,
-  Avatar,
-  createMuiTheme,
-  makeStyles,
-} from '@material-ui/core';
+import { Card, Avatar, createMuiTheme, makeStyles } from '@material-ui/core';
 import { ThemeProvider } from '@material-ui/styles';
 import LockIcon from '@material-ui/icons/Lock';
 import { useHistory } from 'react-router-dom';
@@ -45,7 +36,7 @@ const useStyles = makeStyles(
       backgroundColor: theme.palette.secondary[500],
     },
   }),
-  { name: 'RaLogin' }
+  { name: 'RaLogin' },
 );
 
 /**

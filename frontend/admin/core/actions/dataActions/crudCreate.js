@@ -1,11 +1,6 @@
 import { CREATE } from '../../core';
 
-export const crudCreate = (
-  resource,
-  data,
-  basePath,
-  redirectTo = 'edit'
-) => ({
+export const crudCreate = (resource, data, basePath, redirectTo = 'edit') => ({
   type: CRUD_CREATE,
   payload: { data },
   meta: {

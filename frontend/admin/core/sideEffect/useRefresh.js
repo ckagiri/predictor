@@ -14,7 +14,7 @@ const useRefresh = () => {
   const dispatch = useDispatch();
   return useCallback(
     (doRefresh = true) => doRefresh && dispatch(refreshView()),
-    [dispatch]
+    [dispatch],
   );
 };
 

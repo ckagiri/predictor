@@ -13,10 +13,7 @@ const oppositeOrder = direction =>
 /**
  * This reducer is for the react-router query string, NOT for redux.
  */
-const queryReducer = (
-  previousState,
-  { type, payload }
-) => {
+const queryReducer = (previousState, { type, payload }) => {
   switch (type) {
     case SET_SORT:
       if (payload.sort === previousState.sort) {

@@ -30,18 +30,14 @@ import useQueryWithStore from './useQueryWithStore';
  *     return <div>User {data.username}</div>;
  * };
  */
-const useGetOne = (
-  resource,
-  id,
-  options
-) =>
+const useGetOne = (resource, id, options) =>
   useQueryWithStore(
     { type: 'getOne', resource, payload: { id } },
     options,
     state =>
       state.admin.resources[resource]
         ? state.admin.resources[resource].data[id]
-        : null
+        : null,
   );
 
 export default useGetOne;

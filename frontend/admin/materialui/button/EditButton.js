@@ -13,16 +13,16 @@ const EditButton = ({
   icon = defaultIcon,
   ...rest
 }) => (
-    <Button
-      component={Link}
-      to={linkToRecord(basePath, record && record.id)}
-      label={label}
-      onClick={stopPropagation}
-      {...rest}
-    >
-      {icon}
-    </Button>
-  );
+  <Button
+    component={Link}
+    to={linkToRecord(basePath, record && record.id)}
+    label={label}
+    onClick={stopPropagation}
+    {...rest}
+  >
+    {icon}
+  </Button>
+);
 
 const defaultIcon = <ContentCreate />;
 

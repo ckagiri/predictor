@@ -18,7 +18,7 @@ const useDeclarativeSideEffects = () => {
       { onSuccess, onFailure } = {
         onSuccess: undefined,
         onFailure: undefined,
-      }
+      },
     ) => {
       const convertToFunctionSideEffect = (resource, sideEffects) => {
         if (!sideEffects || typeof sideEffects === 'function') {
@@ -41,7 +41,7 @@ const useDeclarativeSideEffects = () => {
             notify(
               notification.body,
               notification.level,
-              notification.messageArgs
+              notification.messageArgs,
             );
           }
 
@@ -64,7 +64,7 @@ const useDeclarativeSideEffects = () => {
         onFailure: convertToFunctionSideEffect(resource, onFailure),
       };
     },
-    [notify, redirect, refresh, unselectAll]
+    [notify, redirect, refresh, unselectAll],
   );
 };
 

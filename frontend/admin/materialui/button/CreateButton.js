@@ -32,16 +32,16 @@ const CreateButton = ({
       {icon}
     </Fab>
   ) : (
-      <Button
-        component={Link}
-        to={`${basePath}/create`}
-        className={className}
-        label={label}
-        {...rest}
-      >
-        {icon}
-      </Button>
-    );
+    <Button
+      component={Link}
+      to={`${basePath}/create`}
+      className={className}
+      label={label}
+      {...rest}
+    >
+      {icon}
+    </Button>
+  );
 };
 
 const defaultIcon = <ContentAdd />;
@@ -62,7 +62,7 @@ const useStyles = makeStyles(
       color: 'inherit',
     },
   }),
-  { name: 'RaCreateButton' }
+  { name: 'RaCreateButton' },
 );
 
 CreateButton.propTypes = {

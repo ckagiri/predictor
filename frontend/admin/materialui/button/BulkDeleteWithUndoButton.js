@@ -39,7 +39,7 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'RaBulkDeleteWithUndoButton' }
+  { name: 'RaBulkDeleteWithUndoButton' },
 );
 
 const BulkDeleteWithUndoButton = ({
@@ -64,7 +64,7 @@ const BulkDeleteWithUndoButton = ({
         'ra.notification.deleted',
         'info',
         { smart_count: selectedIds.length },
-        true
+        true,
       );
       unselectAll(resource);
       refresh();
@@ -74,7 +74,7 @@ const BulkDeleteWithUndoButton = ({
         typeof error === 'string'
           ? error
           : error.message || 'ra.notification.http_error',
-        'warning'
+        'warning',
       ),
     undoable: true,
   });

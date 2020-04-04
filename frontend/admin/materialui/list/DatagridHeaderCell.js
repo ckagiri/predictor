@@ -20,7 +20,7 @@ const useStyles = makeStyles(
       },
     },
   },
-  { name: 'RaDatagridHeaderCell' }
+  { name: 'RaDatagridHeaderCell' },
 );
 
 export const DatagridHeaderCell = ({
@@ -95,5 +95,5 @@ DatagridHeaderCell.propTypes = {
 export default shouldUpdate(
   (props, nextProps) =>
     props.updateSort !== nextProps.updateSort ||
-    (nextProps.isSorting && props.sortable !== nextProps.sortable)
+    (nextProps.isSorting && props.sortable !== nextProps.sortable),
 )(DatagridHeaderCell);

@@ -12,7 +12,7 @@ export const showNotification = (
   // The type of the notification
   type = 'info',
   // Specify additional parameters of notification
-  notificationOptions
+  notificationOptions,
 ) => ({
   type: SHOW_NOTIFICATION,
   payload: {

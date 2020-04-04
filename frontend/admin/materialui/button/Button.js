@@ -36,9 +36,7 @@ const Button = ({
 }) => {
   const translate = useTranslate();
   const classes = useStyles({ classes: classesOverride });
-  const isXSmall = useMediaQuery(theme =>
-    theme.breakpoints.down('xs')
-  );
+  const isXSmall = useMediaQuery(theme => theme.breakpoints.down('xs'));
 
   return isXSmall ? (
     label && !disabled ? (
@@ -53,46 +51,46 @@ const Button = ({
         </IconButton>
       </Tooltip>
     ) : (
-        <IconButton
-          className={className}
-          color={color}
-          disabled={disabled}
-          {...rest}
-        >
-          {children}
-        </IconButton>
-      )
-  ) : (
-      <MuiButton
-        className={classnames(classes.button, className)}
+      <IconButton
+        className={className}
         color={color}
-        size={size}
-        aria-label={label ? translate(label, { _: label }) : undefined}
         disabled={disabled}
         {...rest}
       >
-        {alignIcon === 'left' &&
-          children &&
-          React.cloneElement(children, {
-            className: classes[`${size}Icon`],
+        {children}
+      </IconButton>
+    )
+  ) : (
+    <MuiButton
+      className={classnames(classes.button, className)}
+      color={color}
+      size={size}
+      aria-label={label ? translate(label, { _: label }) : undefined}
+      disabled={disabled}
+      {...rest}
+    >
+      {alignIcon === 'left' &&
+        children &&
+        React.cloneElement(children, {
+          className: classes[`${size}Icon`],
+        })}
+      {label && (
+        <span
+          className={classnames({
+            [classes.label]: alignIcon === 'left',
+            [classes.labelRightIcon]: alignIcon !== 'left',
           })}
-        {label && (
-          <span
-            className={classnames({
-              [classes.label]: alignIcon === 'left',
-              [classes.labelRightIcon]: alignIcon !== 'left',
-            })}
-          >
-            {translate(label, { _: label })}
-          </span>
-        )}
-        {alignIcon === 'right' &&
-          children &&
-          React.cloneElement(children, {
-            className: classes[`${size}Icon`],
-          })}
-      </MuiButton>
-    );
+        >
+          {translate(label, { _: label })}
+        </span>
+      )}
+      {alignIcon === 'right' &&
+        children &&
+        React.cloneElement(children, {
+          className: classes[`${size}Icon`],
+        })}
+    </MuiButton>
+  );
 };
 
 const useStyles = makeStyles(
@@ -117,7 +115,7 @@ const useStyles = makeStyles(
       fontSize: 24,
     },
   },
-  { name: 'RaButton' }
+  { name: 'RaButton' },
 );
 
 Button.propTypes = {

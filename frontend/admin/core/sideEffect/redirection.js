@@ -25,22 +25,22 @@ export function* handleRedirection({
         payload
           ? payload.id || (payload.data ? payload.data.id : null)
           : requestPayload
-            ? requestPayload.id
-            : null,
+          ? requestPayload.id
+          : null,
         payload && payload.data
           ? payload.data
           : requestPayload && requestPayload.data
-            ? requestPayload.data
-            : null
-      )
-    )
+          ? requestPayload.data
+          : null,
+      ),
+    ),
   );
 }
 
-export default function* () {
+export default function*() {
   yield takeEvery(
     // @ts-ignore
     action => action.meta && typeof action.meta.redirectTo !== 'undefined',
-    handleRedirection
+    handleRedirection,
   );
 }

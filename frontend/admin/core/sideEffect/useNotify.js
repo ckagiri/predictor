@@ -1,8 +1,6 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  showNotification,
-} from '../actions/notificationActions';
+import { showNotification } from '../actions/notificationActions';
 
 /**
  * Hook for Notification Side Effect
@@ -22,20 +20,15 @@ import {
 const useNotify = () => {
   const dispatch = useDispatch();
   return useCallback(
-    (
-      message,
-      type = 'info',
-      messageArgs = {},
-      undoable = false
-    ) => {
+    (message, type = 'info', messageArgs = {}, undoable = false) => {
       dispatch(
         showNotification(message, type, {
           messageArgs,
           undoable,
-        })
+        }),
       );
     },
-    [dispatch]
+    [dispatch],
   );
 };
 

@@ -8,7 +8,7 @@ export const crudGetManyReference = (
   pagination,
   sort,
   filter,
-  source
+  source,
 ) => ({
   type: CRUD_GET_MANY_REFERENCE,
   payload: { target, id, pagination, sort, filter, source },

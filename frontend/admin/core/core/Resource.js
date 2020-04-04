@@ -27,7 +27,7 @@ const ResourceRegister = ({
         hasShow: !!show,
         hasCreate: !!create,
         icon,
-      })
+      }),
     );
     return () => dispatch(unregisterResource(name));
   }, [dispatch, name, create, edit, icon, list, show, options]);
@@ -44,7 +44,7 @@ const ResourceRoutes = ({
   options = defaultOptions,
 }) => {
   const isRegistered = useSelector(state =>
-    state.admin.resources[name] ? true : false
+    state.admin.resources[name] ? true : false,
   );
 
   const basePath = match ? match.path : '';
@@ -86,9 +86,7 @@ const ResourceRoutes = ({
               <WithPermissions
                 component={show}
                 basePath={basePath}
-                id={decodeURIComponent(
-                  routeProps.match.params.id
-                )}
+                id={decodeURIComponent(routeProps.match.params.id)}
                 {...routeProps}
                 {...props}
               />
@@ -102,9 +100,7 @@ const ResourceRoutes = ({
               <WithPermissions
                 component={edit}
                 basePath={basePath}
-                id={decodeURIComponent(
-                  routeProps.match.params.id
-                )}
+                id={decodeURIComponent(routeProps.match.params.id)}
                 {...routeProps}
                 {...props}
               />
@@ -129,14 +125,11 @@ const ResourceRoutes = ({
   }, [basePath, name, create, edit, list, show, options, isRegistered]); // eslint-disable-line react-hooks/exhaustive-deps
 };
 
-const Resource = ({
-  intent = 'route',
-  ...props
-}) =>
+const Resource = ({ intent = 'route', ...props }) =>
   intent === 'registration' ? (
     <ResourceRegister {...props} />
   ) : (
-      <ResourceRoutes {...props} />
-    );
+    <ResourceRoutes {...props} />
+  );
 
 export default Resource;

@@ -12,22 +12,21 @@ import { setListSelectedIds, toggleListItem } from '../actions/listActions';
 const useSelectItems = resource => {
   const dispatch = useDispatch();
   const selectedIds = useSelector(
-    reduxState =>
-      reduxState.admin.resources[resource].list.selectedIds,
-    shallowEqual
+    reduxState => reduxState.admin.resources[resource].list.selectedIds,
+    shallowEqual,
   );
   const selectionModifiers = {
     select: useCallback(
       newIds => {
         dispatch(setListSelectedIds(resource, newIds));
       },
-      [resource] // eslint-disable-line react-hooks/exhaustive-deps
+      [resource], // eslint-disable-line react-hooks/exhaustive-deps
     ),
     toggle: useCallback(
       id => {
         dispatch(toggleListItem(resource, id));
       },
-      [resource] // eslint-disable-line react-hooks/exhaustive-deps
+      [resource], // eslint-disable-line react-hooks/exhaustive-deps
     ),
     clearSelection: useCallback(() => {
       dispatch(setListSelectedIds(resource, []));

@@ -18,7 +18,7 @@ const useStyles = makeStyles(
       justifyContent: 'flex-start',
     },
   },
-  { name: 'RaMenu' }
+  { name: 'RaMenu' },
 );
 
 const translatedResourceName = (resource, translate) =>

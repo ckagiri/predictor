@@ -21,7 +21,7 @@ const RefreshButton = ({
         onClick(event);
       }
     },
-    [dispatch, onClick]
+    [dispatch, onClick],
   );
 
   return (

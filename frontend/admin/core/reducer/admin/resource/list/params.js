@@ -1,6 +1,4 @@
-import {
-  CRUD_CHANGE_LIST_PARAMS,
-} from '../../../../actions/listActions';
+import { CRUD_CHANGE_LIST_PARAMS } from '../../../../actions/listActions';
 
 const defaultState = {
   sort: null,
@@ -10,10 +8,7 @@ const defaultState = {
   filter: {},
 };
 
-const paramsReducer = (
-  previousState = defaultState,
-  action
-) => {
+const paramsReducer = (previousState = defaultState, action) => {
   switch (action.type) {
     case CRUD_CHANGE_LIST_PARAMS:
       return action.payload;

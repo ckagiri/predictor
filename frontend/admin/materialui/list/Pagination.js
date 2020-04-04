@@ -44,19 +44,19 @@ const Pagination = ({
         throw new Error(
           translate('ra.navigation.page_out_of_boundaries', {
             page: page + 1,
-          })
+          }),
         );
       }
       setPage(page + 1);
     },
-    [total, perPage, setPage, translate] // eslint-disable-line react-hooks/exhaustive-deps
+    [total, perPage, setPage, translate], // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const handlePerPageChange = useCallback(
     event => {
       setPerPage(event.target.value);
     },
-    [setPerPage]
+    [setPerPage],
   );
 
   const labelDisplayedRows = useCallback(
@@ -66,7 +66,7 @@ const Pagination = ({
         offsetEnd: to,
         total: count,
       }),
-    [translate]
+    [translate],
   );
 
   if (total === 0) {

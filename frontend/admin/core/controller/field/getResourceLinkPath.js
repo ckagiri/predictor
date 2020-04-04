@@ -54,17 +54,17 @@ const getResourceLinkPath = ({
     !linkTo
       ? false
       : typeof linkTo === 'function'
-        ? linkTo(record, reference)
-        : linkToRecord(rootPath, sourceId, linkTo);
+      ? linkTo(record, reference)
+      : linkToRecord(rootPath, sourceId, linkTo);
 
   if (linkType !== undefined) {
     console.warn(
-      "The 'linkType' prop is deprecated and should be named to 'link' in <ReferenceField />"
+      "The 'linkType' prop is deprecated and should be named to 'link' in <ReferenceField />",
     );
   }
 
   const resourceLinkPath = getResourceLinkPath(
-    linkType !== undefined ? linkType : link
+    linkType !== undefined ? linkType : link,
   );
 
   return resourceLinkPath;

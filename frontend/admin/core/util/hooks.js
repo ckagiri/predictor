@@ -3,9 +3,7 @@ import isEqual from 'lodash/isEqual';
 
 // thanks Kent C Dodds for the following helpers
 
-export function useSafeSetState(
-  initialState
-) {
+export function useSafeSetState(initialState) {
   const [state, setState] = useState(initialState);
 
   const mountedRef = useRef(false);
@@ -15,7 +13,7 @@ export function useSafeSetState(
   }, []);
   const safeSetState = useCallback(
     args => mountedRef.current && setState(args),
-    [mountedRef, setState]
+    [mountedRef, setState],
   );
 
   return [state, safeSetState];

@@ -11,7 +11,7 @@ export default ({ translate, messages, children }) => (
       i18nProvider: {
         translate: messages
           ? (key, options) =>
-            lodashGet(messages, key) ? lodashGet(messages, key) : options._
+              lodashGet(messages, key) ? lodashGet(messages, key) : options._
           : translate,
         changeLocale: () => Promise.resolve(),
         getLocale: () => 'en',

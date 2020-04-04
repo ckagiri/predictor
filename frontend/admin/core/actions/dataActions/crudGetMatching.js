@@ -5,7 +5,7 @@ export const crudGetMatching = (
   relatedTo,
   pagination,
   sort,
-  filter
+  filter,
 ) => ({
   type: CRUD_GET_MATCHING,
   payload: { pagination, sort, filter },

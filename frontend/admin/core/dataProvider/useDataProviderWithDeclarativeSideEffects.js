@@ -15,11 +15,7 @@ const useDataProviderWithDeclarativeSideEffects = () => {
   const dataProviderProxy = useMemo(() => {
     return new Proxy(dataProvider, {
       get: (target, name) => {
-        return (
-          resource,
-          payload,
-          options
-        ) => {
+        return (resource, payload, options) => {
           const { onSuccess, onFailure } = getSideEffects(resource, options);
 
           return target[name.toString()](resource, payload, {

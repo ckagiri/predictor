@@ -1,7 +1,7 @@
 // reducer for queries called via useQueryWithStore and without a custom action name
 const customQueriesReducer = (
   previousState = {},
-  { type, requestPayload, payload, meta }
+  { type, requestPayload, payload, meta },
 ) => {
   if (type !== 'CUSTOM_QUERY_SUCCESS') {
     return previousState;

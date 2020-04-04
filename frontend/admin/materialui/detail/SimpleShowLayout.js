@@ -69,7 +69,7 @@ export const SimpleShowLayout = ({
           key={field.props.source}
           className={classnames(
             `ra-field ra-field-${field.props.source}`,
-            field.props.className
+            field.props.className,
           )}
         >
           {field.props.addLabel ? (
@@ -93,7 +93,7 @@ export const SimpleShowLayout = ({
             })
           )}
         </div>
-      ) : null
+      ) : null,
     )}
   </CardContentInner>
 );

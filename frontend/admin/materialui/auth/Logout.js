@@ -6,7 +6,6 @@ import ExitIcon from '@material-ui/icons/PowerSettingsNew';
 import classnames from 'classnames';
 import { useTranslate, useLogout } from '../../core';
 
-
 const useStyles = makeStyles(
   theme => ({
     menuItem: {
@@ -14,7 +13,7 @@ const useStyles = makeStyles(
     },
     icon: { minWidth: theme.spacing(5) },
   }),
-  { name: 'RaLogout' }
+  { name: 'RaLogout' },
 );
 
 /**
@@ -22,10 +21,7 @@ const useStyles = makeStyles(
  *
  * Used for the Logout Menu item in the sidebar
  */
-const LogoutWithRef = React.forwardRef(function Logout( // HACK: https://github.com/mui-org/material-ui/issues/16245
-  props,
-  ref
-) {
+const LogoutWithRef = React.forwardRef(function Logout(props, ref) { // HACK: https://github.com/mui-org/material-ui/issues/16245
   const { className, redirectTo, ...rest } = props;
   const classes = useStyles({}); // the empty {} is a temp fix for https://github.com/mui-org/material-ui/issues/15942
   const translate = useTranslate();

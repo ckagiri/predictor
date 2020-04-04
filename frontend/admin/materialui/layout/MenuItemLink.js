@@ -32,7 +32,7 @@ const MenuItemLink = forwardRef(
       sidebarIsOpen,
       ...props
     },
-    ref
+    ref,
   ) => {
     const classes = useStyles({ classes: classesOverride });
 
@@ -40,7 +40,7 @@ const MenuItemLink = forwardRef(
       e => {
         onClick && onClick(e);
       },
-      [onClick]
+      [onClick],
     );
 
     const renderMenuItem = () => {
@@ -74,7 +74,7 @@ const MenuItemLink = forwardRef(
         {renderMenuItem()}
       </Tooltip>
     );
-  }
+  },
 );
 
 MenuItemLink.propTypes = {

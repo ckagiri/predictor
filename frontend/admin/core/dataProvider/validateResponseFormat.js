@@ -8,7 +8,7 @@ import {
 function validateResponseFormat(
   response,
   type,
-  logger = console.error // eslint-disable-line no-console
+  logger = console.error, // eslint-disable-line no-console
 ) {
   if (!response) {
     logger(`The dataProvider returned an empty response for '${type}'.`);
@@ -16,7 +16,7 @@ function validateResponseFormat(
   }
   if (!response.hasOwnProperty('data')) {
     logger(
-      `The response to '${type}' must be like { data: ... }, but the received response does not have a 'data' key. The dataProvider is probably wrong for '${type}'.`
+      `The response to '${type}' must be like { data: ... }, but the received response does not have a 'data' key. The dataProvider is probably wrong for '${type}'.`,
     );
     throw new Error('ra.notification.data_provider_error');
   }
@@ -25,7 +25,7 @@ function validateResponseFormat(
     !Array.isArray(response.data)
   ) {
     logger(
-      `The response to '${type}' must be like { data : [...] }, but the received data is not an array. The dataProvider is probably wrong for '${type}'`
+      `The response to '${type}' must be like { data : [...] }, but the received data is not an array. The dataProvider is probably wrong for '${type}'`,
     );
     throw new Error('ra.notification.data_provider_error');
   }
@@ -36,7 +36,7 @@ function validateResponseFormat(
     !response.data[0].hasOwnProperty('id')
   ) {
     logger(
-      `The response to '${type}' must be like { data : [{ id: 123, ...}, ...] }, but the received data items do not have an 'id' key. The dataProvider is probably wrong for '${type}'`
+      `The response to '${type}' must be like { data : [{ id: 123, ...}, ...] }, but the received data items do not have an 'id' key. The dataProvider is probably wrong for '${type}'`,
     );
     throw new Error('ra.notification.data_provider_error');
   }
@@ -45,7 +45,7 @@ function validateResponseFormat(
     !response.data.hasOwnProperty('id')
   ) {
     logger(
-      `The response to '${type}' must be like { data: { id: 123, ... } }, but the received data does not have an 'id' key. The dataProvider is probably wrong for '${type}'`
+      `The response to '${type}' must be like { data: { id: 123, ... } }, but the received data does not have an 'id' key. The dataProvider is probably wrong for '${type}'`,
     );
     throw new Error('ra.notification.data_provider_error');
   }
@@ -54,7 +54,7 @@ function validateResponseFormat(
     !response.hasOwnProperty('total')
   ) {
     logger(
-      `The response to '${type}' must be like  { data: [...], total: 123 }, but the received response does not have a 'total' key. The dataProvider is probably wrong for '${type}'`
+      `The response to '${type}' must be like  { data: [...], total: 123 }, but the received response does not have a 'total' key. The dataProvider is probably wrong for '${type}'`,
     );
     throw new Error('ra.notification.data_provider_error');
   }

@@ -19,11 +19,7 @@ import TestContext from './TestContext';
  * dispatch: spy on the redux stroe dispatch method
  * reduxStore: the redux store used by the tested component
  */
-export default (
-  component,
-  initialState = {},
-  options = {}
-) => {
+export default (component, initialState = {}, options = {}) => {
   let dispatch;
   let reduxStore;
   const renderResult = render(
@@ -34,7 +30,7 @@ export default (
         return component;
       }}
     </TestContext>,
-    options
+    options,
   );
 
   return {
@@ -47,7 +43,7 @@ export default (
             reduxStore = store;
             return newComponent;
           }}
-        </TestContext>
+        </TestContext>,
       );
     },
     dispatch,

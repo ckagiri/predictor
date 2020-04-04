@@ -119,7 +119,7 @@ export default function*() {
     accumulateFactory(
       tasks,
       accumulations,
-      finalizeFactory(tasks, accumulations)
-    )
+      finalizeFactory(tasks, accumulations),
+    ),
   );
 }

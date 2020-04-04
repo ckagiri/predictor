@@ -1,11 +1,6 @@
 import { GET_ONE } from '../../core';
 
-export const crudGetOne = (
-  resource,
-  id,
-  basePath,
-  refresh = true
-) => ({
+export const crudGetOne = (resource, id, basePath, refresh = true) => ({
   type: CRUD_GET_ONE,
   payload: { id },
   meta: {

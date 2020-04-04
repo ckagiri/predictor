@@ -1,7 +1,4 @@
-import {
-  REGISTER_RESOURCE,
-  UNREGISTER_RESOURCE,
-} from '../../../actions';
+import { REGISTER_RESOURCE, UNREGISTER_RESOURCE } from '../../../actions';
 
 import data from './data';
 import list from './list';
@@ -42,13 +39,13 @@ export default (previousState = initialState, action) => {
       [resource]:
         action.meta.resource === resource
           ? {
-            props: previousState[resource].props,
-            data: data(previousState[resource].data, action),
-            list: list(previousState[resource].list, action),
-          }
+              props: previousState[resource].props,
+              data: data(previousState[resource].data, action),
+              list: list(previousState[resource].list, action),
+            }
           : previousState[resource],
     }),
-    {}
+    {},
   );
 
   return newState;

@@ -9,14 +9,14 @@ import { DELETE, DELETE_MANY } from '../../../../core';
 
 export const addRecordIdsFactory = getFetchedAtCallback => (
   newRecordIds = [],
-  oldRecordIds
+  oldRecordIds,
 ) => {
   const newFetchedAt = getFetchedAtCallback(
     newRecordIds,
-    oldRecordIds.fetchedAt
+    oldRecordIds.fetchedAt,
   );
   const recordIds = uniq(
-    oldRecordIds.filter(id => !!newFetchedAt[id]).concat(newRecordIds)
+    oldRecordIds.filter(id => !!newFetchedAt[id]).concat(newRecordIds),
   );
 
   Object.defineProperty(recordIds, 'fetchedAt', {
@@ -28,10 +28,7 @@ export const addRecordIdsFactory = getFetchedAtCallback => (
 const addRecordIds = addRecordIdsFactory(getFetchedAt);
 
 // Todo fix
-const idsReducer = (
-  previousState = [],
-  action
-) => {
+const idsReducer = (previousState = [], action) => {
   if (action.meta && action.meta.optimistic) {
     if (action.meta.fetch === DELETE) {
       const index = previousState
@@ -53,7 +50,7 @@ const idsReducer = (
     }
     if (action.meta.fetch === DELETE_MANY) {
       const newState = previousState.filter(
-        el => !action.payload.ids.includes(el)
+        el => !action.payload.ids.includes(el),
       );
       Object.defineProperty(newState, 'fetchedAt', {
         value: previousState.fetchedAt,
@@ -67,7 +64,7 @@ const idsReducer = (
     case CRUD_GET_LIST_SUCCESS:
       return addRecordIds(
         action.payload.data.map(({ id }) => id),
-        []
+        [],
       );
     case CRUD_GET_ONE_SUCCESS:
     case CRUD_CREATE_SUCCESS:

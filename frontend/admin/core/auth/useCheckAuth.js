@@ -49,7 +49,7 @@ const useCheckAuth = () => {
     (
       params = {},
       logoutOnFailure = true,
-      redirectTo = defaultAuthParams.loginUrl
+      redirectTo = defaultAuthParams.loginUrl,
     ) =>
       authProvider.checkAuth(params).catch(error => {
         if (logoutOnFailure) {
@@ -58,7 +58,7 @@ const useCheckAuth = () => {
         }
         throw error;
       }),
-    [authProvider, logout, notify]
+    [authProvider, logout, notify],
   );
 
   return authProvider ? checkAuth : checkAuthWithoutAuthProvider;
@@ -70,8 +70,8 @@ const getErrorMessage = (error, defaultMessage) =>
   typeof error === 'string'
     ? error
     : typeof error === 'undefined' || !error.message
-      ? defaultMessage
-      : error.message;
+    ? defaultMessage
+    : error.message;
 
 /**
  * Check if the current user is authenticated by calling authProvider.checkAuth().

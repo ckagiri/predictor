@@ -12,10 +12,7 @@ import undo from './undo';
  * @param {Object} dataProvider A Data Provider function
  * @param {Function} authProvider An Authentication Provider object
  */
-export default (
-  dataProvider,
-  authProvider
-) =>
+export default (dataProvider, authProvider) =>
   function* admin() {
     yield all([
       auth(authProvider)(),

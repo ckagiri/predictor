@@ -15,16 +15,12 @@ import Polyglot from 'node-polyglot';
  * };
  * const i18nProvider = polyglotI18nProvider(locale => messages[locale])
  */
-export default (
-  getMessages,
-  initialLocale = 'en',
-  polyglotOptions = {}
-) => {
+export default (getMessages, initialLocale = 'en', polyglotOptions = {}) => {
   let locale = initialLocale;
   const messages = getMessages(initialLocale);
   if (messages instanceof Promise) {
     throw new Error(
-      `The i18nProvider returned a Promise for the messages of the default locale (${initialLocale}). Please update your i18nProvider to return the messages of the default locale in a synchronous way.`
+      `The i18nProvider returned a Promise for the messages of the default locale (${initialLocale}). Please update your i18nProvider to return the messages of the default locale in a synchronous way.`,
     );
   }
   const polyglot = new Polyglot({
@@ -40,7 +36,7 @@ export default (
       new Promise(resolve =>
         // so we systematically return a Promise for the messages
         // i18nProvider may return a Promise for language changes,
-        resolve(getMessages(newLocale))
+        resolve(getMessages(newLocale)),
       ).then(messages => {
         locale = newLocale;
         const newPolyglot = new Polyglot({

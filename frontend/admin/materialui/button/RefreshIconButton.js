@@ -23,7 +23,7 @@ const RefreshIconButton = ({
         onClick(event);
       }
     },
-    [dispatch, onClick]
+    [dispatch, onClick],
   );
 
   return (

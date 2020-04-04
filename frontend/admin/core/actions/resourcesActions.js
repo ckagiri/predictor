@@ -1,15 +1,11 @@
 export const REGISTER_RESOURCE = 'RA/REGISTER_RESOURCE';
-export const registerResource = (
-  resource
-) => ({
+export const registerResource = resource => ({
   type: REGISTER_RESOURCE,
   payload: resource,
 });
 
 export const UNREGISTER_RESOURCE = 'RA/UNREGISTER_RESOURCE';
-export const unregisterResource = (
-  resourceName
-) => ({
+export const unregisterResource = resourceName => ({
   type: UNREGISTER_RESOURCE,
   payload: resourceName,
 });

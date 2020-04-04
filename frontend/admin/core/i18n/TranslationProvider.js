@@ -1,8 +1,4 @@
-import React, {
-  useCallback,
-  useMemo,
-  Children,
-} from 'react';
+import React, { useCallback, useMemo, Children } from 'react';
 
 import { useSafeSetState } from '../util/hooks';
 import { TranslationContext } from './TranslationContext';
@@ -33,7 +29,7 @@ const TranslationProvider = props => {
         locale: newLocale,
         i18nProvider,
       }),
-    [i18nProvider, setState]
+    [i18nProvider, setState],
   );
 
   // Allow locale modification by including setLocale in the context
@@ -43,7 +39,7 @@ const TranslationProvider = props => {
       ...state,
       setLocale,
     }),
-    [setLocale, state]
+    [setLocale, state],
   );
 
   return (

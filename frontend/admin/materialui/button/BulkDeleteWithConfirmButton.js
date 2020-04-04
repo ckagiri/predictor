@@ -40,7 +40,7 @@ const useStyles = makeStyles(
       },
     },
   }),
-  { name: 'RaBulkDeleteWithConfirmButton' }
+  { name: 'RaBulkDeleteWithConfirmButton' },
 );
 
 const BulkDeleteWithConfirmButton = ({
@@ -76,7 +76,7 @@ const BulkDeleteWithConfirmButton = ({
         typeof error === 'string'
           ? error
           : error.message || 'ra.notification.http_error',
-        'warning'
+        'warning',
       ),
   });
 
@@ -119,7 +119,7 @@ const BulkDeleteWithConfirmButton = ({
               smart_count: selectedIds.length,
               _: inflection.inflect(resource, selectedIds.length),
             }),
-            true
+            true,
           ),
         }}
         onConfirm={handleDelete}

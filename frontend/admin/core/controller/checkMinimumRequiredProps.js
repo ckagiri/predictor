@@ -2,7 +2,7 @@ import React, { ComponentType } from 'react';
 
 const checkMinimumRequiredProps = (
   displayName,
-  requiredProps
+  requiredProps,
 ) => WrappedComponent => props => {
   useCheckMinimumRequiredProps(displayName, requiredProps, props);
   return <WrappedComponent {...props} />;
@@ -14,7 +14,7 @@ export default checkMinimumRequiredProps;
 export const useCheckMinimumRequiredProps = (
   displayName,
   requiredProps,
-  props
+  props,
 ) => {
   const propNames = Object.keys(props);
   const missingProps = requiredProps.filter(prop => !propNames.includes(prop));
@@ -28,7 +28,7 @@ const My${displayName} = props => (
     <${displayName} {...props}></${displayName}>
 );
 
-The missing props are: ${missingProps.join(', ')}`
+The missing props are: ${missingProps.join(', ')}`,
     );
   }
 };

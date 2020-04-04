@@ -14,5 +14,4 @@ import { useSelector } from 'react-redux';
  *      return loading ? <Squeleton /> : <RealContent>;
  * }
  */
-export default () =>
-  useSelector(state => state.admin.loading > 0);
+export default () => useSelector(state => state.admin.loading > 0);

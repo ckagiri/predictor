@@ -5,7 +5,7 @@ export const crudUpdateMany = (
   ids,
   data,
   basePath,
-  refresh = true
+  refresh = true,
 ) => ({
   type: CRUD_UPDATE_MANY,
   payload: { ids, data },

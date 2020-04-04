@@ -4,10 +4,7 @@ import {
 } from '../../../../actions/dataActions';
 import { DELETE, DELETE_MANY } from '../../../../core';
 
-const totalReducer = (
-  previousState = 0,
-  action
-) => {
+const totalReducer = (previousState = 0, action) => {
   if (action.type === CRUD_GET_ONE_SUCCESS) {
     return previousState === 0 ? 1 : previousState;
   }

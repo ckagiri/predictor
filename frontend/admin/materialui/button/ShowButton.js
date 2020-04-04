@@ -14,16 +14,16 @@ const ShowButton = ({
   icon = defaultIcon,
   ...rest
 }) => (
-    <Button
-      component={Link}
-      to={`${linkToRecord(basePath, record && record.id)}/show`}
-      label={label}
-      onClick={stopPropagation}
-      {...rest}
-    >
-      {icon}
-    </Button>
-  );
+  <Button
+    component={Link}
+    to={`${linkToRecord(basePath, record && record.id)}/show`}
+    label={label}
+    onClick={stopPropagation}
+    {...rest}
+  >
+    {icon}
+  </Button>
+);
 
 const defaultIcon = <ImageEye />;
 
@@ -43,7 +43,7 @@ const enhance = shouldUpdate(
       nextProps.record &&
       props.record.id !== nextProps.record.id) ||
     props.basePath !== nextProps.basePath ||
-    (props.record == null && nextProps.record != null)
+    (props.record == null && nextProps.record != null),
 );
 
 export default enhance(ShowButton);

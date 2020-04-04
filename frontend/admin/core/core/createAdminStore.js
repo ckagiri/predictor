@@ -21,22 +21,20 @@ export default ({
       action.type !== CLEAR_STATE
         ? state
         : // Erase data from the store but keep location, notifications, ui prefs, etc.
-        // This allows e.g. to display a notification on logout
-        {
-          ...state,
-          admin: {
-            ...state.admin,
-            resources: {},
-            customQueries: {},
-            references: { oneToMany: {}, possibleValues: {} },
+          // This allows e.g. to display a notification on logout
+          {
+            ...state,
+            admin: {
+              ...state.admin,
+              resources: {},
+              customQueries: {},
+              references: { oneToMany: {}, possibleValues: {} },
+            },
           },
-        },
-      action
+      action,
     );
   const saga = function* rootSaga() {
-    yield all(
-      [adminSaga(dataProvider, authProvider)].map(fork)
-    );
+    yield all([adminSaga(dataProvider, authProvider)].map(fork));
   };
   const sagaMiddleware = createSagaMiddleware();
 
@@ -53,7 +51,9 @@ export default ({
   const store = createStore(
     resettableAppReducer,
     typeof initialState === 'function' ? initialState() : initialState,
-    composeEnhancers(applyMiddleware(sagaMiddleware, routerMiddleware(history)))
+    composeEnhancers(
+      applyMiddleware(sagaMiddleware, routerMiddleware(history)),
+    ),
   );
   sagaMiddleware.run(saga);
   return store;

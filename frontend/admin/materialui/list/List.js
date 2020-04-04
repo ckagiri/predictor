@@ -246,7 +246,7 @@ export const useStyles = makeStyles(
     },
     noResults: { padding: 20 },
   }),
-  { name: 'RaList' }
+  { name: 'RaList' },
 );
 
 const sanitizeRestProps = ({
