@@ -11,7 +11,11 @@ export interface BaseRepository<T extends Entity> {
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
-  find$(requestQuery?: any, projection?: any, options?: any): Observable<{ result: T[]; count: number; }>;
+  find$(
+    requestQuery?: any,
+    projection?: any,
+    options?: any,
+  ): Observable<{ result: T[]; count: number }>;
   findOne$(conditions: any, projection?: any): Observable<T>;
   findById$(id: string): Observable<T>;
   remove$(id: string): Observable<void>;
@@ -21,7 +25,7 @@ export interface BaseRepository<T extends Entity> {
 export class BaseRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-  > extends DocumentDao<TDocument> implements BaseRepository<T> {
+> extends DocumentDao<TDocument> implements BaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(
@@ -132,18 +136,20 @@ export class BaseRepositoryImpl<
     requestQuery?: any,
     _projection?: any, // Todo: figure out
     options?: any,
-  ): Observable<{ result: T[]; count: number; }> {
-    return Observable.create((observer: Subscriber<{ result: T[]; count: number; }>) => {
-      this.find(requestQuery, '-__v -externalReference', options)
-        .then(
+  ): Observable<{ result: T[]; count: number }> {
+    return Observable.create(
+      (observer: Subscriber<{ result: T[]; count: number }>) => {
+        this.find(requestQuery, '-__v -externalReference', options).then(
           ({ result, count }) => {
             observer.next({ result, count });
             observer.complete();
           },
           (error: any) => {
             observer.error(error);
-          })
-    })
+          },
+        );
+      },
+    );
   }
 
   public findOne$(conditions: any, projection?: any): Observable<T> {

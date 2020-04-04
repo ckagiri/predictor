@@ -83,7 +83,7 @@ class SeasonBuilder implements Builder<Season> {
   private season?: Season;
   private predictions: Prediction[] = [];
 
-  constructor(private gameBuilder: GameBuilder) { }
+  constructor(private gameBuilder: GameBuilder) {}
 
   reset() {
     this.teamBuilders = [];
@@ -466,7 +466,7 @@ class GameBuilder implements Builder<GameData> {
     this.matches = [];
     this.predictions = [];
 
-    this.seasonBuilders.forEach(builder => builder.reset())
+    this.seasonBuilders.forEach(builder => builder.reset());
   }
 
   async build(): Promise<Game> {

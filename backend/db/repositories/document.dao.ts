@@ -37,11 +37,7 @@ export class DocumentDao<T extends Document> {
       .exec() as Promise<T[]>;
   }
 
-  public find(
-    requestQuery: any = {},
-    projection?: any,
-    options?: any,
-  ) {
+  public find(requestQuery: any = {}, projection?: any, options?: any) {
     const { filter, range, sort } = requestQuery;
     const conditions: any = {};
     if (filter) {
@@ -55,25 +51,25 @@ export class DocumentDao<T extends Document> {
             k =>
               schema.paths[k].instance === 'String' ||
               schema.paths[k].instance === 'ObjectID' ||
-              schema.paths[k].instance === 'Number'
+              schema.paths[k].instance === 'Number',
           )
           .map(k => {
             switch (schema.paths[k].instance) {
               case 'String':
                 return {
-                  [k]: new RegExp(q, 'i')
+                  [k]: new RegExp(q, 'i'),
                 };
               case 'ObjectID':
                 return mongoose.Types.ObjectId.isValid(q)
                   ? {
-                    [k]: q
-                  }
+                      [k]: q,
+                    }
                   : null;
               case 'Number':
                 return !isNaN(parseInt(q))
                   ? {
-                    [k]: parseInt(q)
-                  }
+                      [k]: parseInt(q),
+                    }
                   : null;
             }
             return null;
@@ -88,23 +84,32 @@ export class DocumentDao<T extends Document> {
           const needle = search[key];
           if (Array.isArray(needle)) {
             return {
-              [isId ? '_id' : key]: { $in: needle.map(n => (isId ? mongoose.Types.ObjectId(n) : n)) }
+              [isId ? '_id' : key]: {
+                $in: needle.map(n => (isId ? mongoose.Types.ObjectId(n) : n)),
+              },
             };
           }
-          return { [isId ? '_id' : key]: isId ? mongoose.Types.ObjectId(needle) : needle };
+          return {
+            [isId ? '_id' : key]: isId
+              ? mongoose.Types.ObjectId(needle)
+              : needle,
+          };
         });
         if (combinedAnd.length > 0) {
           conditions['$and'] = combinedAnd;
         }
       }
     }
-    return this.Model.countDocuments(conditions).exec()
+    return this.Model.countDocuments(conditions)
+      .exec()
       .then(async count => {
         let query = this.Model.find(conditions, projection, options);
         if (sort) {
           const [field, order] = JSON.parse(sort);
           query = query.sort({
-            [options && options.primaryKey && field === 'id' ? options.primaryKey : field]: order === 'ASC' ? 1 : -1
+            [options && options.primaryKey && field === 'id'
+              ? options.primaryKey
+              : field]: order === 'ASC' ? 1 : -1,
           });
         }
         if (range) {
@@ -113,7 +118,7 @@ export class DocumentDao<T extends Document> {
         }
         const result = await query.exec();
         return await Promise.resolve({ result, count });
-      }) as Promise<{ result: T[], count: number }>
+      }) as Promise<{ result: T[]; count: number }>;
   }
 
   public findOne(conditions: any, projection?: any) {

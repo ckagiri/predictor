@@ -6,7 +6,7 @@ import memoryDb from '../memoryDb';
 
 const userRepo = UserRepositoryImpl.getInstance();
 
-describe('User Repo', function () {
+describe('User Repo', function() {
   before(async () => {
     await memoryDb.connect();
   });
@@ -42,12 +42,14 @@ describe('User Repo', function () {
   });
 
   it('should filter users', done => {
-    userRepo.find$({
-      filter: JSON.stringify({ username: ["chalo"] })
-    }).subscribe(({ result: users, count }) => {
-      expect(users).to.have.length(1);
-      expect(count).to.equal(1)
-      done();
-    });
+    userRepo
+      .find$({
+        filter: JSON.stringify({ username: ['chalo'] }),
+      })
+      .subscribe(({ result: users, count }) => {
+        expect(users).to.have.length(1);
+        expect(count).to.equal(1);
+        done();
+      });
   });
 });
