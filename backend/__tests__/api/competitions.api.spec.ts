@@ -32,7 +32,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Competitions API', function() {
+describe('Competitions API', function () {
   let gameData: GameData;
 
   before(async () => {
@@ -48,7 +48,7 @@ describe('Competitions API', function() {
     await memoryDb.close();
   });
 
-  describe('Competitions Controller', function() {
+  describe('Competitions Controller', function () {
     const competitionRepo = CompetitionRepositoryImpl.getInstance();
     const competitionsController = new CompetitionsController(competitionRepo);
 
@@ -66,7 +66,7 @@ describe('Competitions API', function() {
     });
   });
 
-  describe('Competition Routes', function() {
+  describe('Competition Routes', function () {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -77,10 +77,10 @@ describe('Competitions API', function() {
       server.close();
     });
 
-    it('should respond with JSON array', async function() {
-      const competitions: Competition[] = await competitionsAPI
-        .get('competitions')
-        .then(res => res.data);
+    it.only('should respond with JSON array', async function () {
+      const res = await competitionsAPI
+        .get('competitions');
+      const competitions: Competition[] = res.data;
       expect(competitions).to.be.an.instanceof(Array);
       expect(competitions).to.have.length(2);
       expect(competitions.map(c => c.id)).to.contain(
@@ -89,6 +89,8 @@ describe('Competitions API', function() {
       expect(competitions.map(c => c.id)).to.contain(
         gameData.competitions[1].id,
       );
+
+      expect(res).to.have.header('content-range', 'Competitions 0-1/2');
     });
   });
 });

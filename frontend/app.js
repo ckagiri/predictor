@@ -3,7 +3,6 @@ import '@babel/polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import PostIcon from '@material-ui/icons/Book';
 // Load the favicon
 // import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import { createHashHistory } from 'history';
@@ -11,10 +10,10 @@ import { ConnectedRouter } from 'connected-react-router';
 
 import { Resource } from './admin/core';
 
-import { PostList, PostShow } from './admin/posts';
+import { CompetitionList } from './admin/competitions';
 import authProvider from './admin/authProvider';
-import jsonServerProvider from './admin/jsonServerProvider';
-import defaultI18nProvider from './admin/admin/defaultI18nProvider';
+import restServerProvider from './admin/restServerProvider';
+import defaultI18nProvider from './admin/defaultI18nProvider';
 import { AuthContext } from './admin/core/auth';
 import { DataProviderContext } from './admin/core/dataProvider';
 import createAdminStore from './admin/core/core/createAdminStore';
@@ -23,7 +22,7 @@ import CoreAdminRouter from './admin/core/core/CoreAdminRouter';
 import { Layout } from './admin/materialui/layout';
 
 const history = createHashHistory();
-const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
+const dataProvider = restServerProvider('api');
 const MOUNT_NODE = document.getElementById('app');
 
 const renderCore = () => {
@@ -38,10 +37,8 @@ const renderCore = () => {
               catchall={() => null}
             >
               <Resource
-                name="posts"
-                icon={PostIcon}
-                list={PostList}
-                show={PostShow}
+                name="competitions"
+                list={CompetitionList}
               />
             </CoreAdminRouter>
           </ConnectedRouter>
@@ -73,7 +70,7 @@ if (module.hot) {
   // Hot reloadable React components
   // modules.hot.accept does not accept dynamic dependencies,
   // have to be constants at compile-time
-  module.hot.accept(['admin/admin/Admin'], () => {
+  module.hot.accept(['./app'], () => {
     ReactDOM.unmountComponentAtNode(MOUNT_NODE);
     render();
   });
