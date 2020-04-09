@@ -8,5 +8,6 @@ export * from './dataProvider';
 export * from './util';
 export * from './controller';
 export * from './export';
+export * from './form';
 
 export { getResources, getNotification } from './reducer';

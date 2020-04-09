@@ -7,6 +7,7 @@ import useQueryWithStore from './useQueryWithStore';
 import * as fetchUtils from './fetch';
 import useDeleteMany from './useDeleteMany';
 import useGetMany from './useGetMany';
+import useCreate from './useCreate';
 
 export {
   convertLegacyDataProvider,
@@ -18,4 +19,5 @@ export {
   useQueryWithStore,
   useDeleteMany,
   useGetMany,
+  useCreate,
 };

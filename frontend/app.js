@@ -10,7 +10,8 @@ import { ConnectedRouter } from 'connected-react-router';
 
 import { Resource } from './admin/core';
 
-import { CompetitionList } from './admin/competitions';
+import { CompetitionList } from './admin/CompetitionList';
+import { CompetitionCreate } from './admin/CompetitionCreate';
 import authProvider from './admin/authProvider';
 import restServerProvider from './admin/restServerProvider';
 import defaultI18nProvider from './admin/defaultI18nProvider';
@@ -38,6 +39,7 @@ const renderCore = () => {
             >
               <Resource
                 name="competitions"
+                create={CompetitionCreate}
                 list={CompetitionList}
               />
             </CoreAdminRouter>

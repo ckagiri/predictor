@@ -7,6 +7,7 @@ import BulkDeleteButton from './BulkDeleteButton';
 import BulkDeleteWithConfirmButton from './BulkDeleteWithConfirmButton';
 import BulkDeleteWithUndoButton from './BulkDeleteWithUndoButton';
 import ExportButton from './ExportButton';
+import Button from './Button';
 
 export {
   ExportButton,
@@ -18,4 +19,5 @@ export {
   RefreshButton,
   RefreshIconButton,
   ShowButton,
+  Button
 };
