@@ -50,14 +50,7 @@ const SeasonsLink = ({ record }) => {
       color="primary"
       component={Link}
       to={{
-        pathname: '/competitions/record.slug/seasons',
-        search: stringify({
-          page: 1,
-          perPage: 25,
-          sort: 'id',
-          order: 'DESC',
-          filter: JSON.stringify({ competitionId: record.id }),
-        }),
+        pathname: `/competitions/${record.slug}/seasons`,
       }}
       className={classes.link}
     >

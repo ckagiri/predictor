@@ -8,6 +8,7 @@ import * as fetchUtils from './fetch';
 import useDeleteMany from './useDeleteMany';
 import useGetMany from './useGetMany';
 import useCreate from './useCreate';
+import useUpdate from './useUpdate';
 
 export {
   convertLegacyDataProvider,
@@ -20,4 +21,5 @@ export {
   useDeleteMany,
   useGetMany,
   useCreate,
+  useUpdate,
 };

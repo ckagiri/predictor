@@ -8,6 +8,7 @@ import warning from './warning';
 import linkToRecord from './linkToRecord';
 import removeEmpty from './removeEmpty';
 import removeKey from './removeKey';
+import renderWithRedux from './renderWithRedux';
 
 export {
   ComponentPropType,
@@ -17,6 +18,7 @@ export {
   Ready,
   warning,
   resolveRedirectTo,
+  renderWithRedux,
   useSafeSetState,
   useTimeout,
   removeEmpty,

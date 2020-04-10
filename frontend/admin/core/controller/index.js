@@ -8,6 +8,7 @@ import {
 import useListController from './useListController';
 import useReference from './useReference';
 import useCreateController from './useCreateController';
+import useEditController from './useEditController';
 
 export {
   getListControllerProps,
@@ -18,6 +19,7 @@ export {
   useShowController,
   useVersion,
   useReference,
+  useEditController,
 };
 
 export * from './field';

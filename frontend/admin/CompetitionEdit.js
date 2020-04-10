@@ -1,15 +1,16 @@
 import React from 'react';
 import {
-  Create,
+  Edit,
   SimpleForm,
   TextInput,
 } from '../admin/materialui'
 
-export const CompetitionCreate = ({ permissions, ...props }) => {
+export const CompetitionEdit = ({ permissions, ...props }) => {
 
   return (
-    <Create {...props}>
+    <Edit {...props}>
       <SimpleForm
+        variant="standard"
         toolbar={null}
         validate={values => {
           const errors = {};
@@ -25,6 +26,6 @@ export const CompetitionCreate = ({ permissions, ...props }) => {
         <TextInput source="slug" fullWidth={true} />
         <TextInput source="code" />
       </SimpleForm>
-    </Create>
+    </Edit>
   );
 };

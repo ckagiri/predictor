@@ -12,6 +12,7 @@ import { Resource } from './admin/core';
 
 import { CompetitionList } from './admin/CompetitionList';
 import { CompetitionCreate } from './admin/CompetitionCreate';
+import { CompetitionEdit } from './admin/CompetitionEdit';
 import authProvider from './admin/authProvider';
 import restServerProvider from './admin/restServerProvider';
 import defaultI18nProvider from './admin/defaultI18nProvider';
@@ -40,6 +41,7 @@ const renderCore = () => {
               <Resource
                 name="competitions"
                 create={CompetitionCreate}
+                edit={CompetitionEdit}
                 list={CompetitionList}
               />
             </CoreAdminRouter>
