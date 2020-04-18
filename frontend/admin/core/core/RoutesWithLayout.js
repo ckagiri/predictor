@@ -12,7 +12,8 @@ const RoutesWithLayout = ({ catchAll, children, dashboard, title }) => {
       {Children.map(children, child => (
         <Route
           key={child.props.name}
-          path={`/${child.props.name}`}
+          exact
+          path={`/${child.props.path ? child.props.path : child.props.name}`}
           render={props =>
             cloneElement(child, {
               // The context prop instruct the Resource component to
