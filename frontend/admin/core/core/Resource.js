@@ -129,7 +129,7 @@ const Resource = ({ intent = 'route', ...props }) =>
   intent === 'registration' ? (
     <ResourceRegister {...props} />
   ) : (
-    <ResourceRoutes {...props} />
-  );
+      <ResourceRoutes {...props} />
+    );
 
 export default Resource;

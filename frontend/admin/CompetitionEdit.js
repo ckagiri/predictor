@@ -1,4 +1,5 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Edit,
   SimpleForm,
@@ -6,9 +7,9 @@ import {
 } from '../admin/materialui'
 
 export const CompetitionEdit = ({ permissions, ...props }) => {
-
+  const { slug } = useParams();
   return (
-    <Edit {...props}>
+    <Edit id={slug} {...props}>
       <SimpleForm
         variant="standard"
         toolbar={null}

@@ -7,9 +7,10 @@ import { Provider } from 'react-redux';
 // import '!file-loader?name=[name].[ext]!./images/favicon.ico';
 import { createHashHistory } from 'history';
 import { ConnectedRouter } from 'connected-react-router';
-
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { ThemeProvider } from '@material-ui/styles';
 import { Resource } from './admin/core';
-
+import AppBar from './admin/materialui/layout/AppBar';
 import { CompetitionList } from './admin/CompetitionList';
 import { CompetitionCreate } from './admin/CompetitionCreate';
 import { CompetitionEdit } from './admin/CompetitionEdit';
@@ -25,37 +26,58 @@ import createAdminStore from './admin/core/core/createAdminStore';
 import TranslationProvider from './admin/core/i18n/TranslationProvider';
 import CoreAdminRouter from './admin/core/core/CoreAdminRouter';
 import { Layout } from './admin/materialui/layout';
+import { useTimeout } from './admin/core/util'
+import { createMuiTheme } from '@material-ui/core/styles';
 
 const history = createHashHistory();
 const dataProvider = restServerProvider('api');
 const MOUNT_NODE = document.getElementById('app');
+
+const AdminRouter = () => {
+  const oneMilliSecondHasPassed = useTimeout(1);
+  if (oneMilliSecondHasPassed) {
+    return (
+      <Switch>
+        <Route
+          exact
+          path="/competitions"
+        >
+          <CompetitionList />
+        </Route>
+        <Route
+          exact
+          path="/competitions/:slug/seasons"
+          render={routeProps =>
+            <SeasonList
+              resource="seasons"
+              hasEdit
+              basePath={routeProps.match.url} {...routeProps}
+            />
+          }
+        />
+      </Switch>
+    )
+  } else return null;
+}
 
 const renderCore = () => {
   return (
     <AuthContext.Provider value={authProvider}>
       <DataProviderContext.Provider value={dataProvider}>
         <TranslationProvider i18nProvider={defaultI18nProvider}>
-          <ConnectedRouter history={history}>
-            <CoreAdminRouter
-              layout={Layout}
-              title="Another One"
-              catchall={() => null}
-            >
-              <Resource
-                name="competitions"
-                create={CompetitionCreate}
-                edit={CompetitionEdit}
-                list={CompetitionList}
-              />
-              <Resource
-                name="seasons"
-                path="competitions/:slug/seasons"
-                create={SeasonCreate}
-                edit={SeasonEdit}
-                list={SeasonList}
-              />
-            </CoreAdminRouter>
-          </ConnectedRouter>
+          <ThemeProvider theme={createMuiTheme()}>
+            <Resource name="competitions" intent="registration" />
+            <Resource name="seasons" intent="registration" />
+            <ConnectedRouter history={history}>
+              <Switch>
+                <Route
+                  path="/"
+                >
+                  <AdminRouter />
+                </Route>
+              </Switch>
+            </ConnectedRouter>
+          </ThemeProvider>
         </TranslationProvider>
       </DataProviderContext.Provider>
     </AuthContext.Provider>

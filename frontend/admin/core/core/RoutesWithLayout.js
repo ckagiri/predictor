@@ -12,7 +12,6 @@ const RoutesWithLayout = ({ catchAll, children, dashboard, title }) => {
       {Children.map(children, child => (
         <Route
           key={child.props.name}
-          exact
           path={`/${child.props.path ? child.props.path : child.props.name}`}
           render={props =>
             cloneElement(child, {

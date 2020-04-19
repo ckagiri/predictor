@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import ProductIcon from '@material-ui/icons/Collections';
 import { makeStyles } from '@material-ui/core/styles';
 import { stringify } from 'query-string';
-import { Link } from 'react-router-dom';
+import { Link, useRouteMatch, useLocation } from 'react-router-dom';
 import { EditButton } from '../admin/materialui'
 import {
   TextField,
@@ -11,27 +11,36 @@ import {
   List,
 } from './materialui';
 
-export const CompetitionList = props => (
-  <List
-    {...props}
-    filter={null}
-    actions={null}
-    bulkActionButtons={false}
-    pagination={null}>
-    <Datagrid>
-      {/* <ReferenceField label="User" source="userId" reference="users">
+export const CompetitionList = props => {
+  const match = useRouteMatch("/competitions");
+  const basePath = match ? match.path : '';
+  const location = useLocation();
+  return (
+    <List
+      resource="competitions"
+      basePath={basePath}
+      location={location}
+      match={match}
+      {...props}
+      filter={null}
+      actions={null}
+      bulkActionButtons={false}
+      pagination={null}>
+      <Datagrid>
+        {/* <ReferenceField label="User" source="userId" reference="users">
         <TextField source="name" />
       </ReferenceField>
       <TextField source="title" />
       <ShowButton /> */}
-      <TextField source="name" sortable={false} />
-      <TextField source="slug" sortable={false} />
-      <TextField source="code" sortable={false} />
-      <SeasonsLink />
-      <EditButton />
-    </Datagrid>
-  </List>
-);
+        <TextField source="name" sortable={false} />
+        <TextField source="slug" sortable={false} />
+        <TextField source="code" sortable={false} />
+        <SeasonsLink />
+        <EditButton />
+      </Datagrid>
+    </List>
+  )
+}
 
 const useStyles = makeStyles({
   icon: { paddingRight: '0.5em' },
