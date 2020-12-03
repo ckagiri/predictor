@@ -1,8 +1,7 @@
 import { GET_LIST } from '../../core';
 
-export const crudGetAll = (resource, sort, filter, maxResults, callback) => ({
+export const crudGetAll = (resource) => ({
   type: CRUD_GET_ALL,
-  payload: { sort, filter, pagination: { page: 1, perPage: maxResults } },
   meta: {
     resource,
     fetch: GET_LIST,

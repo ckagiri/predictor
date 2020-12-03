@@ -1,17 +1,4 @@
-import React, { ComponentType } from 'react';
-
-const checkMinimumRequiredProps = (
-  displayName,
-  requiredProps,
-) => WrappedComponent => props => {
-  useCheckMinimumRequiredProps(displayName, requiredProps, props);
-  return <WrappedComponent {...props} />;
-};
-
-export default checkMinimumRequiredProps;
-
-// Todo Not a hook but named that way to avoid conflicts with the old one
-export const useCheckMinimumRequiredProps = (
+export default checkMinimumRequiredProps = (
   displayName,
   requiredProps,
   props,

@@ -3,8 +3,6 @@ export const SHOW_NOTIFICATION = 'RA/SHOW_NOTIFICATION';
 /**
  * Shows a snackbar/toast notification on the screen
  *
- * @see {@link https://material-ui.com/api/snackbar/|Material ui snackbar component}
- * @see {@link https://material.io/guidelines/components/snackbars-toasts.html|Material ui reference document on snackbar}
  */
 export const showNotification = (
   // A translatable label or text to display on notification

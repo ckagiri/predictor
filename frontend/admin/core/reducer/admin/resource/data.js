@@ -1,15 +1,9 @@
 import isEqual from 'lodash/isEqual';
 import { FETCH_END } from '../../../actions';
 import {
-  CREATE,
-  DELETE,
-  DELETE_MANY,
   GET_LIST,
-  GET_MANY,
-  GET_MANY_REFERENCE,
   GET_ONE,
   UPDATE,
-  UPDATE_MANY,
 } from '../../../core';
 import getFetchedAt from '../../../util/getFetchedAt';
 
@@ -77,7 +71,7 @@ const removeRecords = (removedRecordIds = [], oldRecords) => {
   const records = Object.entries(oldRecords)
     .filter(([key]) => !removedRecordIds.includes(key))
     .reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {
-      fetchedAt: {}, // TypeScript warns later if this is not defined
+      fetchedAt: {},
     });
   records.fetchedAt = Object.entries(oldRecords.fetchedAt)
     .filter(([key]) => !removedRecordIds.includes(key))
@@ -89,40 +83,15 @@ const removeRecords = (removedRecordIds = [], oldRecords) => {
 const initialState = hideFetchedAt({ fetchedAt: {} });
 
 const dataReducer = (previousState = initialState, { payload, meta }) => {
-  if (meta && meta.optimistic) {
-    if (meta.fetch === UPDATE) {
-      const updatedRecord = {
-        ...previousState[payload.id],
-        ...payload.data,
-      };
-      return addRecords([updatedRecord], previousState);
-    }
-    if (meta.fetch === UPDATE_MANY) {
-      const updatedRecords = payload.ids.map(id => ({
-        ...previousState[id],
-        ...payload.data,
-      }));
-      return addRecords(updatedRecords, previousState);
-    }
-    if (meta.fetch === DELETE) {
-      return removeRecords([payload.id], previousState);
-    }
-    if (meta.fetch === DELETE_MANY) {
-      return removeRecords(payload.ids, previousState);
-    }
-  }
   if (!meta || !meta.fetchResponse || meta.fetchStatus !== FETCH_END) {
     return previousState;
   }
 
   switch (meta.fetchResponse) {
     case GET_LIST:
-    case GET_MANY:
-    case GET_MANY_REFERENCE:
       return addRecords(payload.data, previousState);
     case GET_ONE:
     case UPDATE:
-    case CREATE:
       return addRecords([payload.data], previousState);
     default:
       return previousState;

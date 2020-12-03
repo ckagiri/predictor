@@ -5,7 +5,6 @@ import {
   CRUD_CREATE_SUCCESS,
 } from '../../../../actions';
 import getFetchedAt from '../../../../util/getFetchedAt';
-import { DELETE, DELETE_MANY } from '../../../../core';
 
 export const addRecordIdsFactory = getFetchedAtCallback => (
   newRecordIds = [],
@@ -27,39 +26,7 @@ export const addRecordIdsFactory = getFetchedAtCallback => (
 
 const addRecordIds = addRecordIdsFactory(getFetchedAt);
 
-// Todo fix
 const idsReducer = (previousState = [], action) => {
-  if (action.meta && action.meta.optimistic) {
-    if (action.meta.fetch === DELETE) {
-      const index = previousState
-        .map(el => el === action.payload.id) // eslint-disable-line eqeqeq
-        .indexOf(true);
-      if (index === -1) {
-        return previousState;
-      }
-      const newState = [
-        ...previousState.slice(0, index),
-        ...previousState.slice(index + 1),
-      ];
-
-      Object.defineProperty(newState, 'fetchedAt', {
-        value: previousState.fetchedAt,
-      });
-
-      return newState;
-    }
-    if (action.meta.fetch === DELETE_MANY) {
-      const newState = previousState.filter(
-        el => !action.payload.ids.includes(el),
-      );
-      Object.defineProperty(newState, 'fetchedAt', {
-        value: previousState.fetchedAt,
-      });
-
-      return newState;
-    }
-  }
-
   switch (action.type) {
     case CRUD_GET_LIST_SUCCESS:
       return addRecordIds(

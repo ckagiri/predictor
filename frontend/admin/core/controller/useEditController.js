@@ -1,15 +1,13 @@
 import { useCallback } from 'react';
-import inflection from 'inflection';
 
 import useVersion from './useVersion';
-import { useCheckMinimumRequiredProps } from './checkMinimumRequiredProps';
+import checkMinimumRequiredProps from './checkMinimumRequiredProps';
 import {
   useNotify,
   useRedirect,
   useRefresh,
 } from '../sideEffect';
 import { useGetOne, useUpdate } from '../dataProvider';
-import { useTranslate } from '../i18n';
 import { CRUD_GET_ONE, CRUD_UPDATE } from '../actions';
 
 /**
@@ -30,9 +28,8 @@ import { CRUD_GET_ONE, CRUD_UPDATE } from '../actions';
  * }
  */
 const useEditController = props => {
-  useCheckMinimumRequiredProps('Edit', ['basePath', 'resource'], props);
+  checkMinimumRequiredProps('Edit', ['basePath', 'resource'], props);
   const { basePath, id, resource, successMessage, undoable = true } = props;
-  const translate = useTranslate();
   const notify = useNotify();
   const redirect = useRedirect();
   const refresh = useRefresh();
@@ -41,21 +38,13 @@ const useEditController = props => {
     version, // used to force reload
     action: CRUD_GET_ONE,
     onFailure: () => {
-      notify('ra.notification.item_doesnt_exist', 'warning');
+      notify("Item doesn't exist", 'warning');
       redirect('list', basePath);
       refresh();
     },
   });
 
-  const resourceName = translate(`resources.${resource}.name`, {
-    smart_count: 1,
-    _: inflection.humanize(inflection.singularize(resource)),
-  });
-  const defaultTitle = translate('ra.page.edit', {
-    name: `${resourceName}`,
-    id,
-    record,
-  });
+  const defaultTitle = resource;
 
   const [update, { loading: saving }] = useUpdate(
     resource,
@@ -78,7 +67,7 @@ const useEditController = props => {
             ? onSuccess
             : () => {
               notify(
-                successMessage || 'ra.notification.updated',
+                successMessage || 'Updated',
                 'info',
                 {
                   smart_count: 1,

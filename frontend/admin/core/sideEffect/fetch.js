@@ -77,13 +77,6 @@ export function* handleFetch(dataProvider, action) {
   const failureSideEffects = onFailure instanceof Function ? {} : onFailure;
 
   try {
-    const isOptimistic = yield select(state => state.admin.ui.optimistic);
-    if (isOptimistic) {
-      // in optimistic mode, all fetch actions are canceled,
-      // so the admin uses the store without synchronization
-      return;
-    }
-
     yield all([
       put({ type: `${type}_LOADING`, payload, meta }),
       put({ type: FETCH_START }),
