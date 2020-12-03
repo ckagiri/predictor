@@ -107,3 +107,5 @@ backend/config
 npm-debug.log
 .idea
 .awcache
+
+frontend/storybook-static
