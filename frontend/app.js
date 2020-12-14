@@ -19,20 +19,22 @@ const dataProvider = restServerProvider('api');
 const MOUNT_NODE = document.getElementById('app');
 
 const renderCore = () => {
-  <DataProviderContext.Provider value={dataProvider}>
-    <ConnectedRouter history={history}>
-      <Switch>
-        <Route
-          path="/admin"
-        >
-          <CoreAdminRouter>
-            <Resource name="competitions" basePath="/competitions" />
-            <Resource name="seasons" basePath="/competitions/:slug/seasons" />
-          </CoreAdminRouter>
-        </Route>
-      </Switch>
-    </ConnectedRouter>
-  </DataProviderContext.Provider>
+  <AuthContext.Provider value={authProvider}>
+    <DataProviderContext.Provider value={dataProvider}>
+      <ConnectedRouter history={history}>
+        <Switch>
+          <Route
+            path="/admin"
+          >
+            <CoreAdminRouter>
+              <Resource name="competitions" basePath="/competitions" />
+              <Resource name="seasons" basePath="/competitions/:slug/seasons" />
+            </CoreAdminRouter>
+          </Route>
+        </Switch>
+      </ConnectedRouter>
+    </DataProviderContext.Provider>
+  </AuthContext.Provider>
 }
 
 const render = () => {
