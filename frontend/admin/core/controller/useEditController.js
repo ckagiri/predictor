@@ -83,7 +83,7 @@ const useEditController = props => {
                 typeof error === 'string'
                   ? error
                   : error.message ||
-                  'ra.notification.http_error',
+                  'Http Error',
                 'warning'
               );
               if (undoable) {

@@ -5,84 +5,35 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 // Load the favicon
 // import '!file-loader?name=[name].[ext]!./images/favicon.ico';
-import { createHashHistory } from 'history';
+import { createBrowserHistory } from 'history';
 import { ConnectedRouter } from 'connected-react-router';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { ThemeProvider } from '@material-ui/styles';
 import { Resource } from './admin/core';
-import AppBar from './admin/materialui/layout/AppBar';
-import { CompetitionList } from './admin/CompetitionList';
-import { CompetitionCreate } from './admin/CompetitionCreate';
-import { CompetitionEdit } from './admin/CompetitionEdit';
-import { SeasonList } from './admin/SeasonList';
-import { SeasonCreate } from './admin/SeasonCreate';
-import { SeasonEdit } from './admin/SeasonEdit';
 import authProvider from './admin/authProvider';
+import CoreAdminRouter from './admin/core/core/CoreAdminRouter'
 import restServerProvider from './admin/restServerProvider';
-import defaultI18nProvider from './admin/defaultI18nProvider';
-import { AuthContext } from './admin/core/auth';
 import { DataProviderContext } from './admin/core/dataProvider';
 import createAdminStore from './admin/core/core/createAdminStore';
-import TranslationProvider from './admin/core/i18n/TranslationProvider';
-import CoreAdminRouter from './admin/core/core/CoreAdminRouter';
-import { Layout } from './admin/materialui/layout';
-import { useTimeout } from './admin/core/util'
-import { createMuiTheme } from '@material-ui/core/styles';
 
-const history = createHashHistory();
+const history = createBrowserHistory();
 const dataProvider = restServerProvider('api');
 const MOUNT_NODE = document.getElementById('app');
 
-const AdminRouter = () => {
-  const oneMilliSecondHasPassed = useTimeout(1);
-  if (oneMilliSecondHasPassed) {
-    return (
+const renderCore = () => {
+  <DataProviderContext.Provider value={dataProvider}>
+    <ConnectedRouter history={history}>
       <Switch>
         <Route
-          exact
-          path="/competitions"
+          path="/admin"
         >
-          <CompetitionList />
+          <CoreAdminRouter>
+            <Resource name="competitions" basePath="/competitions" />
+            <Resource name="seasons" basePath="/competitions/:slug/seasons" />
+          </CoreAdminRouter>
         </Route>
-        <Route
-          exact
-          path="/competitions/:slug/seasons"
-          render={routeProps =>
-            <SeasonList
-              resource="seasons"
-              hasEdit
-              basePath={routeProps.match.url} {...routeProps}
-            />
-          }
-        />
       </Switch>
-    )
-  } else return null;
+    </ConnectedRouter>
+  </DataProviderContext.Provider>
 }
-
-const renderCore = () => {
-  return (
-    <AuthContext.Provider value={authProvider}>
-      <DataProviderContext.Provider value={dataProvider}>
-        <TranslationProvider i18nProvider={defaultI18nProvider}>
-          <ThemeProvider theme={createMuiTheme()}>
-            <Resource name="competitions" intent="registration" />
-            <Resource name="seasons" intent="registration" />
-            <ConnectedRouter history={history}>
-              <Switch>
-                <Route
-                  path="/"
-                >
-                  <AdminRouter />
-                </Route>
-              </Switch>
-            </ConnectedRouter>
-          </ThemeProvider>
-        </TranslationProvider>
-      </DataProviderContext.Provider>
-    </AuthContext.Provider>
-  );
-};
 
 const render = () => {
   ReactDOM.render(

@@ -16,8 +16,8 @@ const isEmptyList = data =>
   Array.isArray(data)
     ? data.length === 0
     : data &&
-      Object.keys(data).length === 0 &&
-      data.hasOwnProperty('fetchedAt');
+    Object.keys(data).length === 0 &&
+    data.hasOwnProperty('fetchedAt');
 
 /**
  * Default cache selector. Allows to cache responses by default.
@@ -27,12 +27,7 @@ const isEmptyList = data =>
  * comes, and the customQueries reducer stores the result in the store.
  * This selector reads the customQueries store and acts as a response cache.
  */
-const defaultDataSelector = query => state => {
-  const key = JSON.stringify({ ...query, type: getFetchType(query.type) });
-  return state.admin.customQueries[key]
-    ? state.admin.customQueries[key].data
-    : undefined;
-};
+const defaultDataSelector = () => []
 
 const defaultTotalSelector = () => null;
 

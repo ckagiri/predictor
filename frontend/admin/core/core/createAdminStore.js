@@ -10,7 +10,6 @@ import { CLEAR_STATE } from '../actions/clearActions';
 export default ({
   dataProvider,
   history,
-  authProvider = null,
   initialState,
 }) => {
   //todo hack
@@ -21,20 +20,18 @@ export default ({
       action.type !== CLEAR_STATE
         ? state
         : // Erase data from the store but keep location, notifications, ui prefs, etc.
-          // This allows e.g. to display a notification on logout
-          {
-            ...state,
-            admin: {
-              ...state.admin,
-              resources: {},
-              customQueries: {},
-              references: { oneToMany: {}, possibleValues: {} },
-            },
+        // This allows e.g. to display a notification on logout
+        {
+          ...state,
+          admin: {
+            ...state.admin,
+            resources: {},
           },
+        },
       action,
     );
   const saga = function* rootSaga() {
-    yield all([adminSaga(dataProvider, authProvider)].map(fork));
+    yield all([adminSaga(dataProvider)].map(fork));
   };
   const sagaMiddleware = createSagaMiddleware();
 

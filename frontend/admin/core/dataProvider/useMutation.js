@@ -3,7 +3,6 @@ import merge from 'lodash/merge';
 
 import { useSafeSetState } from '../util/hooks';
 import useDataProvider from './useDataProvider';
-import useDataProviderWithDeclarativeSideEffects from './useDataProviderWithDeclarativeSideEffects';
 
 /**
  * Get a callback to fetch the data provider through Redux, usually for mutations.
@@ -33,7 +32,6 @@ import useDataProviderWithDeclarativeSideEffects from './useDataProviderWithDecl
  * @param {boolean} options.undoable Set to true to run the mutation locally before calling the dataProvider
  * @param {Function} options.onSuccess Side effect function to be executed upon success of failure, e.g. { onSuccess: response => refresh() } }
  * @param {Function} options.onFailure Side effect function to be executed upon failure, e.g. { onFailure: error => notify(error.message) } }
- * @param {boolean} options.withDeclarativeSideEffectsSupport Set to true to support legacy side effects (e.g. { onSuccess: { refresh: true } })
  *
  * @returns A tuple with the mutation callback and the request state. Destructure as [mutate, { data, total, error, loading, loaded }].
  *
@@ -131,17 +129,10 @@ const useMutation = (query, options) => {
   });
 
   const dataProvider = useDataProvider();
-  const dataProviderWithDeclarativeSideEffects = useDataProviderWithDeclarativeSideEffects();
 
   /* eslint-disable react-hooks/exhaustive-deps */
   const mutate = useCallback(
     (callTimeQuery, callTimeOptions) => {
-      const finalDataProvider = hasDeclarativeSideEffectsSupport(
-        options,
-        callTimeOptions,
-      )
-        ? dataProviderWithDeclarativeSideEffects
-        : dataProvider;
       const params = mergeDefinitionAndCallTimeParameters(
         query,
         callTimeQuery,
@@ -151,7 +142,7 @@ const useMutation = (query, options) => {
 
       setState(prevState => ({ ...prevState, loading: true }));
 
-      finalDataProvider[params.type](
+      dataProvider[params.type](
         params.resource,
         params.payload,
         params.options,
@@ -176,7 +167,6 @@ const useMutation = (query, options) => {
       // deep equality, see https://github.com/facebook/react/issues/14476#issuecomment-471199055
       JSON.stringify({ query, options }),
       dataProvider,
-      dataProviderWithDeclarativeSideEffects,
       setState,
     ],
     /* eslint-enable react-hooks/exhaustive-deps */
@@ -253,17 +243,9 @@ const mergeDefinitionAndCallTimeParameters = (
   };
 };
 
-const hasDeclarativeSideEffectsSupport = (options, callTimeOptions) => {
-  if (!options && !callTimeOptions) return false;
-  if (callTimeOptions && callTimeOptions.withDeclarativeSideEffectsSupport)
-    return true;
-  if (options && options.withDeclarativeSideEffectsSupport) return true;
-  return false;
-};
-
 const sanitizeOptions = args => {
   if (!args) return {};
-  const { withDeclarativeSideEffectsSupport, ...options } = args;
+  const { ...options } = args;
   return options;
 };
 

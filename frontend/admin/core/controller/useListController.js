@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 
-import { useCheckMinimumRequiredProps } from './checkMinimumRequiredProps';
+import checkMinimumRequiredProps from './checkMinimumRequiredProps';
 import useListParams from './useListParams';
 import useRecordSelection from './useRecordSelection';
 import useVersion from './useVersion';
@@ -39,7 +39,7 @@ const defaultData = {};
  * }
  */
 const useListController = props => {
-  useCheckMinimumRequiredProps('List', ['basePath', 'resource'], props);
+  checkMinimumRequiredProps('List', ['basePath', 'resource'], props);
 
   const {
     basePath,
@@ -71,8 +71,6 @@ const useListController = props => {
     perPage,
     debounce,
   });
-
-  const [selectedIds, selectionModifiers] = useRecordSelection(resource);
 
   /**
    * We want the list of ids to be always available for optimistic rendering,
@@ -132,17 +130,10 @@ const useListController = props => {
     [query.sort, query.order],
   );
 
-  const resourceName = translate(`resources.${resource}.name`, {
-    smart_count: 2,
-    _: inflection.humanize(inflection.pluralize(resource)),
-  });
-  const defaultTitle = translate('ra.page.list', {
-    name: resourceName,
-  });
+  const defaultTitle = resource;
 
   return {
     basePath,
-    currentSort,
     data,
     defaultTitle,
     displayedFilters: query.displayedFilters,
@@ -152,13 +143,9 @@ const useListController = props => {
     ids: typeof total === 'undefined' ? defaultIds : ids,
     loaded: loaded || defaultIds.length > 0,
     loading,
-    onSelect: selectionModifiers.select,
-    onToggleItem: selectionModifiers.toggle,
-    onUnselectItems: selectionModifiers.clearSelection,
     page: query.page,
     perPage: query.perPage,
     resource,
-    selectedIds,
     setFilters: queryModifiers.setFilters,
     setPage: queryModifiers.setPage,
     setPerPage: queryModifiers.setPerPage,

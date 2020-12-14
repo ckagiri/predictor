@@ -1,7 +1,6 @@
 import {
   fetchActionsWithRecordResponse,
   fetchActionsWithArrayOfIdentifiedRecordsResponse,
-  fetchActionsWithArrayOfRecordsResponse,
   fetchActionsWithTotalResponse,
 } from '../core';
 
