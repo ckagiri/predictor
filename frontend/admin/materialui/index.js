@@ -1,4 +1,3 @@
-export * from './auth';
 export * from './layout';
 export * from './detail';
 export * from './input';

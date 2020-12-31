@@ -1,7 +1,6 @@
 import { useCallback, isValidElement } from 'react';
 import set from 'lodash/set';
 import useChoices from './useChoices';
-import { useTranslate } from '../i18n';
 
 /*
  * Returns helper functions for suggestions handling.
@@ -38,7 +37,6 @@ const useSuggestions = ({
   suggestionLimit = 0,
   translateChoice,
 }) => {
-  const translate = useTranslate();
   const { getChoiceText, getChoiceValue } = useChoices({
     optionText,
     optionValue,
@@ -50,7 +48,7 @@ const useSuggestions = ({
       allowDuplicates,
       allowEmpty,
       choices,
-      emptyText: translate(emptyText, { _: emptyText }),
+      emptyText: 'empty',
       emptyValue,
       getChoiceText,
       getChoiceValue,

@@ -1,8 +1,6 @@
 import { isValidElement, cloneElement, useCallback } from 'react';
 import get from 'lodash/get';
 
-import { useTranslate } from '../i18n';
-
 /*
  * Returns helper functions for choices handling.
  *
@@ -19,8 +17,6 @@ const useChoices = ({
   optionValue = 'id',
   translateChoice = true,
 }) => {
-  const translate = useTranslate();
-
   const getChoiceText = useCallback(
     choice => {
       if (isValidElement(optionText)) {
@@ -33,11 +29,9 @@ const useChoices = ({
           ? optionText(choice)
           : get(choice, optionText);
 
-      return translateChoice
-        ? translate(choiceName, { _: choiceName })
-        : choiceName;
+      return choiceName;
     },
-    [optionText, translate, translateChoice]
+    [optionText, translateChoice]
   );
 
   const getChoiceValue = useCallback(choice => get(choice, optionValue), [

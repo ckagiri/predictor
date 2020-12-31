@@ -43,11 +43,11 @@ const defaultData = {};
  *     )}</ul>;
  * };
  */
-const useGetList = (resource, pagination, sort, filter, options) => {
+const useGetList = (resource, resourcePath, pagination, sort, filter, options) => {
   const requestSignature = JSON.stringify({ pagination, sort, filter });
 
   const { data: ids, total, error, loading, loaded } = useQueryWithStore(
-    { type: 'getList', resource, payload: { pagination, sort, filter } },
+    { type: 'getList', resourcePath, payload: { pagination, sort, filter } },
     options,
     // data selector (may return [])
     state =>

@@ -12,12 +12,14 @@ import {
 } from './materialui';
 
 export const CompetitionList = props => {
-  const match = useRouteMatch("/competitions");
+  const match = useRouteMatch();
   const basePath = match ? match.path : '';
+
   const location = useLocation();
   return (
     <List
       resource="competitions"
+      resourcePath="competitions"
       basePath={basePath}
       location={location}
       match={match}

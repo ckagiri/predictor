@@ -1,15 +1,11 @@
 import React, { Children, cloneElement } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import RoutesWithLayout from './RoutesWithLayout';
 import { Ready } from '../util';
 
 const CoreAdminRouter = props => {
   const {
-    catchAll,
     children,
-    customRoutes,
-    title,
   } = props;
 
   if (
@@ -18,20 +14,6 @@ const CoreAdminRouter = props => {
     return <Ready />;
   }
 
-  const renderCustomRoutes = (route, routeProps) => {
-    if (route.props.render) {
-      return route.props.render({
-        ...routeProps,
-        title: props.title,
-      });
-    }
-    if (route.props.component) {
-      return createElement(route.props.component, {
-        ...routeProps,
-        title: props.title,
-      });
-    }
-  };
 
   return (
     <div>
@@ -45,7 +27,8 @@ const CoreAdminRouter = props => {
             // but simply to register itself as a known resource
             intent: 'registration',
           }),
-        )}
+        )
+      }
       <Switch>
         {Children.map(children, (child) => (
           <Route

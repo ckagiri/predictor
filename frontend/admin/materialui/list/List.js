@@ -198,6 +198,7 @@ ListView.propTypes = {
   perPage: PropTypes.number,
   refresh: PropTypes.func,
   resource: PropTypes.string,
+  resourcePath: PropTypes.string,
   selectedIds: PropTypes.array,
   setFilters: PropTypes.func,
   setPage: PropTypes.func,

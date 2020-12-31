@@ -12,9 +12,10 @@ import {
 } from './materialui';
 
 export const SeasonList = props => {
-  const { slug: competitionSlug } = useParams();
+  const { slug } = useParams();
   return (
     <List
+      resourcePath={`competitions/${slug}/seasons`}
       {...props}
       perPage={1000}
       actions={null}

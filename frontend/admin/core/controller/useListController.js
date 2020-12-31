@@ -1,15 +1,9 @@
 import { isValidElement, useEffect, useMemo } from 'react';
-import inflection from 'inflection';
-import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 
 import checkMinimumRequiredProps from './checkMinimumRequiredProps';
-import useListParams from './useListParams';
-import useRecordSelection from './useRecordSelection';
 import useVersion from './useVersion';
-import { useTranslate } from '../i18n';
-import { SORT_ASC } from '../reducer/admin/resource/list/queryReducer';
 import { CRUD_GET_LIST } from '../actions';
 import { useNotify } from '../sideEffect';
 import useGetList from '../dataProvider/useGetList';
@@ -39,11 +33,12 @@ const defaultData = {};
  * }
  */
 const useListController = props => {
-  checkMinimumRequiredProps('List', ['basePath', 'resource'], props);
+  checkMinimumRequiredProps('List', ['basePath', 'resource', 'resourcePath'], props);
 
   const {
     basePath,
     resource,
+    resourcePath,
     hasCreate,
     filterDefaultValues,
     sort = defaultSort,
@@ -58,19 +53,8 @@ const useListController = props => {
     );
   }
 
-  const location = useLocation();
-  const translate = useTranslate();
   const notify = useNotify();
   const version = useVersion();
-
-  const [query, queryModifiers] = useListParams({
-    resource,
-    location,
-    filterDefaultValues,
-    sort,
-    perPage,
-    debounce,
-  });
 
   /**
    * We want the list of ids to be always available for optimistic rendering,
@@ -78,12 +62,10 @@ const useListController = props => {
    */
   const { ids, total, loading, loaded } = useGetList(
     resource,
-    {
-      page: query.page,
-      perPage: query.perPage,
-    },
-    { field: query.sort, order: query.order },
-    { ...query.filter, ...filter },
+    resourcePath,
+    {},
+    {},
+    {},
     {
       action: CRUD_GET_LIST,
       version,
@@ -112,45 +94,17 @@ const useListController = props => {
     get(state.admin.resources, [resource, 'list', 'total'], 0),
   );
 
-  useEffect(() => {
-    if (
-      query.page <= 0 ||
-      (!loading && query.page > 1 && (ids || []).length === 0)
-    ) {
-      // query for a page that doesn't exist, set page to 1
-      queryModifiers.setPage(1);
-    }
-  }, [loading, query.page, ids, queryModifiers]);
-
-  const currentSort = useMemo(
-    () => ({
-      field: query.sort,
-      order: query.order,
-    }),
-    [query.sort, query.order],
-  );
-
   const defaultTitle = resource;
 
   return {
     basePath,
     data,
     defaultTitle,
-    displayedFilters: query.displayedFilters,
-    filterValues: query.filterValues,
     hasCreate,
-    hideFilter: queryModifiers.hideFilter,
     ids: typeof total === 'undefined' ? defaultIds : ids,
     loaded: loaded || defaultIds.length > 0,
     loading,
-    page: query.page,
-    perPage: query.perPage,
     resource,
-    setFilters: queryModifiers.setFilters,
-    setPage: queryModifiers.setPage,
-    setPerPage: queryModifiers.setPerPage,
-    setSort: queryModifiers.setSort,
-    showFilter: queryModifiers.showFilter,
     total: typeof total === 'undefined' ? defaultTotal : total,
     version,
   };
@@ -175,6 +129,7 @@ export const injectedProps = [
   'perPage',
   'refresh',
   'resource',
+  'resourcePath',
   'selectedIds',
   'setFilters',
   'setPage',

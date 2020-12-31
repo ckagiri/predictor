@@ -6,7 +6,6 @@ import { ConnectedRouter } from 'connected-react-router';
 import { AuthContext } from '../auth';
 import { DataProviderContext } from '../dataProvider';
 import createAdminStore from './createAdminStore';
-import TranslationProvider from '../i18n/TranslationProvider';
 
 const CoreAdminContext = ({
   authProvider,
@@ -33,9 +32,7 @@ React-admin requires a valid dataProvider function to work.`);
     return (
       <AuthContext.Provider value={finalAuthProvider}>
         <DataProviderContext.Provider value={finalDataProvider}>
-          <TranslationProvider i18nProvider={i18nProvider}>
-            <ConnectedRouter history={finalHistory}>{children}</ConnectedRouter>
-          </TranslationProvider>
+          <ConnectedRouter history={finalHistory}>{children}</ConnectedRouter>
         </DataProviderContext.Provider>
       </AuthContext.Provider>
     );

@@ -1,8 +1,6 @@
 import { combineReducers } from 'redux';
 import ids from './ids';
 import loadedOnce from './loadedOnce';
-import params from './params';
-import selectedIds from './selectedIds';
 import total from './total';
 
 const defaultReducer = () => null;
@@ -17,7 +15,5 @@ export default combineReducers({
    */
   ids: ids || defaultReducer,
   loadedOnce: loadedOnce || defaultReducer,
-  params: params || defaultReducer,
-  selectedIds: selectedIds || defaultReducer,
   total: total || defaultReducer,
 });
