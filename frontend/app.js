@@ -5,22 +5,19 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 // Load the favicon
 // import '!file-loader?name=[name].[ext]!./images/favicon.ico';
-import { createBrowserHistory } from 'history';
+import { createBrowserHistory, createHashHistory } from 'history';
 import { ConnectedRouter } from 'connected-react-router';
 import { Resource } from './admin/core';
 import authProvider from './admin/authProvider';
 import CoreAdminRouter from './admin/core/core/CoreAdminRouter'
 import jsonServerProvider from './admin/jsonServerProvider';
 import { DataProviderContext } from './admin/core/dataProvider';
+import { AuthContext } from './admin/core/auth';
 import createAdminStore from './admin/core/core/createAdminStore';
-import { Switch } from '@material-ui/core';
 import { CompetitionList } from './admin/CompetitionList';
-import { CompetitionCreate } from './admin/CompetitionCreate';
-import { CompetitionEdit } from './admin/CompetitionEdit';
 import { SeasonList } from './admin/SeasonList';
-import { SeasonCreate } from './admin/SeasonCreate';
-import { SeasonEdit } from './admin/SeasonEdit';
-
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { useTimeout } from './admin/core/util'
 
 const history = createBrowserHistory();
 const dataProvider = jsonServerProvider('api');
@@ -30,7 +27,7 @@ const Layout = ({ children }) => <div>{children}</div>
 const Matches = () => <div>Mathces Budah</div>
 const catchAll = () => <div>Catch All</div>
 
-const RoutesWithLayout = (
+const RoutesWithLayout = () => (
   <Layout>
     <Switch>
       <Route
@@ -50,35 +47,38 @@ const RoutesWithLayout = (
 )
 
 const renderCore = () => {
-  <AuthContext.Provider value={authProvider}>
-    <DataProviderContext.Provider value={dataProvider}>
-      <ConnectedRouter history={history}>
-        <Switch>
-          <Route
-            path="/admin"
-          >
-            <CoreAdminRouter>
-              <Resource
-                name="competitions"
-                basePath="/competitions"
-                list={CompetitionList}
-              />
-              <Resource
-                name="seasons"
-                basePath="/competitions/:slug/seasons"
-                list={SeasonList}
-              />
-            </CoreAdminRouter>
-          </Route>
-          <Route
-            path="/"
-          >
-            <RoutesWithLayout />
-          </Route>
-        </Switch>
-      </ConnectedRouter>
-    </DataProviderContext.Provider>
-  </AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={authProvider}>
+      <DataProviderContext.Provider value={dataProvider}>
+        <ConnectedRouter history={history}>
+          <Switch>
+            <Route
+              path="/admin"
+            >
+              <CoreAdminRouter>
+                <Resource
+                  name="competitions"
+                  basePath="/competitions"
+                  list={CompetitionList}
+                />
+                <Resource
+                  name="seasons"
+                  basePath="/competitions/:slug/seasons"
+                  list={SeasonList}
+                />
+              </CoreAdminRouter>
+              <Matches />
+            </Route>
+            <Route
+              path="/"
+            >
+              <RoutesWithLayout />
+            </Route>
+          </Switch>
+        </ConnectedRouter>
+      </DataProviderContext.Provider>
+    </AuthContext.Provider>
+  )
 }
 
 const render = () => {

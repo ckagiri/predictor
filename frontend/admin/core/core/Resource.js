@@ -15,6 +15,7 @@ const ResourceRegister = ({
   icon,
   options = defaultOptions,
 }) => {
+  console.log('Whatever');
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(
@@ -42,6 +43,7 @@ const ResourceRoutes = ({
   show,
   options = defaultOptions,
 }) => {
+  console.log('Whatever');
   const isRegistered = useSelector(state =>
     state.admin.resources[name] ? true : false,
   );

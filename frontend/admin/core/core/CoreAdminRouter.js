@@ -7,6 +7,7 @@ const CoreAdminRouter = props => {
   const {
     children,
   } = props;
+  console.log('Whatever');
 
   if (
     process.env.NODE_ENV !== 'production' && !children

@@ -1,4 +1,4 @@
-export default checkMinimumRequiredProps = (
+const checkMinimumRequiredProps = (
   displayName,
   requiredProps,
   props,
@@ -19,3 +19,5 @@ The missing props are: ${missingProps.join(', ')}`,
     );
   }
 };
+
+export default checkMinimumRequiredProps;

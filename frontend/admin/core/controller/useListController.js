@@ -1,4 +1,4 @@
-import { isValidElement, useEffect, useMemo } from 'react';
+import { isValidElement } from 'react';
 import { useSelector } from 'react-redux';
 import get from 'lodash/get';
 
@@ -7,13 +7,6 @@ import useVersion from './useVersion';
 import { CRUD_GET_LIST } from '../actions';
 import { useNotify } from '../sideEffect';
 import useGetList from '../dataProvider/useGetList';
-
-const defaultSort = {
-  field: 'id',
-  order: SORT_ASC,
-};
-
-const defaultData = {};
 
 /**
  * Prepare data for the List view
@@ -40,11 +33,7 @@ const useListController = props => {
     resource,
     resourcePath,
     hasCreate,
-    filterDefaultValues,
-    sort = defaultSort,
-    perPage = 10,
     filter,
-    debounce = 500,
   } = props;
 
   if (filter && isValidElement(filter)) {
