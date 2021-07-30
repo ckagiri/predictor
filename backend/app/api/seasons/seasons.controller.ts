@@ -7,28 +7,38 @@ import { isMongoId } from '../utils';
 import { Season } from '../../../db/models/season.model';
 
 export class SeasonsController {
-  static getInstance() {
+  public static getInstance() {
     return new SeasonsController(SeasonRepositoryImpl.getInstance());
   }
 
-  constructor(private seasonRepo: SeasonRepository) {}
+  constructor(private seasonRepo: SeasonRepository) { }
 
-  getSeasons = async (req: Request, res: Response) => {
+  public getSeasons = async (req: Request, res: Response) => {
     try {
-      const competitionId = req.query.competitionId;
-      if (!competitionId) {
-        throw new Error('competitionId is required');
+      const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
+      const competition = req.query.competition || filter.competition;
+      let seasons: Season[] = [];
+      if (!competition) {
+        throw new Error('competition id or slug is required');
       }
-      const seasons = await this.seasonRepo
-        .findAll$({ 'competition.id': competitionId })
-        .toPromise();
+      if (isMongoId(competition)) {
+        seasons = await this.seasonRepo
+          .findAll$({ 'competition.id': competition })
+          .toPromise();
+      } else {
+        seasons = await this.seasonRepo
+          .findAll$({ 'competition.slug': competition })
+          .toPromise();
+      }
+      const count = seasons.length;
+      res.header('Content-Range', `Seasons 0-${count - 1}/${count}`);
       return res.status(200).json(seasons);
     } catch (error) {
       return res.status(500).send(error);
     }
   };
 
-  getSeason = async (req: Request, res: Response) => {
+  public getSeason = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
       let season: Season;

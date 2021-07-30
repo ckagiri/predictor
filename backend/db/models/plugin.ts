@@ -7,14 +7,14 @@ export default function(schema: Schema, _options?: any) {
   });
   schema.set('toJSON', {
     virtuals: true,
-    transform: function(doc: any, ret: any, game: any) {
+    transform: (doc: any, ret: any, game: any) => {
       delete ret._id;
       delete ret.__v;
     },
   });
   schema.set('toObject', {
     virtuals: true,
-    transform: function(doc: any, ret: any, game: any) {
+    transform: (doc: any, ret: any, game: any) => {
       delete ret._id;
       delete ret.__v;
     },

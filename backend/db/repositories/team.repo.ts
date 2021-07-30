@@ -29,7 +29,7 @@ export class TeamRepositoryImpl
     super(TeamModel, converter);
   }
 
-  getAllBySeason$(seasonId: string | undefined): Observable<Team[]> {
+  public getAllBySeason$(seasonId: string | undefined): Observable<Team[]> {
     if (!seasonId) {
       throwError('seasonId cannot be empty');
     }
@@ -42,10 +42,11 @@ export class TeamRepositoryImpl
           SeasonModel.findOne({ _id: seasonId })
             .populate('teams', '-__v -externalReference')
             .lean()
-            .exec(function(err, season) {
-              if (err) reject(err);
-              if (!season)
+            .exec((err, season) => {
+              if (err) { reject(err); }
+              if (!season) {
                 reject(new Error('Failed to find Season ' + seasonId));
+              }
               return resolve(season.teams as Team[]);
             });
         },

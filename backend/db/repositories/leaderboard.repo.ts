@@ -20,7 +20,7 @@ export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
   ): Observable<Leaderboard>;
   findRoundBoardAndUpsert$(
     seasonId: string,
-    gameRound: number,
+    gameRound: string,
     update: any,
   ): Observable<Leaderboard>;
 }
@@ -61,7 +61,7 @@ export class LeaderboardRepositoryImpl
 
   public findRoundBoardAndUpsert$(
     seasonId: string,
-    gameRound: number,
+    gameRound: string,
     update: any,
   ) {
     const query: any = {

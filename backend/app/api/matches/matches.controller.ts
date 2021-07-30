@@ -7,13 +7,13 @@ import { isMongoId } from '../utils';
 import { Match } from '../../../db/models/match.model';
 
 export class MatchesController {
-  static getInstance() {
+  public static getInstance() {
     return new MatchesController(MatchRepositoryImpl.getInstance());
   }
 
   constructor(private matchRepo: MatchRepository) {}
 
-  getMatches = async (req: Request, res: Response) => {
+  public getMatches = async (req: Request, res: Response) => {
     try {
       const seasonId = req.query.seasonId;
       if (!seasonId) {
@@ -28,7 +28,7 @@ export class MatchesController {
     }
   };
 
-  getMatch = async (req: Request, res: Response) => {
+  public getMatch = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
       let match: Match;

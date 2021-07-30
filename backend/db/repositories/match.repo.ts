@@ -19,7 +19,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findSelectableMatches$(
     seasonId: string,
-    gameRound: number,
+    gameRound: string,
   ): Observable<Match[]>;
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
@@ -42,7 +42,7 @@ export class MatchRepositoryImpl
     super(MatchModel, converter);
   }
 
-  public findSelectableMatches$(seasonId: string, gameRound: number) {
+  public findSelectableMatches$(seasonId: string, gameRound: string) {
     const {
       SCHEDULED,
       TIMED,
@@ -77,16 +77,14 @@ export class MatchRepositoryImpl
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
     return (this.converter as MatchConverter).from(obj).pipe(
       flatMap(data => {
-        const { season, homeTeam, awayTeam, externalReference } = data;
+        const { season, homeTeam, awayTeam, gameRound, externalReference } = data;
         const query = {
           season,
           'homeTeam.id': homeTeam && homeTeam.id,
           'awayTeam.id': awayTeam && awayTeam.id,
         };
         delete data.externalReference;
-        if (obj.gameRound) {
-          data.gameRound = obj.gameRound;
-        }
+        data.gameRound = gameRound;
         Object.keys(data).forEach(key => data[key] == null && delete data[key]);
 
         return this._findOneAndUpsert$(query, data, externalReference);

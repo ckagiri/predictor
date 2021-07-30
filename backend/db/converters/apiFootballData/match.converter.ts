@@ -10,15 +10,22 @@ import {
   TeamRepository,
   TeamRepositoryImpl,
 } from '../../repositories/team.repo';
+import {
+  GameRoundRepository,
+  GameRoundRepositoryImpl,
+} from '../../repositories/gameRound.repo';
+
 import { Match } from '../../models/match.model';
 import { Season } from '../../models/season.model';
 import { Team } from '../../models/team.model';
+import { GameRound } from '../../models/gameRound.model';
 
 export class AfdMatchConverter implements MatchConverter {
   public static getInstance(): MatchConverter {
     return new AfdMatchConverter(
       SeasonRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
       TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      GameRoundRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
     );
   }
   public footballApiProvider: ApiProvider;
@@ -26,6 +33,7 @@ export class AfdMatchConverter implements MatchConverter {
   constructor(
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
+    private gameRoundRepo: GameRoundRepository,
   ) {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
@@ -35,10 +43,12 @@ export class AfdMatchConverter implements MatchConverter {
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.name),
       this.teamRepo.findByName$(data.awayTeam.name),
-      (season: Season, homeTeam: Team, awayTeam: Team) => {
+      this.gameRoundRepo.findOne$({position: data.matchday}),
+      (season: Season, homeTeam: Team, awayTeam: Team, gameRound: GameRound) => {
         return {
           season: season.id,
           date: data.utcDate,
+          gameRound: gameRound.id,
           matchRound: data.matchday,
           status: data.status,
           homeTeam: {

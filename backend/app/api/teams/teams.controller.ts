@@ -7,28 +7,25 @@ import { isMongoId } from '../utils';
 import { Team } from '../../../db/models/team.model';
 
 export class TeamsController {
-  static getInstance() {
+  public static getInstance() {
     return new TeamsController(TeamRepositoryImpl.getInstance());
   }
 
   constructor(private teamRepo: TeamRepository) {}
 
-  getTeams = async (req: Request, res: Response) => {
+  public getTeams = async (req: Request, res: Response) => {
     try {
-      let teams: Team[];
       const seasonId = req.query.seasonId as string;
-      if (seasonId) {
-        teams = await this.teamRepo.getAllBySeason$(seasonId).toPromise();
-      } else {
-        teams = await this.teamRepo.findAll$().toPromise();
-      }
+      const teams: Team[] = seasonId
+        ? await this.teamRepo.getAllBySeason$(seasonId).toPromise()
+        : await this.teamRepo.findAll$().toPromise();
       res.status(200).json(teams);
     } catch (error) {
       res.status(500).send(error);
     }
   };
 
-  getTeam = async (req: Request, res: Response) => {
+  public getTeam = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
       let team: Team;

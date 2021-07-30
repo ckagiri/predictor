@@ -1,10 +1,11 @@
 import seedData from '../tasks/seedData/seed-epl20.json';
 
-import mongooseSeeder = require('mais-mongoose-seeder');
-import mongoose = require('mongoose');
+import mongooseSeeder from 'mais-mongoose-seeder';
+import mongoose from 'mongoose';
 import('../models/competition.model');
 import('../models/season.model');
 import('../models/team.model');
+import('../models/gameRound.model');
 
 function seed() {
   mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true });

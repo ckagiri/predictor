@@ -53,7 +53,7 @@ export class CompetitionJob implements Job {
             .build();
 
           queue.addJob(matchesJob);
-          //queue.addJob(teamsJob);
+          // queue.addJob(teamsJob);
         }),
       )
       .toPromise();

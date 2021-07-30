@@ -85,6 +85,12 @@ class SeasonBuilder implements Builder<Season> {
 
   constructor(private gameBuilder: GameBuilder) {}
 
+  reset() {
+    this.teamBuilders = [];
+    this.matchBuilders = [];
+    this.predictions = [];
+  }
+
   name(value: string) {
     this.built.name = value;
     return this;
@@ -112,6 +118,16 @@ class SeasonBuilder implements Builder<Season> {
 
   currentMatchRound(value: number) {
     this.built.currentMatchRound = value;
+    return this;
+  }
+
+  currentGameRound(value: number) {
+    this.built.currentGameRound = value;
+    return this;
+  }
+
+  externalReference(value: any) {
+    this.built.externalReference = value;
     return this;
   }
 
@@ -171,7 +187,7 @@ class SeasonBuilder implements Builder<Season> {
     const matches = await Promise.all(
       this.matchBuilders.map(async builder => {
         builder.season(this);
-        const match = builder.build();
+        const match = await builder.build();
         return match;
       }),
     );
@@ -309,7 +325,7 @@ class MatchBuilder implements Builder<Match> {
     const predictions = await Promise.all(
       this.predictionBuilders.map(async builder => {
         builder.match(this);
-        const prediction = builder.build();
+        const prediction = await builder.build();
         return prediction;
       }),
     );
@@ -442,13 +458,15 @@ class GameBuilder implements Builder<GameData> {
     return this;
   }
 
-  private clearGameData() {
+  private reset() {
     this.users = [];
     this.teams = [];
     this.competitions = [];
     this.seasons = [];
     this.matches = [];
     this.predictions = [];
+
+    this.seasonBuilders.forEach(builder => builder.reset());
   }
 
   async build(): Promise<Game> {
@@ -489,7 +507,7 @@ class GameBuilder implements Builder<GameData> {
       predictions: this.predictions,
     });
 
-    this.clearGameData();
+    this.reset();
 
     return game;
   }

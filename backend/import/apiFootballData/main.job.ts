@@ -40,7 +40,7 @@ export class MainJob implements Job {
     // tslint:disable-next-line: no-console
     console.log('** starting ApiFootballData Main job');
     return this.apiClient
-      .getCompetitions(2018)
+      .getCompetitions(2021)
       .then((response: any) => {
         const competitions = response.data.competitions;
         for (const comp of competitions) {

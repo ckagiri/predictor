@@ -20,7 +20,7 @@ export default (app: Application, options: SetupOptions) => {
   } else {
     const filePath = path.resolve(
       process.cwd(),
-      '../frontend/webpack/webpack.client.dev',
+      '../frontend/webpack/webpack.client.dev.js',
     );
     const webpackConfig = require(filePath) as WebpackConfig;
     addDevMiddlewares(app, webpackConfig);

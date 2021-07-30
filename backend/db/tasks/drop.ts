@@ -1,4 +1,4 @@
-import mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 function drop() {
   // tslint:disable-next-line:no-console

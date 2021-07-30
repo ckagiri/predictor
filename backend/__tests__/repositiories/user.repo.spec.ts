@@ -2,36 +2,36 @@ import { expect } from 'chai';
 
 import UserModel from '../../db/models/user.model';
 import { UserRepositoryImpl } from '../../db/repositories/user.repo';
-import * as db from '../../db/index';
+import memoryDb from '../memoryDb';
 
 const userRepo = UserRepositoryImpl.getInstance();
 
 describe('User Repo', function() {
-  this.timeout(5000);
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+  before(async () => {
+    await memoryDb.connect();
   });
-  beforeEach(done => {
+
+  beforeEach(async () => {
     const user1 = new UserModel({
       username: 'chalo',
       email: 'chalo@example.com',
       local: { password: 'chalo' },
     });
+
     const user2 = {
       username: 'kagiri',
       email: 'kagiri@example.com',
     };
-    Promise.all([user1.save(), UserModel.create(user2)]).then(() => done());
+
+    await Promise.all([user1.save(), UserModel.create(user2)]);
   });
-  afterEach(done => {
-    db.drop().then(() => {
-      done();
-    });
+
+  afterEach(async () => {
+    await memoryDb.dropDb();
   });
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
+
+  after(async () => {
+    await memoryDb.close();
   });
 
   it('should find all users', done => {
@@ -39,5 +39,17 @@ describe('User Repo', function() {
       expect(users).to.have.length(2);
       done();
     });
+  });
+
+  it('should filter users', done => {
+    userRepo
+      .find$({
+        filter: JSON.stringify({ username: ['chalo'] }),
+      })
+      .subscribe(({ result: users, count }) => {
+        expect(users).to.have.length(1);
+        expect(count).to.equal(1);
+        done();
+      });
   });
 });

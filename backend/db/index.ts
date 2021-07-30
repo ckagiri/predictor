@@ -1,4 +1,4 @@
-import mongoose = require('mongoose');
+import mongoose from 'mongoose';
 import CompetitionModel from './models/competition.model';
 import TeamModel from './models/team.model';
 import PredictionModel from './models/prediction.model';

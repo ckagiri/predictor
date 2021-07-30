@@ -20,7 +20,7 @@ import {
 } from '../../../db/repositories/competition.repo';
 
 export class GameController {
-  static getInstance() {
+  public static getInstance() {
     return new GameController(
       CompetitionRepositoryImpl.getInstance(),
       SeasonRepositoryImpl.getInstance(),
@@ -36,13 +36,13 @@ export class GameController {
     private matchRepo: MatchRepository,
   ) {}
 
-  getGameData = async (_req: Request, res: Response) => {
+  public getGameData = async (_req: Request, res: Response) => {
     try {
       const gameData = await this.competitionRepo
         .findAll$()
         .pipe(
           map(competitions => {
-            //Todo: global-config
+            // Todo: global-config
             const selectedCompetition = competitions.find(
               c => c.slug === 'english-premier-league',
             );
@@ -71,8 +71,8 @@ export class GameController {
         .pipe(
           flatMap(
             ({ competitions, selectedCompetition, competitionSeasons }) => {
-              //Todo: global-config
-              let selectedSeason = competitionSeasons.find(
+              // Todo: global-config
+              const selectedSeason = competitionSeasons.find(
                 s => s.year === 2020,
               );
               // Todo: season-teams

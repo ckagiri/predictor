@@ -29,7 +29,7 @@ export class SeasonRepositoryImpl
     super(SeasonModel, converter);
   }
 
-  getTeamsForSeason$(seasonId: string | undefined) {
+  public getTeamsForSeason$(seasonId: string | undefined) {
     if (!seasonId) {
       throwError('seasonId cannot be empty');
     }
@@ -42,10 +42,11 @@ export class SeasonRepositoryImpl
           SeasonModel.findOne({ _id: seasonId })
             .populate('teams', '-__v -externalReference')
             .lean()
-            .exec(function(err, season) {
-              if (err) reject(err);
-              if (!season)
+            .exec((err, season) => {
+              if (err) { reject(err); }
+              if (!season) {
                 reject(new Error('Failed to load Season ' + seasonId));
+              }
               return resolve(season.teams as Team[]);
             });
         },

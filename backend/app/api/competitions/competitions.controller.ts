@@ -7,22 +7,23 @@ import { isMongoId } from '../utils';
 import { Competition } from '../../../db/models/competition.model';
 
 export class CompetitionsController {
-  static getInstance() {
+  public static getInstance() {
     return new CompetitionsController(CompetitionRepositoryImpl.getInstance());
   }
 
-  constructor(private competitionRepo: CompetitionRepository) {}
+  constructor(private competitionRepo: CompetitionRepository) { }
 
-  getCompetitions = async (_req: Request, res: Response) => {
+  public getCompetitions = async (_req: Request, res: Response) => {
     try {
       const competitions = await this.competitionRepo.findAll$().toPromise();
+      res.header('Content-Range', `Competitions 0-${competitions.length - 1}/${competitions.length}`);
       res.status(200).json(competitions);
     } catch (error) {
       res.status(500).send(error);
     }
   };
 
-  getCompetition = async (req: Request, res: Response) => {
+  public getCompetition = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
       let competition: Competition;

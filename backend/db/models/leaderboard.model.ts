@@ -8,7 +8,7 @@ export interface Leaderboard extends Entity {
   season: string;
   year?: number;
   month?: number;
-  gameRound?: number;
+  gameRound?: string;
   status?: BOARD_STATUS;
   boardType?: BOARD_TYPE;
   userCount?: number;
@@ -35,7 +35,7 @@ const STATUS = BOARD_STATUS;
 
 const leaderboardSchema = schema({
   season: { type: ObjectId, ref: 'Season', index: true },
-  gameRound: { type: Number, index: true },
+  gameRound: { type: ObjectId, ref: 'GameRound', index: true },
   year: { type: Number, index: true },
   month: { type: Number, index: true },
   status: {

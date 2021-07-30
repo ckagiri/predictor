@@ -19,7 +19,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
     userId: string,
     seasonId: string,
-    gameRound: number,
+    gameRound: string,
     pick: string | string[],
   ): Observable<Prediction>;
   findOneOrCreate$({
@@ -54,7 +54,7 @@ export class PredictionRepositoryImpl
   public findOrCreateJoker$(
     userId: string,
     seasonId: string,
-    gameRound: number,
+    gameRound: string,
     pick: string | string[],
   ): Observable<Prediction> {
     const query: any = {

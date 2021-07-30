@@ -37,6 +37,90 @@ export class DocumentDao<T extends Document> {
       .exec() as Promise<T[]>;
   }
 
+  public find(requestQuery: any = {}, projection?: any, options?: any) {
+    const { filter, range, sort } = requestQuery;
+    const conditions: any = {};
+    if (filter) {
+      const search = JSON.parse(filter);
+      const { q } = search;
+      if (q) {
+        /* Search for case-insensitive match on any field: */
+        const schema: any = this.Model.schema;
+        const combinedOr = Object.keys(schema.paths)
+          .filter(
+            k =>
+              schema.paths[k].instance === 'String' ||
+              schema.paths[k].instance === 'ObjectID' ||
+              schema.paths[k].instance === 'Number',
+          )
+          .map(k => {
+            switch (schema.paths[k].instance) {
+              case 'String':
+                return {
+                  [k]: new RegExp(q, 'i'),
+                };
+              case 'ObjectID':
+                return mongoose.Types.ObjectId.isValid(q)
+                  ? {
+                      [k]: q,
+                    }
+                  : null;
+              case 'Number':
+                return !isNaN(parseInt(q, 10))
+                  ? {
+                      [k]: parseInt(q, 10),
+                    }
+                  : null;
+            }
+            return null;
+          })
+          .filter(condition => !!condition);
+        if (combinedOr.length > 0) {
+          conditions['$or'] = combinedOr;
+        }
+      } else {
+        const combinedAnd = Object.keys(search).map(key => {
+          const isId = key === 'id';
+          const needle = search[key];
+          if (Array.isArray(needle)) {
+            return {
+              [isId ? '_id' : key]: {
+                $in: needle.map(n => (isId ? mongoose.Types.ObjectId(n) : n)),
+              },
+            };
+          }
+          return {
+            [isId ? '_id' : key]: isId
+              ? mongoose.Types.ObjectId(needle)
+              : needle,
+          };
+        });
+        if (combinedAnd.length > 0) {
+          conditions['$and'] = combinedAnd;
+        }
+      }
+    }
+    return this.Model.countDocuments(conditions)
+      .exec()
+      .then(async count => {
+        let query = this.Model.find(conditions, projection, options);
+        if (sort) {
+          const [field, order] = JSON.parse(sort);
+          query = query.sort({
+            [options && options.primaryKey && field === 'id'
+              ? options.primaryKey
+              : field]: order === 'ASC' ? 1 : -1,
+          });
+        }
+        if (range) {
+          const [start, end] = JSON.parse(range);
+          query = query.skip(start).limit(end - start);
+        }
+        const result = await query.exec();
+        return Promise.resolve({ result, count });
+      }) as Promise<{ result: T[]; count: number }>;
+  }
+
   public findOne(conditions: any, projection?: any) {
     return this.Model.findOne(conditions, projection).exec() as Promise<T>;
   }
@@ -72,6 +156,6 @@ export class DocumentDao<T extends Document> {
   }
 
   public count(conditions: any) {
-    return this.Model.count(conditions).exec();
+    return this.Model.countDocuments(conditions).exec();
   }
 }
