@@ -14,6 +14,7 @@ const Resource = ({ name, path, list }) => {
               createElement(list, {
                 path,
                 resource: name,
+                basePath: routeProps.match.url,
                 ...routeProps,
               })
             }

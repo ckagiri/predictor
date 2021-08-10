@@ -1,6 +1,6 @@
 import React from 'react';
 import { generatePath } from 'react-router';
-import { useParams, useRouteMatch } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { ReferenceListBase, useListContext } from 'lib/core/controller';
 
@@ -8,10 +8,8 @@ const MatchList = props => {
   const { path } = props;
   const { competition, season, round } = useParams();
   const resourcePath = generatePath(path, { competition, season, round });
-  const { url: basePath } = useRouteMatch();
 
   const options = {
-    basePath,
     resourcePath,
     referencingResource: round ? 'gamerounds' : 'seasons',
     id: `${competition}_${season}${round ? `_${round}` : ''}`,

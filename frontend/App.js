@@ -12,11 +12,8 @@ import { CompetitionList } from 'admin/competitions';
 import { SeasonList } from 'admin/seasons';
 import { GameRoundList } from 'admin/gamerounds';
 import { MatchList } from 'admin/matches';
-import {
-  AppLocationContext as ResourceAppLocationContext,
-  ResourceBreadcrumbItems,
-} from 'admin/navigation';
-import { Breadcrumb as ResourceBreadcrumb } from 'admin/navigation/breadcrumb';
+import { AppLocationContext, ResourceBreadcrumbItems } from 'navigation';
+import { Breadcrumb } from 'navigation/breadcrumb';
 
 const history = createBrowserHistory();
 const dataProvider = jsonServerProvider('/api');
@@ -43,10 +40,10 @@ const App = () => {
             <Redirect exact from="/" to="/admin" />
             <Redirect exact from="/admin" to="/admin/competitions" />
             <Route path="/admin">
-              <ResourceAppLocationContext>
-                <ResourceBreadcrumb>
+              <AppLocationContext>
+                <Breadcrumb>
                   <ResourceBreadcrumbItems />
-                </ResourceBreadcrumb>
+                </Breadcrumb>
                 <Resource
                   name="competitions"
                   path="/competitions"
@@ -72,7 +69,7 @@ const App = () => {
                   path="/competitions/:competition/seasons/:season/gamerounds/:round/matches"
                   list={MatchList}
                 />
-              </ResourceAppLocationContext>
+              </AppLocationContext>
             </Route>
             <CatchAll />
           </Switch>

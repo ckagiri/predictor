@@ -1,6 +1,6 @@
 import React from 'react';
 import { generatePath } from 'react-router';
-import { Link, useParams, useRouteMatch } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 
 import { ReferenceListBase, useListContext } from 'lib/core/controller';
@@ -9,10 +9,8 @@ const SeasonList = props => {
   const { path } = props;
   const { competition } = useParams();
   const resourcePath = generatePath(path, { competition });
-  const { url: basePath } = useRouteMatch();
 
   const options = {
-    basePath,
     resourcePath,
     referencingResource: 'competitions',
     id: competition,

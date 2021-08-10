@@ -1,15 +1,14 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
-import { Link, useRouteMatch } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ListBase, useListContext } from 'lib/core/controller';
 
 const CompetitionList = props => {
   const { path: resourcePath } = props;
-  const { url: basePath } = useRouteMatch();
 
   return (
-    <ListBase basePath={basePath} resourcePath={resourcePath} {...props}>
+    <ListBase resourcePath={resourcePath} {...props}>
       <CompetitionListView />
     </ListBase>
   );
