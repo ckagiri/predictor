@@ -45,6 +45,7 @@ async function startServer(): Promise<http.Server> {
     db.once('open', () => {
       console.info(`Connected to MongoDB: ${mongoUri}`);
     });
+    console.info(`Connected to MongoDB: ${mongoUri}`);
   }
 
   return new Promise(resolve => {

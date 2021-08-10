@@ -13,7 +13,6 @@ export interface GameRoundDocument extends GameRound, DocumentEntity {}
 const GameRoundSchema = schema({
   season: { type: Schema.Types.ObjectId, ref: 'Season', index: true, required: true },
   name: { type: String, required: true },
-  slug: { type: String, required: true },
   position: { type: Number },
 });
 

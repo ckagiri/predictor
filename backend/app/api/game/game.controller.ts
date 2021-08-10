@@ -73,7 +73,7 @@ export class GameController {
             ({ competitions, selectedCompetition, competitionSeasons }) => {
               // Todo: global-config
               const selectedSeason = competitionSeasons.find(
-                s => s.year === 2020,
+                s => s.year === 2022,
               );
               // Todo: season-teams
               return zip(

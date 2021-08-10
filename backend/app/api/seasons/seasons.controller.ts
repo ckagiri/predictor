@@ -16,7 +16,7 @@ export class SeasonsController {
   public getSeasons = async (req: Request, res: Response) => {
     try {
       const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
-      const competition = req.query.competition || filter.competition;
+      const competition = req.params.competition || req.query.competition || filter.competition;
       let seasons: Season[] = [];
       if (!competition) {
         throw new Error('competition id or slug is required');
