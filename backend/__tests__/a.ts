@@ -339,22 +339,11 @@ class MatchBuilder implements Builder<Match> {
   }
 
   async build(): Promise<Match> {
-    if (this.season == null) {
-      await this.seasonBuilder?.build();
-    }
     this.built.season = this.season?.id;
-
-
-    if (this.homeTeam == null) {
-      await this.homeTeamBuilder?.build()!;
-    }
     const { name: homeTeamName, id: homeTeamId, slug: homeTeamSlug, crestUrl: homeTeamCrestUrl } = this.homeTeam;
     this.built.homeTeam = { id: homeTeamId!, name: homeTeamName, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
 
-    if (this.awayTeam == null) {
-      await this.awayTeamBuilder?.build()!;
-    }
-    const { name: awayTeamName, id: awayTeamId, slug: awayTeamSlug, crestUrl: awayTeamCrestUrl } = this.homeTeam;
+    const { name: awayTeamName, id: awayTeamId, slug: awayTeamSlug, crestUrl: awayTeamCrestUrl } = this.awayTeam;
     this.built.awayTeam = { id: awayTeamId!, name: awayTeamName, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
 
     this.built.slug = `${this.built.homeTeam?.slug}-${this.built.homeTeam?.slug}`;

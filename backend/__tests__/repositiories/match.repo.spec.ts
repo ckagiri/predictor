@@ -42,7 +42,7 @@ describe('MatchRepo', function() {
     await memoryDb.close();
   });
 
-  xdescribe('create | update', function() {
+  describe('create | update', function() {
     let season: Season;
     let team1: Team;
     let team2: Team;
@@ -224,7 +224,7 @@ describe('MatchRepo', function() {
       await memoryDb.dropDb();
     });
 
-    xit('should filter matches by id', done => {
+    it('should filter matches by id', done => {
       const id = gameData.matches[0].id;
       ligiMatchRepo
         .find$({
@@ -237,7 +237,7 @@ describe('MatchRepo', function() {
         });
     });
 
-    xit('should filter matches by team', done => {
+    it('should filter matches by team', done => {
       const chelseaId = gameData.teams.find(t => t.slug === 'chelsea')?.id;
       ligiMatchRepo
         .find$({
@@ -251,7 +251,7 @@ describe('MatchRepo', function() {
         });
     });
 
-    xit('should filter matches by slug', done => {
+    it('should filter matches by slug', done => {
       ligiMatchRepo
         .find$({
           filter: JSON.stringify({ 'homeTeam.slug': ['chelsea'] }),
@@ -263,7 +263,7 @@ describe('MatchRepo', function() {
         });
     });
 
-    xit('should filter matches by multiple slug', done => {
+    it('should filter matches by multiple slug', done => {
       ligiMatchRepo
         .find$({
           filter: JSON.stringify({ 'homeTeam.slug': ['chelsea', 'everton'] }),
@@ -293,7 +293,7 @@ describe('MatchRepo', function() {
         });
     });
 
-    xit('should filter matches by search term', done => {
+    it('should filter matches by search term', done => {
       ligiMatchRepo
         .find$({
           filter: JSON.stringify({ q: 'man' }),
@@ -305,7 +305,7 @@ describe('MatchRepo', function() {
         });
     });
 
-    xit('should sort matches by date', done => {
+    it('should sort matches by date', done => {
       ligiMatchRepo
         .find$({
           sort: JSON.stringify(['date', 'ASC']),
@@ -317,7 +317,7 @@ describe('MatchRepo', function() {
         });
     });
 
-    xit('should paginate matches', done => {
+    it('should paginate matches', done => {
       ligiMatchRepo
         .find$({
           sort: JSON.stringify(['date', 'ASC']),
