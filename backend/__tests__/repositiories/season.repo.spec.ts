@@ -49,7 +49,7 @@ describe('seasonRepo', function () {
       },
     };
 
-    // for AFD season repo we work with a season that has a competition prop
+    // properly construct season with its competition prop to insert$ not save$
     epl21 = {
       id: 'abc123a',
       name: '2020-2021',
@@ -86,7 +86,7 @@ describe('seasonRepo', function () {
   it('should save new season', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
 
-    // competitionId is for LIGI season-repo; season-repo converter will find competition and construct season competition prop
+    // competitionId is for LIGI season-repo; season-repo converter will find competition and construct season competition prop during save$
     const theEpl22 = {
       id: 'abc123',
       name: '2021-2022',
