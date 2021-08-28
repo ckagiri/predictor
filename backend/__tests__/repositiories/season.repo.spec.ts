@@ -17,7 +17,7 @@ let afdEpl22: any; // Afd season representation
 const EPL_21_REF = 'AFD_EPL_21';
 const EPL_22_REF = 'AFD_EPL_22';
 
-describe('seasonRepo', function() {
+describe('seasonRepo', function () {
   before(async () => {
     await memoryDb.connect();
   });
@@ -33,50 +33,50 @@ describe('seasonRepo', function() {
       .code('epl')
       .build();
 
-      const { id, name, slug } = epl;
-      const competition = { id, name, slug } as Required<Competition>;
+    const { id, name, slug } = epl;
+    const competition = { id, name, slug } as Required<Competition>;
 
-      afdEpl22 = {
-        id: EPL_22_REF,
-        name: 'Premier League',
-        code: 'PL',
-        currentSeason: {
-          id: 445,
-          startDate: '2021-08-10',
-          endDate: '2022-05-12',
-          currentMatchday: 34,
-          winner: null,
-        },
-      };
+    afdEpl22 = {
+      id: EPL_22_REF,
+      name: 'Premier League',
+      code: 'PL',
+      currentSeason: {
+        id: 445,
+        startDate: '2021-08-10',
+        endDate: '2022-05-12',
+        currentMatchday: 34,
+        winner: null,
+      },
+    };
 
-      // for AFD season repo we work with a season that has a competition prop
-      epl21 = {
-        id: 'abc123a',
-        name: '2020-2021',
-        slug: '2020-21',
-        year: 2022,
-        seasonStart: '2020-08-11T00:00:00+0200',
-        seasonEnd: '2021-05-13T16:00:00+0200',
-        currentMatchRound: 20,
-        competition,
-        externalReference: {
-          [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_21_REF },
-        },
-      };
+    // for AFD season repo we work with a season that has a competition prop
+    epl21 = {
+      id: 'abc123a',
+      name: '2020-2021',
+      slug: '2020-21',
+      year: 2022,
+      seasonStart: '2020-08-11T00:00:00+0200',
+      seasonEnd: '2021-05-13T16:00:00+0200',
+      currentMatchRound: 20,
+      competition,
+      externalReference: {
+        [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_21_REF },
+      },
+    };
 
-      epl22 = {
-        id: 'abc123',
-        name: '2021-2022',
-        slug: '2021-22',
-        year: 2022,
-        seasonStart: '2021-08-11T00:00:00+0200',
-        seasonEnd: '2022-05-13T16:00:00+0200',
-        currentMatchRound: 20,
-        competition,
-        externalReference: {
-          [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_22_REF },
-        },
-      };
+    epl22 = {
+      id: 'abc123',
+      name: '2021-2022',
+      slug: '2021-22',
+      year: 2022,
+      seasonStart: '2021-08-11T00:00:00+0200',
+      seasonEnd: '2022-05-13T16:00:00+0200',
+      currentMatchRound: 20,
+      competition,
+      externalReference: {
+        [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_22_REF },
+      },
+    };
   })
 
   afterEach(async () => {

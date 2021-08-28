@@ -36,12 +36,7 @@ describe('CompetitionRepo', function() {
         expect(slug).to.equal(competition.slug);
         expect(code).to.equal(competition.code);
         done();
-      },
-      err => {
-        // tslint:disable-next-line: no-console
-        console.log(err);
-        done();
-      },
+      }
     );
   });
 });
