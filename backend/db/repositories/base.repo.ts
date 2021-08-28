@@ -120,7 +120,7 @@ export class BaseRepositoryImpl<
     options?: any,
   ): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
-      this.findAll(conditions, '-__v -externalReference', options).then(
+      this.findAll(conditions, '-__v', options).then(
         (result: TDocument[]) => {
           observer.next(result);
           observer.complete();
@@ -139,7 +139,7 @@ export class BaseRepositoryImpl<
   ): Observable<{ result: T[]; count: number }> {
     return Observable.create(
       (observer: Subscriber<{ result: T[]; count: number }>) => {
-        this.find(requestQuery, '-__v -externalReference', options).then(
+        this.find(requestQuery, '-__v', options).then(
           ({ result, count }) => {
             observer.next({ result, count });
             observer.complete();

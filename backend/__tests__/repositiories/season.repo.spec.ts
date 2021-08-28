@@ -2,106 +2,61 @@ import 'mocha';
 import { expect } from 'chai';
 import { flatMap } from 'rxjs/operators';
 
-import db from '../../db';
-import { CompetitionDocument } from '../../db/models/competition.model';
+import { Competition } from '../../db/models/competition.model';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
+import memoryDb from '../memoryDb';
+import a from '../a';
 
-const epl = {
-  name: 'English Premier League',
-  slug: 'english_premier_league',
-  code: 'epl',
-};
-
-const epl17 = {
-  id: undefined,
-  name: '2017-2018',
-  slug: '17-18',
-  year: 2017,
-  seasonStart: '2017-08-11T00:00:00+0200',
-  seasonEnd: '2018-05-13T16:00:00+0200',
-  currentMatchRound: 20,
-  competitionId: undefined,
-};
-
-const epl16 = {
-  id: undefined,
-  name: '2016-2017',
-  slug: '16-17',
-  year: 2016,
-  seasonStart: '2016-08-11T00:00:00+0200',
-  seasonEnd: '2017-05-13T16:00:00+0200',
-  currentMatchRound: 20,
-};
-
-const afdEpl17 = {
-  id: 2021,
-  name: 'Premier League',
-  code: 'PL',
-  currentSeason: {
-    id: 445,
-    startDate: '2018-08-10',
-    endDate: '2019-05-12',
-    currentMatchday: 34,
-    winner: null,
-  },
-};
-
-const afdEpl16 = {
-  id: 2021,
-  name: 'Premier League',
-  code: 'PL',
-  currentSeason: {
-    id: 441,
-    startDate: '2018-08-10',
-    endDate: '2019-05-12',
-    currentMatchday: 32,
-    winner: null,
-  },
-};
-
-let aCompetition: CompetitionDocument;
+let epl: Competition;
 
 describe('seasonRepo', function() {
-  this.timeout(5000);
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+  before(async () => {
+    await memoryDb.connect();
   });
-  beforeEach(done => {
-    db.Competition.create(epl).then(l => {
-      aCompetition = l;
-      done();
-    });
+
+  after(async () => {
+    await memoryDb.close();
   });
-  afterEach(done => {
-    db.drop().then(() => {
-      done();
-    });
-  });
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
+
+  beforeEach(async () => {
+    epl = await a.competition
+      .name('English Premier League')
+      .slug('english-premier-league')
+      .code('epl')
+      .build();
+  })
+
+  afterEach(async () => {
+    await memoryDb.dropDb();
   });
 
   it('should save new season', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
-    epl17.competitionId = aCompetition._id;
-    seasonRepo.save$(epl17).subscribe(
+
+    // competitionId is for LIGI season-repo; season-repo converter will find competition and construct season competition prop
+    const epl22 = {
+      id: 'abc123',
+      name: '2021-2022',
+      slug: '2021-22',
+      year: 2022,
+      seasonStart: '2021-08-11T00:00:00+0200',
+      seasonEnd: '2022-05-13T16:00:00+0200',
+      currentMatchRound: 20,
+      competitionId: epl.id,
+    };
+
+    // save$ calls converter from, insert$ doesn't
+    seasonRepo.save$(epl22).subscribe(
       (data: any) => {
         const { competition, name, slug, year } = data;
-        expect(name).to.equal(epl17.name);
-        expect(slug).to.equal(epl17.slug);
-        expect(year).to.equal(epl17.year);
+        expect(name).to.equal(epl22.name);
+        expect(slug).to.equal(epl22.slug);
+        expect(year).to.equal(epl22.year);
         expect(competition.name).to.equal(epl.name);
         expect(competition.slug).to.equal(epl.slug);
         done();
-      },
-      err => {
-        // tslint:disable-next-line: no-console
-        console.log(err);
-        done();
-      },
+      }
     );
   });
 
@@ -109,168 +64,95 @@ describe('seasonRepo', function() {
     const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
-    const { _id, name, slug } = aCompetition;
-    const theEpl17 = {
-      ...epl17,
-      competition: { id: _id, name, slug },
+    const EXTERNAL_REF_ID = 'AFD_EPL_22';
+    const { id, name, slug } = epl;
+    const competition = { id, name, slug };
+
+    // for AFD season repo we work with a season that has a competition prop
+    const theEpl22 = {
+      id: 'abc123',
+      name: '2021-2022',
+      slug: '2021-22',
+      year: 2022,
+      seasonStart: '2021-08-11T00:00:00+0200',
+      seasonEnd: '2022-05-13T16:00:00+0200',
+      currentMatchRound: 20,
+      competitionId: epl.id,
+      competition,
       externalReference: {
-        [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
+        [ApiProvider.API_FOOTBALL_DATA]: { id: EXTERNAL_REF_ID },
       },
     };
 
     seasonRepo
-      .insert$(theEpl17)
+      .insert$(theEpl22)
       .pipe(
         flatMap(_ => {
-          return seasonRepo.findByExternalId$(afdEpl17.id);
+          return seasonRepo.findByExternalId$(EXTERNAL_REF_ID);
         }),
       )
       .subscribe(s => {
-        expect(s.externalReference).to.deep.equal(theEpl17.externalReference);
+        expect(s.externalReference).to.deep.equal(theEpl22.externalReference);
         done();
       });
   });
 
+  // findByExternalIds is used in seasonScheduler and by seasonUpdater to update the currentMatchRound.. the ids come from api client getCompetitions..
+  // interesting that these competitions behave as seasons
   it('should find by externalIds', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
-    const { _id, name, slug } = aCompetition;
-    const competition = { id: _id, name, slug };
-    const theEpl17 = {
-      ...epl17,
+    const { id, name, slug } = epl;
+    const competition = { id, name, slug };
+
+    const EPL_21_REF = 'AFD_EPL_21';
+    const theEpl21 = {
+      id: 'abc123a',
+      name: '2020-2021',
+      slug: '2020-21',
+      year: 2022,
+      seasonStart: '2020-08-11T00:00:00+0200',
+      seasonEnd: '2021-05-13T16:00:00+0200',
+      currentMatchRound: 20,
+      competitionId: epl.id,
       competition,
       externalReference: {
-        [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
+        [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_21_REF },
       },
     };
-    const theEpl16 = {
-      ...epl16,
+
+    const EPL_22_REF = 'AFD_EPL_22';
+    const theEpl22 = {
+      id: 'abc123b',
+      name: '2021-2022',
+      slug: '2021-22',
+      year: 2022,
+      seasonStart: '2021-08-11T00:00:00+0200',
+      seasonEnd: '2022-05-13T16:00:00+0200',
+      currentMatchRound: 20,
+      competitionId: epl.id,
       competition,
       externalReference: {
-        [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl16.id },
+        [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_22_REF },
       },
     };
 
     seasonRepo
-      .insertMany$([theEpl16, theEpl17])
+      .insertMany$([theEpl21, theEpl22])
       .pipe(
         flatMap(_ => {
-          return seasonRepo.findByExternalIds$([afdEpl16.id, afdEpl17.id]);
+          return seasonRepo.findByExternalIds$([EPL_21_REF, EPL_22_REF]);
         }),
       )
       .subscribe(data => {
         expect(data[0].externalReference).to.deep.equal(
-          theEpl16.externalReference,
+          theEpl21.externalReference,
         );
         expect(data[1].externalReference).to.deep.equal(
-          theEpl17.externalReference,
+          theEpl22.externalReference,
         );
         done();
       });
   });
-
-  it('should findByIdAndUpdate currentMatchRound', done => {
-    const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
-    const epl17Data = { ...epl17, competitionId: aCompetition._id };
-
-    seasonRepo
-      .save$(epl17Data)
-      .pipe(
-        flatMap(s => {
-          const update = { currentMatchRound: 21 };
-          return seasonRepo.findByIdAndUpdate$(s.id!, update);
-        }),
-      )
-      .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
-        done();
-      });
-  });
-
-  it('should findByExternalIdAndUpdate currentMatchRound', done => {
-    const seasonRepo = SeasonRepositoryImpl.getInstance(
-      ApiProvider.API_FOOTBALL_DATA,
-    );
-    const { _id, name, slug } = aCompetition;
-    const competition = { id: _id, name, slug };
-    const theEpl17 = {
-      ...epl17,
-      competition,
-      externalReference: {
-        [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
-      },
-    };
-
-    seasonRepo
-      .insert$(theEpl17)
-      .pipe(
-        flatMap(() => {
-          afdEpl17.currentSeason.currentMatchday = 21;
-          return seasonRepo.findByExternalIdAndUpdate$(afdEpl17);
-        }),
-      )
-      .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
-        done();
-      });
-  });
-
-  it('should findByExternalIdAndUpdate currentMatchRound (version2)', done => {
-    const seasonRepo = SeasonRepositoryImpl.getInstance(
-      ApiProvider.API_FOOTBALL_DATA,
-    );
-    const { _id, name, slug } = aCompetition;
-    const competition = { id: _id, name, slug };
-    const theEpl17 = {
-      ...epl17,
-      competition,
-      externalReference: {
-        [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
-      },
-    };
-
-    seasonRepo
-      .insert$(theEpl17)
-      .pipe(
-        flatMap(() => {
-          const update = { currentMatchRound: 21 };
-          return seasonRepo.findByExternalIdAndUpdate$(afdEpl17.id, update);
-        }),
-      )
-      .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
-        done();
-      });
-  });
-
-  it('should findByExternalIdAndUpdate while preserving ExternalReference', done => {
-    const seasonRepo = SeasonRepositoryImpl.getInstance(
-      ApiProvider.API_FOOTBALL_DATA,
-    );
-    const { _id, name, slug } = aCompetition;
-    const competition = { id: _id, name, slug };
-    const theEpl17 = {
-      ...epl17,
-      competition,
-      externalReference: {
-        ['SomeOtherApi']: { id: 'someExternalId' },
-        [ApiProvider.API_FOOTBALL_DATA]: { id: afdEpl17.id },
-      },
-    };
-
-    seasonRepo
-      .insert$(theEpl17)
-      .pipe(
-        flatMap(() => {
-          afdEpl17.currentSeason.currentMatchday = 21;
-          return seasonRepo.findByExternalIdAndUpdate$(afdEpl17);
-        }),
-      )
-      .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
-        expect(s.externalReference).to.deep.equal(theEpl17.externalReference);
-        done();
-      });
-  });
-});
+})
