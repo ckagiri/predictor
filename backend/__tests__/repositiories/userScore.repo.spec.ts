@@ -75,6 +75,9 @@ const cheVars = a.match
   .awayScore(1)
   .withPredictions(user1_cheVars_pred, user2_cheVars_pred);
 
+const eplBoard = a.leaderboard.boardType('GLOBAL_SEASON');
+const eplGw1Board = a.leaderboard.boardType('GLOBAL_ROUND').withGameRound(gw1);
+
 describe('UserScore Repo', function () {
   before(async () => {
     await memoryDb.connect();
@@ -98,6 +101,7 @@ describe('UserScore Repo', function () {
           .withTeams(manu, manc, che, ars)
           .withGameRounds(gw1, gw2)
           .withMatches(manuVmanc, cheVars)
+          .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
 

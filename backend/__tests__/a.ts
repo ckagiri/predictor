@@ -636,6 +636,10 @@ class a {
   static get prediction() {
     return new PredictionBuilder();
   }
+
+  static get leaderboard() {
+    return new LeaderboardBuilder();
+  }
 }
 
 export default a;
