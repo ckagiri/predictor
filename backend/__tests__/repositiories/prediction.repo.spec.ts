@@ -111,7 +111,7 @@ const kagiri: User = {
   email: 'kagiri@example.com',
 };
 
-describe('Prediction repo', function() {
+describe('Prediction repo', function () {
   this.timeout(5000);
 
   before(done => {
@@ -277,7 +277,6 @@ describe('Prediction repo', function() {
             ExactGoalDifferencePoints: 0,
             ExactMatchScorePoints: 0,
             CloseMatchScorePoints: 0,
-            SpreadTeamScorePoints: 0,
             ExactTeamScorePoints: 3,
           };
           return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });

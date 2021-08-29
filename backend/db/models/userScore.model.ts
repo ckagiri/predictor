@@ -16,7 +16,6 @@ export interface UserScore extends Entity {
   ExactGoalDifferencePoints: number;
   ExactMatchScorePoints: number;
   CloseMatchScorePoints: number;
-  SpreadTeamScorePoints: number;
   ExactTeamScorePoints: number;
   APointsExcludingJoker?: number;
   BPointsExcludingJoker?: number;
@@ -27,7 +26,7 @@ export interface UserScore extends Entity {
   positionNew?: number;
 }
 
-export interface UserScoreDocument extends UserScore, DocumentEntity {}
+export interface UserScoreDocument extends UserScore, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 
@@ -48,7 +47,6 @@ const userScoreSchema = schema({
   ExactGoalDifferencePoints: { type: Number },
   ExactMatchScorePoints: { type: Number },
   CloseMatchScorePoints: { type: Number },
-  SpreadTeamScorePoints: { type: Number },
   ExactTeamScorePoints: { type: Number },
   APointsExcludingJoker: { type: Number },
   BPointsExcludingJoker: { type: Number },

@@ -12,7 +12,6 @@ export interface ScorePoints {
   ExactGoalDifferencePoints: number;
   ExactMatchScorePoints: number;
   CloseMatchScorePoints: number;
-  SpreadTeamScorePoints: number;
   ExactTeamScorePoints: number;
   [key: string]: number;
 }

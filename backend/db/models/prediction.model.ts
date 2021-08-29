@@ -23,7 +23,7 @@ export interface Prediction extends Entity {
   jokerAutoPicked?: boolean;
 }
 
-export interface PredictionDocument extends Prediction, DocumentEntity {}
+export interface PredictionDocument extends Prediction, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;
@@ -48,7 +48,6 @@ const predictionSchema = schema({
     ExactGoalDifferencePoints: { type: Number },
     ExactMatchScorePoints: { type: Number },
     CloseMatchScorePoints: { type: Number },
-    SpreadTeamScorePoints: { type: Number },
     ExactTeamScorePoints: { type: Number },
   },
   hasJoker: { type: Boolean, default: false },

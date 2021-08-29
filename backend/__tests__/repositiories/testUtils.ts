@@ -117,7 +117,6 @@ const user1_team1Vteam2_points: ScorePoints = {
   ExactGoalDifferencePoints: 0,
   ExactMatchScorePoints: 0,
   CloseMatchScorePoints: 1,
-  SpreadTeamScorePoints: 2,
   ExactTeamScorePoints: 1,
 };
 
@@ -137,7 +136,6 @@ const user1_team3Vteam4_points: ScorePoints = {
   ExactGoalDifferencePoints: 0,
   ExactMatchScorePoints: 0,
   CloseMatchScorePoints: 1,
-  SpreadTeamScorePoints: 2,
   ExactTeamScorePoints: 1,
 };
 
@@ -157,7 +155,6 @@ const user2_team1Vteam2_points: ScorePoints = {
   ExactGoalDifferencePoints: 1,
   ExactMatchScorePoints: 0,
   CloseMatchScorePoints: 0,
-  SpreadTeamScorePoints: 0,
   ExactTeamScorePoints: 0,
 };
 
@@ -178,7 +175,6 @@ const user2_team3Vteam4_points: ScorePoints = {
   ExactGoalDifferencePoints: 1,
   ExactMatchScorePoints: 5,
   CloseMatchScorePoints: 0,
-  SpreadTeamScorePoints: 2,
   ExactTeamScorePoints: 2,
 };
 

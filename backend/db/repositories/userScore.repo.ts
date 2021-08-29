@@ -49,7 +49,6 @@ export class UserScoreRepositoryImpl
       ExactGoalDifferencePoints,
       ExactMatchScorePoints,
       CloseMatchScorePoints,
-      SpreadTeamScorePoints,
       ExactTeamScorePoints,
     } = predictionPoints;
 
@@ -63,7 +62,6 @@ export class UserScoreRepositoryImpl
       ExactTeamScorePoints,
       ExactMatchScorePoints,
       CloseMatchScorePoints,
-      SpreadTeamScorePoints,
       ExactGoalDifferencePoints,
     };
 
@@ -83,7 +81,6 @@ export class UserScoreRepositoryImpl
             score.ExactGoalDifferencePoints *= 2;
             score.ExactMatchScorePoints *= 2;
             score.CloseMatchScorePoints *= 2;
-            score.SpreadTeamScorePoints *= 2;
             score.ExactTeamScorePoints *= 2;
           }
           return this.insert$(score);
@@ -110,11 +107,8 @@ export class UserScoreRepositoryImpl
           standing.ExactMatchScorePoints += hasJoker
             ? ExactMatchScorePoints * 2
             : ExactMatchScorePoints;
-          standing.SpreadTeamScorePoints += hasJoker
-            ? SpreadTeamScorePoints * 2
-            : SpreadTeamScorePoints;
           standing.ExactTeamScorePoints += hasJoker
-            ? SpreadTeamScorePoints * 2
+            ? ExactTeamScorePoints * 2
             : ExactTeamScorePoints;
           standing.APoints += hasJoker ? APoints * 2 : APoints;
           standing.BPoints += hasJoker ? BPoints * 2 : BPoints;
@@ -129,7 +123,6 @@ export class UserScoreRepositoryImpl
               ExactGoalDifferencePoints: standing.ExactGoalDifferencePoints,
               ExactMatchScorePoints: standing.ExactMatchScorePoints,
               ExactTeamScorePoints: standing.ExactTeamScorePoints,
-              SpreadTeamScorePoints: standing.SpreadTeamScorePoints,
               CloseMatchScorePoints: standing.CloseMatchScorePoints,
               pointsExcludingJoker: standing.pointsExcludingJoker,
               APointsExcludingJoker: standing.APointsExcludingJoker,
@@ -152,7 +145,6 @@ export class UserScoreRepositoryImpl
         ExactGoalDifferencePoints: -1,
         ExactMatchScorePoints: -1,
         CloseMatchScorePoints: -1,
-        SpreadTeamScorePoints: -1,
         ExactTeamScorePoints: -1,
       },
     });
