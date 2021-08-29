@@ -55,11 +55,15 @@ export class TeamRepositoryImpl
   }
 
   public findByNameAndUpsert$(name: any, obj?: any): Observable<Team> {
+    // we call this method by passing an api team object or name & patch
+    // if a patch is not passed then I call it a partial update not sure why -- this not clear
+    // also when patch is not passed treat the object as an api object therefore need to convert
     let partialUpdate = true;
     if (obj === undefined) {
+      partialUpdate = false;
+      // maintain call structure (name, object) even though only object was passed in
       obj = name;
       name = obj.name;
-      partialUpdate = false;
     }
     const query = {
       $or: [{ name }, { shortName: name }, { aliases: name }],
@@ -71,6 +75,7 @@ export class TeamRepositoryImpl
       flatMap(data => {
         const { externalReference } = data;
         delete obj.externalReference;
+        // this is a special method to deal with mixed type for externalReference to avoid overwritting existing keys
         return this._findOneAndUpsert$(query, obj, externalReference);
       }),
     );
