@@ -4,7 +4,7 @@ import { flatMap } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import memoryDb from '../memoryDb';
-import a, { GameBuilder, GameData } from '../a';
+import a, { GameData } from '../a';
 import { GameRound, Match, Season, Team } from '../../db/models';
 import { MatchStatus } from '../../db/models/match.model';
 
@@ -30,8 +30,7 @@ const matchRepo = MatchRepositoryImpl.getInstance(
 
 const ligiMatchRepo = MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
 
-describe('MatchRepo', function() {
-  this.timeout(5 * 60 * 1000);
+describe('MatchRepo', function () {
   let gameData: GameData;
 
   before(async () => {
@@ -42,7 +41,7 @@ describe('MatchRepo', function() {
     await memoryDb.close();
   });
 
-  describe('create | update', function() {
+  describe('create | update', function () {
     let season: Season;
     let team1: Team;
     let team2: Team;
@@ -90,7 +89,7 @@ describe('MatchRepo', function() {
           .withGameRounds(
             a.gameRound.name('Gameweek 1').position(1),
             a.gameRound.name('Gameweek 2').position(2))
-          )
+        )
         .build();
 
       season = gameData.seasons[0];
@@ -174,7 +173,7 @@ describe('MatchRepo', function() {
     });
   });
 
-  describe('filter | sort | page', function() {
+  describe('filter | sort | page', function () {
     const liverpool = a.team.name('Liverpool').slug('liverpool');
     const chelsea = a.team.name('Chelsea').slug('chelsea');
     const manutd = a.team.name('Manchester United').slug('man-utd');

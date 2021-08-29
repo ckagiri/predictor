@@ -54,13 +54,13 @@ export class PredictionRepositoryImpl
   public findOrCreateJoker$(
     userId: string,
     seasonId: string,
-    gameRound: string,
+    gameRoundId: string,
     pick: string | string[],
   ): Observable<Prediction> {
     const query: any = {
       user: userId,
       season: seasonId,
-      gameRound,
+      gameRound: gameRoundId,
       hasJoker: true,
     };
     return this.findOne$(query).pipe(
@@ -89,6 +89,8 @@ export class PredictionRepositoryImpl
 
   public findOne$(query?: any) {
     const { userId, matchId } = query;
+    // prediction model doesnt have Id suffix for the reference models; here I am expecting the Id suffix and quite sure why
+    // why not pass match and user keys, does the name imply a full object?
     if (userId !== undefined && matchId !== undefined) {
       query.user = userId;
       query.match = matchId;
