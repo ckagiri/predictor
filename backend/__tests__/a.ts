@@ -7,10 +7,11 @@ import {
   GameRound,
   Match,
   Prediction,
+  Leaderboard
 } from '../db/models';
 import { MatchStatus } from '../db/models/match.model';
 import { compact, flatMap } from 'lodash'
-
+import { ScorePoints, Score } from '../common/score';
 interface Game {
   users: User[];
   teams: Team[];
@@ -155,9 +156,10 @@ class SeasonBuilder implements Builder<Season> {
   private teamBuilders: TeamBuilder[] = [];
   private gameRoundBuilders: GameRoundBuilder[] = [];
   private matchBuilders: MatchBuilder[] = [];
+  private leaderboardBuilders: LeaderboardBuilder[] = [];
   public season?: Season;
 
-  constructor() {}
+  constructor() { }
 
   name(value: string) {
     this.built.name = value;
@@ -236,6 +238,12 @@ class SeasonBuilder implements Builder<Season> {
     return flatMap(this.matchBuilders.map(n => n.predictions));
   }
 
+  withLeaderboards(...leaderboardBuilders: LeaderboardBuilder[]) {
+    leaderboardBuilders.forEach(builder => builder.withSeason(this))
+    this.leaderboardBuilders = leaderboardBuilders;
+    return this;
+  }
+
   async build(): Promise<Season> {
     if (this.competition == null) {
       await this.competitionBuilder?.build()!;
@@ -268,12 +276,22 @@ class SeasonBuilder implements Builder<Season> {
       }),
     );
 
+    await Promise.all(
+      this.leaderboardBuilders.map(async builder => {
+        return await builder.build();
+      }),
+    );
+
     return this.season;
   }
 }
 
 class MatchBuilder implements Builder<Match> {
   private built = {
+    result: {
+      goalsHomeTeam: 0,
+      goalsAwayTeam: 0
+    },
     status: MatchStatus.SCHEDULED,
   } as Match;
   private seasonBuilder?: SeasonBuilder;
@@ -329,7 +347,18 @@ class MatchBuilder implements Builder<Match> {
     return this.awayTeamBuilder?.team!;
   }
 
+  homeScore(homeScore: number) {
+    this.built.result!.goalsHomeTeam = homeScore;
+    return this;
+  }
+
+  awayScore(awayScore: number) {
+    this.built.result!.goalsAwayTeam = awayScore;
+    return this;
+  }
+
   withPredictions(...predictionBuilders: PredictionBuilder[]) {
+    predictionBuilders.forEach(builder => builder.withMatch(this))
     this.predictionBuilders = predictionBuilders;
     return this;
   }
@@ -438,6 +467,47 @@ class PredictionBuilder implements Builder<Prediction> {
 
     this.prediction = await db.Prediction.create(this.built);
     return this.prediction;
+  }
+}
+
+class LeaderboardBuilder implements Builder<Leaderboard> {
+  private built = {} as Leaderboard;
+  private seasonBuilder?: SeasonBuilder;
+  private gameRoundBuilder?: GameRoundBuilder;
+  public leaderboard?: Leaderboard;
+
+  withSeason(seasonBuilder: SeasonBuilder) {
+    this.seasonBuilder = seasonBuilder;
+    return this;
+  }
+
+  get season(): Season {
+    return this.seasonBuilder?.season!;
+  }
+
+  withGameRound(gameRoundBuilder: GameRoundBuilder) {
+    this.gameRoundBuilder = gameRoundBuilder;
+    return this;
+  }
+
+  boardType(boardType: any) {
+    this.built.boardType = boardType
+    return this;
+  }
+
+  get gameRound(): GameRound {
+    return this.gameRoundBuilder?.gameRound!;
+  }
+
+  async build(): Promise<Leaderboard> {
+    this.built.season = this.season.id!;
+
+    if (this.gameRound !== null) {
+      this.built.gameRound = this.gameRound.id
+    }
+
+    this.leaderboard = await db.Leaderboard.create(this.built);
+    return this.leaderboard
   }
 }
 
