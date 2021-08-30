@@ -20,6 +20,7 @@ interface Game {
   gameRounds: GameRound[];
   matches: Match[];
   predictions: Prediction[];
+  leaderboards: Leaderboard[];
 }
 
 export class GameData {
@@ -30,6 +31,7 @@ export class GameData {
   gameRounds: GameRound[];
   matches: Match[];
   predictions: Prediction[];
+  leaderboards: Leaderboard[];
   constructor({
     users,
     teams,
@@ -38,6 +40,7 @@ export class GameData {
     gameRounds,
     matches,
     predictions,
+    leaderboards
   }: Game) {
     this.users = users;
     this.teams = teams;
@@ -46,6 +49,7 @@ export class GameData {
     this.gameRounds = gameRounds;
     this.matches = matches;
     this.predictions = predictions;
+    this.leaderboards = leaderboards;
   }
 }
 
@@ -236,6 +240,10 @@ class SeasonBuilder implements Builder<Season> {
 
   get predictions(): Prediction[] {
     return flatMap(this.matchBuilders.map(n => n.predictions));
+  }
+
+  get leaderboards(): Leaderboard[] {
+    return compact(this.leaderboardBuilders.map(n => n.leaderboard))
   }
 
   withLeaderboards(...leaderboardBuilders: LeaderboardBuilder[]) {
@@ -502,7 +510,8 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
   async build(): Promise<Leaderboard> {
     this.built.season = this.season.id!;
 
-    if (this.gameRound !== null) {
+    // check if gameRound was set to determine if we have a gameRound leaderboard
+    if (this.gameRound != null) {
       this.built.gameRound = this.gameRound.id
     }
 
@@ -565,6 +574,10 @@ export class GameBuilder implements Builder<GameData> {
     return flatMap(this.seasonBuilders.map(n => n.predictions));
   }
 
+  get leaderboards(): Leaderboard[] {
+    return flatMap(this.seasonBuilders.map(n => n.leaderboards));
+  }
+
   async build(): Promise<Game> {
     await Promise.all(
       this.userBuilders.map(async builder => {
@@ -598,6 +611,7 @@ export class GameBuilder implements Builder<GameData> {
       gameRounds: this.gameRounds,
       matches: this.matches,
       predictions: this.predictions,
+      leaderboards: this.leaderboards
     });
 
     return game;

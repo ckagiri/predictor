@@ -110,8 +110,14 @@ describe('UserScore Repo', function () {
 
   describe('find and upsert', () => {
     it('should create a userScore if it does not exist', done => {
+      // refactor these optional types
+      const leaderboardId = eplBoard.leaderboard?.id!;
+      const userId = user1.user?.id!;
+      const matchId = manuVmanc.match?.id!;
+      const predictionId = user1_manuVmanc_pred.prediction?.id!;
+      const hasJoker = true;
       // result 2-1 prediction 1-0
-      const user1_manuVmanc_pred: ScorePoints = {
+      const user1_manuVmanc_pred_points: ScorePoints = {
         points: 8,
         APoints: 8,
         BPoints: 0,
@@ -121,8 +127,49 @@ describe('UserScore Repo', function () {
         CloseMatchScorePoints: 0,
         ExactTeamScorePoints: 0,
       };
-      expect(1).to.eq(1);
-      done();
+      userScoreRepo
+        .findOneAndUpsert$(
+          leaderboardId,
+          userId,
+          matchId,
+          predictionId,
+          user1_manuVmanc_pred_points,
+          hasJoker,
+        )
+        .subscribe(score => {
+          expect(score.pointsExcludingJoker).to.equal(8);
+          expect(score.APointsExcludingJoker).to.equal(8);
+          expect(score.BPointsExcludingJoker).to.equal(0);
+          expect(score.points).to.equal(16);
+          expect(score.APoints).to.equal(16);
+          expect(score.BPoints).to.equal(0);
+          expect(score.matches).to.contain(matchId);
+          expect(score.predictions).to.contain(predictionId);
+          done();
+        });
+    });
+
+    it('should update a userScore if it exists', done => {
+      const leaderboardId = eplBoard.leaderboard?.id!;
+      const userId = user1.user?.id!;
+      const matchId = manuVmanc.match?.id!;
+      const predictionId = user1_manuVmanc_pred.prediction?.id!;
+      // result 2-1 prediction 1-0
+      const user1_manuVmanc_pred_points: ScorePoints = {
+        points: 8,
+        APoints: 8,
+        BPoints: 0,
+        CorrectMatchOutcomePoints: 7,
+        ExactGoalDifferencePoints: 1,
+        ExactMatchScorePoints: 0,
+        CloseMatchScorePoints: 0,
+        ExactTeamScorePoints: 0,
+      };
+
+      const user1_manuVmanc_pred_points_joker = Object.keys(user1_manuVmanc_pred_points).reduce(
+        (result, key) => ({ ...result, [key]: user1_manuVmanc_pred_points[key] * 2 }),
+        user1_manuVmanc_pred_points,
+      );
     });
   });
 });
