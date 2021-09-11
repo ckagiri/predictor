@@ -4,7 +4,6 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    
     {
       "type": "chrome",
       "request": "launch",
@@ -77,6 +76,11 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
+      "outFiles": [
+        "${workspaceFolder}/backend/**/*.js",
+        "!**/node_modules/**"
+      ],
+      "trace": true,
     },
     {
       "type": "node",
