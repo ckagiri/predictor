@@ -79,6 +79,19 @@ const eplBoard = a.leaderboard.boardType('GLOBAL_SEASON');
 const eplGw1Board = a.leaderboard.boardType('GLOBAL_ROUND').withGameRound(gw1);
 
 describe('UserScore Repo', function () {
+  let leaderboardId: string;
+  let userId1: string;
+  let userId2: string;
+  let matchId1: string;
+  let matchId2: string;
+  let userId1predictionId1: string;
+  let userId1predictionId2: string;
+  let userId2predictionId1: string;
+  let userId2predictionId2: string;
+  let user1_manuVmanc_pred_points: ScorePoints;
+  let user1_cheVars_pred_points: ScorePoints;
+  let user2_manuVmanc_pred_points: ScorePoints;
+
   before(async () => {
     await memoryDb.connect();
   });
@@ -104,33 +117,64 @@ describe('UserScore Repo', function () {
           .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
+    // refactor these optional types
+    leaderboardId = eplBoard.leaderboard?.id!;
+    userId1 = user1.user?.id!;
+    userId2 = user2.user?.id!;
+    matchId1 = manuVmanc.match?.id!;
+    matchId2 = cheVars.match?.id!;
+    userId1predictionId1 = user1_manuVmanc_pred.prediction?.id!;
+    userId1predictionId2 = user1_cheVars_pred.prediction?.id!;
+    userId2predictionId1 = user2_manuVmanc_pred.prediction?.id!;
+    userId2predictionId2 = user2_cheVars_pred.prediction?.id!;
+
+    // result 2-1 prediction 1-0
+    user1_manuVmanc_pred_points = {
+      points: 8,
+      APoints: 8,
+      BPoints: 0,
+      CorrectMatchOutcomePoints: 7,
+      ExactGoalDifferencePoints: 1,
+      ExactMatchScorePoints: 0,
+      CloseMatchScorePoints: 0,
+      ExactTeamScorePoints: 0,
+    };
+
+    // result 2-1 prediction 1-0
+    user1_cheVars_pred_points = {
+      points: 16,
+      APoints: 14,
+      BPoints: 2,
+      CorrectMatchOutcomePoints: 7,
+      ExactGoalDifferencePoints: 1,
+      ExactMatchScorePoints: 6,
+      CloseMatchScorePoints: 0,
+      ExactTeamScorePoints: 2,
+    };
+
+    // result 2-1 prediction 3-0
+    user2_manuVmanc_pred_points = {
+      points: 7,
+      APoints: 7,
+      BPoints: 0,
+      CorrectMatchOutcomePoints: 7,
+      ExactGoalDifferencePoints: 0,
+      ExactMatchScorePoints: 0,
+      CloseMatchScorePoints: 0,
+      ExactTeamScorePoints: 0,
+    };
   })
 
   describe('find and upsert', () => {
+
     it('should create a userScore if it does not exist', done => {
-      // refactor these optional types
-      const leaderboardId = eplBoard.leaderboard?.id!;
-      const userId = user1.user?.id!;
-      const matchId = manuVmanc.match?.id!;
-      const predictionId = user1_manuVmanc_pred.prediction?.id!;
       const hasJoker = true;
-      // result 2-1 prediction 1-0
-      const user1_manuVmanc_pred_points: ScorePoints = {
-        points: 8,
-        APoints: 8,
-        BPoints: 0,
-        CorrectMatchOutcomePoints: 7,
-        ExactGoalDifferencePoints: 1,
-        ExactMatchScorePoints: 0,
-        CloseMatchScorePoints: 0,
-        ExactTeamScorePoints: 0,
-      };
       userScoreRepo
         .findOneAndUpsert$(
           leaderboardId,
-          userId,
-          matchId,
-          predictionId,
+          userId1,
+          matchId1,
+          userId1predictionId1,
           user1_manuVmanc_pred_points,
           hasJoker,
         )
@@ -141,22 +185,15 @@ describe('UserScore Repo', function () {
           expect(score.points).to.equal(16);
           expect(score.APoints).to.equal(16);
           expect(score.BPoints).to.equal(0);
-          expect(score.matches).to.contain(matchId);
-          expect(score.predictions).to.contain(predictionId);
+          expect(score.matches).to.contain(matchId1);
+          expect(score.predictions).to.contain(userId1predictionId1);
           done();
         });
     });
 
     it('should update a userScore if it exists', done => {
-      const leaderboardId = eplBoard.leaderboard?.id!;
-      const userId = user1.user?.id!;
-      const matchId1 = manuVmanc.match?.id!;
-      const predictionId1 = user1_manuVmanc_pred.prediction?.id!;
-      const matchId2 = cheVars.match?.id!;
-      const predictionId2 = user1_cheVars_pred.prediction?.id!;
-
-      // result 2-1 prediction 1-0
-      const user1_manuVmanc_pred_points: ScorePoints = {
+      // result 2-1 prediction 1-0 (is joker)
+      const user1_manuVmanc_predJoker_points: ScorePoints = {
         points: 16,
         APoints: 16,
         BPoints: 0,
@@ -167,38 +204,27 @@ describe('UserScore Repo', function () {
         ExactTeamScorePoints: 0,
       };
 
-      let { points, APoints, BPoints } = user1_manuVmanc_pred_points;
-      const user1_manuVmanc_pred_score: UserScore = {
-        ...user1_manuVmanc_pred_points,
+      let { points, APoints, BPoints } = user1_manuVmanc_predJoker_points;
+      const user1_manuVmanc_predJoker_score: UserScore = {
+        ...user1_manuVmanc_predJoker_points,
         leaderboard: leaderboardId,
-        user: userId,
+        user: userId1,
         matches: [matchId1],
-        predictions: [predictionId1],
+        predictions: [userId1predictionId1],
         pointsExcludingJoker: points / 2,
         APointsExcludingJoker: APoints / 2,
         BPointsExcludingJoker: BPoints / 2,
       }
 
-      userScoreRepo.insert$(user1_manuVmanc_pred_score)
+      userScoreRepo.insert$(user1_manuVmanc_predJoker_score)
         .pipe(
           flatMap(_ => {
-            // result 2-1 prediction 1-0
-            const user1_cheVars_pred_points: ScorePoints = {
-              points: 16,
-              APoints: 14,
-              BPoints: 2,
-              CorrectMatchOutcomePoints: 7,
-              ExactGoalDifferencePoints: 1,
-              ExactMatchScorePoints: 6,
-              CloseMatchScorePoints: 0,
-              ExactTeamScorePoints: 2,
-            };
             const hasJoker = false;
             return userScoreRepo.findOneAndUpsert$(
               leaderboardId,
-              userId,
+              userId1,
               matchId2,
-              predictionId2,
+              userId1predictionId2,
               user1_cheVars_pred_points,
               hasJoker,
             );
@@ -211,7 +237,80 @@ describe('UserScore Repo', function () {
           expect(score.APoints).to.equal(30);
           expect(score.BPoints).to.equal(2);
           expect(score.matches).to.contain(matchId1, matchId2);
-          expect(score.predictions).to.contain(predictionId1, predictionId2);
+          expect(score.predictions).to.contain(userId1predictionId1, userId1predictionId2);
+          done();
+        });
+    });
+
+    it('should find by leaderboard and order by points', done => {
+      let { points: points1, APoints: APoints1, BPoints: BPoints1 } = user1_manuVmanc_pred_points;
+      const user1_manuVmanc_pred_score: UserScore = {
+        ...user1_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId1,
+        matches: [matchId1],
+        predictions: [userId1predictionId1],
+        pointsExcludingJoker: points1,
+        APointsExcludingJoker: APoints1,
+        BPointsExcludingJoker: BPoints1,
+      }
+
+      let { points: points2, APoints: APoints2, BPoints: BPoints2 } = user1_manuVmanc_pred_points;
+      const user2_manuVmanc_pred_score: UserScore = {
+        ...user2_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId2,
+        matches: [matchId1],
+        predictions: [userId2predictionId1],
+        pointsExcludingJoker: points2,
+        APointsExcludingJoker: APoints2,
+        BPointsExcludingJoker: BPoints2,
+      }
+
+      userScoreRepo
+        .insertMany$([user1_manuVmanc_pred_score, user2_manuVmanc_pred_score])
+        .pipe(
+          flatMap(_ => {
+            return userScoreRepo.findByLeaderboardOrderByPoints$(leaderboardId);
+          }),
+        )
+        .subscribe(standings => {
+          expect(standings[1].points).to.be.lte(standings[0].points);
+          done();
+        });
+    })
+
+    it('should find by id and update positions', done => {
+      let { points, APoints, BPoints } = user1_manuVmanc_pred_points;
+      const user1_manuVmanc_pred_score: UserScore = {
+        ...user1_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId1,
+        matches: [matchId1],
+        predictions: [userId1predictionId1],
+        pointsExcludingJoker: points,
+        APointsExcludingJoker: APoints,
+        BPointsExcludingJoker: BPoints,
+        positionNew: 1,
+        positionOld: 2,
+      }
+
+      userScoreRepo
+        .insert$(user1_manuVmanc_pred_score)
+        .pipe(
+          flatMap(standing => {
+            const prevPosition = standing.positionNew!;
+            const positionOld = prevPosition;
+            const positionNew = prevPosition + 1;
+            return userScoreRepo.findByIdAndUpdate$(standing.id!, {
+              positionNew,
+              positionOld,
+            });
+          }),
+        )
+        .subscribe(standing => {
+          expect(standing.positionNew).to.equal(2);
+          expect(standing.positionOld).to.equal(1);
           done();
         });
     });

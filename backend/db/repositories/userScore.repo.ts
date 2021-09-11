@@ -9,6 +9,7 @@ import UserScoreModel, {
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface UserScoreRepository extends BaseRepository<UserScore> {
+  // todo: pass object literal for search-criteria
   findOneAndUpsert$(
     leaderboardId: string,
     userId: string,
