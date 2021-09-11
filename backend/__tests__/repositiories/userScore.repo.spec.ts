@@ -2,7 +2,7 @@ import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import memoryDb from '../memoryDb';
-import { Match, Prediction, PredictionDocument } from '../../db/models';
+import { Match, Prediction, PredictionDocument, UserScore } from '../../db/models';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
 import { ScorePoints, Score } from '../../common/score';
 
@@ -92,7 +92,7 @@ describe('UserScore Repo', function () {
   });
 
   beforeEach(async () => {
-    const gameData = await a.game
+    await a.game
       .withTeams(manu, manc, che, ars)
       .withUsers(user1, user2)
       .withCompetitions(epl)
@@ -104,8 +104,6 @@ describe('UserScore Repo', function () {
           .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
-
-    const season = gameData.seasons[0];
   })
 
   describe('find and upsert', () => {
@@ -152,24 +150,70 @@ describe('UserScore Repo', function () {
     it('should update a userScore if it exists', done => {
       const leaderboardId = eplBoard.leaderboard?.id!;
       const userId = user1.user?.id!;
-      const matchId = manuVmanc.match?.id!;
-      const predictionId = user1_manuVmanc_pred.prediction?.id!;
+      const matchId1 = manuVmanc.match?.id!;
+      const predictionId1 = user1_manuVmanc_pred.prediction?.id!;
+      const matchId2 = cheVars.match?.id!;
+      const predictionId2 = user1_cheVars_pred.prediction?.id!;
+
       // result 2-1 prediction 1-0
       const user1_manuVmanc_pred_points: ScorePoints = {
-        points: 8,
-        APoints: 8,
+        points: 16,
+        APoints: 16,
         BPoints: 0,
-        CorrectMatchOutcomePoints: 7,
-        ExactGoalDifferencePoints: 1,
+        CorrectMatchOutcomePoints: 14,
+        ExactGoalDifferencePoints: 2,
         ExactMatchScorePoints: 0,
         CloseMatchScorePoints: 0,
         ExactTeamScorePoints: 0,
       };
 
-      const user1_manuVmanc_pred_points_joker = Object.keys(user1_manuVmanc_pred_points).reduce(
-        (result, key) => ({ ...result, [key]: user1_manuVmanc_pred_points[key] * 2 }),
-        user1_manuVmanc_pred_points,
-      );
+      let { points, APoints, BPoints } = user1_manuVmanc_pred_points;
+      const user1_manuVmanc_pred_score: UserScore = {
+        ...user1_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId,
+        matches: [matchId1],
+        predictions: [predictionId1],
+        pointsExcludingJoker: points / 2,
+        APointsExcludingJoker: APoints / 2,
+        BPointsExcludingJoker: BPoints / 2,
+      }
+
+      userScoreRepo.insert$(user1_manuVmanc_pred_score)
+        .pipe(
+          flatMap(_ => {
+            // result 2-1 prediction 1-0
+            const user1_cheVars_pred_points: ScorePoints = {
+              points: 16,
+              APoints: 14,
+              BPoints: 2,
+              CorrectMatchOutcomePoints: 7,
+              ExactGoalDifferencePoints: 1,
+              ExactMatchScorePoints: 6,
+              CloseMatchScorePoints: 0,
+              ExactTeamScorePoints: 2,
+            };
+            const hasJoker = false;
+            return userScoreRepo.findOneAndUpsert$(
+              leaderboardId,
+              userId,
+              matchId2,
+              predictionId2,
+              user1_cheVars_pred_points,
+              hasJoker,
+            );
+          })
+        ).subscribe(score => {
+          expect(score.pointsExcludingJoker).to.equal(24);
+          expect(score.APointsExcludingJoker).to.equal(22);
+          expect(score.BPointsExcludingJoker).to.equal(2);
+          expect(score.points).to.equal(32);
+          expect(score.APoints).to.equal(30);
+          expect(score.BPoints).to.equal(2);
+          expect(score.matches).to.contain(matchId1, matchId2);
+          expect(score.predictions).to.contain(predictionId1, predictionId2);
+          done();
+        });
     });
   });
 });
