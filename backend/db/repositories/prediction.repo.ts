@@ -89,7 +89,8 @@ export class PredictionRepositoryImpl
 
   public findOne$(query?: any) {
     const { userId, matchId } = query;
-    // prediction model doesnt have Id suffix for the reference models; here I am expecting the Id suffix and quite sure why
+    // prediction model doesnt have Id suffix for the reference models;
+    // here I am expecting the Id suffix and quite sure why
     // why not pass match and user keys, does the name imply a full object?
     if (userId !== undefined && matchId !== undefined) {
       query.user = userId;

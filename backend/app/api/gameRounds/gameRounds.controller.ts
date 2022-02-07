@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
   SeasonRepository,
-  SeasonRepositoryImpl
+  SeasonRepositoryImpl,
 } from '../../../db/repositories/season.repo';
 import {
   GameRoundRepositoryImpl,
@@ -30,7 +30,7 @@ export class GameRoundsController {
       }
 
       const season = await this.seasonRepo.findOne$({
-        $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}]
+        $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}],
       }).toPromise();
 
       const gameRounds = await this.gameRoundRepo
@@ -53,18 +53,18 @@ export class GameRoundsController {
         const seasonSlug = req.params.season;
 
         const season = await this.seasonRepo.findOne$({
-          $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}]
+          $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}],
         }).toPromise();
 
         gameRound = await this.gameRoundRepo.findOne$({
           $or: [
             {
-              $and: [{ season: season.id }, { slug: id }]
+              $and: [{ season: season.id }, { slug: id }],
             },
             {
-              $and: [{ season: season.id}, { position: parseInt(id, 10) || 0 }]
-            }
-          ]
+              $and: [{ season: season.id}, { position: parseInt(id, 10) || 0 }],
+            },
+          ],
         }).toPromise();
       }
       res.status(200).json(gameRound);
