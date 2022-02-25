@@ -61,6 +61,10 @@ class CompetitionBuilder implements Builder<Competition> {
   private built = {} as Competition;
   public competition?: Competition;
 
+  id() {
+    return this.built.id!;
+  }
+
   name(value: string) {
     this.built.name = value;
     return this;
@@ -106,6 +110,10 @@ class UserBuilder implements Builder<User> {
   private built = {} as User;
   public user?: User;
 
+  id() {
+    return this.built.id!
+  }
+
   username(value: string) {
     this.built.username = value;
     return this;
@@ -126,6 +134,10 @@ class GameRoundBuilder implements Builder<GameRound> {
   private built = {} as GameRound;
   private seasonBuilder?: SeasonBuilder;
   public gameRound?: GameRound;
+
+  id() {
+    return this.built.id!;
+  }
 
   name(value: string) {
     this.built.name = value;
@@ -165,12 +177,21 @@ class SeasonBuilder implements Builder<Season> {
 
   constructor() { }
 
+  id() {
+    return this.built.id!;
+  }
+
   name(value: string) {
     this.built.name = value;
     return this;
   }
 
-  slug(value: string) {
+  slug(value: string): this;
+  slug(value?: string): this | string {
+    if (value === undefined) {
+      return this.built.slug!
+    }
+
     this.built.slug = value;
     return this;
   }
@@ -309,6 +330,10 @@ class MatchBuilder implements Builder<Match> {
   private predictionBuilders: PredictionBuilder[] = [];
   public match?: Match;
 
+  id() {
+    return this.built.id!;
+  }
+
   status(value: MatchStatus) {
     this.built.status = value;
     return this;
@@ -412,6 +437,10 @@ class PredictionBuilder implements Builder<Prediction> {
   private matchBuilder?: MatchBuilder;
   public prediction?: Prediction;
 
+  id() {
+    return this.built.id!;
+  }
+
   homeScore(homeScore: number) {
     this.built.choice.goalsHomeTeam = homeScore;
     return this;
@@ -484,6 +513,15 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
   private gameRoundBuilder?: GameRoundBuilder;
   public leaderboard?: Leaderboard;
 
+  id() {
+    return this.built.id!;
+  }
+
+  boardType(boardType: any) {
+    this.built.boardType = boardType
+    return this;
+  }
+
   withSeason(seasonBuilder: SeasonBuilder) {
     this.seasonBuilder = seasonBuilder;
     return this;
@@ -495,11 +533,6 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
 
   withGameRound(gameRoundBuilder: GameRoundBuilder) {
     this.gameRoundBuilder = gameRoundBuilder;
-    return this;
-  }
-
-  boardType(boardType: any) {
-    this.built.boardType = boardType
     return this;
   }
 

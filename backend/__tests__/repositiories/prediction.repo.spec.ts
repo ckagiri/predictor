@@ -75,38 +75,55 @@ describe('Prediction repo', function () {
       .build();
   })
 
-  describe('findOrCreate joker', () => {
-    it('should create joker if it doesnt exist', done => {
-      const userId = user1.user?.id!
-      const seasonId = epl2022.season?.id!
-      const gameRoundId = gw1.gameRound?.id!;
-      const matchId = manuVmanc.match?.id!;
+  describe('finders', () => {
+    it('findOneOrCreate should create prediction if it doesnt exist', done => {
+      const userId = user1.id();
+      const { id: matchId, slug: matchSlug, season: seasonId } = manuVmanc.match as Required<Match>;
 
       predictionRepo
-        .findOrCreateJoker$(
-          userId,
-          seasonId,
-          gameRoundId,
-          [matchId],
-        )
+        .findOneOrCreate$({ userId, matchId })
         .subscribe(p => {
-          expect(p).to.have.property('hasJoker', true);
-          expect(p).to.have.property('jokerAutoPicked', true);
+          expect(p.user.toString()).to.equal(userId);
+          expect(p.match.toString()).to.equal(matchId);
+          expect(p.matchSlug).to.equal(matchSlug);
+          expect(p.season?.toString()).to.equal(seasonId);
+          expect(p).to.have.property('hasJoker', false);
           done();
         });
     });
 
-    it('should findOne prediction by user and match', done => {
-      const userId = user1.user?.id!
-      const matchId = manuVmanc.match?.id!
-      const { slug: matchSlug, season, gameRound, id } = manuVmanc.match as Required<Match>;
+    it('findOneOrCreate should return existing prediction', done => {
+      let prediction: Prediction;
+      const userId = user1.id();
+      const matchId = manuVmanc.id();
+
+      predictionRepo
+        .findOneOrCreate$({ userId, matchId })
+        .pipe(
+          flatMap(p => {
+            prediction = p;
+            return predictionRepo.findOneOrCreate$({ userId, matchId });
+          })
+        )
+        .subscribe(p => {
+          // do a deep object comparison for equality test
+          expect((p as PredictionDocument).toObject()).to.eql(
+            (prediction as PredictionDocument).toObject(),
+          );
+          done();
+        });
+    });
+
+    it('should find prediction by user and match', done => {
+      const userId = user1.id();
+      const matchId = manuVmanc.id();
+      const { slug: matchSlug, season } = manuVmanc.match as Required<Match>;
       let prediction: Prediction;
       const predData: Prediction = {
         user: userId,
         match: matchId,
         matchSlug,
         season,
-        gameRound,
         choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
       };
       predictionRepo.insert$(predData)
@@ -122,69 +139,50 @@ describe('Prediction repo', function () {
         });
     });
 
-    describe('findOneOrCreate prediction', () => {
-      it('should create prediction if it doesnt exist', done => {
-        const userId = user1.user?.id!
-        const { id: matchId, slug: matchSlug } = manuVmanc.match as Required<Match>;
+    it('should findById And update score', done => {
+      let scorePoints: ScorePoints;
+      const userId = user1.id();
+      const matchId = manuVmanc.id();
+
+      predictionRepo
+        .findOneOrCreate$({ userId, matchId })
+        .pipe(
+          flatMap(p => {
+            scorePoints = {
+              points: 16,
+              APoints: 14,
+              BPoints: 2,
+              CorrectMatchOutcomePoints: 7,
+              ExactGoalDifferencePoints: 1,
+              ExactMatchScorePoints: 6,
+              CloseMatchScorePoints: 0,
+              ExactTeamScorePoints: 2,
+            };
+            return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
+          }),
+        )
+        .subscribe(p => {
+          const pred = (p as PredictionDocument).toObject() as Prediction;
+          expect(pred.scorePoints).to.eql(scorePoints);
+          done();
+        });
+    });
+
+    describe('findOrCreateJoker', () => {
+      it('should create joker if it doesnt exist', done => {
+        const userId = user1.id()
+        const gameRoundId = gw1.id()
+        const matchId = manuVmanc.id();
 
         predictionRepo
-          .findOneOrCreate$({ userId, matchId })
-          .subscribe(p => {
-            expect(p.user.toString()).to.equal(userId);
-            expect(p.match.toString()).to.equal(matchId);
-            expect(p.matchSlug).to.equal(matchSlug);
-            expect(p).to.have.property('hasJoker', false);
-            done();
-          });
-      });
-
-      it('should return existing prediction', done => {
-        let prediction: Prediction;
-        const userId = user1.user?.id!
-        const matchId = manuVmanc.match?.id!
-
-        predictionRepo
-          .findOneOrCreate$({ userId, matchId })
-          .pipe(
-            flatMap(p => {
-              prediction = p;
-              return predictionRepo.findOneOrCreate$({ userId, matchId });
-            })
+          .findOrCreateJoker$(
+            userId,
+            gameRoundId,
+            [matchId],
           )
           .subscribe(p => {
-            // not sure why I need to do a deep object comparison here; leads to unnecessary casting
-            expect((p as PredictionDocument).toObject()).to.eql(
-              (prediction as PredictionDocument).toObject(),
-            );
-            done();
-          });
-      });
-
-      it('should findById And update score', done => {
-        let scorePoints: ScorePoints;
-        const userId = user1.user?.id!
-        const matchId = manuVmanc.match?.id!
-
-        predictionRepo
-          .findOneOrCreate$({ userId, matchId })
-          .pipe(
-            flatMap(p => {
-              scorePoints = {
-                points: 16,
-                APoints: 14,
-                BPoints: 2,
-                CorrectMatchOutcomePoints: 7,
-                ExactGoalDifferencePoints: 1,
-                ExactMatchScorePoints: 6,
-                CloseMatchScorePoints: 0,
-                ExactTeamScorePoints: 2,
-              };
-              return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
-            }),
-          )
-          .subscribe(p => {
-            const pred = (p as PredictionDocument).toObject() as Prediction;
-            expect(pred.scorePoints).to.eql(scorePoints);
+            expect(p).to.have.property('hasJoker', true);
+            expect(p).to.have.property('jokerAutoPicked', true);
             done();
           });
       });

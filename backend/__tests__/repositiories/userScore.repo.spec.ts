@@ -84,10 +84,10 @@ describe('UserScore Repo', function () {
   let userId2: string;
   let matchId1: string;
   let matchId2: string;
-  let userId1predictionId1: string;
-  let userId1predictionId2: string;
-  let userId2predictionId1: string;
-  let userId2predictionId2: string;
+  let userId1matchId1Pred: string;
+  let userId1matchId2Pred: string;
+  let userId2matchId1Pred: string;
+  let userId2matchId2Pred: string;
   let user1_manuVmanc_pred_points: ScorePoints;
   let user1_cheVars_pred_points: ScorePoints;
   let user2_manuVmanc_pred_points: ScorePoints;
@@ -117,16 +117,15 @@ describe('UserScore Repo', function () {
           .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
-    // refactor these optional types
-    leaderboardId = eplBoard.leaderboard?.id!;
-    userId1 = user1.user?.id!;
-    userId2 = user2.user?.id!;
-    matchId1 = manuVmanc.match?.id!;
-    matchId2 = cheVars.match?.id!;
-    userId1predictionId1 = user1_manuVmanc_pred.prediction?.id!;
-    userId1predictionId2 = user1_cheVars_pred.prediction?.id!;
-    userId2predictionId1 = user2_manuVmanc_pred.prediction?.id!;
-    userId2predictionId2 = user2_cheVars_pred.prediction?.id!;
+    leaderboardId = eplBoard.id();
+    userId1 = user1.id();
+    userId2 = user2.id();
+    matchId1 = manuVmanc.id();
+    matchId2 = cheVars.id();
+    userId1matchId1Pred = user1_manuVmanc_pred.id();
+    userId1matchId2Pred = user1_cheVars_pred.id();
+    userId2matchId1Pred = user2_manuVmanc_pred.id();
+    userId2matchId2Pred = user2_cheVars_pred.id();
 
     // result 2-1 prediction 1-0
     user1_manuVmanc_pred_points = {
@@ -174,7 +173,7 @@ describe('UserScore Repo', function () {
           leaderboardId,
           userId1,
           matchId1,
-          userId1predictionId1,
+          userId1matchId1Pred,
           user1_manuVmanc_pred_points,
           hasJoker,
         )
@@ -186,7 +185,7 @@ describe('UserScore Repo', function () {
           expect(score.APoints).to.equal(16);
           expect(score.BPoints).to.equal(0);
           expect(score.matches).to.contain(matchId1);
-          expect(score.predictions).to.contain(userId1predictionId1);
+          expect(score.predictions).to.contain(userId1matchId1Pred);
           done();
         });
     });
@@ -210,7 +209,7 @@ describe('UserScore Repo', function () {
         leaderboard: leaderboardId,
         user: userId1,
         matches: [matchId1],
-        predictions: [userId1predictionId1],
+        predictions: [userId1matchId1Pred],
         pointsExcludingJoker: points / 2,
         APointsExcludingJoker: APoints / 2,
         BPointsExcludingJoker: BPoints / 2,
@@ -224,7 +223,7 @@ describe('UserScore Repo', function () {
               leaderboardId,
               userId1,
               matchId2,
-              userId1predictionId2,
+              userId1matchId2Pred,
               user1_cheVars_pred_points,
               hasJoker,
             );
@@ -237,7 +236,7 @@ describe('UserScore Repo', function () {
           expect(score.APoints).to.equal(30);
           expect(score.BPoints).to.equal(2);
           expect(score.matches).to.contain(matchId1, matchId2);
-          expect(score.predictions).to.contain(userId1predictionId1, userId1predictionId2);
+          expect(score.predictions).to.contain(userId1matchId1Pred, userId1matchId2Pred);
           done();
         });
     });
@@ -249,7 +248,7 @@ describe('UserScore Repo', function () {
         leaderboard: leaderboardId,
         user: userId1,
         matches: [matchId1],
-        predictions: [userId1predictionId1],
+        predictions: [userId1matchId1Pred],
         pointsExcludingJoker: points1,
         APointsExcludingJoker: APoints1,
         BPointsExcludingJoker: BPoints1,
@@ -261,7 +260,7 @@ describe('UserScore Repo', function () {
         leaderboard: leaderboardId,
         user: userId2,
         matches: [matchId1],
-        predictions: [userId2predictionId1],
+        predictions: [userId2matchId1Pred],
         pointsExcludingJoker: points2,
         APointsExcludingJoker: APoints2,
         BPointsExcludingJoker: BPoints2,
@@ -287,7 +286,7 @@ describe('UserScore Repo', function () {
         leaderboard: leaderboardId,
         user: userId1,
         matches: [matchId1],
-        predictions: [userId1predictionId1],
+        predictions: [userId1matchId1Pred],
         pointsExcludingJoker: points,
         APointsExcludingJoker: APoints,
         BPointsExcludingJoker: BPoints,

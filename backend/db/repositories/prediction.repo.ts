@@ -18,8 +18,7 @@ import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
     userId: string,
-    seasonId: string,
-    gameRound: string,
+    gameRoundId: string,
     pick: string | string[],
   ): Observable<Prediction>;
   findOneOrCreate$({
@@ -53,13 +52,12 @@ export class PredictionRepositoryImpl
 
   public findOrCreateJoker$(
     userId: string,
-    seasonId: string,
     gameRoundId: string,
     pick: string | string[],
+    autoPicked: boolean = true,
   ): Observable<Prediction> {
     const query: any = {
       user: userId,
-      season: seasonId,
       gameRound: gameRoundId,
       hasJoker: true,
     };
@@ -71,7 +69,7 @@ export class PredictionRepositoryImpl
             return of(currentJoker);
           } else {
             newJokerMatchId = pick[Math.floor(Math.random() * pick.length)];
-            return this.pickJoker$(userId, currentJoker, newJokerMatchId, true);
+            return this.pickJoker$(userId, currentJoker, newJokerMatchId, autoPicked);
           }
         } else {
           newJokerMatchId = pick;
@@ -81,7 +79,7 @@ export class PredictionRepositoryImpl
           ) {
             return throwError(new Error('Joker prediction already processed'));
           }
-          return this.pickJoker$(userId, currentJoker, newJokerMatchId, false);
+          return this.pickJoker$(userId, currentJoker, newJokerMatchId, autoPicked);
         }
       }),
     );
@@ -119,7 +117,6 @@ export class PredictionRepositoryImpl
             const {
               slug: matchSlug,
               season,
-              gameRound,
               odds,
             } = match as Required<Match>;
             const pred: Prediction = {
@@ -127,7 +124,6 @@ export class PredictionRepositoryImpl
               match: matchId,
               matchSlug,
               season,
-              gameRound,
               choice: {} as any,
             };
             const randomMatchScore = this.getRandomMatchScore();
