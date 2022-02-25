@@ -61,6 +61,7 @@ export class PredictionRepositoryImpl
       gameRound: gameRoundId,
       hasJoker: true,
     };
+    // predictions dont have gameRounds
     return this.findOne$(query).pipe(
       flatMap(currentJoker => {
         let newJokerMatchId: string;

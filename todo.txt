@@ -1,0 +1,33 @@
+- upgrade webpack to 5
+- fix html webpack plugin with webpack 5
+- upgrade typescript
+- upgrade rxjs
+
+onMatchFinished findOrCreateJoker(gameRoundPicks)
+onUIJokerPick findOrCreateJoker(matchPick, false)
+onMatchRoundChanged findOrCreateJoker(gameRoundPicks)
+onLuckySpin findOrCreateJoker(gameRoundPicks, false)
+
+use createReactApp typescript version
+login app
+
+save vs insert?
+
+use seasonId, suffix ids
+
+predictions dont have gameRoundPicks
+
+fix leaderboard tests
+
+work on processes
+
+punt:
+update jokers -> on match gameRound changes
+create predictions -> on new gameRound
+
+createJokerIfNotExists(userId, matchPicks)
+findOrCreateJoker(userId, matchPicks)
+
+pickJoker(userId, matchPick)
+
+getPrediction(userId, matchId) -> createJokerIfNotExists(userId, matchPicks), findOneOrCreate(userId, matchId)

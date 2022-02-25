@@ -14,6 +14,8 @@
     "lint:fix": "tslint --config tslint.json --project tsconfig.json --fix && npm run typecheck",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "test": "TS_NODE_PROJECT='tsconfig.json' mocha --require ts-node/register --require dotenv-flow/config --recursive '__tests__/**/*.spec.ts' --node-env=test",
+    "test1": "TS_NODE_PROJECT='tsconfig.json' NODE_ENV=test mocha --require ts-node/register --require dotenv-flow/config --recursive '__tests__/api/competitions.api.spec.ts' --node-env=test",
+    "test2": "TS_NODE_PROJECT='tsconfig.json' NODE_ENV=test mocha --require ts-node/register --require dotenv-flow/config --recursive '__tests__/repositiories/competition.repo.spec.ts' --node-env=test",
     "drop:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/drop.js",
     "seed:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/seed.js",
     "import:test": "NODE_ENV=test node -r dotenv-flow/config build/import/start.js"
