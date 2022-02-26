@@ -28,9 +28,9 @@ describe('seasonRepo', function () {
 
   beforeEach(async () => {
     epl = await a.competition
-      .name('English Premier League')
-      .slug('english-premier-league')
-      .code('epl')
+      .setName('English Premier League')
+      .setSlug('english-premier-league')
+      .setCode('epl')
       .build();
 
     const { id, name, slug } = epl;

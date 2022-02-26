@@ -10,43 +10,43 @@ import { flatMap } from 'rxjs/operators';
 
 const predictionRepo = PredictionRepositoryImpl.getInstance();
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2022 = a.season
   .withCompetition(epl)
-  .name('2021-2022')
-  .slug('2021-22')
-  .year(2022)
-  .seasonStart('2021-08-09T00:00:00+0200')
-  .seasonEnd('2022-05-17T16:00:00+0200')
-  .externalReference({
+  .setName('2021-2022')
+  .setSlug('2021-22')
+  .setYear(2022)
+  .setSeasonStart('2021-08-09T00:00:00+0200')
+  .setSeasonEnd('2022-05-17T16:00:00+0200')
+  .setExternalReference({
     [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
   })
 
-const manu = a.team.name('Manchester United').slug('man-utd');
-const manc = a.team.name('Manchester City').slug('man-city');
-const che = a.team.name('Chelsea').slug('chelsea');
-const ars = a.team.name('Arsenal').slug('arsenal');
+const manu = a.team.setName('Manchester United').setSlug('man-utd');
+const manc = a.team.setName('Manchester City').setSlug('man-city');
+const che = a.team.setName('Chelsea').setSlug('chelsea');
+const ars = a.team.setName('Arsenal').setSlug('arsenal');
 
-const gw1 = a.gameRound.name('Gameweek 1').position(1);
-const gw2 = a.gameRound.name('Gameweek 2').position(2);
+const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
 
 const manuVmanc = a.match
   .withHomeTeam(manu)
   .withAwayTeam(manc)
-  .date('2021-08-11T11:30:00Z')
+  .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw1)
 
 const cheVars = a.match
   .withHomeTeam(che)
   .withAwayTeam(ars)
-  .date('2021-08-21T11:30:00Z')
+  .setDate('2021-08-21T11:30:00Z')
   .withGameRound(gw2)
 
-const user1 = a.user.username('charles').email('charles@email.com');
-const user2 = a.user.username('kagiri').email('kagiri@email.com');
+const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
+const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
 
 describe('Prediction repo', function () {
   before(async () => {
@@ -77,7 +77,7 @@ describe('Prediction repo', function () {
 
   describe('finders', () => {
     it('findOneOrCreate should create prediction if it doesnt exist', done => {
-      const userId = user1.id();
+      const userId = user1.id;
       const { id: matchId, slug: matchSlug, season: seasonId } = manuVmanc.match as Required<Match>;
 
       predictionRepo
@@ -94,8 +94,8 @@ describe('Prediction repo', function () {
 
     it('findOneOrCreate should return existing prediction', done => {
       let prediction: Prediction;
-      const userId = user1.id();
-      const matchId = manuVmanc.id();
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
 
       predictionRepo
         .findOneOrCreate$({ userId, matchId })
@@ -115,8 +115,8 @@ describe('Prediction repo', function () {
     });
 
     it('should find prediction by user and match', done => {
-      const userId = user1.id();
-      const matchId = manuVmanc.id();
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
       const { slug: matchSlug, season } = manuVmanc.match as Required<Match>;
       let prediction: Prediction;
       const predData: Prediction = {
@@ -141,8 +141,8 @@ describe('Prediction repo', function () {
 
     it('should findById And update score', done => {
       let scorePoints: ScorePoints;
-      const userId = user1.id();
-      const matchId = manuVmanc.id();
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
 
       predictionRepo
         .findOneOrCreate$({ userId, matchId })
@@ -170,9 +170,9 @@ describe('Prediction repo', function () {
 
     describe('findOrCreateJoker', () => {
       it('should create joker if it doesnt exist', done => {
-        const userId = user1.id()
-        const gameRoundId = gw1.id()
-        const matchId = manuVmanc.id();
+        const userId = user1.id;
+        const gameRoundId = gw1.id;
+        const matchId = manuVmanc.id;
 
         predictionRepo
           .findOrCreateJoker$(

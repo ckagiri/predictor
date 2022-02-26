@@ -61,7 +61,7 @@ describe('Leaderboard Repo', function () {
     const now = new Date();
     const month = now.getUTCMonth() + 1;
     const year = now.getFullYear();
-    const gameRound = 20;
+    const gameRound = "20";
 
     it('should create seasonBoard if it doesnt exist', done => {
       leaderboardRepo

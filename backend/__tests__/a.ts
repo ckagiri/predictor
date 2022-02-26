@@ -61,21 +61,21 @@ class CompetitionBuilder implements Builder<Competition> {
   private built = {} as Competition;
   public competition?: Competition;
 
-  id() {
+  get id() {
     return this.built.id!;
   }
 
-  name(value: string) {
+  setName(value: string) {
     this.built.name = value;
     return this;
   }
 
-  code(value: string) {
+  setCode(value: string) {
     this.built.code = value;
     return this;
   }
 
-  slug(value: string) {
+  setSlug(value: string) {
     this.built.slug = value;
     return this;
   }
@@ -90,12 +90,12 @@ class TeamBuilder implements Builder<Team> {
   private built = {} as Team;
   public team?: Team;
 
-  name(value: string) {
+  setName(value: string) {
     this.built.name = value;
     return this;
   }
 
-  slug(value: string) {
+  setSlug(value: string) {
     this.built.slug = value;
     return this;
   }
@@ -110,16 +110,16 @@ class UserBuilder implements Builder<User> {
   private built = {} as User;
   public user?: User;
 
-  id() {
+  get id() {
     return this.built.id!
   }
 
-  username(value: string) {
+  setUsername(value: string) {
     this.built.username = value;
     return this;
   }
 
-  email(value: string) {
+  setEmail(value: string) {
     this.built.email = value;
     return this;
   }
@@ -135,16 +135,16 @@ class GameRoundBuilder implements Builder<GameRound> {
   private seasonBuilder?: SeasonBuilder;
   public gameRound?: GameRound;
 
-  id() {
+  get id() {
     return this.built.id!;
   }
 
-  name(value: string) {
+  setName(value: string) {
     this.built.name = value;
     return this;
   }
 
-  position(value: number) {
+  setPosition(value: number) {
     this.built.position = value;
     return this;
   }
@@ -177,46 +177,45 @@ class SeasonBuilder implements Builder<Season> {
 
   constructor() { }
 
-  id() {
+  get id() {
     return this.built.id!;
   }
 
-  name(value: string) {
+  setName(value: string) {
     this.built.name = value;
     return this;
   }
 
-  slug(value: string): this;
-  slug(value?: string): this | string {
-    if (value === undefined) {
-      return this.built.slug!
-    }
-
+  setSlug(value: string) {
     this.built.slug = value;
     return this;
   }
 
-  year(value: number) {
+  get slug() {
+    return this.built.slug!;
+  }
+
+  setYear(value: number) {
     this.built.year = value;
     return this;
   }
 
-  seasonStart(value: string) {
+  setSeasonStart(value: string) {
     this.built.seasonStart = value;
     return this;
   }
 
-  seasonEnd(value: string) {
+  setSeasonEnd(value: string) {
     this.built.seasonEnd = value;
     return this;
   }
 
-  currentMatchRound(value: number) {
+  setCurrentMatchRound(value: number) {
     this.built.currentMatchRound = value;
     return this;
   }
 
-  externalReference(value: any) {
+  setExternalReference(value: any) {
     this.built.externalReference = value;
     return this;
   }
@@ -330,16 +329,16 @@ class MatchBuilder implements Builder<Match> {
   private predictionBuilders: PredictionBuilder[] = [];
   public match?: Match;
 
-  id() {
+  get id() {
     return this.built.id!;
   }
 
-  status(value: MatchStatus) {
+  setStatus(value: MatchStatus) {
     this.built.status = value;
     return this;
   }
 
-  date(value: any) {
+  setDate(value: any) {
     this.built.date = value;
     return this;
   }
@@ -380,12 +379,12 @@ class MatchBuilder implements Builder<Match> {
     return this.awayTeamBuilder?.team!;
   }
 
-  homeScore(homeScore: number) {
+  setHomeScore(homeScore: number) {
     this.built.result!.goalsHomeTeam = homeScore;
     return this;
   }
 
-  awayScore(awayScore: number) {
+  setAwayScore(awayScore: number) {
     this.built.result!.goalsAwayTeam = awayScore;
     return this;
   }
@@ -437,26 +436,26 @@ class PredictionBuilder implements Builder<Prediction> {
   private matchBuilder?: MatchBuilder;
   public prediction?: Prediction;
 
-  id() {
+  get id() {
     return this.built.id!;
   }
 
-  homeScore(homeScore: number) {
+  setHomeScore(homeScore: number) {
     this.built.choice.goalsHomeTeam = homeScore;
     return this;
   }
 
-  awayScore(awayScore: number) {
+  setAwayScore(awayScore: number) {
     this.built.choice.goalsAwayTeam = awayScore;
     return this;
   }
 
-  computerPick(isComputerPick: boolean) {
+  setComputerPick(isComputerPick: boolean) {
     this.built.choice.isComputerGenerated = isComputerPick;
     return this;
   }
 
-  joker(isJoker: boolean) {
+  setJoker(isJoker: boolean) {
     this.built.hasJoker = isJoker;
     return this;
   }
@@ -500,7 +499,6 @@ class PredictionBuilder implements Builder<Prediction> {
     this.built.matchSlug = matchSlug;
     this.built.user = userId;
     this.built.season = season;
-    this.built.gameRound = gameRound;
 
     this.prediction = await db.Prediction.create(this.built);
     return this.prediction;
@@ -513,11 +511,11 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
   private gameRoundBuilder?: GameRoundBuilder;
   public leaderboard?: Leaderboard;
 
-  id() {
+  get id() {
     return this.built.id!;
   }
 
-  boardType(boardType: any) {
+  setBoardType(boardType: any) {
     this.built.boardType = boardType
     return this;
   }

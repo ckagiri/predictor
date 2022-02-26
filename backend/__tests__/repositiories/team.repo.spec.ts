@@ -152,7 +152,6 @@ describe('teamRepo', function () {
 
     // check to see if we have an external reference
     // check shortName it would be preferable if such prop could be excluded from the patch object
-
     teamRepo
       .insert$(manUtd)
       .pipe(
@@ -229,24 +228,24 @@ describe('teamRepo', function () {
 
   it('should findAll by season', async () => {
     const epl = a.competition
-      .name('English Premier League')
-      .slug('english-premier-league')
-      .code('epl');
+      .setName('English Premier League')
+      .setSlug('english-premier-league')
+      .setCode('epl');
 
     const epl2022 = a.season
       .withCompetition(epl)
-      .name('2021-2022')
-      .slug('2021-22')
-      .year(2022)
-      .seasonStart('2021-08-09T00:00:00+0200')
-      .seasonEnd('2022-05-17T16:00:00+0200')
-      .externalReference({
+      .setName('2021-2022')
+      .setSlug('2021-22')
+      .setYear(2022)
+      .setSeasonStart('2021-08-09T00:00:00+0200')
+      .setSeasonEnd('2022-05-17T16:00:00+0200')
+      .setExternalReference({
         [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
       })
 
-    const manUtd = a.team.name('Manchester United').slug('man-utd');
-    const manCity = a.team.name('Manchester City').slug('man-city');
-    const brazil = a.team.name('Brazil').slug('brazil');
+    const manUtd = a.team.setName('Manchester United').setSlug('man-utd');
+    const manCity = a.team.setName('Manchester City').setSlug('man-city');
+    const brazil = a.team.setName('Brazil').setSlug('brazil');
 
     const gameData = await a.game
       .withTeams(manUtd, manCity, brazil)

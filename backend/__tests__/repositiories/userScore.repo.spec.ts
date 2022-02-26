@@ -11,72 +11,72 @@ import a from '../a';
 const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2022 = a.season
   .withCompetition(epl)
-  .name('2021-2022')
-  .slug('2021-22')
-  .year(2022)
-  .seasonStart('2021-08-09T00:00:00+0200')
-  .seasonEnd('2022-05-17T16:00:00+0200')
-  .externalReference({
+  .setName('2021-2022')
+  .setSlug('2021-22')
+  .setYear(2022)
+  .setSeasonStart('2021-08-09T00:00:00+0200')
+  .setSeasonEnd('2022-05-17T16:00:00+0200')
+  .setExternalReference({
     [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
   })
 
-const manu = a.team.name('Manchester United').slug('man-utd');
-const manc = a.team.name('Manchester City').slug('man-city');
-const che = a.team.name('Chelsea').slug('chelsea');
-const ars = a.team.name('Arsenal').slug('arsenal');
+const manu = a.team.setName('Manchester United').setSlug('man-utd');
+const manc = a.team.setName('Manchester City').setSlug('man-city');
+const che = a.team.setName('Chelsea').setSlug('chelsea');
+const ars = a.team.setName('Arsenal').setSlug('arsenal');
 
-const gw1 = a.gameRound.name('Gameweek 1').position(1);
-const gw2 = a.gameRound.name('Gameweek 2').position(2);
+const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
 
-const user1 = a.user.username('charles').email('charles@email.com');
-const user2 = a.user.username('kagiri').email('kagiri@email.com');
+const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
+const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
 
 const user1_manuVmanc_pred = a.prediction
   .withUser(user1)
-  .homeScore(1)
-  .awayScore(0)
+  .setHomeScore(1)
+  .setAwayScore(0)
 
 const user2_manuVmanc_pred = a.prediction
   .withUser(user2)
-  .homeScore(3)
-  .awayScore(0)
+  .setHomeScore(3)
+  .setAwayScore(0)
 
 const user1_cheVars_pred = a.prediction
   .withUser(user1)
-  .homeScore(1)
-  .awayScore(1)
+  .setHomeScore(1)
+  .setAwayScore(1)
 
 const user2_cheVars_pred = a.prediction
   .withUser(user2)
-  .homeScore(2)
-  .awayScore(2)
+  .setHomeScore(2)
+  .setAwayScore(2)
 
 const manuVmanc = a.match
   .withHomeTeam(manu)
   .withAwayTeam(manc)
-  .date('2021-08-11T11:30:00Z')
+  .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw1)
-  .homeScore(2)
-  .awayScore(1)
+  .setHomeScore(2)
+  .setAwayScore(1)
   .withPredictions(user1_manuVmanc_pred, user2_manuVmanc_pred)
 
 const cheVars = a.match
   .withHomeTeam(che)
   .withAwayTeam(ars)
-  .date('2021-08-21T11:30:00Z')
+  .setDate('2021-08-21T11:30:00Z')
   .withGameRound(gw2)
-  .homeScore(1)
-  .awayScore(1)
+  .setHomeScore(1)
+  .setAwayScore(1)
   .withPredictions(user1_cheVars_pred, user2_cheVars_pred);
 
-const eplBoard = a.leaderboard.boardType('GLOBAL_SEASON');
-const eplGw1Board = a.leaderboard.boardType('GLOBAL_ROUND').withGameRound(gw1);
+const eplBoard = a.leaderboard.setBoardType('GLOBAL_SEASON');
+const eplGw1Board = a.leaderboard.setBoardType('GLOBAL_ROUND').withGameRound(gw1);
 
 describe('UserScore Repo', function () {
   let leaderboardId: string;
@@ -117,15 +117,15 @@ describe('UserScore Repo', function () {
           .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
-    leaderboardId = eplBoard.id();
-    userId1 = user1.id();
-    userId2 = user2.id();
-    matchId1 = manuVmanc.id();
-    matchId2 = cheVars.id();
-    userId1matchId1Pred = user1_manuVmanc_pred.id();
-    userId1matchId2Pred = user1_cheVars_pred.id();
-    userId2matchId1Pred = user2_manuVmanc_pred.id();
-    userId2matchId2Pred = user2_cheVars_pred.id();
+    leaderboardId = eplBoard.id;
+    userId1 = user1.id;
+    userId2 = user2.id;
+    matchId1 = manuVmanc.id;
+    matchId2 = cheVars.id;
+    userId1matchId1Pred = user1_manuVmanc_pred.id;
+    userId1matchId2Pred = user1_cheVars_pred.id;
+    userId2matchId1Pred = user2_manuVmanc_pred.id;
+    userId2matchId2Pred = user2_cheVars_pred.id;
 
     // result 2-1 prediction 1-0
     user1_manuVmanc_pred_points = {

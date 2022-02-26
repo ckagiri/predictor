@@ -9,20 +9,20 @@ import { GameRound, Match, Season, Team } from '../../db/models';
 import { MatchStatus } from '../../db/models/match.model';
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2020 = a.season
   .withCompetition(epl)
-  .name('2019-2020')
-  .slug('2019-20')
-  .year(2020)
-  .externalReference({
+  .setName('2019-2020')
+  .setSlug('2019-20')
+  .setYear(2020)
+  .setExternalReference({
     [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
   })
-  .seasonStart('2019-08-09T00:00:00+0200')
-  .seasonEnd('2020-05-17T16:00:00+0200');
+  .setSeasonStart('2019-08-09T00:00:00+0200')
+  .setSeasonEnd('2020-05-17T16:00:00+0200');
 
 const matchRepo = MatchRepositoryImpl.getInstance(
   ApiProvider.API_FOOTBALL_DATA,
@@ -48,8 +48,8 @@ describe('MatchRepo', function () {
     let gameRound1: GameRound;
     let team1Vteam2: Partial<Match>;
 
-    const manutd = a.team.name('Manchester United').slug('man-utd');
-    const mancity = a.team.name('Manchester City').slug('man-city');
+    const manutd = a.team.setName('Manchester United').setSlug('man-utd');
+    const mancity = a.team.setName('Manchester City').setSlug('man-city');
 
     const afdTeam1VTeam2 = {
       id: 233371,
@@ -87,8 +87,8 @@ describe('MatchRepo', function () {
         .withSeasons(epl2020
           .withTeams(manutd, mancity)
           .withGameRounds(
-            a.gameRound.name('Gameweek 1').position(1),
-            a.gameRound.name('Gameweek 2').position(2))
+            a.gameRound.setName('Gameweek 1').setPosition(1),
+            a.gameRound.setName('Gameweek 2').setPosition(2))
         )
         .build();
 
@@ -174,16 +174,16 @@ describe('MatchRepo', function () {
   });
 
   describe('filter | sort | page', function () {
-    const liverpool = a.team.name('Liverpool').slug('liverpool');
-    const chelsea = a.team.name('Chelsea').slug('chelsea');
-    const manutd = a.team.name('Manchester United').slug('man-utd');
-    const arsenal = a.team.name('Arsenal').slug('arsenal');
-    const everton = a.team.name('Everton').slug('everton');
-    const mancity = a.team.name('Manchester City').slug('man-city');
+    const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
+    const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
+    const manutd = a.team.setName('Manchester United').setSlug('man-utd');
+    const arsenal = a.team.setName('Arsenal').setSlug('arsenal');
+    const everton = a.team.setName('Everton').setSlug('everton');
+    const mancity = a.team.setName('Manchester City').setSlug('man-city');
     const teams = [liverpool, arsenal, chelsea, manutd, mancity, everton];
 
-    const epl2020Gw1 = a.gameRound.name('Gameweek 1').position(1);
-    const epl2020Gw2 = a.gameRound.name('Gameweek 2').position(2);
+    const epl2020Gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
+    const epl2020Gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
 
     beforeEach(async () => {
       gameData = await a.game
@@ -196,22 +196,22 @@ describe('MatchRepo', function () {
             a.match
               .withHomeTeam(chelsea)
               .withAwayTeam(manutd)
-              .date('2020-02-11T11:30:00Z')
+              .setDate('2020-02-11T11:30:00Z')
               .withGameRound(epl2020Gw1),
             a.match
               .withHomeTeam(liverpool)
               .withAwayTeam(arsenal)
-              .date('2020-02-10T11:30:00Z')
+              .setDate('2020-02-10T11:30:00Z')
               .withGameRound(epl2020Gw1),
             a.match
               .withHomeTeam(everton)
               .withAwayTeam(mancity)
-              .date('2020-02-15T11:30:00Z')
+              .setDate('2020-02-15T11:30:00Z')
               .withGameRound(epl2020Gw2),
             a.match
               .withHomeTeam(chelsea)
               .withAwayTeam(liverpool)
-              .date('2020-02-14T11:30:00Z')
+              .setDate('2020-02-14T11:30:00Z')
               .withGameRound(epl2020Gw2),
           ),
         )
