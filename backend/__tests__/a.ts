@@ -62,7 +62,7 @@ class CompetitionBuilder implements Builder<Competition> {
   public competition?: Competition;
 
   get id() {
-    return this.built.id!;
+    return this.competition?.id!;
   }
 
   setName(value: string) {
@@ -111,7 +111,7 @@ class UserBuilder implements Builder<User> {
   public user?: User;
 
   get id() {
-    return this.built.id!
+    return this.user?.id!;
   }
 
   setUsername(value: string) {
@@ -136,7 +136,7 @@ class GameRoundBuilder implements Builder<GameRound> {
   public gameRound?: GameRound;
 
   get id() {
-    return this.built.id!;
+    return this.gameRound?.id!;
   }
 
   setName(value: string) {
@@ -178,7 +178,7 @@ class SeasonBuilder implements Builder<Season> {
   constructor() { }
 
   get id() {
-    return this.built.id!;
+    return this.season?.id!;
   }
 
   setName(value: string) {
@@ -192,7 +192,7 @@ class SeasonBuilder implements Builder<Season> {
   }
 
   get slug() {
-    return this.built.slug!;
+    return this.season?.slug;
   }
 
   setYear(value: number) {
@@ -330,7 +330,11 @@ class MatchBuilder implements Builder<Match> {
   public match?: Match;
 
   get id() {
-    return this.built.id!;
+    return this.match?.id!;
+  }
+
+  get slug() {
+    return this.match?.slug!;
   }
 
   setStatus(value: MatchStatus) {
@@ -407,7 +411,7 @@ class MatchBuilder implements Builder<Match> {
     const { name: awayTeamName, id: awayTeamId, slug: awayTeamSlug, crestUrl: awayTeamCrestUrl } = this.awayTeam;
     this.built.awayTeam = { id: awayTeamId!, name: awayTeamName, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
 
-    this.built.slug = `${this.built.homeTeam?.slug}-${this.built.homeTeam?.slug}`;
+    this.built.slug = `${this.built.homeTeam?.slug}-${this.built.awayTeam?.slug}`;
     this.built.gameRound = this.gameRound.id;
     this.match = await db.Match.create(this.built);
 
@@ -437,7 +441,7 @@ class PredictionBuilder implements Builder<Prediction> {
   public prediction?: Prediction;
 
   get id() {
-    return this.built.id!;
+    return this.prediction?.id!
   }
 
   setHomeScore(homeScore: number) {
@@ -490,15 +494,12 @@ class PredictionBuilder implements Builder<Prediction> {
     const {
       id: matchId,
       slug: matchSlug,
-      season,
-      gameRound,
     } = this.match as Required<Match>;
 
     const { id: userId } = this.user as Required<User>;
     this.built.match = matchId;
     this.built.matchSlug = matchSlug;
     this.built.user = userId;
-    this.built.season = season;
 
     this.prediction = await db.Prediction.create(this.built);
     return this.prediction;
@@ -512,7 +513,7 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
   public leaderboard?: Leaderboard;
 
   get id() {
-    return this.built.id!;
+    return this.leaderboard?.id!
   }
 
   setBoardType(boardType: any) {

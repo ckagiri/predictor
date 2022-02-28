@@ -7,6 +7,7 @@ import a from '../a';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import memoryDb from '../memoryDb';
 import { flatMap } from 'rxjs/operators';
+import { MatchStatus } from '../../db/models/match.model';
 
 const predictionRepo = PredictionRepositoryImpl.getInstance();
 const epl = a.competition
@@ -29,6 +30,10 @@ const manu = a.team.setName('Manchester United').setSlug('man-utd');
 const manc = a.team.setName('Manchester City').setSlug('man-city');
 const che = a.team.setName('Chelsea').setSlug('chelsea');
 const ars = a.team.setName('Arsenal').setSlug('arsenal');
+const liv = a.team.setName('Liverpool').setSlug('liverpool');
+const tot = a.team.setName('Tottenham').setSlug('tottenham');
+const eve = a.team.setName('Everton').setSlug('everton');
+const whu = a.team.setName('West Ham').setSlug('west-ham')
 
 const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
 const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
@@ -38,12 +43,28 @@ const manuVmanc = a.match
   .withAwayTeam(manc)
   .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw1)
+  .setStatus(MatchStatus.SCHEDULED)
 
 const cheVars = a.match
   .withHomeTeam(che)
   .withAwayTeam(ars)
   .setDate('2021-08-21T11:30:00Z')
+  .withGameRound(gw1)
+  .setStatus(MatchStatus.SCHEDULED)
+
+const livVtot = a.match
+  .withHomeTeam(liv)
+  .withAwayTeam(tot)
+  .setDate('2021-08-11T11:30:00Z')
+  .withGameRound(gw1)
+  .setStatus(MatchStatus.SCHEDULED);
+
+const eveVwhu = a.match
+  .withHomeTeam(eve)
+  .withAwayTeam(tot)
+  .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw2)
+  .setStatus(MatchStatus.POSTPONED)
 
 const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
 const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
@@ -63,14 +84,14 @@ describe('Prediction repo', function () {
 
   beforeEach(async () => {
     await a.game
-      .withTeams(manu, manc, che, ars)
+      .withTeams(manu, manc, che, ars, liv, tot, eve, whu)
       .withUsers(user1, user2)
       .withCompetitions(epl)
       .withSeasons(
         epl2022
-          .withTeams(manu, manc, che, ars)
+          .withTeams(manu, manc, che, ars, liv, tot, eve, whu)
           .withGameRounds(gw1, gw2)
-          .withMatches(manuVmanc, cheVars)
+          .withMatches(manuVmanc, livVtot, cheVars, eveVwhu)
       )
       .build();
   })
@@ -86,7 +107,6 @@ describe('Prediction repo', function () {
           expect(p.user.toString()).to.equal(userId);
           expect(p.match.toString()).to.equal(matchId);
           expect(p.matchSlug).to.equal(matchSlug);
-          expect(p.season?.toString()).to.equal(seasonId);
           expect(p).to.have.property('hasJoker', false);
           done();
         });
@@ -114,7 +134,7 @@ describe('Prediction repo', function () {
         });
     });
 
-    it('should find prediction by user and match', done => {
+    it('findOne should find prediction by user and match', done => {
       const userId = user1.id;
       const matchId = manuVmanc.id;
       const { slug: matchSlug, season } = manuVmanc.match as Required<Match>;
@@ -123,7 +143,6 @@ describe('Prediction repo', function () {
         user: userId,
         match: matchId,
         matchSlug,
-        season,
         choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
       };
       predictionRepo.insert$(predData)
@@ -171,14 +190,19 @@ describe('Prediction repo', function () {
     describe('findOrCreateJoker', () => {
       it('should create joker if it doesnt exist', done => {
         const userId = user1.id;
-        const gameRoundId = gw1.id;
-        const matchId = manuVmanc.id;
+        const roundId = gw1.id;
+
+        const userId1matchId1Pred: Prediction = {
+          user: userId,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+        };
 
         predictionRepo
-          .findOrCreateJoker$(
-            userId,
-            gameRoundId,
-            [matchId],
+          .insertMany$([userId1matchId1Pred])
+          .pipe(
+            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
           )
           .subscribe(p => {
             expect(p).to.have.property('hasJoker', true);

@@ -28,6 +28,10 @@ create predictions -> on new gameRound
 createJokerIfNotExists(userId, matchPicks)
 findOrCreateJoker(userId, matchPicks)
 
-pickJoker(userId, matchPick)
+next pickJoker(userId, matchId)
 
 getPrediction(userId, matchId) -> createJokerIfNotExists(userId, matchPicks), findOneOrCreate(userId, matchId)
+
+processor -> createPredictionsIfNotExist(roundId)
+processor -> unsetJokerPredictions(matchId)
+

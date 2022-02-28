@@ -14,7 +14,6 @@ export interface Prediction extends Entity {
   user: string;
   match: string;
   matchSlug?: string;
-  season?: string;
   choice: Score;
   scorePoints?: ScorePoints;
   status?: PredictionStatus;
@@ -31,7 +30,6 @@ const predictionSchema = schema({
   user: { type: ObjectId, ref: 'User', required: true, index: true },
   match: { type: ObjectId, ref: 'Match', required: true, index: true },
   matchSlug: { type: String, trim: true },
-  season: { type: ObjectId, ref: 'Season' },
   choice: {
     goalsHomeTeam: { type: Number },
     goalsAwayTeam: { type: Number },
