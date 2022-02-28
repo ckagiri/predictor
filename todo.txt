@@ -18,15 +18,17 @@ fix leaderboard tests
 work on processes
 
 punt:
+>>>> jokers
 findOrCreateJoker(userId, roundId)
 findOrCreatePrediction(userId, matchId)
 findOrCreatePredictions(userId, roundId)
+findOrUpsertPrediction(userId, matchId)
 pickJoker(userId, matchId)
+unsetJoker(userId, match)
 
-next pickJoker(userId, matchId)
+processor -> createPredictionsIfNotExist(roundId) -> findOrCreateJoker, (findOrCreatePredictions -> findOrCreatePrediction)
+processor -> unsetJokers(matchId) -> unsetJoker
 
-
-processor -> createPredictionsIfNotExist(roundId) -> findOrCreateJoker, findOrCreatePredictions
-processor -> unsetJokerPredictions(matchId)
-
-
+UI -> load-page, pick-joker, change prediction-score, lucky-spin
+events -> match status changed, new match round
+<<<< jokers
