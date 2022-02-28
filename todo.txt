@@ -3,10 +3,6 @@
 - upgrade typescript
 - upgrade rxjs
 
-onMatchFinished findOrCreateJoker(gameRoundPicks)
-onUIJokerPick findOrCreateJoker(matchPick, false)
-onMatchRoundChanged findOrCreateJoker(gameRoundPicks)
-onLuckySpin findOrCreateJoker(gameRoundPicks, false)
 
 use createReactApp typescript version
 login app
@@ -22,16 +18,15 @@ fix leaderboard tests
 work on processes
 
 punt:
-update jokers -> on match gameRound changes
-create predictions -> on new gameRound
-
-createJokerIfNotExists(userId, matchPicks)
-findOrCreateJoker(userId, matchPicks)
+findOrCreateJoker(userId, roundId)
+findOrCreatePrediction(userId, matchId)
+findOrCreatePredictions(userId, roundId)
+pickJoker(userId, matchId)
 
 next pickJoker(userId, matchId)
 
-getPrediction(userId, matchId) -> createJokerIfNotExists(userId, matchPicks), findOneOrCreate(userId, matchId)
 
-processor -> createPredictionsIfNotExist(roundId)
+processor -> createPredictionsIfNotExist(roundId) -> findOrCreateJoker, findOrCreatePredictions
 processor -> unsetJokerPredictions(matchId)
+
 

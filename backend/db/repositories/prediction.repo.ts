@@ -19,7 +19,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
     userId: string,
     roundId: string,
-    autoPick: true,
+    autoPicked: true,
     roundMatches: Match[]
   ): Observable<Prediction>;
   findOneOrCreate$({
@@ -47,7 +47,7 @@ export class PredictionRepositoryImpl
     this.matchRepo = matchRepo;
   }
   findOrCreateJoker$(
-    userId: string, roundId: string, autoPick: boolean = true, roundMatches: Match[] = []
+    userId: string, roundId: string, autoPicked: boolean = true, roundMatches: Match[] = []
   ): Observable<Prediction> {
     return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
       .pipe(
@@ -65,7 +65,6 @@ export class PredictionRepositoryImpl
                 const jokers = [];
                 if (predictions.length === 0) {
                   const jokerMatchId = matchIds[Math.floor(Math.random() * matchIds.length)]!;
-                  console.log(matchIds)
                   const { slug: jokerMatchSlug } = matches.find(m => m.id?.toString() === jokerMatchId) as Match
                   const randomMatchScore = this.getRandomMatchScore();
 
@@ -74,7 +73,7 @@ export class PredictionRepositoryImpl
                     match: jokerMatchId,
                     matchSlug: jokerMatchSlug,
                     hasJoker: true,
-                    jokerAutoPicked: autoPick,
+                    jokerAutoPicked: autoPicked,
                     choice: randomMatchScore,
                   };
                   jokers.push(joker);
