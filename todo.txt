@@ -22,7 +22,7 @@ punt:
 findOrCreateJoker(userId, roundId)
 findOrCreatePrediction(userId, matchId)
 findOrCreatePredictions(userId, roundId)
-findOrUpsertPrediction(userId, matchId)
+findOrUpsertPrediction(userId, matchId, choice)
 pickJoker(userId, matchId)
 unsetJoker(userId, match)
 
@@ -32,3 +32,9 @@ processor -> unsetJokers(matchId) -> unsetJoker
 UI -> load-page, pick-joker, change prediction-score, lucky-spin
 events -> match status changed, new match round
 <<<< jokers
+
+<<< grouping
+- name, teams
+- match has gameRound, grouping { Group A, Round of 16, Quarter-finals, Semi-finals, Final, Third-place }
+- compe has groupings
+>>> league
