@@ -27,6 +27,33 @@ export class DocumentDao<T extends Document> {
     return this.Model.insertMany(objs) as Promise<T[]>;
   }
 
+  public upsertMany(objs: Entity[]): Promise<any> {
+    //Create bulk operations
+    const ops = objs.map((obj: any) => {
+      if (!(obj instanceof this.Model)) {
+        obj = new this.Model(obj);
+      }
+      // Convert to plain object
+      if (obj instanceof this.Model) {
+        obj = obj.toObject({ depopulate: true });
+      }
+
+      // Can't have _id field when upserting item
+      if (typeof obj._id !== 'undefined') {
+        delete obj._id;
+      }
+
+      return {
+        updateOne: {
+          filter: { _id: obj.id },
+          update: obj,
+          upsert: true
+        }
+      }
+    });
+    return this.Model.bulkWrite(ops);
+  }
+
   public findAll(
     conditions: any = {},
     projection?: any,
@@ -62,14 +89,14 @@ export class DocumentDao<T extends Document> {
               case 'ObjectID':
                 return mongoose.Types.ObjectId.isValid(q)
                   ? {
-                      [k]: q,
-                    }
+                    [k]: q,
+                  }
                   : null;
               case 'Number':
                 return !isNaN(parseInt(q, 10))
                   ? {
-                      [k]: parseInt(q, 10),
-                    }
+                    [k]: parseInt(q, 10),
+                  }
                   : null;
             }
             return null;

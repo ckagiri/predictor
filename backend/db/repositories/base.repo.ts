@@ -8,6 +8,7 @@ export interface BaseRepository<T extends Entity> {
   insert$(obj: Entity): Observable<T>;
   saveMany$(objs: Entity[]): Observable<T[]>;
   insertMany$(objs: Entity[]): Observable<T[]>;
+  upsertMany$(objs: Entity[]): Observable<any>;
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
@@ -25,7 +26,7 @@ export interface BaseRepository<T extends Entity> {
 export class BaseRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-> extends DocumentDao<TDocument> implements BaseRepository<T> {
+  > extends DocumentDao<TDocument> implements BaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(
@@ -71,6 +72,20 @@ export class BaseRepositoryImpl<
   public insertMany$(objs: Entity[]): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
       this.insertMany(objs).then(
+        (result: T[]) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        },
+      );
+    });
+  }
+
+  public upsertMany$(objs: Entity[]): Observable<any> {
+    return Observable.create((observer: Subscriber<T[]>) => {
+      this.upsertMany(objs).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();

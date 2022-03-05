@@ -210,6 +210,45 @@ describe('Prediction repo', function () {
             done();
           });
       });
+
+      it.only('should pick one joker and unset others if multiple jokers exists', done => {
+        const userId = user1.id;
+        const roundId = gw1.id;
+
+        const userId1matchId1Pred: Prediction = {
+          user: userId,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+
+        const userId1matchId2Pred: Prediction = {
+          user: userId,
+          match: cheVars.id,
+          matchSlug: cheVars.slug,
+          choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+
+        predictionRepo
+          .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+          .pipe(
+            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+          ).pipe(
+            flatMap(() => predictionRepo.findAll$({
+              user: userId,
+              match: { $in: [manuVmanc.id, cheVars.id] },
+              hasJoker: true
+            }))
+          )
+          .subscribe(predictions => {
+            expect(predictions.filter(p => p.hasJoker)).to.have.lengthOf(1);
+            done();
+          });
+      });
     });
   });
 });

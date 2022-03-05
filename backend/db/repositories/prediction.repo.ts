@@ -1,5 +1,5 @@
 import { Observable, of, from, throwError } from 'rxjs';
-import { filter, first, flatMap, catchError } from 'rxjs/operators';
+import { filter, first, flatMap, map, catchError } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -85,10 +85,11 @@ export class PredictionRepositoryImpl
                   jokers.push(joker)
                   otherJokers.forEach(j => {
                     j.hasJoker = false;
+                    j.jokerAutoPicked = false;
                     jokers.push(j);
                   });
                 }
-                return this.saveMany$(jokers);
+                return this.upsertMany$(jokers);
               })
             )
             .pipe(
@@ -97,16 +98,14 @@ export class PredictionRepositoryImpl
               }),
             )
             .pipe(
-              flatMap(predictions => {
-                return from(predictions);
-              }),
+              flatMap(() => {
+                return this.findOne$({
+                  user: userId,
+                  match: { $in: matchIds },
+                  hasJoker: true
+                })
+              })
             )
-            .pipe(
-              filter(prediction => {
-                return !!prediction.hasJoker;
-              }),
-            )
-            .pipe(first());
         })
       )
   }
