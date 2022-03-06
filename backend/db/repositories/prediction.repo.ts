@@ -1,5 +1,5 @@
 import { Observable, of, from, throwError } from 'rxjs';
-import { filter, first, flatMap, map, catchError } from 'rxjs/operators';
+import { filter, first, flatMap, map, catchError, toArray } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -16,28 +16,32 @@ import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
+  findOrCreateJoker$(userId: string, roundId: string): Observable<Prediction>;
+  findOrCreateJoker$(userId: string, roundId: string, autoPicked: true): Observable<Prediction>;
   findOrCreateJoker$(
     userId: string,
     roundId: string,
     autoPicked: true,
     roundMatches: Match[]
   ): Observable<Prediction>;
-  findOneOrCreate$({
-    userId,
-    matchId,
-  }: {
-    userId: string;
-    matchId: string;
-  }): Observable<Prediction>;
+  findOne$(userId: string, matchId: string): Observable<Prediction>;
+  findOneOrCreate$(userId: string, matchId: string): Observable<Prediction>;
+  findOrCreatePredictions$(
+    userId: string,
+    roundId: string,
+  ): Observable<Prediction[]>;
+  findOrUpsertPrediction$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
+  pickJoker$(userId: string, matchId: string): Observable<Prediction>;
+  unsetJoker$(userId: string, matchId: string): Observable<Prediction>;
 }
 
 export class PredictionRepositoryImpl
   extends BaseRepositoryImpl<Prediction, PredictionDocument>
   implements PredictionRepository {
-  public static getInstance() {
-    return new PredictionRepositoryImpl(
-      MatchRepositoryImpl.getInstance(ApiProvider.LIGI),
-    );
+  public static getInstance(matchRepo?: MatchRepository) {
+    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
+
+    return new PredictionRepositoryImpl(matchRepoImpl);
   }
 
   private matchRepo: MatchRepository;
@@ -45,6 +49,42 @@ export class PredictionRepositoryImpl
   constructor(matchRepo: MatchRepository) {
     super(PredictionModel);
     this.matchRepo = matchRepo;
+  }
+  findOrUpsertPrediction$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
+    throw new Error('Method not implemented.');
+  }
+  pickJoker$(userId: string, matchId: string): Observable<Prediction> {
+    throw new Error('Method not implemented.');
+  }
+  unsetJoker$(userId: string, matchId: string): Observable<Prediction> {
+    throw new Error('Method not implemented.');
+  }
+  findOrCreatePredictions$(userId: string, roundId: string): Observable<Prediction[]> {
+    return this.matchRepo.findAll$({ gameRound: roundId })
+      .pipe(
+        flatMap(matches => {
+          return this.findOrCreateJoker$(userId, roundId, true, matches)
+            .pipe(
+              map(joker => {
+                return {
+                  matches,
+                  joker
+                }
+              })
+            )
+        })
+      )
+      .pipe(
+        flatMap(({ matches }) => {
+          return from(matches)
+            .pipe(
+              flatMap(match => {
+                return this.findOneOrCreate$(userId, match.id!)
+              })
+            )
+        }),
+        toArray()
+      )
   }
   findOrCreateJoker$(
     userId: string, roundId: string, autoPicked: boolean = true, roundMatches: Match[] = []
@@ -99,7 +139,7 @@ export class PredictionRepositoryImpl
             )
             .pipe(
               flatMap(() => {
-                return this.findOne$({
+                return super.findOne$({
                   user: userId,
                   match: { $in: matchIds },
                   hasJoker: true
@@ -110,39 +150,21 @@ export class PredictionRepositoryImpl
       )
   }
 
-  public findOne$(query?: any) {
-    const { userId, matchId } = query;
-    // prediction model doesnt have Id suffix for the reference models;
-    // here I am expecting the Id suffix and not quite sure why
-    // todo: clean up
-    if (userId !== undefined && matchId !== undefined) {
-      query.user = userId;
-      query.match = matchId;
-      delete query.userId;
-      delete query.matchId;
-    }
-    return super.findOne$(query);
+  public findOne$(userId: string, matchId: string) {
+    return super.findOne$({ user: userId, match: matchId });
   }
 
-  public findOneOrCreate$({
-    userId,
-    matchId,
-  }: {
-    userId: string;
-    matchId: string;
-  }) {
-    const query = { user: userId, match: matchId };
-    return this.findOne$(query).pipe(
+  public findOneOrCreate$(
+    userId: string,
+    matchId: string) {
+    return this.findOne$(userId, matchId).pipe(
       flatMap(prediction => {
         if (prediction) {
           return of(prediction);
         }
         return this.matchRepo.findById$(matchId).pipe(
           flatMap(match => {
-            const {
-              slug: matchSlug,
-              season,
-            } = match as Required<Match>;
+            const { slug: matchSlug } = match as Required<Match>;
             const pred: Prediction = {
               user: userId,
               match: matchId,

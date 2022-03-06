@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import { Match, Prediction, PredictionDocument } from '../../db/models';
-import { ScorePoints } from '../../common/score';
+import { ScorePoints, Score } from '../../common/score';
 import a from '../a';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import memoryDb from '../memoryDb';
@@ -99,10 +99,10 @@ describe('Prediction repo', function () {
   describe('finders', () => {
     it('findOneOrCreate should create prediction if it doesnt exist', done => {
       const userId = user1.id;
-      const { id: matchId, slug: matchSlug, season: seasonId } = manuVmanc.match as Required<Match>;
+      const { id: matchId, slug: matchSlug } = manuVmanc.match as Required<Match>;
 
       predictionRepo
-        .findOneOrCreate$({ userId, matchId })
+        .findOneOrCreate$(userId, matchId)
         .subscribe(p => {
           expect(p.user.toString()).to.equal(userId);
           expect(p.match.toString()).to.equal(matchId);
@@ -118,11 +118,11 @@ describe('Prediction repo', function () {
       const matchId = manuVmanc.id;
 
       predictionRepo
-        .findOneOrCreate$({ userId, matchId })
+        .findOneOrCreate$(userId, matchId)
         .pipe(
           flatMap(p => {
             prediction = p;
-            return predictionRepo.findOneOrCreate$({ userId, matchId });
+            return predictionRepo.findOneOrCreate$(userId, matchId);
           })
         )
         .subscribe(p => {
@@ -137,7 +137,7 @@ describe('Prediction repo', function () {
     it('findOne should find prediction by user and match', done => {
       const userId = user1.id;
       const matchId = manuVmanc.id;
-      const { slug: matchSlug, season } = manuVmanc.match as Required<Match>;
+      const { slug: matchSlug } = manuVmanc.match as Required<Match>;
       let prediction: Prediction;
       const predData: Prediction = {
         user: userId,
@@ -164,7 +164,7 @@ describe('Prediction repo', function () {
       const matchId = manuVmanc.id;
 
       predictionRepo
-        .findOneOrCreate$({ userId, matchId })
+        .findOneOrCreate$(userId, matchId)
         .pipe(
           flatMap(p => {
             scorePoints = {
@@ -211,7 +211,7 @@ describe('Prediction repo', function () {
           });
       });
 
-      it.only('should pick one joker and unset others if multiple jokers exists', done => {
+      it('should pick one joker and unset others if multiple jokers exists', done => {
         const userId = user1.id;
         const roundId = gw1.id;
 
@@ -250,5 +250,39 @@ describe('Prediction repo', function () {
           });
       });
     });
+
+    it.only('should findOrCreatePredictions', done => {
+      const userId1 = user1.id;
+      const roundId1 = gw1.id;
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId1,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: true,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      const userId1matchId2Pred: Prediction = {
+        user: userId1,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        hasJoker: true,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: false },
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+        .pipe(
+          flatMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(3)
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          done();
+        });
+    })
   });
 });

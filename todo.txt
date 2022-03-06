@@ -20,7 +20,7 @@ work on processes
 punt:
 >>>> jokers
 findOrCreateJoker(userId, roundId)
-findOrCreatePrediction(userId, matchId)
+findOrCreatePrediction(userId, matchId) aka findOneOrCreate(userId, matchId)
 findOrCreatePredictions(userId, roundId)
 findOrUpsertPrediction(userId, matchId, choice)
 pickJoker(userId, matchId)
@@ -36,5 +36,14 @@ events -> match status changed, new match round
 <<< grouping
 - name, teams
 - match has gameRound, grouping { Group A, Round of 16, Quarter-finals, Semi-finals, Final, Third-place }
-- compe has groupings
->>> league
+- compe has-groupings
+>>> groupings
+
+<<< stadiums
+- name
+- compe has stadiums
+- team has stadium
+- ui default to homeTeam if has stadium, drop-down or autocomplete better
+<<< stadiums
+
+dao should be composed not inherited base-repo

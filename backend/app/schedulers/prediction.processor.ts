@@ -28,59 +28,39 @@ export interface PredictionProcessor {
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
-  public static getInstance() {
+  public static getInstance(
+    userRepo?: UserRepository,
+    matchRepo?: MatchRepository,
+    predictionRepo?: PredictionRepository
+  ) {
+    const userRepoImpl = userRepo ?? UserRepositoryImpl.getInstance();
+    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance();
+    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance(matchRepoImpl)
+
     return new PredictionProcessorImpl(
-      MatchRepositoryImpl.getInstance(ApiProvider.LIGI),
-      UserRepositoryImpl.getInstance(),
-      PredictionRepositoryImpl.getInstance(),
+      userRepoImpl,
+      predictionRepoImpl,
       PredictionCalculator.getInstance(),
     );
   }
   constructor(
-    private matchRepo: MatchRepository,
     private userRepo: UserRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
-  ) {}
+  ) { }
 
   public getOrCreatePredictions$(match: Match) {
-    const { season: seasonId, gameRound } = match;
-    return this.matchRepo
-      .findSelectableMatches$(seasonId!, gameRound!)
+    const { gameRound } = match;
+    return this.userRepo
+      .findAll$()
       .pipe(
-        map(selectableMatches => {
-          return [...selectableMatches, match].map(n => n.id!);
-        }),
-      )
-      .pipe(
-        flatMap(matchIds => {
-          return this.userRepo
-            .findAll$()
-            .pipe(
-              flatMap(users => {
-                return from(users);
-              }),
-            )
-            .pipe(
-              map(user => {
-                return {
-                  selectableMatchIds: matchIds,
-                  user,
-                };
-              }),
-            );
-        }),
-      )
-      .pipe(
-        flatMap(data => {
-          const selectableMatchIds = data.selectableMatchIds;
-          const userId = data.user.id;
+        flatMap(users => users),
+        flatMap(user => {
+          const userId = user.id;
           return this.predictionRepo
             .findOrCreateJoker$(
               userId!,
-              seasonId!,
               gameRound!,
-              selectableMatchIds,
             )
             .pipe(
               map(jokerPrediction => {
@@ -100,10 +80,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
           if (jokerPrediction.match.toString() === matchId) {
             return of(jokerPrediction);
           }
-          return this.predictionRepo.findOneOrCreate$({
-            userId: userId!,
-            matchId: matchId!,
-          });
+          return this.predictionRepo.findOneOrCreate$(userId!, matchId!);
         }),
       )
       .pipe(toArray());
