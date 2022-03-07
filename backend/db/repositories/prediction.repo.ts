@@ -14,6 +14,7 @@ import {
 } from '../repositories/match.repo';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
+import { uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
@@ -30,7 +31,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   ): Observable<Prediction[]>;
   findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
   findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
-  pickJoker$(userId: string, matchId: string): Observable<Prediction>;
+  pickJoker$(userId: string, matchId: string): Observable<Prediction[]>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction>;
 }
 
@@ -55,7 +56,7 @@ export class PredictionRepositoryImpl
   }
 
   findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
-    return this.matchRepo.findOne$({ _id: matchId })
+    return this.matchRepo.findById$(matchId)
       .pipe(
         flatMap(match => {
           const prediction = {
@@ -69,11 +70,60 @@ export class PredictionRepositoryImpl
       )
   }
 
-  pickJoker$(userId: string, matchId: string): Observable<Prediction> {
-    throw new Error('Method not implemented.');
+  pickJoker$(userId: string, matchId: string): Observable<Prediction[]> {
+    return this.matchRepo.findById$(matchId)
+      .pipe(
+        flatMap(match => {
+          return this.findOrCreateJoker$(userId, match.gameRound!)
+        }),
+        flatMap(currentJoker => {
+          return this.findOneOrCreate$(userId, matchId)
+            .pipe(
+              flatMap(newJoker => {
+                const jokers = [];
+                if (currentJoker.match.toString() === newJoker.match.toString()) {
+                  currentJoker.jokerAutoPicked = false;
+
+                  jokers.push(currentJoker);
+                } else {
+                  currentJoker.hasJoker = false;
+
+                  newJoker.hasJoker = true;
+                  newJoker.jokerAutoPicked = false;
+
+                  jokers.push(currentJoker, newJoker);
+                }
+
+                return this.upsertMany$(jokers)
+                  .pipe(
+                    map(() => {
+                      return {
+                        oldJokerMatch: currentJoker.match,
+                        newJokerMatch: newJoker.match,
+                      }
+                    })
+                  )
+              })
+            )
+        })
+      ).pipe(
+        flatMap(({ oldJokerMatch, newJokerMatch }) => {
+          return this.findAll$({
+            user: userId,
+            match: { $in: uniq([oldJokerMatch, newJokerMatch]) }
+          })
+        })
+      )
   }
+
   unsetJoker$(userId: string, matchId: string): Observable<Prediction> {
-    throw new Error('Method not implemented.');
+    return super.findOne$({ user: userId, match: matchId, hasJoker: true })
+      .pipe(
+        flatMap(pred => {
+          pred.hasJoker = false;
+          return this.save$(pred)
+        })
+      )
   }
   findOrCreatePredictions$(userId: string, roundId: string): Observable<Prediction[]> {
     return this.matchRepo.findAll$({ gameRound: roundId })

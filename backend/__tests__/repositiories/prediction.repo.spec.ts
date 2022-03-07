@@ -368,5 +368,89 @@ describe('Prediction repo', function () {
           done();
         });
     })
+
+    it('should unset joker', done => {
+      const userId1matchId1Pred: Prediction = {
+        user: user1.id,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: true,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
+      };
+      predictionRepo.insert$(userId1matchId1Pred)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.unsetJoker$(user1.id, manuVmanc.id)
+          })
+        ).subscribe(pred => {
+          expect(pred.hasJoker).to.be.false
+          done();
+        })
+    });
+
+    describe('pick joker', () => {
+      it('should pick a different joker if joker exists', done => {
+        const userId1matchId1Pred: Prediction = {
+          user: user1.id,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+        const userId1matchId2Pred: Prediction = {
+          user: user1.id,
+          match: cheVars.id,
+          matchSlug: cheVars.slug,
+          choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
+        };
+
+        predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+          .pipe(
+            flatMap(() => {
+              return predictionRepo.pickJoker$(user1.id, cheVars.id)
+            })
+          ).subscribe(predictions => {
+            expect(predictions).to.have.lengthOf(2)
+            const oldJoker = predictions.find(p => p.match.toString() === manuVmanc.id)
+            expect(oldJoker?.hasJoker).to.be.false;
+            const newJoker = predictions.find(p => p.match.toString() === cheVars.id)
+            expect(newJoker?.hasJoker).to.be.true;
+            expect(newJoker?.jokerAutoPicked).to.be.false;
+            done();
+          })
+      })
+
+      it('should pick same joker if it is same match', done => {
+        const userId1matchId1Pred: Prediction = {
+          user: user1.id,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+        const userId1matchId2Pred: Prediction = {
+          user: user1.id,
+          match: cheVars.id,
+          matchSlug: cheVars.slug,
+          choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
+        };
+
+        predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+          .pipe(
+            flatMap(() => {
+              return predictionRepo.pickJoker$(user1.id, manuVmanc.id)
+            })
+          ).subscribe(predictions => {
+            expect(predictions).to.have.lengthOf(1)
+            const joker = predictions.find(p => p.match.toString() === manuVmanc.id)
+            expect(joker?.hasJoker).to.be.true;
+            expect(joker?.jokerAutoPicked).to.be.false;
+            done();
+          })
+      })
+    })
   });
 });

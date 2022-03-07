@@ -11,7 +11,13 @@ export class DocumentDao<T extends Document> {
   }
 
   public save(obj: Entity): Promise<T> {
-    const model = new this.Model(obj) as T;
+    let model: T;
+    if (obj instanceof this.Model) {
+      model = obj as T;
+    } else {
+      model = new this.Model(obj) as T;
+    }
+
     return model.save();
   }
 
