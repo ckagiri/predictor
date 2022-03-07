@@ -16,13 +16,11 @@ import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
-  findOrCreateJoker$(userId: string, roundId: string): Observable<Prediction>;
-  findOrCreateJoker$(userId: string, roundId: string, autoPicked: true): Observable<Prediction>;
   findOrCreateJoker$(
     userId: string,
     roundId: string,
-    autoPicked: true,
-    roundMatches: Match[]
+    autoPicked?: boolean,
+    roundMatches?: Match[]
   ): Observable<Prediction>;
   findOne$(userId: string, matchId: string): Observable<Prediction>;
   findOneOrCreate$(userId: string, matchId: string): Observable<Prediction>;
@@ -30,7 +28,8 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     userId: string,
     roundId: string,
   ): Observable<Prediction[]>;
-  findOrUpsertPrediction$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
+  findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
+  findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
   pickJoker$(userId: string, matchId: string): Observable<Prediction>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction>;
 }
@@ -50,9 +49,26 @@ export class PredictionRepositoryImpl
     super(PredictionModel);
     this.matchRepo = matchRepo;
   }
-  findOrUpsertPrediction$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
-    throw new Error('Method not implemented.');
+
+  findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
+    return super.findOneAndUpdate$({ user: userId, match: matchId }, { choice })
   }
+
+  findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
+    return this.matchRepo.findOne$({ _id: matchId })
+      .pipe(
+        flatMap(match => {
+          const prediction = {
+            user: userId,
+            match: match.id,
+            matchSlug: match.slug,
+            choice
+          } as Prediction
+          return super.findOneAndUpsert$({ user: userId, match: matchId }, prediction)
+        })
+      )
+  }
+
   pickJoker$(userId: string, matchId: string): Observable<Prediction> {
     throw new Error('Method not implemented.');
   }
@@ -165,12 +181,11 @@ export class PredictionRepositoryImpl
         return this.matchRepo.findById$(matchId).pipe(
           flatMap(match => {
             const { slug: matchSlug } = match as Required<Match>;
-            const pred: Prediction = {
+            const pred = {
               user: userId,
               match: matchId,
               matchSlug,
-              choice: {} as any,
-            };
+            } as Prediction;
             const randomMatchScore = this.getRandomMatchScore();
             pred.choice = randomMatchScore;
             return this.save$(pred);

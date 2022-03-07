@@ -178,6 +178,18 @@ export class DocumentDao<T extends Document> {
     ).exec() as Promise<T>;
   }
 
+  public findOneAndUpsert(
+    conditions: any,
+    update: any,
+    options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
+  ) {
+    return this.Model.findOneAndUpdate(
+      conditions,
+      update,
+      options,
+    ).exec() as Promise<T>;
+  }
+
   public remove(id: string) {
     return this.Model.remove({ _id: id }).exec();
   }

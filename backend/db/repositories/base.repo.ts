@@ -11,6 +11,7 @@ export interface BaseRepository<T extends Entity> {
   upsertMany$(objs: Entity[]): Observable<any>;
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
+  findOneAndUpsert$(conditions: any, update: any, options?: any): Observable<T>;
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
   find$(
     requestQuery?: any,
@@ -114,7 +115,25 @@ export class BaseRepositoryImpl<
   public findOneAndUpdate$(
     conditions: any,
     update: any,
-    options?: any,
+    options: any = { overwrite: false, new: true },
+  ): Observable<T> {
+    return Observable.create((observer: Subscriber<T>) => {
+      this.findOneAndUpdate(conditions, update, options).then(
+        (result: T) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        },
+      );
+    });
+  }
+
+  public findOneAndUpsert$(
+    conditions: any,
+    update: any,
+    options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
   ): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findOneAndUpdate(conditions, update, options).then(

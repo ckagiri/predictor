@@ -149,7 +149,7 @@ describe('Prediction repo', function () {
         .pipe(
           flatMap(p => {
             prediction = p;
-            return predictionRepo.findOne$({ userId, matchId })
+            return predictionRepo.findOne$(userId, matchId)
           })
         )
         .subscribe(p => {
@@ -158,7 +158,7 @@ describe('Prediction repo', function () {
         });
     });
 
-    it('should findById And update score', done => {
+    it('should findById And update score-points', done => {
       let scorePoints: ScorePoints;
       const userId = user1.id;
       const matchId = manuVmanc.id;
@@ -183,6 +183,90 @@ describe('Prediction repo', function () {
         .subscribe(p => {
           const pred = (p as PredictionDocument).toObject() as Prediction;
           expect(pred.scorePoints).to.eql(scorePoints);
+          done();
+        });
+    });
+
+    it('should find by user and match And insert if it doesnt exist', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const matchSlug = manuVmanc.slug;
+      const choice = { goalsHomeTeam: 2, goalsAwayTeam: 1 }
+
+      predictionRepo.findOneAndUpsert$(userId, matchId, choice)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.findOne$(userId, matchId);
+          }),
+        )
+        .subscribe(pred => {
+          expect(pred.match.toString()).to.equal(matchId);
+          expect(pred.matchSlug).to.equal(matchSlug);
+          expect(pred.choice.goalsHomeTeam).to.equal(choice.goalsHomeTeam);
+          expect(pred.choice.goalsHomeTeam).to.equal(choice.goalsHomeTeam);
+          expect(pred.choice.isComputerGenerated).to.be.true
+          done();
+        });
+    });
+
+    it('should find by user and match And update if it exists (upsert variation)', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const matchSlug = manuVmanc.slug;
+      const origChoice = { goalsHomeTeam: 2, goalsAwayTeam: 1, isComputerGenerated: true }
+      const newChoice = { goalsHomeTeam: 1, goalsAwayTeam: 2, isComputerGenerated: false };
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        choice: origChoice,
+      };
+
+      predictionRepo
+        .insert$(userId1matchId1Pred)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.findOneAndUpsert$(userId, matchId, newChoice);
+          }),
+        )
+        .subscribe(pred => {
+          expect(pred.match.toString()).to.equal(matchId);
+          expect(pred.matchSlug).to.equal(matchSlug);
+          expect(pred.choice.goalsHomeTeam).to.equal(newChoice.goalsHomeTeam);
+          expect(pred.choice.goalsAwayTeam).to.equal(newChoice.goalsAwayTeam);
+          expect(pred.choice.isComputerGenerated).to.be.false
+          done();
+        });
+    });
+
+    it('should find by user and match And update if it exists (update variation)', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const matchSlug = manuVmanc.slug;
+      const origChoice = { goalsHomeTeam: 2, goalsAwayTeam: 1, isComputerGenerated: true }
+      const newChoice = { goalsHomeTeam: 1, goalsAwayTeam: 2, isComputerGenerated: false };
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        choice: origChoice,
+      };
+
+      predictionRepo
+        .insert$(userId1matchId1Pred)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
+          }),
+        )
+        .subscribe(pred => {
+          expect(pred.match.toString()).to.equal(matchId);
+          expect(pred.matchSlug).to.equal(matchSlug);
+          expect(pred.choice.goalsHomeTeam).to.equal(newChoice.goalsHomeTeam);
+          expect(pred.choice.goalsAwayTeam).to.equal(newChoice.goalsAwayTeam);
+          expect(pred.choice.isComputerGenerated).to.be.false
           done();
         });
     });
@@ -251,7 +335,7 @@ describe('Prediction repo', function () {
       });
     });
 
-    it.only('should findOrCreatePredictions', done => {
+    it('should findOrCreatePredictions', done => {
       const userId1 = user1.id;
       const roundId1 = gw1.id;
 

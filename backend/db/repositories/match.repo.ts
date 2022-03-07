@@ -112,6 +112,7 @@ export class MatchRepositoryImpl
         { status: { $in: ['CANCELED', 'POSTPONED', 'FINISHED'] } },
       ],
     };
+    // todo: why? for a season I can get all the rounds and iterate over them
     if (gameRound) {
       query.$and.push({ gameRound });
     }

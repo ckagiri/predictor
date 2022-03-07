@@ -31,6 +31,8 @@ processor -> unsetJokers(matchId) -> unsetJoker
 
 UI -> load-page, pick-joker, change prediction-score, lucky-spin
 events -> match status changed, new match round
+
+match finished/cancelled/postponed? or not scheduled/timed?
 <<<< jokers
 
 <<< grouping
