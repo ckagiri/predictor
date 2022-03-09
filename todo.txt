@@ -20,17 +20,19 @@ work on processes
 punt:
 >>>> jokers
 findOrCreateJoker(userId, roundId)
-findOrCreatePrediction(userId, matchId) aka findOneOrCreate(userId, matchId)
+findOneOrCreate(userId, matchId) --> [findOrCreatePrediction(userId, matchId)]
 findOrCreatePredictions(userId, roundId)
-findOrUpsertPrediction(userId, matchId, choice)
+findOrUpdatePrediction(userId, matchId, choice)
 pickJoker(userId, matchId)
 unsetJoker(userId, match)
+findOrCreatePicks() { isComputerGenerated? }
 
 processor -> createPredictionsIfNotExist(roundId) -> findOrCreateJoker, (findOrCreatePredictions -> findOrCreatePrediction)
 processor -> unsetJokers(matchId) -> unsetJoker
 
-UI -> load-page, pick-joker, change prediction-score, lucky-spin
-events -> match status changed, new match round
+UI -> load-page [findOrCreatePredictions], pick-joker [pickJoker],
+  change prediction-score [findOrUpdatePrediction], lucky-spin [findOrCreatePicks]
+events -> match status changed [unsetJokers, processPredictions], new match round [findOrCreatePredictions]
 
 match finished/cancelled/postponed? or not scheduled/timed?
 <<<< jokers
