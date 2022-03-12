@@ -51,3 +51,5 @@ match finished/cancelled/postponed? or not scheduled/timed?
 <<< stadiums
 
 dao should be composed not inherited base-repo
+vose predictor laterz
+refactor tests undefined types

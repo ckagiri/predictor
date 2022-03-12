@@ -57,7 +57,7 @@ const livVtot = a.match
   .withAwayTeam(tot)
   .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw1)
-  .setStatus(MatchStatus.SCHEDULED);
+  .setStatus(MatchStatus.FINISHED);
 
 const eveVwhu = a.match
   .withHomeTeam(eve)
@@ -451,6 +451,41 @@ describe('Prediction repo', function () {
             done();
           })
       })
+    })
+
+    it.only('should findOrCreatePicks ', done => {
+      const userId1 = user1.id;
+      const roundId1 = gw1.id;
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId1,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: true,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      const userId1matchId2Pred: Prediction = {
+        user: userId1,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        hasJoker: false,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+        .pipe(
+          flatMap(() => predictionRepo.findOrCreatePicks$(userId1, roundId1))
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(3)
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          expect(preds.some(p => p.choice.isComputerGenerated)).to.be.false
+          done();
+        });
     })
   });
 });
