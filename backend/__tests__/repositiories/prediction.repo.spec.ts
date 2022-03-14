@@ -453,7 +453,7 @@ describe('Prediction repo', function () {
       })
     })
 
-    it.only('should findOrCreatePicks ', done => {
+    it('should findOrCreatePicks ', done => {
       const userId1 = user1.id;
       const roundId1 = gw1.id;
 

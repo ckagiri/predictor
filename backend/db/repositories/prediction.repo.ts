@@ -140,13 +140,10 @@ export class PredictionRepositoryImpl
         })
       )
       .pipe(
-        concatMap(({ matches }) => {
-          return from(matches)
-            .pipe(
-              flatMap(match => {
-                return this.findOneOrCreate$(userId, match.id!)
-              })
-            )
+        // todo: optimise - fetch user round predictions, if eq size with matches return
+        flatMap(({ matches }) => matches),
+        flatMap(match => {
+          return this.findOneOrCreate$(userId, match.id!)
         }),
         toArray()
       )
@@ -231,6 +228,7 @@ export class PredictionRepositoryImpl
             )
             .pipe(
               flatMap(() => {
+                // todo: optimize - check if param is joker
                 return super.findOne$({
                   user: userId,
                   match: { $in: matchIds },
