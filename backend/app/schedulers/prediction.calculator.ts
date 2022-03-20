@@ -14,7 +14,6 @@ export class PredictionCalculator {
       ExactGoalDifferencePoints: 0,
       ExactMatchScorePoints: 0,
       CloseMatchScorePoints: 0,
-      SpreadTeamScorePoints: 0,
       ExactTeamScorePoints: 0,
     };
     const choiceOutcome = calcOutcome(
@@ -26,8 +25,8 @@ export class PredictionCalculator {
       result.goalsAwayTeam,
     );
     if (choiceOutcome === resultOutcome) {
-      scorePoints.CorrectMatchOutcomePoints = 5;
-      scorePoints.APoints += 5;
+      scorePoints.CorrectMatchOutcomePoints = 7;
+      scorePoints.APoints += 7;
     }
 
     const choiceGd = choice.goalsHomeTeam - choice.goalsAwayTeam;
@@ -41,8 +40,8 @@ export class PredictionCalculator {
       choice.goalsHomeTeam === result.goalsHomeTeam &&
       choice.goalsAwayTeam === result.goalsAwayTeam
     ) {
-      scorePoints.ExactMatchScorePoints = 5;
-      scorePoints.APoints += 5;
+      scorePoints.ExactMatchScorePoints = 6;
+      scorePoints.APoints += 6;
     }
 
     const homeGoalsGd = Math.abs(choice.goalsHomeTeam - result.goalsHomeTeam);
@@ -52,32 +51,6 @@ export class PredictionCalculator {
         scorePoints.CloseMatchScorePoints = 1;
         scorePoints.BPoints += 1;
       }
-    }
-
-    if (
-      homeGoalsGd === 1 &&
-      awayGoalsGd === 1 &&
-      choiceGd === 0 &&
-      resultGd === 0
-    ) {
-      scorePoints.CloseMatchScorePoints = 1;
-      scorePoints.BPoints += 1;
-    }
-
-    if (
-      (choice.goalsHomeTeam < 1.5 && result.goalsHomeTeam < 1.5) ||
-      (choice.goalsHomeTeam > 1.5 && result.goalsHomeTeam > 1.5)
-    ) {
-      scorePoints.SpreadTeamScorePoints += 1;
-      scorePoints.BPoints += 1;
-    }
-
-    if (
-      (choice.goalsAwayTeam < 1.5 && result.goalsAwayTeam < 1.5) ||
-      (choice.goalsAwayTeam > 1.5 && result.goalsAwayTeam > 1.5)
-    ) {
-      scorePoints.SpreadTeamScorePoints += 1;
-      scorePoints.BPoints += 1;
     }
 
     if (choice.goalsHomeTeam === result.goalsHomeTeam) {

@@ -19,14 +19,14 @@ const epl18: Season = {
   seasonStart: '2018-08-11T00:00:00+0200',
   seasonEnd: '2019-05-13T16:00:00+0200',
   currentMatchRound: 20,
-  currentGameRound: 20,
+  currentGameRound: '20',
   competition: undefined,
 };
 
 const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 let theSeason: any;
 
-describe('Leaderboard Repo', function() {
+describe('Leaderboard Repo', function () {
   this.timeout(5000);
   before(done => {
     db.init(process.env.MONGO_URI!, done, { drop: true });
@@ -61,7 +61,7 @@ describe('Leaderboard Repo', function() {
     const now = new Date();
     const month = now.getUTCMonth() + 1;
     const year = now.getFullYear();
-    const gameRound = 20;
+    const gameRound = "20";
 
     it('should create seasonBoard if it doesnt exist', done => {
       leaderboardRepo
@@ -128,7 +128,7 @@ describe('Leaderboard Repo', function() {
   });
 
   // tslint:disable-next-line: only-arrow-functions
-  describe('finders', function() {
+  describe('finders', function () {
     let lb1: Leaderboard;
     beforeEach(done => {
       db.Leaderboard.create([

@@ -54,7 +54,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     private leaderboardRepo: LeaderboardRepository,
     private predictionRepo: PredictionRepository,
     private userScoreRepo: UserScoreRepository,
-  ) {}
+  ) { }
 
   public setCacheService(cacheService: CacheService) {
     this.cacheService = cacheService;
@@ -167,10 +167,10 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
       .pipe(
         flatMap(data => {
           const { user, match, leaderboard } = data;
-          const userId = user.id?.toString();
-          const matchId = match.id?.toString();
+          const userId = user.id!.toString();
+          const matchId = match.id!.toString()!;
 
-          return this.predictionRepo.findOne$({ userId, matchId }).pipe(
+          return this.predictionRepo.findOne$(userId, matchId).pipe(
             map(prediction => {
               return { user, match, leaderboard, prediction };
             }),

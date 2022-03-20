@@ -11,7 +11,13 @@ export class DocumentDao<T extends Document> {
   }
 
   public save(obj: Entity): Promise<T> {
-    const model = new this.Model(obj) as T;
+    let model: T;
+    if (obj instanceof this.Model) {
+      model = obj as T;
+    } else {
+      model = new this.Model(obj) as T;
+    }
+
     return model.save();
   }
 
@@ -25,6 +31,33 @@ export class DocumentDao<T extends Document> {
 
   public insertMany(objs: Entity[]): Promise<T[]> {
     return this.Model.insertMany(objs) as Promise<T[]>;
+  }
+
+  public upsertMany(objs: Entity[]): Promise<any> {
+    //Create bulk operations
+    const ops = objs.map((obj: any) => {
+      if (!(obj instanceof this.Model)) {
+        obj = new this.Model(obj);
+      }
+      // Convert to plain object
+      if (obj instanceof this.Model) {
+        obj = obj.toObject({ depopulate: true });
+      }
+
+      // Can't have _id field when upserting item
+      if (typeof obj._id !== 'undefined') {
+        delete obj._id;
+      }
+
+      return {
+        updateOne: {
+          filter: { _id: obj.id },
+          update: obj,
+          upsert: true
+        }
+      }
+    });
+    return this.Model.bulkWrite(ops);
   }
 
   public findAll(
@@ -62,14 +95,14 @@ export class DocumentDao<T extends Document> {
               case 'ObjectID':
                 return mongoose.Types.ObjectId.isValid(q)
                   ? {
-                      [k]: q,
-                    }
+                    [k]: q,
+                  }
                   : null;
               case 'Number':
                 return !isNaN(parseInt(q, 10))
                   ? {
-                      [k]: parseInt(q, 10),
-                    }
+                    [k]: parseInt(q, 10),
+                  }
                   : null;
             }
             return null;
@@ -143,6 +176,18 @@ export class DocumentDao<T extends Document> {
     conditions: any,
     update: any,
     options: any = { overwrite: false, new: true },
+  ) {
+    return this.Model.findOneAndUpdate(
+      conditions,
+      update,
+      options,
+    ).exec() as Promise<T>;
+  }
+
+  public findOneAndUpsert(
+    conditions: any,
+    update: any,
+    options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
   ) {
     return this.Model.findOneAndUpdate(
       conditions,

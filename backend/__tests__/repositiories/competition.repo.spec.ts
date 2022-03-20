@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import * as db from '../../db/index';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
+import memoryDb from '../memoryDb';
 
 const competition = {
   id: '1',
@@ -12,19 +12,16 @@ const competition = {
 };
 
 describe('CompetitionRepo', function() {
-  this.timeout(5000);
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+  before(async () => {
+    await memoryDb.connect();
   });
-  afterEach(done => {
-    db.drop().then(() => {
-      done();
-    });
+
+  after(async () => {
+    await memoryDb.close();
   });
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
+
+  afterEach(async () => {
+    await memoryDb.dropDb();
   });
 
   it('should save new competition', done => {
@@ -39,12 +36,7 @@ describe('CompetitionRepo', function() {
         expect(slug).to.equal(competition.slug);
         expect(code).to.equal(competition.code);
         done();
-      },
-      err => {
-        // tslint:disable-next-line: no-console
-        console.log(err);
-        done();
-      },
+      }
     );
   });
 });

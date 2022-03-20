@@ -11,7 +11,7 @@ const leaderboardUpdater = LeaderboardUpdaterImpl.getInstance().setCacheService(
 
 let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
 
-describe('Finished Matches Processor', function() {
+describe('Finished Matches Processor', function () {
   this.timeout(9999);
 
   before(done => {
@@ -99,7 +99,6 @@ describe('Finished Matches Processor', function() {
             ExactGoalDifferencePoints: 0,
             ExactMatchScorePoints: 0,
             CloseMatchScorePoints: 1,
-            SpreadTeamScorePoints: 2,
             ExactTeamScorePoints: 1,
           },
         };
@@ -123,7 +122,6 @@ describe('Finished Matches Processor', function() {
             ExactGoalDifferencePoints: 0,
             ExactMatchScorePoints: 0,
             CloseMatchScorePoints: 1,
-            SpreadTeamScorePoints: 2,
             ExactTeamScorePoints: 1,
           },
         };
@@ -146,7 +144,6 @@ describe('Finished Matches Processor', function() {
             ExactGoalDifferencePoints: 1,
             ExactMatchScorePoints: 0,
             CloseMatchScorePoints: 0,
-            SpreadTeamScorePoints: 0,
             ExactTeamScorePoints: 0,
           },
         };
@@ -170,7 +167,6 @@ describe('Finished Matches Processor', function() {
             ExactGoalDifferencePoints: 1,
             ExactMatchScorePoints: 0,
             CloseMatchScorePoints: 0,
-            SpreadTeamScorePoints: 2,
             ExactTeamScorePoints: 0,
           },
         };

@@ -1,5 +1,5 @@
-import { Observable, of, from, throwError } from 'rxjs';
-import { filter, first, flatMap, catchError } from 'rxjs/operators';
+import { EMPTY, Observable, of, from, throwError, forkJoin, iif } from 'rxjs';
+import { filter, first, flatMap, map, catchError, toArray, concatMap, switchMap } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -14,34 +14,32 @@ import {
 } from '../repositories/match.repo';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
+import { differenceWith, head, uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
     userId: string,
-    seasonId: string,
-    gameRound: string,
-    pick: string | string[],
+    roundId: string,
+    autoPicked?: boolean,
+    roundMatches?: Match[]
   ): Observable<Prediction>;
-  findOneOrCreate$({
-    userId,
-    matchId,
-  }: {
-    userId: string;
-    matchId: string;
-  }): Observable<Prediction>;
-  findOneAndUpsert$(
-    { userId, matchId }: { userId: string; matchId: string },
-    choice: Score,
-  ): Observable<Prediction>;
+  findOne$(userId: string, matchId: string): Observable<Prediction>;
+  findOneOrCreate$(userId: string, matchId: string): Observable<Prediction>;
+  findOrCreatePredictions$(userId: string, roundId: string): Observable<Prediction[]>;
+  findOrCreatePicks$(userId: string, roundId: string): Observable<Prediction[]>;
+  findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
+  findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
+  pickJoker$(userId: string, matchId: string): Observable<Prediction[]>;
+  unsetJoker$(userId: string, matchId: string): Observable<Prediction>;
 }
 
 export class PredictionRepositoryImpl
   extends BaseRepositoryImpl<Prediction, PredictionDocument>
   implements PredictionRepository {
-  public static getInstance() {
-    return new PredictionRepositoryImpl(
-      MatchRepositoryImpl.getInstance(ApiProvider.LIGI),
-    );
+  public static getInstance(matchRepo?: MatchRepository) {
+    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
+
+    return new PredictionRepositoryImpl(matchRepoImpl);
   }
 
   private matchRepo: MatchRepository;
@@ -51,84 +49,241 @@ export class PredictionRepositoryImpl
     this.matchRepo = matchRepo;
   }
 
-  public findOrCreateJoker$(
-    userId: string,
-    seasonId: string,
-    gameRound: string,
-    pick: string | string[],
-  ): Observable<Prediction> {
-    const query: any = {
-      user: userId,
-      season: seasonId,
-      gameRound,
-      hasJoker: true,
-    };
-    return this.findOne$(query).pipe(
-      flatMap(currentJoker => {
-        let newJokerMatchId: string;
-        if (pick instanceof Array) {
-          if (currentJoker) {
-            return of(currentJoker);
+  findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
+    return super.findOneAndUpdate$({ user: userId, match: matchId }, { choice })
+  }
+
+  findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
+    return this.matchRepo.findById$(matchId)
+      .pipe(
+        flatMap(match => {
+          const prediction = {
+            user: userId,
+            match: match.id,
+            matchSlug: match.slug,
+            choice
+          } as Prediction
+          return super.findOneAndUpsert$({ user: userId, match: matchId }, prediction)
+        })
+      )
+  }
+
+  pickJoker$(userId: string, matchId: string): Observable<Prediction[]> {
+    return this.matchRepo.findById$(matchId)
+      .pipe(
+        flatMap(match => {
+          if (!(match.status === MatchStatus.SCHEDULED ||
+            match.status === MatchStatus.TIMED)) {
+            throwError(`${match.slug} not scheduled to be played`)
+          }
+          return this.findOrCreateJoker$(userId, match.gameRound!)
+        }),
+        flatMap((currentJoker) => {
+          return this.findOneOrCreate$(userId, matchId)
+            .pipe(
+              flatMap(newJoker => {
+                const jokers = [];
+                if (currentJoker.match.toString() === newJoker.match.toString()) {
+                  currentJoker.jokerAutoPicked = false;
+
+                  jokers.push(currentJoker);
+                } else {
+                  currentJoker.hasJoker = false;
+
+                  newJoker.hasJoker = true;
+                  newJoker.jokerAutoPicked = false;
+
+                  jokers.push(currentJoker, newJoker);
+                }
+
+                return this.upsertMany$(jokers)
+                  .pipe(
+                    map(() => {
+                      return {
+                        oldJokerMatch: currentJoker.match,
+                        newJokerMatch: newJoker.match,
+                      }
+                    })
+                  )
+              })
+            )
+        }),
+        flatMap(({ oldJokerMatch, newJokerMatch }) => {
+          return this.findAll$({
+            user: userId,
+            match: { $in: uniq([oldJokerMatch, newJokerMatch]) }
+          })
+        })
+      )
+  }
+
+  unsetJoker$(userId: string, matchId: string): Observable<Prediction> {
+    return super.findOne$({ user: userId, match: matchId, hasJoker: true })
+      .pipe(
+        flatMap(pred => {
+          pred.hasJoker = false;
+          return this.save$(pred)
+        })
+      )
+  }
+
+  findOrCreatePredictions$(userId: string, roundId: string): Observable<Prediction[]> {
+    return this.matchRepo.findAll$({ gameRound: roundId })
+      .pipe(
+        flatMap(matches => {
+          return this.findOrCreateJoker$(userId, roundId, true, matches)
+            .pipe(
+              map(() => {
+                return matches
+              })
+            )
+        })
+      )
+      .pipe(
+        flatMap(matches => {
+          return this.findAll$({
+            user: userId,
+            match: { $in: matches.map(n => n.id) },
+          }).pipe(
+            map(predictions => {
+              return { matches, predictions }
+            })
+          )
+        }),
+        flatMap(({ matches, predictions }) =>
+          iif(
+            () => matches.length === predictions.length,
+            from(predictions),
+            from(matches)
+              .pipe(flatMap(match => {
+                return this.findOneOrCreate$(userId, match.id!)
+              }))
+          )
+        ),
+        toArray()
+      )
+  }
+
+  findOrCreatePicks$(userId: string, roundId: string): Observable<Prediction[]> {
+    return this.findOrCreatePredictions$(userId, roundId)
+      .pipe(
+        flatMap(predictions => {
+          return predictions
+        }),
+        flatMap(prediction => {
+          if (prediction.choice.isComputerGenerated) {
+            return this.findByIdAndUpdate$(prediction.id!, {
+              choice: this.getRandomMatchScore(false)
+            })
           } else {
-            newJokerMatchId = pick[Math.floor(Math.random() * pick.length)];
-            return this.pickJoker$(userId, currentJoker, newJokerMatchId, true);
+            return of(prediction);
           }
-        } else {
-          newJokerMatchId = pick;
-          if (
-            currentJoker &&
-            currentJoker.status === PredictionStatus.PROCESSED
-          ) {
-            return throwError(new Error('Joker prediction already processed'));
-          }
-          return this.pickJoker$(userId, currentJoker, newJokerMatchId, false);
-        }
-      }),
-    );
+        }),
+        toArray()
+      );
   }
 
-  public findOne$(query?: any) {
-    const { userId, matchId } = query;
-    if (userId !== undefined && matchId !== undefined) {
-      query.user = userId;
-      query.match = matchId;
-      delete query.userId;
-      delete query.matchId;
-    }
-    return super.findOne$(query);
+
+  findOrCreateJoker$(
+    userId: string, roundId: string, autoPicked: boolean = true, roundMatches: Match[] = []
+  ): Observable<Prediction> {
+    return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
+      .pipe(
+        flatMap(matches => {
+          const matchIds = matches.map(m => m.id?.toString())
+          return this.findAll$({
+            user: userId,
+            match: { $in: matchIds },
+            hasJoker: true
+          })
+            .pipe(
+              flatMap(jokerPredictions => {
+                const jokers = [];
+                if (jokerPredictions.length === 0) {
+                  const selectableMatchIds = matches
+                    .filter(m => m.status === MatchStatus.SCHEDULED || m.status === MatchStatus.TIMED)
+                    .map(m => m.id?.toString());
+
+                  if (selectableMatchIds.length) {
+                    const jokerMatchId = selectableMatchIds[Math.floor(Math.random() * selectableMatchIds.length)]!;
+                    const { slug: jokerMatchSlug } = matches.find(m => m.id?.toString() === jokerMatchId) as Match
+                    const randomMatchScore = this.getRandomMatchScore();
+
+                    const joker: Prediction = {
+                      user: userId,
+                      match: jokerMatchId,
+                      matchSlug: jokerMatchSlug,
+                      hasJoker: true,
+                      jokerAutoPicked: autoPicked,
+                      choice: randomMatchScore,
+                    };
+                    jokers.push(joker);
+                  }
+                } else if (jokerPredictions.length > 1) {
+                  // poor: use reverse for latest joker; better - use last modified
+                  const [, ...otherJokers] = jokerPredictions.reverse();
+                  otherJokers.forEach(j => {
+                    j.hasJoker = false;
+                    j.jokerAutoPicked = false;
+                    jokers.push(j);
+                  });
+                }
+
+                if (jokers.length) {
+                  return this.upsertMany$(jokers);
+                } else {
+                  return of(head(jokerPredictions));
+                }
+              })
+            )
+            .pipe(
+              catchError((error: any) => {
+                return throwError(error);
+              }),
+            )
+            .pipe(
+              flatMap(result => {
+                if (result.constructor.name === 'BulkWriteResult') {
+                  return super.findOne$({
+                    user: userId,
+                    match: { $in: matchIds },
+                    hasJoker: true
+                  })
+                }
+                return of(result as Prediction)
+              })
+            )
+        })
+      )
   }
 
-  public findOneOrCreate$({
-    userId,
-    matchId,
-  }: {
-    userId: string;
-    matchId: string;
-  }) {
-    const query = { user: userId, match: matchId };
-    return this.findOne$(query).pipe(
+  public findOne$(userId: string, matchId: string) {
+    return super.findOne$({ user: userId, match: matchId });
+  }
+
+  public findOneOrCreate$(
+    userId: string,
+    matchId: string,
+  ) {
+    return this.findOne$(userId, matchId).pipe(
       flatMap(prediction => {
         if (prediction) {
           return of(prediction);
         }
         return this.matchRepo.findById$(matchId).pipe(
           flatMap(match => {
-            const {
-              slug: matchSlug,
-              season,
-              gameRound,
-              odds,
-            } = match as Required<Match>;
-            const pred: Prediction = {
+            const { slug: matchSlug } = match;
+            const pred = {
               user: userId,
               match: matchId,
               matchSlug,
-              season,
-              gameRound,
-              choice: {} as any,
-            };
-            const randomMatchScore = this.getRandomMatchScore();
-            pred.choice = randomMatchScore;
+            } as Prediction;
+
+            if (match.status === MatchStatus.SCHEDULED ||
+              match.status === MatchStatus.TIMED) {
+              const randomMatchScore = this.getRandomMatchScore();
+              pred.choice = randomMatchScore;
+            }
             return this.save$(pred);
           }),
         );
@@ -136,118 +291,22 @@ export class PredictionRepositoryImpl
     );
   }
 
-  public findOneAndUpsert$(
-    { userId, matchId }: { userId: string; matchId: string },
-    choice: Score,
-  ) {
-    return throwError(new Error('method not implemented'));
-  }
-
-  private pickJoker$(
-    userId: string,
-    currentJoker: Prediction,
-    newJokerMatchId: string,
-    autoPicked: boolean,
-  ) {
-    let newJokerMatch: Match;
-    return this.matchRepo
-      .findById$(newJokerMatchId)
-      .pipe(
-        flatMap(match => {
-          if (!match) {
-            return throwError(new Error('Match does not exist'));
-          }
-          newJokerMatch = match;
-          if (
-            autoPicked ||
-            newJokerMatch.status === MatchStatus.SCHEDULED ||
-            newJokerMatch.status === MatchStatus.TIMED
-          ) {
-            return this.findOne$({ user: userId, match: newJokerMatchId });
-          }
-          return throwError(new Error('Match not scheduled'));
-        }),
-      )
-      .pipe(
-        catchError((error: any) => {
-          return throwError(error);
-        }),
-      )
-      .pipe(
-        flatMap((newJokerPrediction: Prediction) => {
-          const {
-            slug: matchSlug,
-            season,
-            gameRound,
-            odds,
-          } = newJokerMatch as Required<Match>;
-          let newJoker: Prediction;
-          if (!newJokerPrediction) {
-            const randomMatchScore = this.getRandomMatchScore();
-            newJoker = {
-              user: userId,
-              match: newJokerMatchId,
-              matchSlug,
-              season,
-              gameRound,
-              hasJoker: true,
-              jokerAutoPicked: autoPicked,
-              choice: randomMatchScore,
-            };
-          } else {
-            newJoker = newJokerPrediction;
-            newJoker.hasJoker = true;
-            newJoker.jokerAutoPicked = autoPicked;
-          }
-          const predictionJokers: Prediction[] = [newJoker];
-          if (currentJoker) {
-            currentJoker.hasJoker = false;
-            predictionJokers.push(currentJoker);
-          }
-          return this.saveMany$(predictionJokers);
-        }),
-      )
-      .pipe(
-        catchError((error: any) => {
-          return throwError(error);
-        }),
-      )
-      .pipe(
-        flatMap(predictions => {
-          return from(predictions);
-        }),
-      )
-      .pipe(
-        filter(prediction => {
-          return prediction.match.toString() === newJokerMatch.id;
-        }),
-      )
-      .pipe(first());
-  }
-
-  private getRandomMatchScore() {
+  private getRandomMatchScore(isComputerGenerated = true) {
     const scoreList = [
+      '0-0',
       '0-0',
       '1-1',
       '1-1',
       '2-2',
+      '2-2',
       '1-0',
-      '1-0',
       '2-0',
-      '2-0',
-      '2-0',
-      '2-1',
-      '2-1',
       '2-1',
       '3-0',
       '3-1',
       '3-2',
       '0-1',
-      '0-1',
-      '0-1',
-      '0-1',
       '0-2',
-      '1-2',
       '1-2',
       '0-3',
       '1-3',
@@ -261,7 +320,7 @@ export class PredictionRepositoryImpl
     return {
       goalsHomeTeam,
       goalsAwayTeam,
-      isComputerGenerated: true,
+      isComputerGenerated,
     };
   }
 }

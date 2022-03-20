@@ -4,9 +4,17 @@ import { concatMap, filter, flatMap, map, count } from 'rxjs/operators';
 import { PredictionStatus } from '../../db/models/prediction.model';
 import { Match, MatchStatus } from '../../db/models/match.model';
 import {
+  UserRepository,
+  UserRepositoryImpl,
+} from '../../db/repositories/user.repo';
+import {
   PredictionProcessor,
   PredictionProcessorImpl,
 } from './prediction.processor';
+import {
+  PredictionRepository,
+  PredictionRepositoryImpl,
+} from '../../db/repositories/prediction.repo';
 import {
   MatchRepository,
   MatchRepositoryImpl,
@@ -18,17 +26,25 @@ export interface FinishedMatchesProcessor {
 }
 
 export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
-  public static getInstance() {
+  public static getInstance(
+    userRepo?: UserRepository,
+    matchRepo?: MatchRepository,
+    predictionRepo?: PredictionRepository
+  ) {
+    const userRepoImpl = userRepo ?? UserRepositoryImpl.getInstance();
+    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance();
+    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance(matchRepoImpl);
+
     return new FinishedMatchesProcessorImpl(
-      PredictionProcessorImpl.getInstance(),
-      MatchRepositoryImpl.getInstance(),
+      PredictionProcessorImpl.getInstance(userRepoImpl, matchRepoImpl, predictionRepoImpl),
+      matchRepoImpl,
     );
   }
 
   constructor(
     private predictionProcessor: PredictionProcessor,
     private matchRepo: MatchRepository,
-  ) {}
+  ) { }
 
   public processPredictions(matches: Match[]) {
     return from(matches)
@@ -41,15 +57,12 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
         }),
       )
       .pipe(
+        // why concatMap and not flatMap .. is it process one match at a time
         concatMap(match => {
           return this.predictionProcessor
             .getOrCreatePredictions$(match)
             .pipe(
-              flatMap(predictions => {
-                return from(predictions);
-              }),
-            )
-            .pipe(
+              flatMap(predictions => predictions),
               map(prediction => {
                 return { match, prediction };
               }),

@@ -23,7 +23,11 @@ export class MatchesController {
       MatchRepositoryImpl.getInstance());
   }
 
-  constructor(private seasonRepo: SeasonRepository, private gameRoundRepo: GameRoundRepository, private matchRepo: MatchRepository) {}
+  constructor(
+    private seasonRepo: SeasonRepository,
+    private gameRoundRepo: GameRoundRepository,
+    private matchRepo: MatchRepository,
+  ) { }
 
   public getMatches = async (req: Request, res: Response) => {
     try {
@@ -39,18 +43,18 @@ export class MatchesController {
       }
 
       const season = await this.seasonRepo.findOne$({
-        $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}]
+        $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
       }).toPromise();
 
       const gameRound = await this.gameRoundRepo.findOne$({
         $or: [
           {
-            $and: [{ season: season.id }, { slug: roundSlugOrPosition }]
+            $and: [{ season: season.id }, { slug: roundSlugOrPosition }],
           },
           {
-            $and: [{ season: season.id}, { position: parseInt(roundSlugOrPosition, 10) || 0 }]
-          }
-        ]
+            $and: [{ season: season.id }, { position: parseInt(roundSlugOrPosition, 10) || 0 }],
+          },
+        ],
       }).toPromise();
 
       const matches = await this.matchRepo

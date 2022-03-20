@@ -1,319 +1,317 @@
 import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
-
-import db from '../../db';
-import { Competition, Team, UserScore } from '../../db/models';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import memoryDb from '../memoryDb';
+import { Match, Prediction, PredictionDocument, UserScore } from '../../db/models';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
-import testUtils, { TestUtils } from './testUtils';
-let tu: TestUtils = JSON.parse(JSON.stringify(testUtils));
+import { ScorePoints, Score } from '../../common/score';
+
+import a from '../a';
 
 const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 
-describe('UserScore Repo', function() {
-  this.timeout(5000);
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+const epl = a.competition
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
+
+const epl2022 = a.season
+  .withCompetition(epl)
+  .setName('2021-2022')
+  .setSlug('2021-22')
+  .setYear(2022)
+  .setSeasonStart('2021-08-09T00:00:00+0200')
+  .setSeasonEnd('2022-05-17T16:00:00+0200')
+  .setExternalReference({
+    [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
+  })
+
+const manu = a.team.setName('Manchester United').setSlug('man-utd');
+const manc = a.team.setName('Manchester City').setSlug('man-city');
+const che = a.team.setName('Chelsea').setSlug('chelsea');
+const ars = a.team.setName('Arsenal').setSlug('arsenal');
+
+const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
+
+const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
+const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
+
+const user1_manuVmanc_pred = a.prediction
+  .withUser(user1)
+  .setHomeScore(1)
+  .setAwayScore(0)
+
+const user2_manuVmanc_pred = a.prediction
+  .withUser(user2)
+  .setHomeScore(3)
+  .setAwayScore(0)
+
+const user1_cheVars_pred = a.prediction
+  .withUser(user1)
+  .setHomeScore(1)
+  .setAwayScore(1)
+
+const user2_cheVars_pred = a.prediction
+  .withUser(user2)
+  .setHomeScore(2)
+  .setAwayScore(2)
+
+const manuVmanc = a.match
+  .withHomeTeam(manu)
+  .withAwayTeam(manc)
+  .setDate('2021-08-11T11:30:00Z')
+  .withGameRound(gw1)
+  .setHomeScore(2)
+  .setAwayScore(1)
+  .withPredictions(user1_manuVmanc_pred, user2_manuVmanc_pred)
+
+const cheVars = a.match
+  .withHomeTeam(che)
+  .withAwayTeam(ars)
+  .setDate('2021-08-21T11:30:00Z')
+  .withGameRound(gw2)
+  .setHomeScore(1)
+  .setAwayScore(1)
+  .withPredictions(user1_cheVars_pred, user2_cheVars_pred);
+
+const eplBoard = a.leaderboard.setBoardType('GLOBAL_SEASON');
+const eplGw1Board = a.leaderboard.setBoardType('GLOBAL_ROUND').withGameRound(gw1);
+
+describe('UserScore Repo', function () {
+  let leaderboardId: string;
+  let userId1: string;
+  let userId2: string;
+  let matchId1: string;
+  let matchId2: string;
+  let userId1matchId1Pred: string;
+  let userId1matchId2Pred: string;
+  let userId2matchId1Pred: string;
+  let userId2matchId2Pred: string;
+  let user1_manuVmanc_pred_points: ScorePoints;
+  let user1_cheVars_pred_points: ScorePoints;
+  let user2_manuVmanc_pred_points: ScorePoints;
+
+  before(async () => {
+    await memoryDb.connect();
   });
 
-  beforeEach(done => {
-    db.User.create([tu.user1, tu.user2])
-      .then(users => {
-        tu.user1.id = users[0].id;
-        tu.user2.id = users[1].id;
-        return db.Competition.create(tu.league);
-      })
-      .then(league => {
-        let { name, slug, id } = league;
-        tu.season.competition = { name, slug, id } as Required<Competition>;
-        return db.Season.create(tu.season);
-      })
-      .then(season => {
-        tu.season.id = season.id;
-        return db.Team.create([tu.team1, tu.team2, tu.team3, tu.team4]);
-      })
-      .then(teams => {
-        tu.team1Vteam2.homeTeam = {
-          name: teams[0].name,
-          slug: teams[0].slug,
-          id: teams[0].id,
-        } as Required<Team>;
-
-        tu.team1Vteam2.awayTeam = {
-          name: teams[1].name,
-          slug: teams[1].slug,
-          id: teams[1].id,
-        } as Required<Team>;
-
-        tu.team1Vteam2.season = tu.season.id;
-        tu.team1Vteam2.slug = `${teams[0].slug}-${teams[1].slug}`;
-
-        tu.team3Vteam4.homeTeam = {
-          name: teams[2].name,
-          slug: teams[2].slug,
-          id: teams[2].id,
-        } as Required<Team>;
-
-        tu.team3Vteam4.awayTeam = {
-          name: teams[3].name,
-          slug: teams[3].slug,
-          id: teams[3].id,
-        } as Required<Team>;
-
-        tu.team3Vteam4.season = tu.season.id;
-        tu.team3Vteam4.slug = `${teams[2].slug}-${teams[3].slug}`;
-
-        return db.Match.create([tu.team1Vteam2, tu.team3Vteam4]);
-      })
-      .then(matches => {
-        tu.team1Vteam2.id = matches[0].id;
-        tu.team3Vteam4.id = matches[1].id;
-
-        tu.user1_team1Vteam2 = {
-          ...tu.user1_team1Vteam2,
-          season: tu.team1Vteam2.season,
-          match: tu.team1Vteam2.id,
-          matchSlug: tu.team1Vteam2.slug,
-          gameRound: tu.team1Vteam2.gameRound,
-          user: tu.user1.id,
-        };
-        tu.user1_team3Vteam4 = {
-          ...tu.user1_team3Vteam4,
-          season: tu.team3Vteam4.season,
-          match: tu.team3Vteam4.id,
-          matchSlug: tu.team3Vteam4.slug,
-          gameRound: tu.team3Vteam4.gameRound,
-          user: tu.user1.id,
-        };
-        tu.user2_team1Vteam2 = {
-          ...tu.user2_team1Vteam2,
-          season: tu.team1Vteam2.season,
-          match: tu.team1Vteam2.id,
-          matchSlug: tu.team1Vteam2.slug,
-          gameRound: tu.team1Vteam2.gameRound,
-          user: tu.user2.id,
-        };
-        tu.user2_team3Vteam4 = {
-          ...tu.user2_team3Vteam4,
-          season: tu.team3Vteam4.season,
-          match: tu.team3Vteam4.id,
-          matchSlug: tu.team3Vteam4.slug,
-          gameRound: tu.team3Vteam4.gameRound,
-          user: tu.user2.id,
-        };
-
-        return db.Prediction.create([
-          tu.user1_team1Vteam2,
-          tu.user1_team3Vteam4,
-          tu.user2_team1Vteam2,
-          tu.user2_team3Vteam4,
-        ]);
-      })
-      .then(predictions => {
-        tu.user1_team1Vteam2.id = predictions[0].id;
-        tu.user1_team3Vteam4.id = predictions[1].id;
-        tu.user2_team1Vteam2.id = predictions[2].id;
-        tu.user2_team3Vteam4.id = predictions[3].id;
-        return db.Leaderboard.create([
-          {
-            ...tu.season_board,
-            season: tu.season.id,
-          },
-          {
-            ...tu.round_board,
-            season: tu.season.id,
-          },
-        ]);
-      })
-      .then(leaderboards => {
-        tu.season_board = leaderboards[0];
-        tu.round_board = leaderboards[1];
-        done();
-      });
+  after(async () => {
+    await memoryDb.close();
   });
 
-  afterEach(done => {
-    tu = JSON.parse(JSON.stringify(testUtils));
-    db.drop().then(() => {
-      done();
-    });
+  afterEach(async () => {
+    await memoryDb.dropDb();
   });
 
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
-  });
+  beforeEach(async () => {
+    await a.game
+      .withTeams(manu, manc, che, ars)
+      .withUsers(user1, user2)
+      .withCompetitions(epl)
+      .withSeasons(
+        epl2022
+          .withTeams(manu, manc, che, ars)
+          .withGameRounds(gw1, gw2)
+          .withMatches(manuVmanc, cheVars)
+          .withLeaderboards(eplBoard, eplGw1Board)
+      )
+      .build();
+    leaderboardId = eplBoard.id;
+    userId1 = user1.id;
+    userId2 = user2.id;
+    matchId1 = manuVmanc.id;
+    matchId2 = cheVars.id;
+    userId1matchId1Pred = user1_manuVmanc_pred.id;
+    userId1matchId2Pred = user1_cheVars_pred.id;
+    userId2matchId1Pred = user2_manuVmanc_pred.id;
+    userId2matchId2Pred = user2_cheVars_pred.id;
+
+    // result 2-1 prediction 1-0
+    user1_manuVmanc_pred_points = {
+      points: 8,
+      APoints: 8,
+      BPoints: 0,
+      CorrectMatchOutcomePoints: 7,
+      ExactGoalDifferencePoints: 1,
+      ExactMatchScorePoints: 0,
+      CloseMatchScorePoints: 0,
+      ExactTeamScorePoints: 0,
+    };
+
+    // result 2-1 prediction 1-0
+    user1_cheVars_pred_points = {
+      points: 16,
+      APoints: 14,
+      BPoints: 2,
+      CorrectMatchOutcomePoints: 7,
+      ExactGoalDifferencePoints: 1,
+      ExactMatchScorePoints: 6,
+      CloseMatchScorePoints: 0,
+      ExactTeamScorePoints: 2,
+    };
+
+    // result 2-1 prediction 3-0
+    user2_manuVmanc_pred_points = {
+      points: 7,
+      APoints: 7,
+      BPoints: 0,
+      CorrectMatchOutcomePoints: 7,
+      ExactGoalDifferencePoints: 0,
+      ExactMatchScorePoints: 0,
+      CloseMatchScorePoints: 0,
+      ExactTeamScorePoints: 0,
+    };
+  })
 
   describe('find and upsert', () => {
-    it('should create a userScore if it does not exist', done => {
-      const leaderboardId = tu.season_board.id!;
-      const userId = tu.user1.id!;
-      const matchId = tu.team1Vteam2.id!;
-      const predictionId = tu.user1_team1Vteam2.id!;
-      const hasJoker = true;
-      const predictionPoints = tu.user1_team1Vteam2_points;
 
+    it('should create a userScore if it does not exist', done => {
+      const hasJoker = true;
       userScoreRepo
         .findOneAndUpsert$(
           leaderboardId,
-          userId,
-          matchId,
-          predictionId,
-          predictionPoints,
+          userId1,
+          matchId1,
+          userId1matchId1Pred,
+          user1_manuVmanc_pred_points,
           hasJoker,
         )
         .subscribe(score => {
-          expect(score.pointsExcludingJoker).to.equal(4);
-          expect(score.APointsExcludingJoker).to.equal(0);
-          expect(score.BPointsExcludingJoker).to.equal(4);
-          expect(score.points).to.equal(8);
-          expect(score.APoints).to.equal(0);
-          expect(score.BPoints).to.equal(8);
-          expect(score.matches).to.contain(matchId);
-          expect(score.predictions).to.contain(predictionId);
+          expect(score.pointsExcludingJoker).to.equal(8);
+          expect(score.APointsExcludingJoker).to.equal(8);
+          expect(score.BPointsExcludingJoker).to.equal(0);
+          expect(score.points).to.equal(16);
+          expect(score.APoints).to.equal(16);
+          expect(score.BPoints).to.equal(0);
+          expect(score.matches).to.contain(matchId1);
+          expect(score.predictions).to.contain(userId1matchId1Pred);
           done();
         });
     });
 
     it('should update a userScore if it exists', done => {
-      const leaderboardId = tu.season_board.id!;
-      const userId = tu.user1.id!;
-      const matchId = tu.team1Vteam2.id!;
-      const predictionId = tu.user1_team1Vteam2.id!;
-      const score1 = tu.user1_team1Vteam2_points;
-      let joker_score1 = Object.keys(score1).reduce(
-        (result, key) => ({ ...result, [key]: score1[key] * 2 }),
-        score1,
-      );
-      const user1_team1Vteam2_score: UserScore = {
-        ...joker_score1,
-        leaderboard: leaderboardId,
-        user: userId,
-        matches: [matchId],
-        predictions: [predictionId],
-        pointsExcludingJoker: score1.points,
-        APointsExcludingJoker: score1.APoints,
-        BPointsExcludingJoker: score1.BPoints,
+      // result 2-1 prediction 1-0 (is joker)
+      const user1_manuVmanc_predJoker_points: ScorePoints = {
+        points: 16,
+        APoints: 16,
+        BPoints: 0,
+        CorrectMatchOutcomePoints: 14,
+        ExactGoalDifferencePoints: 2,
+        ExactMatchScorePoints: 0,
+        CloseMatchScorePoints: 0,
+        ExactTeamScorePoints: 0,
       };
-      userScoreRepo
-        .insert$(user1_team1Vteam2_score)
+
+      let { points, APoints, BPoints } = user1_manuVmanc_predJoker_points;
+      const user1_manuVmanc_predJoker_score: UserScore = {
+        ...user1_manuVmanc_predJoker_points,
+        leaderboard: leaderboardId,
+        user: userId1,
+        matches: [matchId1],
+        predictions: [userId1matchId1Pred],
+        pointsExcludingJoker: points / 2,
+        APointsExcludingJoker: APoints / 2,
+        BPointsExcludingJoker: BPoints / 2,
+      }
+
+      userScoreRepo.insert$(user1_manuVmanc_predJoker_score)
         .pipe(
           flatMap(_ => {
-            const matchId = tu.user1_team3Vteam4.id!;
-            const predictionId = tu.user1_team3Vteam4.id!;
-            const predictionPoints = tu.user1_team3Vteam4_points;
             const hasJoker = false;
             return userScoreRepo.findOneAndUpsert$(
               leaderboardId,
-              userId,
-              matchId,
-              predictionId,
-              predictionPoints,
+              userId1,
+              matchId2,
+              userId1matchId2Pred,
+              user1_cheVars_pred_points,
               hasJoker,
             );
-          }),
-        )
-        .subscribe(score => {
-          const match1 = tu.team1Vteam2.id!;
-          const match2 = tu.team3Vteam4.id!;
-          const pred1 = tu.user1_team1Vteam2.id!;
-          const pred2 = tu.user1_team3Vteam4.id!;
-          expect(score.pointsExcludingJoker).to.equal(13);
-          expect(score.APointsExcludingJoker).to.equal(5);
-          expect(score.BPointsExcludingJoker).to.equal(8);
-          expect(score.points).to.equal(17);
-          expect(score.APoints).to.equal(5);
-          expect(score.BPoints).to.equal(12);
-          expect(score.matches).to.contain(match1, match2);
-          expect(score.predictions).to.contain(pred1, pred2);
+          })
+        ).subscribe(score => {
+          expect(score.pointsExcludingJoker).to.equal(24);
+          expect(score.APointsExcludingJoker).to.equal(22);
+          expect(score.BPointsExcludingJoker).to.equal(2);
+          expect(score.points).to.equal(32);
+          expect(score.APoints).to.equal(30);
+          expect(score.BPoints).to.equal(2);
+          expect(score.matches).to.contain(matchId1, matchId2);
+          expect(score.predictions).to.contain(userId1matchId1Pred, userId1matchId2Pred);
           done();
         });
     });
-  });
 
-  it('should find by leaderboard and order by points', done => {
-    const leaderboardId = tu.season_board.id!;
-    const user1Id = tu.user1.id!;
-    const matchId = tu.team1Vteam2.id!;
-    const user1_predictionId = tu.user1_team1Vteam2.id!;
-    const user1_match1_points = tu.user1_team1Vteam2_points;
-    const user1_match1_joker_points = Object.keys(user1_match1_points).reduce(
-      (result, key) => ({ ...result, [key]: user1_match1_points[key] * 2 }),
-      user1_match1_points,
-    );
-    const user1_match1_score: UserScore = {
-      ...user1_match1_joker_points,
-      leaderboard: leaderboardId,
-      user: user1Id,
-      matches: [matchId],
-      predictions: [user1_predictionId],
-      pointsExcludingJoker: user1_match1_points.points,
-      APointsExcludingJoker: user1_match1_points.APoints,
-      BPointsExcludingJoker: user1_match1_points.BPoints,
-    };
+    it('should find by leaderboard and order by points', done => {
+      let { points: points1, APoints: APoints1, BPoints: BPoints1 } = user1_manuVmanc_pred_points;
+      const user1_manuVmanc_pred_score: UserScore = {
+        ...user1_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId1,
+        matches: [matchId1],
+        predictions: [userId1matchId1Pred],
+        pointsExcludingJoker: points1,
+        APointsExcludingJoker: APoints1,
+        BPointsExcludingJoker: BPoints1,
+      }
 
-    const user2Id = tu.user2.id!;
-    const user2_predictionId = tu.user2_team1Vteam2.id!;
-    const user2_match1_points = tu.user2_team1Vteam2_points;
-    const user2_match1_score: UserScore = {
-      ...user2_match1_points,
-      leaderboard: leaderboardId,
-      user: user2Id,
-      matches: [matchId],
-      predictions: [user2_predictionId],
-      pointsExcludingJoker: user2_match1_points.points,
-      APointsExcludingJoker: user2_match1_points.APoints,
-      BPointsExcludingJoker: user2_match1_points.BPoints,
-    };
+      let { points: points2, APoints: APoints2, BPoints: BPoints2 } = user1_manuVmanc_pred_points;
+      const user2_manuVmanc_pred_score: UserScore = {
+        ...user2_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId2,
+        matches: [matchId1],
+        predictions: [userId2matchId1Pred],
+        pointsExcludingJoker: points2,
+        APointsExcludingJoker: APoints2,
+        BPointsExcludingJoker: BPoints2,
+      }
 
-    userScoreRepo
-      .insertMany$([user2_match1_score, user1_match1_score])
-      .pipe(
-        flatMap(_ => {
-          return userScoreRepo.findByLeaderboardOrderByPoints$(leaderboardId);
-        }),
-      )
-      .subscribe(standings => {
-        expect(standings[1].points).to.be.lte(standings[0].points);
-        done();
-      });
-  });
+      userScoreRepo
+        .insertMany$([user1_manuVmanc_pred_score, user2_manuVmanc_pred_score])
+        .pipe(
+          flatMap(_ => {
+            return userScoreRepo.findByLeaderboardOrderByPoints$(leaderboardId);
+          }),
+        )
+        .subscribe(standings => {
+          expect(standings[1].points).to.be.lte(standings[0].points);
+          done();
+        });
+    })
 
-  it('should find by id and update positions', done => {
-    const leaderboardId = tu.season_board.id!;
-    const userId = tu.user1.id!;
-    const matchId = tu.team1Vteam2.id!;
-    const predictionId = tu.user1_team1Vteam2.id!;
-    const score1 = tu.user1_team1Vteam2_points;
-    const user1_match1_score: UserScore = {
-      ...score1,
-      leaderboard: leaderboardId,
-      user: userId,
-      matches: [matchId],
-      predictions: [predictionId],
-      pointsExcludingJoker: score1.points,
-      APointsExcludingJoker: score1.APoints,
-      BPointsExcludingJoker: score1.BPoints,
-      positionNew: 1,
-      positionOld: 2,
-    };
-    userScoreRepo
-      .insert$(user1_match1_score)
-      .pipe(
-        flatMap(standing => {
-          const prevPosition = standing.positionNew!;
-          const positionOld = prevPosition;
-          const positionNew = prevPosition + 1;
-          return userScoreRepo.findByIdAndUpdate$(standing.id!, {
-            positionNew,
-            positionOld,
-          });
-        }),
-      )
-      .subscribe(standing => {
-        expect(standing.positionNew).to.equal(2);
-        expect(standing.positionOld).to.equal(1);
-        done();
-      });
+    it('should find by id and update positions', done => {
+      let { points, APoints, BPoints } = user1_manuVmanc_pred_points;
+      const user1_manuVmanc_pred_score: UserScore = {
+        ...user1_manuVmanc_pred_points,
+        leaderboard: leaderboardId,
+        user: userId1,
+        matches: [matchId1],
+        predictions: [userId1matchId1Pred],
+        pointsExcludingJoker: points,
+        APointsExcludingJoker: APoints,
+        BPointsExcludingJoker: BPoints,
+        positionNew: 1,
+        positionOld: 2,
+      }
+
+      userScoreRepo
+        .insert$(user1_manuVmanc_pred_score)
+        .pipe(
+          flatMap(standing => {
+            const prevPosition = standing.positionNew!;
+            const positionOld = prevPosition;
+            const positionNew = prevPosition + 1;
+            return userScoreRepo.findByIdAndUpdate$(standing.id!, {
+              positionNew,
+              positionOld,
+            });
+          }),
+        )
+        .subscribe(standing => {
+          expect(standing.positionNew).to.equal(2);
+          expect(standing.positionOld).to.equal(1);
+          done();
+        });
+    });
   });
 });

@@ -14,8 +14,6 @@ export interface Prediction extends Entity {
   user: string;
   match: string;
   matchSlug?: string;
-  season?: string;
-  gameRound: string;
   choice: Score;
   scorePoints?: ScorePoints;
   status?: PredictionStatus;
@@ -23,7 +21,7 @@ export interface Prediction extends Entity {
   jokerAutoPicked?: boolean;
 }
 
-export interface PredictionDocument extends Prediction, DocumentEntity {}
+export interface PredictionDocument extends Prediction, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 const Status = PredictionStatus;
@@ -32,8 +30,6 @@ const predictionSchema = schema({
   user: { type: ObjectId, ref: 'User', required: true, index: true },
   match: { type: ObjectId, ref: 'Match', required: true, index: true },
   matchSlug: { type: String, trim: true },
-  season: { type: ObjectId, ref: 'Season' },
-  gameRound: { type: ObjectId, ref: 'GameRound' },
   choice: {
     goalsHomeTeam: { type: Number },
     goalsAwayTeam: { type: Number },
@@ -48,7 +44,6 @@ const predictionSchema = schema({
     ExactGoalDifferencePoints: { type: Number },
     ExactMatchScorePoints: { type: Number },
     CloseMatchScorePoints: { type: Number },
-    SpreadTeamScorePoints: { type: Number },
     ExactTeamScorePoints: { type: Number },
   },
   hasJoker: { type: Boolean, default: false },

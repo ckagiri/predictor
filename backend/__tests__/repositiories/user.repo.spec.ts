@@ -6,7 +6,7 @@ import memoryDb from '../memoryDb';
 
 const userRepo = UserRepositoryImpl.getInstance();
 
-describe('User Repo', function() {
+describe('User Repo', function () {
   before(async () => {
     await memoryDb.connect();
   });
@@ -23,6 +23,7 @@ describe('User Repo', function() {
       email: 'kagiri@example.com',
     };
 
+    // user is a simple model, try different ways of saving user data to DB; internally these methods are used in the repo classes
     await Promise.all([user1.save(), UserModel.create(user2)]);
   });
 

@@ -8,8 +8,10 @@ export interface BaseRepository<T extends Entity> {
   insert$(obj: Entity): Observable<T>;
   saveMany$(objs: Entity[]): Observable<T[]>;
   insertMany$(objs: Entity[]): Observable<T[]>;
+  upsertMany$(objs: Entity[]): Observable<any>;
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
+  findOneAndUpsert$(conditions: any, update: any, options?: any): Observable<T>;
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
   find$(
     requestQuery?: any,
@@ -25,7 +27,7 @@ export interface BaseRepository<T extends Entity> {
 export class BaseRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-> extends DocumentDao<TDocument> implements BaseRepository<T> {
+  > extends DocumentDao<TDocument> implements BaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.save(obj).then(
@@ -82,6 +84,20 @@ export class BaseRepositoryImpl<
     });
   }
 
+  public upsertMany$(objs: Entity[]): Observable<any> {
+    return Observable.create((observer: Subscriber<T[]>) => {
+      this.upsertMany(objs).then(
+        (result: T[]) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        },
+      );
+    });
+  }
+
   public findByIdAndUpdate$(id: string, update: any): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findByIdAndUpdate(id, update).then(
@@ -99,7 +115,25 @@ export class BaseRepositoryImpl<
   public findOneAndUpdate$(
     conditions: any,
     update: any,
-    options?: any,
+    options: any = { overwrite: false, new: true },
+  ): Observable<T> {
+    return Observable.create((observer: Subscriber<T>) => {
+      this.findOneAndUpdate(conditions, update, options).then(
+        (result: T) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        },
+      );
+    });
+  }
+
+  public findOneAndUpsert$(
+    conditions: any,
+    update: any,
+    options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
   ): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findOneAndUpdate(conditions, update, options).then(
@@ -120,7 +154,7 @@ export class BaseRepositoryImpl<
     options?: any,
   ): Observable<T[]> {
     return Observable.create((observer: Subscriber<T[]>) => {
-      this.findAll(conditions, '-__v -externalReference', options).then(
+      this.findAll(conditions, '-__v', options).then(
         (result: TDocument[]) => {
           observer.next(result);
           observer.complete();
@@ -139,7 +173,7 @@ export class BaseRepositoryImpl<
   ): Observable<{ result: T[]; count: number }> {
     return Observable.create(
       (observer: Subscriber<{ result: T[]; count: number }>) => {
-        this.find(requestQuery, '-__v -externalReference', options).then(
+        this.find(requestQuery, '-__v', options).then(
           ({ result, count }) => {
             observer.next({ result, count });
             observer.complete();

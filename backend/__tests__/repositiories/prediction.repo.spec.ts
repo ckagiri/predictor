@@ -1,292 +1,559 @@
-import { flatMap } from 'rxjs/operators';
 import { expect } from 'chai';
 
-import db from '../../db';
-import { User, Competition, Season, Team } from '../../db/models';
-import { Match, MatchStatus } from '../../db/models/match.model';
-import {
-  Prediction,
-  PredictionDocument,
-} from '../../db/models/prediction.model';
-
-import { ScorePoints } from '../../common/score';
 import { PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
+import { Match, Prediction, PredictionDocument } from '../../db/models';
+import { ScorePoints, Score } from '../../common/score';
+import a from '../a';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import memoryDb from '../memoryDb';
+import { flatMap } from 'rxjs/operators';
+import { MatchStatus } from '../../db/models/match.model';
 
 const predictionRepo = PredictionRepositoryImpl.getInstance();
-// tslint:disable-next-line: one-variable-per-declaration
-let user1: any,
-  theSeason: any,
-  team1: any,
-  team2: any,
-  team3: any,
-  team4: any,
-  match1: any;
+const epl = a.competition
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
-const epl: Competition = {
-  name: 'English Premier League',
-  slug: 'english_premier_league',
-  code: 'epl',
-};
+const epl2022 = a.season
+  .withCompetition(epl)
+  .setName('2021-2022')
+  .setSlug('2021-22')
+  .setYear(2022)
+  .setSeasonStart('2021-08-09T00:00:00+0200')
+  .setSeasonEnd('2022-05-17T16:00:00+0200')
+  .setExternalReference({
+    [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
+  })
 
-const epl18: Season = {
-  name: '2018-2019',
-  slug: '2018-19',
-  year: 2018,
-  seasonStart: '2017-08-11T00:00:00+0200',
-  seasonEnd: '2018-05-13T16:00:00+0200',
-  currentMatchRound: 20,
-  currentGameRound: 20,
-  competition: undefined,
-};
+const manu = a.team.setName('Manchester United').setSlug('man-utd');
+const manc = a.team.setName('Manchester City').setSlug('man-city');
+const che = a.team.setName('Chelsea').setSlug('chelsea');
+const ars = a.team.setName('Arsenal').setSlug('arsenal');
+const liv = a.team.setName('Liverpool').setSlug('liverpool');
+const tot = a.team.setName('Tottenham').setSlug('tottenham');
+const eve = a.team.setName('Everton').setSlug('everton');
+const whu = a.team.setName('West Ham').setSlug('west-ham')
 
-const manu: Team = {
-  name: 'Manchester United FC',
-  shortName: 'Man United',
-  code: 'MUN',
-  slug: 'man_united',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-  aliases: ['ManU', 'ManUtd'],
-};
+const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
 
-const manc: Team = {
-  name: 'Manchester City FC',
-  shortName: 'Man City',
-  code: 'MCI',
-  slug: 'man_city',
-  crestUrl:
-    'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
-  aliases: ['ManCity'],
-};
+const manuVmanc = a.match
+  .withHomeTeam(manu)
+  .withAwayTeam(manc)
+  .setDate('2021-08-11T11:30:00Z')
+  .withGameRound(gw1)
+  .setStatus(MatchStatus.SCHEDULED)
 
-const che: Team = {
-  name: 'Chelsea FC',
-  shortName: 'Chelsea',
-  code: 'CHE',
-  slug: 'chelsea',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Chelsea_FC.svg',
-  aliases: ['Chelsea'],
-};
+const cheVars = a.match
+  .withHomeTeam(che)
+  .withAwayTeam(ars)
+  .setDate('2021-08-21T11:30:00Z')
+  .withGameRound(gw1)
+  .setStatus(MatchStatus.SCHEDULED)
 
-const ars: Team = {
-  name: 'Arsenal FC',
-  shortName: 'Arsenal',
-  code: 'ARS',
-  slug: 'arsenal',
-  crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Arsenal_FC.svg',
-  aliases: ['Arsenal'],
-};
+const livVtot = a.match
+  .withHomeTeam(liv)
+  .withAwayTeam(tot)
+  .setDate('2021-08-11T11:30:00Z')
+  .withGameRound(gw1)
+  .setStatus(MatchStatus.FINISHED);
 
-const manuVmanc: Match = {
-  date: '2018-09-10T11:30:00Z',
-  status: MatchStatus.SCHEDULED,
-  matchRound: 20,
-  gameRound: 20,
-  season: undefined,
-  homeTeam: undefined,
-  awayTeam: undefined,
-  slug: 'manu-v-manc',
-  result: undefined,
-};
+const eveVwhu = a.match
+  .withHomeTeam(eve)
+  .withAwayTeam(tot)
+  .setDate('2021-08-11T11:30:00Z')
+  .withGameRound(gw2)
+  .setStatus(MatchStatus.POSTPONED)
 
-const cheVars: Match = {
-  date: '2018-09-10T11:30:00Z',
-  status: MatchStatus.SCHEDULED,
-  matchRound: 20,
-  gameRound: 20,
-  season: undefined,
-  homeTeam: undefined,
-  awayTeam: undefined,
-  slug: 'che-v-ars',
-  result: undefined,
-};
+const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
+const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
 
-const chalo: User = {
-  username: 'chalo',
-  email: 'chalo@example.com',
-};
-
-const kagiri: User = {
-  username: 'kagiri',
-  email: 'kagiri@example.com',
-};
-
-describe('Prediction repo', function() {
-  this.timeout(5000);
-
-  before(done => {
-    db.init(process.env.MONGO_URI!, done, { drop: true });
+describe('Prediction repo', function () {
+  before(async () => {
+    await memoryDb.connect();
   });
 
-  beforeEach(done => {
-    db.User.create([chalo, kagiri])
-      .then(users => {
-        user1 = users[0];
-        return db.Competition.create(epl);
-      })
-      .then(l => {
-        const { name, slug, id } = l;
-        epl18.competition = { name, slug, id: id! };
-        return db.Season.create(epl18);
-      })
-      .then(s => {
-        theSeason = s;
-        return db.Team.create([manu, manc, che, ars]);
-      })
-      .then(teams => {
-        team1 = teams[0];
-        team2 = teams[1];
-        team3 = teams[2];
-        team4 = teams[3];
-        manuVmanc.season = theSeason._id;
-        cheVars.season = theSeason._id;
-        manuVmanc.homeTeam = {
-          name: team1.name,
-          slug: team1.slug,
-          id: team1._id,
-          crestUrl: manu.crestUrl!,
-        };
-        manuVmanc.awayTeam = {
-          name: team2.name,
-          slug: team2.slug,
-          id: team2._id,
-          crestUrl: manc.crestUrl!,
-        };
-        manuVmanc.slug = `${team1.slug}-${team2.slug}`;
-        cheVars.homeTeam = {
-          name: team3.name,
-          slug: team3.slug,
-          id: team3._id,
-          crestUrl: che.crestUrl!,
-        };
-        cheVars.awayTeam = {
-          name: team4.name,
-          slug: team4.slug,
-          id: team4._id,
-          crestUrl: ars.crestUrl!,
-        };
-        cheVars.slug = `${team3.slug}-${team4.slug}`;
-
-        return db.Match.create([manuVmanc, cheVars]);
-      })
-      .then(matches => {
-        match1 = matches[0];
-        done();
-      });
+  after(async () => {
+    await memoryDb.close();
   });
 
-  afterEach(done => {
-    db.drop().then(() => {
-      done();
-    });
+  afterEach(async () => {
+    await memoryDb.dropDb();
   });
 
-  after(done => {
-    db.close().then(() => {
-      done();
-    });
-  });
+  beforeEach(async () => {
+    await a.game
+      .withTeams(manu, manc, che, ars, liv, tot, eve, whu)
+      .withUsers(user1, user2)
+      .withCompetitions(epl)
+      .withSeasons(
+        epl2022
+          .withTeams(manu, manc, che, ars, liv, tot, eve, whu)
+          .withGameRounds(gw1, gw2)
+          .withMatches(manuVmanc, livVtot, cheVars, eveVwhu)
+      )
+      .build();
+  })
 
-  describe('findOrCreate joker', () => {
-    it('should create joker if it doesnt exist', done => {
+  describe('finders', () => {
+    it('findOneOrCreate should create prediction if it doesnt exist', done => {
+      const userId = user1.id;
+      const { id: matchId, slug: matchSlug } = manuVmanc.match as Required<Match>;
+
       predictionRepo
-        .findOrCreateJoker$(
-          user1.id,
-          theSeason.id,
-          theSeason.currentGameRound,
-          [match1.id],
-        )
+        .findOneOrCreate$(userId, matchId)
         .subscribe(p => {
-          expect(p).to.have.property('hasJoker', true);
-          expect(p).to.have.property('jokerAutoPicked', true);
-          done();
-        });
-    });
-  });
-
-  it('should findOne prediction by user and match', done => {
-    let prediction: Prediction;
-    const { slug: matchSlug, season, gameRound, id: matchId } = match1;
-    const pred: Prediction = {
-      user: user1.id,
-      match: matchId,
-      matchSlug,
-      season,
-      gameRound,
-      choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
-    };
-    db.Prediction.create(pred)
-      .then(p => {
-        prediction = p;
-        return predictionRepo
-          .findOne$({ userId: user1.id, matchId: match1.id })
-          .toPromise();
-      })
-      .then(p => {
-        expect(p.id).to.equal(prediction.id);
-        done();
-      });
-  });
-
-  describe('findOneOrCreate prediction', () => {
-    it('should create prediction if it doesnt exist', done => {
-      predictionRepo
-        .findOneOrCreate$({ userId: user1.id, matchId: match1.id })
-        .subscribe(p => {
-          expect(p.user.toString()).to.equal(user1.id);
-          expect(p.match.toString()).to.equal(match1.id);
-          expect(p.matchSlug).to.equal(match1.slug);
+          expect(p.user.toString()).to.equal(userId);
+          expect(p.match.toString()).to.equal(matchId);
+          expect(p.matchSlug).to.equal(matchSlug);
           expect(p).to.have.property('hasJoker', false);
-          expect(p).to.have.property('jokerAutoPicked', false);
           done();
         });
     });
-    it('should return existing prediction', done => {
-      let prediction: PredictionDocument;
+
+    it('findOneOrCreate should return existing prediction', done => {
+      let prediction: Prediction;
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+
       predictionRepo
-        .findOneOrCreate$({ userId: user1.id, matchId: match1.id })
+        .findOneOrCreate$(userId, matchId)
         .pipe(
           flatMap(p => {
-            prediction = p as PredictionDocument;
-            return predictionRepo.findOneOrCreate$({
-              userId: user1.id,
-              matchId: match1.id,
-            });
-          }),
+            prediction = p;
+            return predictionRepo.findOneOrCreate$(userId, matchId);
+          })
         )
         .subscribe(p => {
+          // do a deep object comparison for equality test
           expect((p as PredictionDocument).toObject()).to.eql(
-            prediction.toObject(),
+            (prediction as PredictionDocument).toObject(),
           );
           done();
         });
     });
-  });
 
-  it('should findById And update score', done => {
-    let scorePoints: ScorePoints;
-    predictionRepo
-      .findOneOrCreate$({ userId: user1.id, matchId: match1.id })
-      .pipe(
-        flatMap(p => {
-          scorePoints = {
-            points: 7,
-            APoints: 7,
-            BPoints: 0,
-            CorrectMatchOutcomePoints: 4,
-            ExactGoalDifferencePoints: 0,
-            ExactMatchScorePoints: 0,
-            CloseMatchScorePoints: 0,
-            SpreadTeamScorePoints: 0,
-            ExactTeamScorePoints: 3,
-          };
-          return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
-        }),
-      )
-      .subscribe(p => {
-        const pred = (p as PredictionDocument).toObject() as Prediction;
-        expect(pred.scorePoints).to.eql(scorePoints);
-        done();
+    it('findOne should find prediction by user and match', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const { slug: matchSlug } = manuVmanc.match as Required<Match>;
+      let prediction: Prediction;
+      const predData: Prediction = {
+        user: userId,
+        match: matchId,
+        matchSlug,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+      predictionRepo.insert$(predData)
+        .pipe(
+          flatMap(p => {
+            prediction = p;
+            return predictionRepo.findOne$(userId, matchId)
+          })
+        )
+        .subscribe(p => {
+          expect(p.id).to.equal(prediction.id);
+          done();
+        });
+    });
+
+    it('should findById And update score-points', done => {
+      let scorePoints: ScorePoints;
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+
+      predictionRepo
+        .findOneOrCreate$(userId, matchId)
+        .pipe(
+          flatMap(p => {
+            scorePoints = {
+              points: 16,
+              APoints: 14,
+              BPoints: 2,
+              CorrectMatchOutcomePoints: 7,
+              ExactGoalDifferencePoints: 1,
+              ExactMatchScorePoints: 6,
+              CloseMatchScorePoints: 0,
+              ExactTeamScorePoints: 2,
+            };
+            return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
+          }),
+        )
+        .subscribe(p => {
+          const pred = (p as PredictionDocument).toObject() as Prediction;
+          expect(pred.scorePoints).to.eql(scorePoints);
+          done();
+        });
+    });
+
+    it('should find by user and match And insert if it doesnt exist', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const matchSlug = manuVmanc.slug;
+      const choice = { goalsHomeTeam: 2, goalsAwayTeam: 1 }
+
+      predictionRepo.findOneAndUpsert$(userId, matchId, choice)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.findOne$(userId, matchId);
+          }),
+        )
+        .subscribe(pred => {
+          expect(pred.match.toString()).to.equal(matchId);
+          expect(pred.matchSlug).to.equal(matchSlug);
+          expect(pred.choice.goalsHomeTeam).to.equal(choice.goalsHomeTeam);
+          expect(pred.choice.goalsHomeTeam).to.equal(choice.goalsHomeTeam);
+          expect(pred.choice.isComputerGenerated).to.be.true
+          done();
+        });
+    });
+
+    it('should find by user and match And update if it exists (upsert variation)', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const matchSlug = manuVmanc.slug;
+      const origChoice = { goalsHomeTeam: 2, goalsAwayTeam: 1, isComputerGenerated: true }
+      const newChoice = { goalsHomeTeam: 1, goalsAwayTeam: 2, isComputerGenerated: false };
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        choice: origChoice,
+      };
+
+      predictionRepo
+        .insert$(userId1matchId1Pred)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.findOneAndUpsert$(userId, matchId, newChoice);
+          }),
+        )
+        .subscribe(pred => {
+          expect(pred.match.toString()).to.equal(matchId);
+          expect(pred.matchSlug).to.equal(matchSlug);
+          expect(pred.choice.goalsHomeTeam).to.equal(newChoice.goalsHomeTeam);
+          expect(pred.choice.goalsAwayTeam).to.equal(newChoice.goalsAwayTeam);
+          expect(pred.choice.isComputerGenerated).to.be.false
+          done();
+        });
+    });
+
+    it('should find by user and match And update if it exists (update variation)', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const matchSlug = manuVmanc.slug;
+      const origChoice = { goalsHomeTeam: 2, goalsAwayTeam: 1, isComputerGenerated: true }
+      const newChoice = { goalsHomeTeam: 1, goalsAwayTeam: 2, isComputerGenerated: false };
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        choice: origChoice,
+      };
+
+      predictionRepo
+        .insert$(userId1matchId1Pred)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
+          }),
+        )
+        .subscribe(pred => {
+          expect(pred.match.toString()).to.equal(matchId);
+          expect(pred.matchSlug).to.equal(matchSlug);
+          expect(pred.choice.goalsHomeTeam).to.equal(newChoice.goalsHomeTeam);
+          expect(pred.choice.goalsAwayTeam).to.equal(newChoice.goalsAwayTeam);
+          expect(pred.choice.isComputerGenerated).to.be.false
+          done();
+        });
+    });
+
+    describe('findOrCreateJoker', () => {
+      it('should find joker if it exists', done => {
+        const userId = user1.id;
+        const roundId = gw1.id;
+
+        const userId1matchId1Pred: Prediction = {
+          user: userId,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+
+        predictionRepo
+          .insertMany$([userId1matchId1Pred])
+          .pipe(
+            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+          )
+          .subscribe(p => {
+            expect(p).to.have.property('hasJoker', true);
+            expect(p).to.have.property('jokerAutoPicked', true);
+            done();
+          });
       });
+
+      it('should create joker if it doesnt exist', done => {
+        const userId = user1.id;
+        const roundId = gw1.id;
+
+        const userId1matchId1Pred: Prediction = {
+          user: userId,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+        };
+
+        predictionRepo
+          .insertMany$([userId1matchId1Pred])
+          .pipe(
+            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+          )
+          .subscribe(p => {
+            expect(p).to.have.property('hasJoker', true);
+            expect(p).to.have.property('jokerAutoPicked', true);
+            done();
+          });
+      });
+
+      it('should pick one joker and unset others if multiple jokers exists', done => {
+        const userId = user1.id;
+        const roundId = gw1.id;
+
+        const userId1matchId1Pred: Prediction = {
+          user: userId,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+
+        const userId1matchId2Pred: Prediction = {
+          user: userId,
+          match: cheVars.id,
+          matchSlug: cheVars.slug,
+          choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+
+        predictionRepo
+          .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+          .pipe(
+            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+          ).pipe(
+            flatMap(() => predictionRepo.findAll$({
+              user: userId,
+              match: { $in: [manuVmanc.id, cheVars.id] },
+              hasJoker: true
+            }))
+          )
+          .subscribe(predictions => {
+            expect(predictions.filter(p => p.hasJoker)).to.have.lengthOf(1);
+            done();
+          });
+      });
+    });
+
+    it('should find Predictions', done => {
+      const userId1 = user1.id;
+      const roundId1 = gw1.id;
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId1,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      const userId1matchId2Pred: Prediction = {
+        user: userId1,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        hasJoker: false,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: false },
+      };
+
+      const userId1matchId3Pred: Prediction = {
+        user: userId1,
+        match: livVtot.id,
+        matchSlug: livVtot.slug,
+        hasJoker: false,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 2, goalsAwayTeam: 0, isComputerGenerated: false },
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred, userId1matchId3Pred])
+        .pipe(
+          flatMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(3)
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          done();
+        });
+    })
+
+    it('should findOrCreatePredictions', done => {
+      const userId1 = user1.id;
+      const roundId1 = gw1.id;
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId1,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: true,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      const userId1matchId2Pred: Prediction = {
+        user: userId1,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        hasJoker: true,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: false },
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+        .pipe(
+          flatMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(3)
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          done();
+        });
+    })
+
+    it('should unset joker', done => {
+      const userId1matchId1Pred: Prediction = {
+        user: user1.id,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: true,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
+      };
+      predictionRepo.insert$(userId1matchId1Pred)
+        .pipe(
+          flatMap(() => {
+            return predictionRepo.unsetJoker$(user1.id, manuVmanc.id)
+          })
+        ).subscribe(pred => {
+          expect(pred.hasJoker).to.be.false
+          done();
+        })
+    });
+
+    describe('pick joker', () => {
+      it('should pick a different joker if joker exists', done => {
+        const userId1matchId1Pred: Prediction = {
+          user: user1.id,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+        const userId1matchId2Pred: Prediction = {
+          user: user1.id,
+          match: cheVars.id,
+          matchSlug: cheVars.slug,
+          choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
+        };
+
+        predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+          .pipe(
+            flatMap(() => {
+              return predictionRepo.pickJoker$(user1.id, cheVars.id)
+            })
+          ).subscribe(predictions => {
+            expect(predictions).to.have.lengthOf(2)
+            const oldJoker = predictions.find(p => p.match.toString() === manuVmanc.id)
+            expect(oldJoker?.hasJoker).to.be.false;
+            const newJoker = predictions.find(p => p.match.toString() === cheVars.id)
+            expect(newJoker?.hasJoker).to.be.true;
+            expect(newJoker?.jokerAutoPicked).to.be.false;
+            done();
+          })
+      })
+
+      it('should pick same joker if it is same match', done => {
+        const userId1matchId1Pred: Prediction = {
+          user: user1.id,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+        const userId1matchId2Pred: Prediction = {
+          user: user1.id,
+          match: cheVars.id,
+          matchSlug: cheVars.slug,
+          choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
+        };
+
+        predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+          .pipe(
+            flatMap(() => {
+              return predictionRepo.pickJoker$(user1.id, manuVmanc.id)
+            })
+          ).subscribe(predictions => {
+            expect(predictions).to.have.lengthOf(1)
+            const joker = predictions.find(p => p.match.toString() === manuVmanc.id)
+            expect(joker?.hasJoker).to.be.true;
+            expect(joker?.jokerAutoPicked).to.be.false;
+            done();
+          })
+      })
+    })
+
+    it('should findOrCreatePicks ', done => {
+      const userId1 = user1.id;
+      const roundId1 = gw1.id;
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId1,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: true,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      const userId1matchId2Pred: Prediction = {
+        user: userId1,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        hasJoker: false,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+        .pipe(
+          flatMap(() => predictionRepo.findOrCreatePicks$(userId1, roundId1))
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(3)
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          expect(preds.some(p => p.choice.isComputerGenerated)).to.be.false
+          done();
+        });
+    })
   });
 });

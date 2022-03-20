@@ -2,6 +2,7 @@ import { MatchStatus, Match } from '../../db/models/match.model';
 import { User } from '../../db/models/user.model';
 import { Competition } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
+import { GameRound } from '../../db/models/gameRound.model';
 import { Team } from '../../db/models/team.model';
 import { Prediction } from '../../db/models/prediction.model';
 import {
@@ -25,6 +26,11 @@ const season: Season = {
   seasonEnd: '2019-05-13T16:00:00+0200',
   currentMatchRound: 20,
   currentGameRound: 20,
+};
+
+const gameRound: GameRound = {
+  name: 'Gameweek 1',
+  position: 1
 };
 
 const team1: Team = {
@@ -68,8 +74,6 @@ const team4: Team = {
 const team1Vteam2: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
-  matchRound: 20,
-  gameRound: 20,
   allPredictionsProcessed: false,
   result: {
     goalsHomeTeam: 0,
@@ -80,8 +84,6 @@ const team1Vteam2: Partial<Match> = {
 const team3Vteam4: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.FINISHED,
-  matchRound: 20,
-  gameRound: 20,
   allPredictionsProcessed: false,
   result: {
     goalsHomeTeam: 2,
@@ -115,7 +117,6 @@ const user1_team1Vteam2_points: ScorePoints = {
   ExactGoalDifferencePoints: 0,
   ExactMatchScorePoints: 0,
   CloseMatchScorePoints: 1,
-  SpreadTeamScorePoints: 2,
   ExactTeamScorePoints: 1,
 };
 
@@ -135,7 +136,6 @@ const user1_team3Vteam4_points: ScorePoints = {
   ExactGoalDifferencePoints: 0,
   ExactMatchScorePoints: 0,
   CloseMatchScorePoints: 1,
-  SpreadTeamScorePoints: 2,
   ExactTeamScorePoints: 1,
 };
 
@@ -155,7 +155,6 @@ const user2_team1Vteam2_points: ScorePoints = {
   ExactGoalDifferencePoints: 1,
   ExactMatchScorePoints: 0,
   CloseMatchScorePoints: 0,
-  SpreadTeamScorePoints: 0,
   ExactTeamScorePoints: 0,
 };
 
@@ -176,7 +175,6 @@ const user2_team3Vteam4_points: ScorePoints = {
   ExactGoalDifferencePoints: 1,
   ExactMatchScorePoints: 5,
   CloseMatchScorePoints: 0,
-  SpreadTeamScorePoints: 2,
   ExactTeamScorePoints: 2,
 };
 
@@ -188,7 +186,6 @@ const season_board: Partial<Leaderboard> = {
 const round_board: Partial<Leaderboard> = {
   status: BOARD_STATUS.REFRESHED,
   boardType: BOARD_TYPE.GLOBAL_ROUND,
-  gameRound: 20,
 };
 
 export interface TestUtils {

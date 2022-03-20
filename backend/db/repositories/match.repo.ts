@@ -25,7 +25,7 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   findAllFinishedWithPendingPredictions$(
     seasonId: string,
-    gameRound?: number,
+    gameRound?: string,
   ): Observable<Match[]>;
 }
 
@@ -103,7 +103,7 @@ export class MatchRepositoryImpl
 
   public findAllFinishedWithPendingPredictions$(
     seasonId: string,
-    gameRound?: number,
+    gameRound?: string,
   ) {
     const query: any = {
       $and: [
@@ -112,6 +112,7 @@ export class MatchRepositoryImpl
         { status: { $in: ['CANCELED', 'POSTPONED', 'FINISHED'] } },
       ],
     };
+    // todo: why? for a season I can get all the rounds and iterate over them
     if (gameRound) {
       query.$and.push({ gameRound });
     }

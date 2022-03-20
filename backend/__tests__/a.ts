@@ -4,18 +4,23 @@ import {
   Season,
   User,
   Team,
+  GameRound,
   Match,
   Prediction,
+  Leaderboard
 } from '../db/models';
 import { MatchStatus } from '../db/models/match.model';
-
+import { compact, flatMap } from 'lodash'
+import { ScorePoints, Score } from '../common/score';
 interface Game {
   users: User[];
   teams: Team[];
   competitions: Competition[];
   seasons: Season[];
+  gameRounds: GameRound[];
   matches: Match[];
   predictions: Prediction[];
+  leaderboards: Leaderboard[];
 }
 
 export class GameData {
@@ -23,22 +28,28 @@ export class GameData {
   teams: Team[];
   competitions: Competition[];
   seasons: Season[];
+  gameRounds: GameRound[];
   matches: Match[];
   predictions: Prediction[];
+  leaderboards: Leaderboard[];
   constructor({
     users,
     teams,
     competitions,
     seasons,
+    gameRounds,
     matches,
     predictions,
+    leaderboards
   }: Game) {
     this.users = users;
     this.teams = teams;
     this.competitions = competitions;
     this.seasons = seasons;
+    this.gameRounds = gameRounds;
     this.matches = matches;
     this.predictions = predictions;
+    this.leaderboards = leaderboards;
   }
 }
 
@@ -48,25 +59,25 @@ interface Builder<T> {
 
 class CompetitionBuilder implements Builder<Competition> {
   private built = {} as Competition;
-  private competition?: Competition;
+  public competition?: Competition;
 
-  name(value: string) {
+  get id() {
+    return this.competition?.id!;
+  }
+
+  setName(value: string) {
     this.built.name = value;
     return this;
   }
 
-  code(value: string) {
+  setCode(value: string) {
     this.built.code = value;
     return this;
   }
 
-  slug(value: string) {
+  setSlug(value: string) {
     this.built.slug = value;
     return this;
-  }
-
-  getSlug() {
-    return this.competition?.slug;
   }
 
   async build(): Promise<Competition> {
@@ -75,148 +86,18 @@ class CompetitionBuilder implements Builder<Competition> {
   }
 }
 
-class SeasonBuilder implements Builder<Season> {
-  private built = {} as Season;
-  private competitionBuilder?: CompetitionBuilder;
-  private teamBuilders: TeamBuilder[] = [];
-  private matchBuilders: MatchBuilder[] = [];
-  private season?: Season;
-  private predictions: Prediction[] = [];
-
-  constructor(private gameBuilder: GameBuilder) {}
-
-  reset() {
-    this.teamBuilders = [];
-    this.matchBuilders = [];
-    this.predictions = [];
-  }
-
-  name(value: string) {
-    this.built.name = value;
-    return this;
-  }
-
-  slug(value: string) {
-    this.built.slug = value;
-    return this;
-  }
-
-  year(value: number) {
-    this.built.year = value;
-    return this;
-  }
-
-  seasonStart(value: string) {
-    this.built.seasonStart = value;
-    return this;
-  }
-
-  seasonEnd(value: string) {
-    this.built.seasonEnd = value;
-    return this;
-  }
-
-  currentMatchRound(value: number) {
-    this.built.currentMatchRound = value;
-    return this;
-  }
-
-  currentGameRound(value: number) {
-    this.built.currentGameRound = value;
-    return this;
-  }
-
-  externalReference(value: any) {
-    this.built.externalReference = value;
-    return this;
-  }
-
-  withCompetition(competition: CompetitionBuilder) {
-    this.competitionBuilder = competition;
-    return this;
-  }
-
-  withTeams(...teams: TeamBuilder[]) {
-    this.teamBuilders = teams;
-    return this;
-  }
-
-  getTeams() {
-    const teams = this.gameBuilder.teams.filter(gameTeam =>
-      this.teamBuilders.some(
-        teamBuilder => gameTeam.slug! === teamBuilder.getSlug(),
-      ),
-    );
-    return teams;
-  }
-
-  getUsers() {
-    return this.gameBuilder.users;
-  }
-
-  getPredictions() {
-    return this.predictions;
-  }
-
-  addPredictions(predictions: Prediction[]) {
-    this.predictions = [...this.predictions, ...predictions];
-  }
-
-  getCompetition() {
-    const competition = this.gameBuilder.competitions.find(
-      gameCompetition =>
-        gameCompetition.slug === this.competitionBuilder?.getSlug(),
-    );
-    return competition;
-  }
-
-  getSeason() {
-    return this.season;
-  }
-
-  withMatches(...matches: MatchBuilder[]) {
-    this.matchBuilders = matches;
-    return this;
-  }
-
-  async build(): Promise<Season> {
-    const { name, slug, id } = this.getCompetition() as Required<Competition>;
-    this.built.competition = { name, slug, id };
-    this.built.teams = this.getTeams().map((t: any) => t._id as any);
-    this.season = await db.Season.create(this.built);
-    const matches = await Promise.all(
-      this.matchBuilders.map(async builder => {
-        builder.season(this);
-        const match = await builder.build();
-        return match;
-      }),
-    );
-
-    this.gameBuilder.matches = [...this.gameBuilder.matches, ...matches];
-    this.gameBuilder.predictions = [
-      ...this.gameBuilder.predictions,
-      ...this.predictions,
-    ];
-    return this.season;
-  }
-}
-
 class TeamBuilder implements Builder<Team> {
   private built = {} as Team;
-  private team?: Team;
+  public team?: Team;
 
-  name(value: string) {
+  setName(value: string) {
     this.built.name = value;
     return this;
   }
 
-  slug(value: string) {
+  setSlug(value: string) {
     this.built.slug = value;
     return this;
-  }
-
-  getSlug() {
-    return this.team?.slug;
   }
 
   async build(): Promise<Team> {
@@ -225,129 +106,20 @@ class TeamBuilder implements Builder<Team> {
   }
 }
 
-class MatchBuilder implements Builder<Match> {
-  private built = {
-    status: MatchStatus.SCHEDULED,
-  } as Match;
-  private seasonBuilder?: SeasonBuilder;
-  private homeTeamBuilder?: TeamBuilder;
-  private awayTeamBuilder?: TeamBuilder;
-  private predictionBuilders: PredictionBuilder[] = [];
-  private match?: Match;
-
-  season(season: SeasonBuilder) {
-    this.seasonBuilder = season;
-    return this;
-  }
-
-  homeTeam(team: TeamBuilder) {
-    this.homeTeamBuilder = team;
-    return this;
-  }
-
-  awayTeam(team: TeamBuilder) {
-    this.awayTeamBuilder = team;
-    return this;
-  }
-
-  getHomeTeam() {
-    return this.seasonBuilder
-      ?.getTeams()
-      .find(team => team.slug === this.homeTeamBuilder?.getSlug());
-  }
-
-  getAwayTeam() {
-    return this.seasonBuilder
-      ?.getTeams()
-      .find(team => team.slug === this.awayTeamBuilder?.getSlug());
-  }
-
-  status(value: MatchStatus) {
-    this.built.status = value;
-    return this;
-  }
-
-  date(value: any) {
-    this.built.date = value;
-    return this;
-  }
-
-  gameRound(value: number) {
-    this.built.gameRound = value;
-    return this;
-  }
-
-  withPredictions(...predictions: PredictionBuilder[]) {
-    this.predictionBuilders = predictions;
-    return this;
-  }
-
-  getUsers() {
-    return this.seasonBuilder?.getUsers();
-  }
-
-  getMatch() {
-    return this.match;
-  }
-
-  async build(): Promise<Match> {
-    const {
-      id: seasonId,
-      currentMatchRound,
-    } = this.seasonBuilder?.getSeason() as Required<Season>;
-    this.built.season = seasonId;
-    this.built.gameRound ?? currentMatchRound;
-    this.built.matchRound ?? currentMatchRound;
-    const {
-      name: htName,
-      id: htId,
-      slug: htSlug,
-    } = this.getHomeTeam() as Required<Team>;
-    this.built.homeTeam = {
-      name: htName,
-      id: htId,
-      slug: htSlug,
-      crestUrl: '',
-    };
-    let {
-      name: atName,
-      id: atId,
-      slug: atSlug,
-    } = this.getAwayTeam() as Required<Team>;
-    this.built.awayTeam = {
-      name: atName,
-      id: atId,
-      slug: atSlug,
-      crestUrl: '',
-    };
-    this.built.slug = `${htSlug}-${atSlug}`;
-    this.match = await db.Match.create(this.built);
-    const predictions = await Promise.all(
-      this.predictionBuilders.map(async builder => {
-        builder.match(this);
-        const prediction = await builder.build();
-        return prediction;
-      }),
-    );
-    this.seasonBuilder?.addPredictions(predictions);
-    return this.match;
-  }
-}
-
 class UserBuilder implements Builder<User> {
   private built = {} as User;
-  private user?: User;
+  public user?: User;
 
-  username(value: string) {
+  get id() {
+    return this.user?.id!;
+  }
+
+  setUsername(value: string) {
     this.built.username = value;
     return this;
   }
 
-  getUsername() {
-    return this.user?.username;
-  }
-
-  email(value: string) {
+  setEmail(value: string) {
     this.built.email = value;
     return this;
   }
@@ -355,6 +127,301 @@ class UserBuilder implements Builder<User> {
   async build(): Promise<User> {
     this.user = await db.User.create(this.built);
     return this.user;
+  }
+}
+
+class GameRoundBuilder implements Builder<GameRound> {
+  private built = {} as GameRound;
+  private seasonBuilder?: SeasonBuilder;
+  public gameRound?: GameRound;
+
+  get id() {
+    return this.gameRound?.id!;
+  }
+
+  setName(value: string) {
+    this.built.name = value;
+    return this;
+  }
+
+  setPosition(value: number) {
+    this.built.position = value;
+    return this;
+  }
+
+  withSeason(seasonBuilder: SeasonBuilder) {
+    this.seasonBuilder = seasonBuilder;
+    return this;
+  }
+
+  get season(): Season {
+    return this.seasonBuilder?.season!;
+  }
+
+  async build(): Promise<GameRound> {
+    this.built.season = this.season?.id;
+
+    this.gameRound = await db.GameRound.create(this.built);
+    return this.gameRound;
+  }
+}
+
+class SeasonBuilder implements Builder<Season> {
+  private built = {} as Season;
+  private competitionBuilder?: CompetitionBuilder;
+  private teamBuilders: TeamBuilder[] = [];
+  private gameRoundBuilders: GameRoundBuilder[] = [];
+  private matchBuilders: MatchBuilder[] = [];
+  private leaderboardBuilders: LeaderboardBuilder[] = [];
+  public season?: Season;
+
+  constructor() { }
+
+  get id() {
+    return this.season?.id!;
+  }
+
+  setName(value: string) {
+    this.built.name = value;
+    return this;
+  }
+
+  setSlug(value: string) {
+    this.built.slug = value;
+    return this;
+  }
+
+  get slug() {
+    return this.season?.slug;
+  }
+
+  setYear(value: number) {
+    this.built.year = value;
+    return this;
+  }
+
+  setSeasonStart(value: string) {
+    this.built.seasonStart = value;
+    return this;
+  }
+
+  setSeasonEnd(value: string) {
+    this.built.seasonEnd = value;
+    return this;
+  }
+
+  setCurrentMatchRound(value: number) {
+    this.built.currentMatchRound = value;
+    return this;
+  }
+
+  setExternalReference(value: any) {
+    this.built.externalReference = value;
+    return this;
+  }
+
+  withCompetition = (competitionBuilder: CompetitionBuilder) => {
+    this.competitionBuilder = competitionBuilder;
+    return this;
+  }
+
+  get competition(): Competition {
+    return this.competitionBuilder?.competition!;
+  }
+
+  withTeams(...teamBuilders: TeamBuilder[]) {
+    this.teamBuilders = teamBuilders;
+    return this;
+  }
+
+  get teams(): Team[] {
+    return compact(this.teamBuilders.map(n => n.team!));
+  }
+
+  withGameRounds(...gameRoundBuilders: GameRoundBuilder[]) {
+    gameRoundBuilders.forEach(builder => builder.withSeason(this))
+    this.gameRoundBuilders = gameRoundBuilders;
+    return this;
+  }
+
+  get gameRounds(): GameRound[] {
+    return compact(this.gameRoundBuilders.map(n => n.gameRound!));
+  }
+
+  withMatches(...matchBuilders: MatchBuilder[]) {
+    matchBuilders.forEach(builder => builder.withSeason(this))
+    this.matchBuilders = matchBuilders;
+    return this;
+  }
+
+  get matches(): Match[] {
+    return compact(this.matchBuilders.map(n => n.match!));
+  }
+
+  get predictions(): Prediction[] {
+    return flatMap(this.matchBuilders.map(n => n.predictions));
+  }
+
+  get leaderboards(): Leaderboard[] {
+    return compact(this.leaderboardBuilders.map(n => n.leaderboard))
+  }
+
+  withLeaderboards(...leaderboardBuilders: LeaderboardBuilder[]) {
+    leaderboardBuilders.forEach(builder => builder.withSeason(this))
+    this.leaderboardBuilders = leaderboardBuilders;
+    return this;
+  }
+
+  async build(): Promise<Season> {
+    if (this.competition == null) {
+      await this.competitionBuilder?.build()!;
+    }
+    this.built.competition = {
+      name: this.competition?.name!,
+      slug: this.competition?.slug!,
+      id: this.competition?.id!,
+    };
+
+    if (this.teams.length == 0) {
+      await Promise.all(
+        this.teamBuilders.map(async builder => {
+          return await builder.build();
+        }),
+      );
+    }
+    this.built.teams = this.teams.map(n => n.id!);
+    this.season = await db.Season.create(this.built);
+
+    await Promise.all(
+      this.gameRoundBuilders.map(async builder => {
+        return await builder.build();
+      })
+    )
+
+    await Promise.all(
+      this.matchBuilders.map(async builder => {
+        return await builder.build();
+      }),
+    );
+
+    await Promise.all(
+      this.leaderboardBuilders.map(async builder => {
+        return await builder.build();
+      }),
+    );
+
+    return this.season;
+  }
+}
+
+class MatchBuilder implements Builder<Match> {
+  private built = {
+    result: {
+      goalsHomeTeam: 0,
+      goalsAwayTeam: 0
+    },
+    status: MatchStatus.SCHEDULED,
+  } as Match;
+  private seasonBuilder?: SeasonBuilder;
+  private gameRoundBuilder?: GameRoundBuilder;
+  private homeTeamBuilder?: TeamBuilder;
+  private awayTeamBuilder?: TeamBuilder;
+  private predictionBuilders: PredictionBuilder[] = [];
+  public match?: Match;
+
+  get id() {
+    return this.match?.id!;
+  }
+
+  get slug() {
+    return this.match?.slug!;
+  }
+
+  setStatus(value: MatchStatus) {
+    this.built.status = value;
+    return this;
+  }
+
+  setDate(value: any) {
+    this.built.date = value;
+    return this;
+  }
+
+  withSeason(seasonBuilder: SeasonBuilder) {
+    this.seasonBuilder = seasonBuilder;
+    return this;
+  }
+
+  get season(): Season {
+    return this.seasonBuilder?.season!;
+  }
+
+  withGameRound(gameRoundBuilder: GameRoundBuilder) {
+    this.gameRoundBuilder = gameRoundBuilder;
+    return this;
+  }
+
+  get gameRound(): GameRound {
+    return this.gameRoundBuilder?.gameRound!;
+  }
+
+  withHomeTeam(teamBuilder: TeamBuilder) {
+    this.homeTeamBuilder = teamBuilder;
+    return this;
+  }
+
+  get homeTeam(): Team {
+    return this.homeTeamBuilder?.team!;
+  }
+
+  withAwayTeam(teamBuilder: TeamBuilder) {
+    this.awayTeamBuilder = teamBuilder;
+    return this;
+  }
+
+  get awayTeam(): Team {
+    return this.awayTeamBuilder?.team!;
+  }
+
+  setHomeScore(homeScore: number) {
+    this.built.result!.goalsHomeTeam = homeScore;
+    return this;
+  }
+
+  setAwayScore(awayScore: number) {
+    this.built.result!.goalsAwayTeam = awayScore;
+    return this;
+  }
+
+  withPredictions(...predictionBuilders: PredictionBuilder[]) {
+    predictionBuilders.forEach(builder => builder.withMatch(this))
+    this.predictionBuilders = predictionBuilders;
+    return this;
+  }
+
+  get predictions(): Prediction[] {
+    return compact(this.predictionBuilders.map(n => n.prediction!))
+  }
+
+  async build(): Promise<Match> {
+    this.built.season = this.season?.id;
+    const { name: homeTeamName, id: homeTeamId, slug: homeTeamSlug, crestUrl: homeTeamCrestUrl } = this.homeTeam;
+    this.built.homeTeam = { id: homeTeamId!, name: homeTeamName, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
+
+    const { name: awayTeamName, id: awayTeamId, slug: awayTeamSlug, crestUrl: awayTeamCrestUrl } = this.awayTeam;
+    this.built.awayTeam = { id: awayTeamId!, name: awayTeamName, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
+
+    this.built.slug = `${this.built.homeTeam?.slug}-${this.built.awayTeam?.slug}`;
+    this.built.gameRound = this.gameRound.id;
+    this.match = await db.Match.create(this.built);
+
+    await Promise.all(
+      this.predictionBuilders.map(async builder => {
+        return await builder.build();
+      }),
+    );
+
+    return this.match;
   }
 }
 
@@ -371,130 +438,200 @@ class PredictionBuilder implements Builder<Prediction> {
   } as Prediction;
   private userBuilder?: UserBuilder;
   private matchBuilder?: MatchBuilder;
+  public prediction?: Prediction;
 
-  user(user: UserBuilder) {
-    this.userBuilder = user;
-    return this;
+  get id() {
+    return this.prediction?.id!
   }
 
-  getUser() {
-    return this.matchBuilder
-      ?.getUsers()
-      ?.find(user => user.username === this.userBuilder?.getUsername());
-  }
-
-  homeScore(homeScore: number) {
+  setHomeScore(homeScore: number) {
     this.built.choice.goalsHomeTeam = homeScore;
     return this;
   }
 
-  awayScore(awayScore: number) {
+  setAwayScore(awayScore: number) {
     this.built.choice.goalsAwayTeam = awayScore;
     return this;
   }
 
-  computerPick(isComputerPick: boolean) {
+  setComputerPick(isComputerPick: boolean) {
     this.built.choice.isComputerGenerated = isComputerPick;
     return this;
   }
 
-  joker(isJoker: boolean) {
+  setJoker(isJoker: boolean) {
     this.built.hasJoker = isJoker;
     return this;
   }
 
-  match(match: MatchBuilder) {
-    this.matchBuilder = match;
+  withUser(userBuilder: UserBuilder) {
+    this.userBuilder = userBuilder;
     return this;
   }
 
+  get user(): User {
+    return this.userBuilder?.user!;
+  }
+
+  withMatch(matchBuilder: MatchBuilder) {
+    this.matchBuilder = matchBuilder;
+    return this;
+  }
+
+  get match(): Match {
+    return this.matchBuilder?.match!;
+  }
+
   async build(): Promise<Prediction> {
+    if (this.match == null) {
+      await this.matchBuilder?.build();
+    }
+
+    if (this.user == null) {
+      await this.userBuilder?.build();
+    }
+
     const {
       id: matchId,
       slug: matchSlug,
-      season,
-      gameRound,
-    } = this.matchBuilder?.getMatch() as Required<Match>;
-    const { id: userId } = this.getUser() as Required<User>;
+    } = this.match as Required<Match>;
+
+    const { id: userId } = this.user as Required<User>;
     this.built.match = matchId;
     this.built.matchSlug = matchSlug;
     this.built.user = userId;
-    this.built.season = season;
-    this.built.gameRound = gameRound;
-    const prediction = await db.Prediction.create(this.built);
-    return prediction;
+
+    this.prediction = await db.Prediction.create(this.built);
+    return this.prediction;
   }
 }
 
-class GameBuilder implements Builder<GameData> {
+class LeaderboardBuilder implements Builder<Leaderboard> {
+  private built = {} as Leaderboard;
+  private seasonBuilder?: SeasonBuilder;
+  private gameRoundBuilder?: GameRoundBuilder;
+  public leaderboard?: Leaderboard;
+
+  get id() {
+    return this.leaderboard?.id!
+  }
+
+  setBoardType(boardType: any) {
+    this.built.boardType = boardType
+    return this;
+  }
+
+  withSeason(seasonBuilder: SeasonBuilder) {
+    this.seasonBuilder = seasonBuilder;
+    return this;
+  }
+
+  get season(): Season {
+    return this.seasonBuilder?.season!;
+  }
+
+  withGameRound(gameRoundBuilder: GameRoundBuilder) {
+    this.gameRoundBuilder = gameRoundBuilder;
+    return this;
+  }
+
+  get gameRound(): GameRound {
+    return this.gameRoundBuilder?.gameRound!;
+  }
+
+  async build(): Promise<Leaderboard> {
+    this.built.season = this.season.id!;
+
+    // check if gameRound was set to determine if we have a gameRound leaderboard
+    if (this.gameRound != null) {
+      this.built.gameRound = this.gameRound.id
+    }
+
+    this.leaderboard = await db.Leaderboard.create(this.built);
+    return this.leaderboard
+  }
+}
+
+export class GameBuilder implements Builder<GameData> {
   private userBuilders: UserBuilder[] = [];
   private teamBuilders: TeamBuilder[] = [];
   private competitionBuilders: CompetitionBuilder[] = [];
   private seasonBuilders: SeasonBuilder[] = [];
-  public users: User[] = [];
-  public teams: Team[] = [];
-  public competitions: Competition[] = [];
-  public seasons: Season[] = [];
-  public matches: Match[] = [];
-  public predictions: Prediction[] = [];
 
-  withUsers(...users: UserBuilder[]) {
-    this.userBuilders = users;
+  withUsers(...userBuilders: UserBuilder[]) {
+    this.userBuilders = userBuilders;
     return this;
   }
 
-  withTeams(...teams: TeamBuilder[]) {
-    this.teamBuilders = teams;
+  get users(): User[] {
+    return compact(this.userBuilders.map(n => n.user!));
+  }
+
+  withTeams(...teamBuilders: TeamBuilder[]) {
+    this.teamBuilders = teamBuilders;
     return this;
   }
 
-  withCompetitions(...competitions: CompetitionBuilder[]) {
-    this.competitionBuilders = competitions;
+  get teams(): Team[] {
+    return compact(this.teamBuilders.map(n => n.team!))
+  }
+
+  withCompetitions(...competitionBuilders: CompetitionBuilder[]) {
+    this.competitionBuilders = competitionBuilders;
     return this;
   }
 
-  withSeasons(...seasons: SeasonBuilder[]) {
-    this.seasonBuilders = seasons;
+  get competitions(): Competition[] {
+    return compact(this.competitionBuilders.map(n => n.competition!));
+  }
+
+  withSeasons(...seasonBuilders: SeasonBuilder[]) {
+    this.seasonBuilders = seasonBuilders;
     return this;
   }
 
-  private reset() {
-    this.users = [];
-    this.teams = [];
-    this.competitions = [];
-    this.seasons = [];
-    this.matches = [];
-    this.predictions = [];
+  get seasons(): Season[] {
+    return compact(this.seasonBuilders.map(n => n.season!));
+  }
 
-    this.seasonBuilders.forEach(builder => builder.reset());
+  get gameRounds(): GameRound[] {
+    return flatMap(this.seasonBuilders.map(n => n.gameRounds));
+  }
+
+  get matches(): Match[] {
+    return flatMap(this.seasonBuilders.map(n => n.matches))
+  }
+
+  get predictions(): Prediction[] {
+    return flatMap(this.seasonBuilders.map(n => n.predictions));
+  }
+
+  get leaderboards(): Leaderboard[] {
+    return flatMap(this.seasonBuilders.map(n => n.leaderboards));
   }
 
   async build(): Promise<Game> {
-    this.users = await Promise.all(
+    await Promise.all(
       this.userBuilders.map(async builder => {
-        const user = await builder.build();
-        return user;
+        return await builder.build();
       }),
     );
 
-    this.teams = await Promise.all(
+    await Promise.all(
       this.teamBuilders.map(async builder => {
-        const team = await builder.build();
-        return team;
+        return await builder.build();
       }),
     );
 
-    this.competitions = await Promise.all(
+    await Promise.all(
       this.competitionBuilders.map(async builder => {
-        const competition = await builder.build();
-        return competition;
+        return await builder.build();
       }),
     );
 
-    this.seasons = await Promise.all(
+    await Promise.all(
       this.seasonBuilders.map(async builder => {
-        const season = await builder.build();
-        return season;
+        return await builder.build();
       }),
     );
 
@@ -503,25 +640,31 @@ class GameBuilder implements Builder<GameData> {
       teams: this.teams,
       competitions: this.competitions,
       seasons: this.seasons,
+      gameRounds: this.gameRounds,
       matches: this.matches,
       predictions: this.predictions,
+      leaderboards: this.leaderboards
     });
-
-    this.reset();
 
     return game;
   }
 }
 
 class a {
-  static game = new GameBuilder();
+  static get game() {
+    return new GameBuilder();
+  }
 
   static get competition() {
     return new CompetitionBuilder();
   }
 
   static get season() {
-    return new SeasonBuilder(a.game);
+    return new SeasonBuilder();
+  }
+
+  static get gameRound() {
+    return new GameRoundBuilder();
   }
 
   static get team() {
@@ -538,6 +681,10 @@ class a {
 
   static get prediction() {
     return new PredictionBuilder();
+  }
+
+  static get leaderboard() {
+    return new LeaderboardBuilder();
   }
 }
 
