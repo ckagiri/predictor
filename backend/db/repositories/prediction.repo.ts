@@ -1,5 +1,5 @@
-import { EMPTY, Observable, of, from, throwError, forkJoin } from 'rxjs';
-import { filter, first, flatMap, map, catchError, toArray, concatMap } from 'rxjs/operators';
+import { EMPTY, Observable, of, from, throwError, forkJoin, iif } from 'rxjs';
+import { filter, first, flatMap, map, catchError, toArray, concatMap, switchMap } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -14,7 +14,7 @@ import {
 } from '../repositories/match.repo';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
-import { differenceWith, uniq } from 'lodash';
+import { differenceWith, head, uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
@@ -133,18 +133,33 @@ export class PredictionRepositoryImpl
         flatMap(matches => {
           return this.findOrCreateJoker$(userId, roundId, true, matches)
             .pipe(
-              map(joker => {
-                return { matches, joker }
+              map(() => {
+                return matches
               })
             )
         })
       )
       .pipe(
-        // todo: optimise - fetch user round predictions, if eq size with matches return
-        flatMap(({ matches }) => matches),
-        flatMap(match => {
-          return this.findOneOrCreate$(userId, match.id!)
+        flatMap(matches => {
+          return this.findAll$({
+            user: userId,
+            match: { $in: matches.map(n => n.id) },
+          }).pipe(
+            map(predictions => {
+              return { matches, predictions }
+            })
+          )
         }),
+        flatMap(({ matches, predictions }) =>
+          iif(
+            () => matches.length === predictions.length,
+            from(predictions),
+            from(matches)
+              .pipe(flatMap(match => {
+                return this.findOneOrCreate$(userId, match.id!)
+              }))
+          )
+        ),
         toArray()
       )
   }
@@ -217,7 +232,7 @@ export class PredictionRepositoryImpl
                 if (jokers.length) {
                   return this.upsertMany$(jokers);
                 } else {
-                  return of(undefined);
+                  return of(head(jokerPredictions));
                 }
               })
             )
@@ -227,13 +242,15 @@ export class PredictionRepositoryImpl
               }),
             )
             .pipe(
-              flatMap(() => {
-                // todo: optimize - check if param is joker
-                return super.findOne$({
-                  user: userId,
-                  match: { $in: matchIds },
-                  hasJoker: true
-                })
+              flatMap(result => {
+                if (result.constructor.name === 'BulkWriteResult') {
+                  return super.findOne$({
+                    user: userId,
+                    match: { $in: matchIds },
+                    hasJoker: true
+                  })
+                }
+                return of(result as Prediction)
               })
             )
         })

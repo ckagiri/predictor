@@ -272,6 +272,31 @@ describe('Prediction repo', function () {
     });
 
     describe('findOrCreateJoker', () => {
+      it('should find joker if it exists', done => {
+        const userId = user1.id;
+        const roundId = gw1.id;
+
+        const userId1matchId1Pred: Prediction = {
+          user: userId,
+          match: manuVmanc.id,
+          matchSlug: manuVmanc.slug,
+          choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+          hasJoker: true,
+          jokerAutoPicked: true,
+        };
+
+        predictionRepo
+          .insertMany$([userId1matchId1Pred])
+          .pipe(
+            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+          )
+          .subscribe(p => {
+            expect(p).to.have.property('hasJoker', true);
+            expect(p).to.have.property('jokerAutoPicked', true);
+            done();
+          });
+      });
+
       it('should create joker if it doesnt exist', done => {
         const userId = user1.id;
         const roundId = gw1.id;
@@ -334,6 +359,49 @@ describe('Prediction repo', function () {
           });
       });
     });
+
+    it('should find Predictions', done => {
+      const userId1 = user1.id;
+      const roundId1 = gw1.id;
+
+      const userId1matchId1Pred: Prediction = {
+        user: userId1,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        hasJoker: true,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+      };
+
+      const userId1matchId2Pred: Prediction = {
+        user: userId1,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        hasJoker: false,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: false },
+      };
+
+      const userId1matchId3Pred: Prediction = {
+        user: userId1,
+        match: livVtot.id,
+        matchSlug: livVtot.slug,
+        hasJoker: false,
+        jokerAutoPicked: false,
+        choice: { goalsHomeTeam: 2, goalsAwayTeam: 0, isComputerGenerated: false },
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred, userId1matchId3Pred])
+        .pipe(
+          flatMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(3)
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          done();
+        });
+    })
 
     it('should findOrCreatePredictions', done => {
       const userId1 = user1.id;
