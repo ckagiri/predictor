@@ -27,6 +27,8 @@ pickJoker(userId, matchId)
 unsetJoker(userId, match)
 findOrCreatePicks() { isComputerGenerated? }
 
+// findOrCreatePicks -> optimize, get matches - zip em with prediction, get match odds; use VosePredictor
+
 processor -> createPredictionsIfNotExist(roundId) -> findOrCreateJoker, (findOrCreatePredictions -> findOrCreatePrediction)
 processor -> unsetJokers(matchId) -> unsetJoker
 
@@ -53,3 +55,7 @@ match finished/cancelled/postponed? or not scheduled/timed?
 dao should be composed not inherited base-repo
 vose predictor laterz
 refactor tests undefined types
+
+<<< userScore
+- findStandingAndUpsert
+>>>
