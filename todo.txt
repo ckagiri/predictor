@@ -27,7 +27,8 @@ pickJoker(userId, matchId)
 unsetJoker(userId, match)
 findOrCreatePicks() { isComputerGenerated? }
 
-// findOrCreatePicks -> optimize, get matches - zip em with prediction, get match odds; use VosePredictor
+findOrCreatePicks -> optimize, get matches - zip em with prediction, get match odds; use VosePredictor
+findOneOrCreate -> optimize pass full match not matchId
 
 processor -> createPredictionsIfNotExist(roundId) -> findOrCreateJoker, (findOrCreatePredictions -> findOrCreatePrediction)
 processor -> unsetJokers(matchId) -> unsetJoker
