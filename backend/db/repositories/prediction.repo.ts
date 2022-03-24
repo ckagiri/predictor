@@ -24,11 +24,11 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     roundMatches?: Match[]
   ): Observable<Prediction>;
   findOne$(userId: string, matchId: string): Observable<Prediction>;
-  findOneOrCreate$(userId: string, matchId: string): Observable<Prediction>;
+  findOneOrCreate$(userId: string, matchId: string): Observable<Prediction>; // todo pass full match
   findOrCreatePredictions$(userId: string, roundId: string): Observable<Prediction[]>;
   findOrCreatePicks$(userId: string, roundId: string): Observable<Prediction[]>;
-  findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
-  findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
+  findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>; // handle: match is complete
+  findOneAndUpsert$(userId: string, matchId: string, choice: Score): Observable<Prediction>; // todo: delete
   pickJoker$(userId: string, matchId: string): Observable<Prediction[]>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction>;
 }
@@ -154,7 +154,7 @@ export class PredictionRepositoryImpl
           iif(
             () => matches.length === predictions.length,
             from(predictions),
-            from(matches)
+            from(matches) // todo: iff predictions.length == 0
               .pipe(flatMap(match => {
                 return this.findOneOrCreate$(userId, match.id!)
               }))
