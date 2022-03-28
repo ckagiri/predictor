@@ -187,29 +187,7 @@ describe('Prediction repo', function () {
         });
     });
 
-    it('should find by user and match And insert if it doesnt exist', done => {
-      const userId = user1.id;
-      const matchId = manuVmanc.id;
-      const matchSlug = manuVmanc.slug;
-      const choice = { goalsHomeTeam: 2, goalsAwayTeam: 1 }
-
-      predictionRepo.findOneAndUpsert$(userId, matchId, choice)
-        .pipe(
-          flatMap(() => {
-            return predictionRepo.findOne$(userId, matchId);
-          }),
-        )
-        .subscribe(pred => {
-          expect(pred.match.toString()).to.equal(matchId);
-          expect(pred.matchSlug).to.equal(matchSlug);
-          expect(pred.choice.goalsHomeTeam).to.equal(choice.goalsHomeTeam);
-          expect(pred.choice.goalsHomeTeam).to.equal(choice.goalsHomeTeam);
-          expect(pred.choice.isComputerGenerated).to.be.true
-          done();
-        });
-    });
-
-    it('should find by user and match And update if it exists (upsert variation)', done => {
+    it('should find by user and match And update', done => {
       const userId = user1.id;
       const matchId = manuVmanc.id;
       const matchSlug = manuVmanc.slug;
@@ -227,7 +205,7 @@ describe('Prediction repo', function () {
         .insert$(userId1matchId1Pred)
         .pipe(
           flatMap(() => {
-            return predictionRepo.findOneAndUpsert$(userId, matchId, newChoice);
+            return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
           }),
         )
         .subscribe(pred => {
@@ -236,6 +214,18 @@ describe('Prediction repo', function () {
           expect(pred.choice.goalsHomeTeam).to.equal(newChoice.goalsHomeTeam);
           expect(pred.choice.goalsAwayTeam).to.equal(newChoice.goalsAwayTeam);
           expect(pred.choice.isComputerGenerated).to.be.false
+          done();
+        });
+    });
+
+    it('should throw if it cant find by user and match to update', done => {
+      const userId = user1.id;
+      const matchId = manuVmanc.id;
+      const choice = { goalsHomeTeam: 2, goalsAwayTeam: 1 }
+
+      predictionRepo.findOneAndUpdate$(userId, matchId, choice)
+        .subscribe(pred => { console.log(pred); done(); }, err => {
+          expect(err).match(/does not exist/i);
           done();
         });
     });
@@ -403,7 +393,7 @@ describe('Prediction repo', function () {
         });
     })
 
-    it('should findOrCreatePredictions', done => {
+    it.only('should findOrCreatePredictions', done => {
       const userId1 = user1.id;
       const roundId1 = gw1.id;
 
@@ -413,7 +403,7 @@ describe('Prediction repo', function () {
         matchSlug: manuVmanc.slug,
         hasJoker: true,
         jokerAutoPicked: true,
-        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
+        choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
       };
 
       const userId1matchId2Pred: Prediction = {
@@ -422,7 +412,7 @@ describe('Prediction repo', function () {
         matchSlug: cheVars.slug,
         hasJoker: true,
         jokerAutoPicked: false,
-        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: false },
+        choice: { goalsHomeTeam: 2, goalsAwayTeam: 0, isComputerGenerated: false },
       };
 
       predictionRepo
@@ -549,9 +539,10 @@ describe('Prediction repo', function () {
           flatMap(() => predictionRepo.findOrCreatePicks$(userId1, roundId1))
         )
         .subscribe(preds => {
-          expect(preds).to.have.length(3)
+          expect(preds).to.have.length(2)
           expect(preds.filter(p => p.hasJoker)).to.have.length(1);
-          expect(preds.some(p => p.choice.isComputerGenerated)).to.be.false
+          expect(preds.find(p => p.hasJoker)?.match.toString()).to.equal(manuVmanc.id)
+          expect(preds.filter(p => p.choice.isComputerGenerated)).to.be.empty
           done();
         });
     })

@@ -98,6 +98,20 @@ export class BaseRepositoryImpl<
     });
   }
 
+  public updateMany$(objs: Entity[]): Observable<any> {
+    return Observable.create((observer: Subscriber<T[]>) => {
+      this.updateMany(objs).then(
+        (result: T[]) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        },
+      );
+    });
+  }
+
   public findByIdAndUpdate$(id: string, update: any): Observable<T> {
     return Observable.create((observer: Subscriber<T>) => {
       this.findByIdAndUpdate(id, update).then(
