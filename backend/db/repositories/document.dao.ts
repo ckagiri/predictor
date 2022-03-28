@@ -36,6 +36,7 @@ export class DocumentDao<T extends Document> {
   public upsertMany(objs: Entity[]): Promise<any> {
     //Create bulk operations
     const ops = objs.map((obj: any) => {
+      //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
         obj = new this.Model(obj);
       }
@@ -54,6 +55,28 @@ export class DocumentDao<T extends Document> {
           filter: { _id: obj.id },
           update: obj,
           upsert: true
+        }
+      }
+    });
+    return this.Model.bulkWrite(ops);
+  }
+
+  public updateMany(objs: Entity[]): Promise<any> {
+    //Create bulk operations
+    const ops = objs.map((obj: any) => {
+      //Ensure item is a model, to allow inclusion of default values
+      if (!(obj instanceof this.Model)) {
+        obj = new this.Model(obj);
+      }
+      // Convert to plain object
+      if (obj instanceof this.Model) {
+        obj = obj.toObject({ depopulate: true });
+      }
+
+      return {
+        updateOne: {
+          filter: { _id: obj.id },
+          update: obj,
         }
       }
     });

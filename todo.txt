@@ -60,3 +60,7 @@ refactor tests undefined types
 <<< userScore
 - findStandingAndUpsert
 >>>
+
+<<< pred-repo
+ assert more
+<<<
