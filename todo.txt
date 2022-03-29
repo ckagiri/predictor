@@ -63,4 +63,9 @@ refactor tests undefined types
 
 <<< pred-repo
  assert more
+ withJoker parameter
 <<<
+
+<<< gameRound
+  add jokerPickable? -> for last 8 wc
+>>>
