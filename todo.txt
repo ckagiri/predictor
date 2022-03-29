@@ -64,6 +64,7 @@ refactor tests undefined types
 <<< pred-repo
  assert more
  withJoker parameter
+ handle nil match and empty matches --> rearrange rx pipelines
 <<<
 
 <<< gameRound
