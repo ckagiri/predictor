@@ -393,7 +393,7 @@ describe('Prediction repo', function () {
         });
     })
 
-    it.only('should findOrCreatePredictions', done => {
+    it('should findOrCreatePredictions', done => {
       const userId1 = user1.id;
       const roundId1 = gw1.id;
 
@@ -442,7 +442,7 @@ describe('Prediction repo', function () {
             return predictionRepo.unsetJoker$(user1.id, manuVmanc.id)
           })
         ).subscribe(pred => {
-          expect(pred.hasJoker).to.be.false
+          expect(pred?.hasJoker).to.be.false
           done();
         })
     });
