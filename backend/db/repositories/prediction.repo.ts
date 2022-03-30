@@ -68,7 +68,7 @@ export class PredictionRepositoryImpl
           if (!prediction) {
             return throwError('prediction does not exist');
           }
-          return super.findOneAndUpdate$({ user: userId, match: matchId }, { choice })
+          return super.findOneAndUpdate$({ user: userId, match: matchId }, { ...choice, isComputerGenerated: false })
         })
       );
   }
@@ -212,7 +212,8 @@ export class PredictionRepositoryImpl
                       return Boolean(prediction.choice.isComputerGenerated) && Boolean(matchIsScheduled);
                     }),
                     map(prediction => {
-                      prediction.choice = this.getRandomMatchScore(false);
+                      const isComputerGenerated = false;
+                      prediction.choice = this.getRandomMatchScore(isComputerGenerated);
                       return prediction;
                     }),
                     toArray(),
