@@ -83,6 +83,7 @@ export class MatchRepositoryImpl
           'homeTeam.id': homeTeam && homeTeam.id,
           'awayTeam.id': awayTeam && awayTeam.id,
         };
+        // todo: what is goin on here?
         delete data.externalReference;
         data.gameRound = gameRound;
         Object.keys(data).forEach(key => data[key] == null && delete data[key]);

@@ -69,3 +69,8 @@ refactor tests undefined types
 <<< gameRound
   add jokerPickable? -> for last 8 wc
 >>>
+
+<<< frontend
+  add slug to gameRound
+  create constants
+>>>>
