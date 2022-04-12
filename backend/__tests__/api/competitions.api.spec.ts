@@ -18,17 +18,17 @@ const expect = chai.expect;
 let server: http.Server, competitionsAPI: AxiosInstance, baseURL: string;
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
-const slg = a.competition
-  .name('Spanish La Liga')
-  .slug('spanish_la_liga')
-  .code('slg');
+const spl = a.competition
+  .setName('Spanish La Liga')
+  .setSlug('la-liga')
+  .setCode('spl');
 
 async function setupGameData() {
-  const gameData = await a.game.withCompetitions(epl, slg).build();
+  const gameData = await a.game.withCompetitions(epl, spl).build();
   return gameData;
 }
 
@@ -77,7 +77,7 @@ describe('Competitions API', function () {
       server.close();
     });
 
-    it.only('should respond with JSON array', async function () {
+    it('should respond with JSON array', async function () {
       const res = await competitionsAPI
         .get('competitions');
       const competitions: Competition[] = res.data;

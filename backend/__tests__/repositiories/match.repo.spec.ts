@@ -24,6 +24,12 @@ const epl2020 = a.season
   .setSeasonStart('2019-08-09T00:00:00+0200')
   .setSeasonEnd('2020-05-17T16:00:00+0200');
 
+const manutd = a.team.setName('Manchester United').setSlug('man-utd');
+const mancity = a.team.setName('Manchester City').setSlug('man-city');
+
+const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
+
 const matchRepo = MatchRepositoryImpl.getInstance(
   ApiProvider.API_FOOTBALL_DATA,
 );
@@ -31,8 +37,6 @@ const matchRepo = MatchRepositoryImpl.getInstance(
 const ligiMatchRepo = MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
 
 describe('MatchRepo', function () {
-  let gameData: GameData;
-
   before(async () => {
     await memoryDb.connect();
   });
@@ -42,16 +46,9 @@ describe('MatchRepo', function () {
   });
 
   describe('create | update', function () {
-    let season: Season;
-    let team1: Team;
-    let team2: Team;
-    let gameRound1: GameRound;
-    let team1Vteam2: Partial<Match>;
+    let manuVsmanc: Partial<Match>;
 
-    const manutd = a.team.setName('Manchester United').setSlug('man-utd');
-    const mancity = a.team.setName('Manchester City').setSlug('man-city');
-
-    const afdTeam1VTeam2 = {
+    const afdManuVsManc = {
       id: 233371,
       season: {
         id: 445,
@@ -81,30 +78,22 @@ describe('MatchRepo', function () {
     };
 
     beforeEach(async () => {
-      const gameData = await a.game
+      await a.game
         .withTeams(manutd, mancity)
         .withCompetitions(epl)
         .withSeasons(epl2020
           .withTeams(manutd, mancity)
-          .withGameRounds(
-            a.gameRound.setName('Gameweek 1').setPosition(1),
-            a.gameRound.setName('Gameweek 2').setPosition(2))
-        )
-        .build();
+          .withGameRounds(gw1, gw2)
+        ).build();
 
-      season = gameData.seasons[0];
-      team1 = gameData.teams.find(t => t.slug === manutd.team?.slug)!;
-      team2 = gameData.teams.find(t => t.slug === mancity.team?.slug)!;
-      gameRound1 = gameData.gameRounds.find(r => r.season!.toString() == season.id && r.position === 1)!
-
-      team1Vteam2 = {
+      manuVsmanc = {
         id: undefined,
-        seasonId: season.id,
+        seasonId: epl2020.id,
         date: '2019-09-10T11:30:00Z',
         status: MatchStatus.SCHEDULED,
-        gameRound: gameRound1.id,
-        homeTeamId: team1.id,
-        awayTeamId: team2.id,
+        gameRound: gw1.id,
+        homeTeamId: manutd.id,
+        awayTeamId: mancity.id,
         result: undefined,
       };
     });
@@ -114,39 +103,39 @@ describe('MatchRepo', function () {
     });
 
     it('should save a match', done => {
-      ligiMatchRepo.save$(team1Vteam2).subscribe(match => {
-        expect(match.season!.toString()).to.equal(season.id);
-        expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+      ligiMatchRepo.save$(manuVsmanc).subscribe(match => {
+        expect(match.season!.toString()).to.equal(epl2020.id);
+        expect(match.slug).to.equal(`${manutd.slug}-v-${mancity.slug}`);
         done();
       });
     });
 
     it('should findEach By SeasonAndTeams AndUpdateOrCreate', done => {
       ligiMatchRepo
-        .save$(team1Vteam2)
+        .save$(manuVsmanc)
         .pipe(
           flatMap(_ =>
-            matchRepo.findBySeasonAndTeamsAndUpsert$(afdTeam1VTeam2),
+            matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVsManc),
           ),
         )
         .subscribe(match => {
-          expect(match.season!.toString()).to.equal(season.id);
-          expect(match.slug).to.equal(`${team1.slug}-v-${team2.slug}`);
+          expect(match.season!.toString()).to.equal(epl2020.id);
+          expect(match.slug).to.equal(`${manutd.slug}-v-${mancity.slug}`);
           done();
         });
     });
 
     it('should find finished matches with pending predictions', done => {
       ligiMatchRepo
-        .save$(team1Vteam2)
+        .save$(manuVsmanc)
         .pipe(
           flatMap(_ =>
-            matchRepo.findBySeasonAndTeamsAndUpsert$(afdTeam1VTeam2),
+            matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVsManc),
           ),
         )
         .pipe(
           flatMap(_ =>
-            matchRepo.findAllFinishedWithPendingPredictions$(season.id!),
+            matchRepo.findAllFinishedWithPendingPredictions$(epl2020.id),
           ),
         )
         .subscribe(ms => {
@@ -155,15 +144,13 @@ describe('MatchRepo', function () {
         });
     });
 
+    // todo: remove
     it('should find selectable matches for game round', done => {
       ligiMatchRepo
-        .save$(team1Vteam2)
+        .save$(manuVsmanc)
         .pipe(
           flatMap(_ =>
-            matchRepo.findSelectableMatches$(
-              season.id!,
-              gameRound1.id!,
-            ),
+            matchRepo.findSelectableMatches$(epl2020.id, gw1.id),
           ),
         )
         .subscribe(ms => {
@@ -174,16 +161,13 @@ describe('MatchRepo', function () {
   });
 
   describe('filter | sort | page', function () {
+    let gameData: GameData;
+
     const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
     const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
-    const manutd = a.team.setName('Manchester United').setSlug('man-utd');
     const arsenal = a.team.setName('Arsenal').setSlug('arsenal');
     const everton = a.team.setName('Everton').setSlug('everton');
-    const mancity = a.team.setName('Manchester City').setSlug('man-city');
     const teams = [liverpool, arsenal, chelsea, manutd, mancity, everton];
-
-    const epl2020Gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
-    const epl2020Gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
 
     beforeEach(async () => {
       gameData = await a.game
@@ -191,32 +175,31 @@ describe('MatchRepo', function () {
         .withCompetitions(epl)
         .withSeasons(epl2020
           .withTeams(...teams)
-          .withGameRounds(epl2020Gw1, epl2020Gw2)
+          .withGameRounds(gw1, gw2)
           .withMatches(
             a.match
               .withHomeTeam(chelsea)
               .withAwayTeam(manutd)
               .setDate('2020-02-11T11:30:00Z')
-              .withGameRound(epl2020Gw1),
+              .withGameRound(gw1),
             a.match
               .withHomeTeam(liverpool)
               .withAwayTeam(arsenal)
               .setDate('2020-02-10T11:30:00Z')
-              .withGameRound(epl2020Gw1),
+              .withGameRound(gw1),
             a.match
               .withHomeTeam(everton)
               .withAwayTeam(mancity)
               .setDate('2020-02-15T11:30:00Z')
-              .withGameRound(epl2020Gw2),
+              .withGameRound(gw2),
             a.match
               .withHomeTeam(chelsea)
               .withAwayTeam(liverpool)
               .setDate('2020-02-14T11:30:00Z')
-              .withGameRound(epl2020Gw2),
+              .withGameRound(gw2),
           ),
         )
         .build();
-      return gameData;
     });
 
     afterEach(async () => {

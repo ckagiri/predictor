@@ -7,11 +7,11 @@ export interface Competition extends Entity {
   code?: string;
 }
 
-export interface CompetitionDocument extends Competition, DocumentEntity {}
+export interface CompetitionDocument extends Competition, DocumentEntity { }
 
 const competitionSchema = schema({
   name: { type: String, required: true },
-  slug: { type: String, required: true },
+  slug: { type: String, required: true, trim: true },
   code: { type: String, default: '' },
 });
 

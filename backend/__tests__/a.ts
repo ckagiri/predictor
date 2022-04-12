@@ -90,6 +90,14 @@ class TeamBuilder implements Builder<Team> {
   private built = {} as Team;
   public team?: Team;
 
+  get id() {
+    return this.team?.id!;
+  }
+
+  get slug() {
+    return this.team?.slug!;
+  }
+
   setName(value: string) {
     this.built.name = value;
     return this;
@@ -141,6 +149,11 @@ class GameRoundBuilder implements Builder<GameRound> {
 
   setName(value: string) {
     this.built.name = value;
+    return this;
+  }
+
+  setSlug(value: string) {
+    this.built.slug = value;
     return this;
   }
 
