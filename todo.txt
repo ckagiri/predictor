@@ -73,4 +73,10 @@ refactor tests undefined types
 <<< frontend
   add slug to gameRound
   create constants
+
+  merge findAll and find
+  in matchRep findAll -> change
+  if has team filter then add home&away to criteria;
+  conditions: criteria, filter, sort, range
+  test matchRepo spec findAll(conditions, projections, options)
 >>>>
