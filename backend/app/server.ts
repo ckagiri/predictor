@@ -2,9 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import * as http from 'http';
-import setup from './frontendMiddleware';
 import routes from './api/routes';
-import { resolve } from 'path';
 
 async function startServer(): Promise<http.Server> {
   if (!process.env.NODE_ENV || !process.env.PORT || !process.env.MONGO_URI) {
@@ -24,11 +22,6 @@ async function startServer(): Promise<http.Server> {
   app.use(bodyParser.urlencoded({ extended: false }));
 
   app.use('/api', routes);
-
-  setup(app, {
-    outputPath: resolve(process.cwd(), '../dist'),
-    publicPath: '/',
-  });
 
   if (process.env.NODE_ENV !== 'test') {
     await mongoose.connect(mongoUri, {
