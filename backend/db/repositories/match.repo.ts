@@ -1,5 +1,6 @@
 import { Observable, forkJoin } from 'rxjs';
 import { flatMap } from 'rxjs/operators';
+import { get, omit } from 'lodash';
 
 import MatchModel, {
   Match,
@@ -27,6 +28,7 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
     seasonId: string,
     gameRound?: string,
   ): Observable<Match[]>;
+  find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
 }
 
 export class MatchRepositoryImpl
@@ -83,6 +85,7 @@ export class MatchRepositoryImpl
           'homeTeam.id': homeTeam && homeTeam.id,
           'awayTeam.id': awayTeam && awayTeam.id,
         };
+        // todo: what is goin on here?
         delete data.externalReference;
         data.gameRound = gameRound;
         Object.keys(data).forEach(key => data[key] == null && delete data[key]);
@@ -117,5 +120,16 @@ export class MatchRepositoryImpl
       query.$and.push({ gameRound });
     }
     return this.findAll$(query);
+  }
+
+  public find$(query?: any, projection?: any, options?: any) {
+    let { filter } = query;
+    const teamId = get(filter, 'team.id');
+    if (teamId) {
+      filter = omit(filter, 'team.id')
+      filter['criteria'] = { $or: [{ 'homeTeam.id': teamId }, { 'awayTeam.id': teamId }] };
+      query.filter = filter;
+    }
+    return super.find$(query, projection, options);
   }
 }

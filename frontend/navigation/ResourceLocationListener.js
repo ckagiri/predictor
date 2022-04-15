@@ -16,11 +16,7 @@ export const ResourceLocationListener = () => {
   useEffect(() => {
     const { path, values } = resourceLocation || defaultLocation;
     if (resourceLocation) {
-      if (!path) {
-        setLocation('none_resource', values);
-      } else {
-        setLocation(path, values);
-      }
+      setLocation(path, values);
     } else if (currentResourceLocation.current) {
       // Reset the location state if the users navigated away from a resource page
       setLocation(null);

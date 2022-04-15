@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import find from 'lodash/find';
 import zipObjectDeep from 'lodash/zipObjectDeep';
+import get from 'lodash/get';
 import keys from 'lodash/keys';
 import values from 'lodash/values';
 
@@ -28,13 +29,10 @@ const recordSelector = (name, params) => state => {
     competition = getCompetition(competitionSlug);
   }
   if (competitionSlug && seasonSlug) {
-    competition = getCompetition(competitionSlug);
-    season = getSeason(competition && competition.id, seasonSlug);
+    season = getSeason(get(competition, 'id'), seasonSlug);
   }
   if (competitionSlug && seasonSlug && gameroundPos) {
-    competition = getCompetition(competitionSlug);
-    season = getSeason(competition && competition.id, seasonSlug);
-    gameround = getRound(season && season.id, parseInt(gameroundPos, 10));
+    gameround = getRound(get(season, 'id'), parseInt(gameroundPos, 10));
   }
   return { competition, season, gameround };
 };
@@ -46,15 +44,11 @@ export const useResourceAppLocation = () => {
   const resourceLocationInfo = resolveResourceLocationInfo(pathname);
 
   if (resourceLocationInfo == null) {
-    return {
-      path: '',
-      values: {},
-    };
+    return null;
   }
 
-  const hasEdit = resourceLocationInfo.path.split('.').includes('edit');
   const record = useSelector(
-    hasEdit
+    resourceLocationInfo.path.split('.').includes('edit')
       ? recordSelector(
           resourceLocationInfo.resource,
           resourceLocationInfo.params,

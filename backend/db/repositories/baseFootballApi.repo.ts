@@ -21,7 +21,7 @@ export interface BaseFootballApiRepository<T extends Entity>
 export class BaseFootballApiRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-> extends BaseRepositoryImpl<T, TDocument>
+  > extends BaseRepositoryImpl<T, TDocument>
   implements BaseFootballApiRepository<T> {
   protected converter: Converter;
 
@@ -86,6 +86,7 @@ export class BaseFootballApiRepositoryImpl<
       .findOneAndUpdate$(conditions, obj, { new: true, upsert: true })
       .pipe(
         flatMap((updatedObj: T) => {
+          // todo: find a better way to do this
           if (externalReference === undefined) {
             return of(updatedObj);
           }

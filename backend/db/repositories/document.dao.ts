@@ -1,4 +1,5 @@
 import mongoose, { Model, Document } from 'mongoose';
+import { omit } from 'lodash';
 mongoose.set('useFindAndModify', false);
 
 import { Entity } from '../models/base.model';
@@ -93,11 +94,11 @@ export class DocumentDao<T extends Document> {
       .exec() as Promise<T[]>;
   }
 
-  public find(requestQuery: any = {}, projection?: any, options?: any) {
-    const { filter, range, sort } = requestQuery;
-    const conditions: any = {};
+  public find(query: any = {}, projection?: any, options?: any) {
+    const { filter, range, sort } = query;
+    let conditions: any = {};
     if (filter) {
-      const search = JSON.parse(filter);
+      const search = omit(filter, 'criteria');
       const { q } = search;
       if (q) {
         /* Search for case-insensitive match on any field: */
@@ -151,6 +152,13 @@ export class DocumentDao<T extends Document> {
               : needle,
           };
         });
+
+        const { criteria } = filter;
+        if (criteria) {
+          const andCriteria = Object.entries(criteria).map(([key, value]) => ({ [key]: value }));
+          combinedAnd.push(...andCriteria);
+        }
+
         if (combinedAnd.length > 0) {
           conditions['$and'] = combinedAnd;
         }
@@ -161,7 +169,7 @@ export class DocumentDao<T extends Document> {
       .then(async count => {
         let query = this.Model.find(conditions, projection, options);
         if (sort) {
-          const [field, order] = JSON.parse(sort);
+          const [field, order] = sort;
           query = query.sort({
             [options && options.primaryKey && field === 'id'
               ? options.primaryKey
@@ -169,7 +177,7 @@ export class DocumentDao<T extends Document> {
           });
         }
         if (range) {
-          const [start, end] = JSON.parse(range);
+          const [start, end] = range;
           query = query.skip(start).limit(end - start);
         }
         const result = await query.exec();

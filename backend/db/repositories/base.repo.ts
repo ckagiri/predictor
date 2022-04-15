@@ -14,7 +14,7 @@ export interface BaseRepository<T extends Entity> {
   findOneAndUpsert$(conditions: any, update: any, options?: any): Observable<T>;
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
   find$(
-    requestQuery?: any,
+    query?: any,
     projection?: any,
     options?: any,
   ): Observable<{ result: T[]; count: number }>;
@@ -181,13 +181,13 @@ export class BaseRepositoryImpl<
   }
 
   public find$(
-    requestQuery?: any,
+    query?: any,
     _projection?: any, // Todo: figure out
     options?: any,
   ): Observable<{ result: T[]; count: number }> {
     return Observable.create(
       (observer: Subscriber<{ result: T[]; count: number }>) => {
-        this.find(requestQuery, '-__v', options).then(
+        this.find(query, '-__v', options).then(
           ({ result, count }) => {
             observer.next({ result, count });
             observer.complete();
