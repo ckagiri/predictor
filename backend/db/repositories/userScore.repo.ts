@@ -10,7 +10,7 @@ import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface UserScoreRepository extends BaseRepository<UserScore> {
   // todo: pass object literal for search-criteria
-  findOneAndUpsert$(
+  findScoreAndUpsert$(
     leaderboardId: string,
     userId: string,
     matchId: string,
@@ -34,7 +34,7 @@ export class UserScoreRepositoryImpl
     super(UserScoreModel);
   }
 
-  public findOneAndUpsert$(
+  public findScoreAndUpsert$(
     leaderboardId: string,
     userId: string,
     matchId: string,
@@ -66,6 +66,7 @@ export class UserScoreRepositoryImpl
       ExactGoalDifferencePoints,
     };
 
+    // todo: use $nin: [predictionId]
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
       flatMap(standing => {
         if (standing === null) {
@@ -86,6 +87,7 @@ export class UserScoreRepositoryImpl
           }
           return this.insert$(score);
         } else {
+          // todo: remove, no need
           const matches = standing.matches as string[];
           const matchExists = matches.some(n => n.toString() === matchId);
           if (matchExists) {

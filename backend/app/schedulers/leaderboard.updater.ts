@@ -185,7 +185,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
           const leaderboardId = leaderboard.id!;
           const predictionId = prediction.id!;
           const { scorePoints: points, hasJoker } = prediction;
-          return this.userScoreRepo.findOneAndUpsert$(
+          return this.userScoreRepo.findScoreAndUpsert$(
             leaderboardId,
             userId,
             matchId,

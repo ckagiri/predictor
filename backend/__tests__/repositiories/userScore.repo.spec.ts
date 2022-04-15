@@ -169,7 +169,7 @@ describe('UserScore Repo', function () {
     it('should create a userScore if it does not exist', done => {
       const hasJoker = true;
       userScoreRepo
-        .findOneAndUpsert$(
+        .findScoreAndUpsert$(
           leaderboardId,
           userId1,
           matchId1,
@@ -219,7 +219,7 @@ describe('UserScore Repo', function () {
         .pipe(
           flatMap(_ => {
             const hasJoker = false;
-            return userScoreRepo.findOneAndUpsert$(
+            return userScoreRepo.findScoreAndUpsert$(
               leaderboardId,
               userId1,
               matchId2,
