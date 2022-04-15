@@ -18,27 +18,27 @@ const expect = chai.expect;
 let server: http.Server, seasonsAPI: AxiosInstance, baseURL: string;
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2020 = a.season
   .withCompetition(epl)
-  .name('2019-2020')
-  .slug('2019-20')
-  .year(2020)
-  .currentMatchRound(20)
-  .seasonStart('2019-08-09T00:00:00+0200')
-  .seasonEnd('2020-05-17T16:00:00+0200');
+  .setName('2019-2020')
+  .setSlug('2019-20')
+  .setYear(2020)
+  .setCurrentMatchRound(20)
+  .setSeasonStart('2019-08-09T00:00:00+0200')
+  .setSeasonEnd('2020-05-17T16:00:00+0200');
 
 const epl2019 = a.season
   .withCompetition(epl)
-  .name('2018-2019')
-  .slug('2018-19')
-  .year(2019)
-  .currentMatchRound(38)
-  .seasonStart('2018-08-09T00:00:00+0200')
-  .seasonEnd('2019-05-17T16:00:00+0200');
+  .setName('2018-2019')
+  .setSlug('2018-19')
+  .setYear(2019)
+  .setCurrentMatchRound(38)
+  .setSeasonStart('2018-08-09T00:00:00+0200')
+  .setSeasonEnd('2019-05-17T16:00:00+0200');
 
 async function setupGameData() {
   const gameData = await a.game
@@ -68,7 +68,7 @@ describe('Seasons API', function () {
     const seasonRepo = SeasonRepositoryImpl.getInstance();
     const seasonsController = new SeasonsController(seasonRepo);
 
-    it('getSeasons will 500 if no competition id or slug  provided', async () => {
+    it('getSeasons will 500 if no competition id or setSlug  provided', async () => {
       const { req, res } = setupReqRes();
       await seasonsController.getSeasons(<any>req, <any>res);
 
@@ -91,9 +91,9 @@ describe('Seasons API', function () {
       expect(seasons).to.eql(actualSeasons);
     });
 
-    it('getSeasons returns all seasons for competition slug in the database', async () => {
+    it('getSeasons returns all seasons for competition setSlug in the database', async () => {
       const { req, res } = setupReqRes();
-      req.query.competition = gameData.competitions[0].slug;
+      req.query.competition = gameData.competitions[0].setSlug;
       await seasonsController.getSeasons(<any>req, <any>res);
 
       expect(res.json).to.have.been.called;

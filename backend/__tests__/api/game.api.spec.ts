@@ -14,31 +14,30 @@ chai.use(chaiHttp);
 chai.use(sinonChai);
 const expect = chai.expect;
 
-const liverpool = a.team.name('Liverpool').slug('liverpool');
-const chelsea = a.team.name('Chelsea').slug('chelsea');
-const manutd = a.team.name('Manchester Utd').slug('man_utd');
-const arsenal = a.team.name('Arsenal').slug('arsenal');
-const sunderland = a.team.name('Sunderland').slug('sunderland');
+const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
+const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
+const manutd = a.team.setName('Manchester Utd').setSlug('man_utd');
+const arsenal = a.team.setName('Arsenal').setSlug('arsenal');
+const sunderland = a.team.setName('Sunderland').setSlug('sunderland');
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2020 = a.season
   .withCompetition(epl)
-  .name('2019-2020')
-  .slug('2019-20')
-  .year(2020)
-  .currentMatchRound(20)
-  .seasonStart('2019-08-09T00:00:00+0200')
-  .seasonEnd('2020-05-17T16:00:00+0200');
+  .setName('2019-2020')
+  .setSlug('2019-20')
+  .setYear(2020)
+  .setSeasonStart('2019-08-09T00:00:00+0200')
+  .setSeasonEnd('2020-05-17T16:00:00+0200');
 
-const chelseaFan = a.user.username('chelseafan').email('chelseafan@gmail.com');
+const chelseaFan = a.user.setUsername('chelseafan').setEmail('chelseafan@gmail.com');
 
 const liverpoolFan = a.user
-  .username('liverpoolfan')
-  .email('liverpoolfan@gmail.com');
+  .setUsername('liverpoolfan')
+  .setEmail('liverpoolfan@gmail.com');
 
 async function setupSimpleGame() {
   const game = await a.game
@@ -48,36 +47,36 @@ async function setupSimpleGame() {
     .withSeasons(
       epl2020.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
         a.match
-          .homeTeam(chelsea)
-          .awayTeam(manutd)
-          .date('2020-02-10T11:30:00Z')
-          .gameRound(20)
+          .withHomeTeam(chelsea)
+          .withAwayTeam(manutd)
+          .setDate('2020-02-10T11:30:00Z')
+          .withGameRound()
           .withPredictions(
             a.prediction
-              .user(chelseaFan)
-              .homeScore(3)
-              .awayScore(0)
-              .joker(true),
+              .withUser(chelseaFan)
+              .setHomeScore(3)
+              .setAwayScore(0)
+              .setJoker(true),
             a.prediction
-              .user(liverpoolFan)
-              .homeScore(1)
-              .awayScore(1),
+              .withUser(liverpoolFan)
+              .setHomeScore(1)
+              .setAwayScore(1),
           ),
         a.match
-          .homeTeam(liverpool)
-          .awayTeam(arsenal)
-          .date('2020-02-14T11:30:00Z')
-          .gameRound(21)
+          .withHomeTeam(liverpool)
+          .withAwayTeam(arsenal)
+          .setDate('2020-02-14T11:30:00Z')
+          .withGameRound(21)
           .withPredictions(
             a.prediction
-              .user(chelseaFan)
-              .homeScore(1)
-              .awayScore(0),
+              .withUser(chelseaFan)
+              .setHomeScore(1)
+              .setAwayScore(0),
             a.prediction
-              .user(liverpoolFan)
-              .homeScore(2)
-              .awayScore(0)
-              .joker(true),
+              .withUser(liverpoolFan)
+              .setHomeScore(2)
+              .setAwayScore(0)
+              .setJoker(true),
           ),
       ),
     )
@@ -85,7 +84,7 @@ async function setupSimpleGame() {
   return game;
 }
 
-describe('Game Controller', function() {
+describe('Game Controller', function () {
   let simpleGame: GameData;
 
   before(async () => {
@@ -96,7 +95,7 @@ describe('Game Controller', function() {
     await memoryDb.close();
   });
 
-  describe('get game data', function() {
+  describe('get game data', function () {
     let response: {
       competitions?: any;
       selectedCompetition?: any;

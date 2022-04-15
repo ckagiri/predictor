@@ -18,23 +18,23 @@ const expect = chai.expect;
 let server: http.Server, matchsAPI: AxiosInstance, baseURL: string;
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2020 = a.season
   .withCompetition(epl)
-  .name('2019-2020')
-  .slug('2019-20')
-  .year(2020)
-  .currentMatchRound(20)
-  .seasonStart('2019-08-09T00:00:00+0200')
-  .seasonEnd('2020-05-17T16:00:00+0200');
+  .setName('2019-2020')
+  .setSlug('2019-20')
+  .setYear(2020)
+  .withGameRounds(20)
+  .setSeasonStart('2019-08-09T00:00:00+0200')
+  .setSeasonEnd('2020-05-17T16:00:00+0200');
 
-const liverpool = a.team.name('Liverpool').slug('liverpool');
-const chelsea = a.team.name('Chelsea').slug('chelsea');
-const manutd = a.team.name('Manchester Utd').slug('man_utd');
-const arsenal = a.team.name('Arsenal').slug('arsenal');
+const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
+const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
+const manutd = a.team.setName('Manchester Utd').setSlug('man_utd');
+const arsenal = a.team.setName('Arsenal').setSlug('arsenal');
 
 async function setupGameData() {
   const gameData = await a.game
@@ -43,22 +43,22 @@ async function setupGameData() {
     .withSeasons(
       epl2020.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
         a.match
-          .homeTeam(chelsea)
-          .awayTeam(manutd)
-          .date('2020-02-10T11:30:00Z')
-          .gameRound(20),
+          .withHomeTeam(chelsea)
+          .withAwayTeam(manutd)
+          .setDate('2020-02-10T11:30:00Z')
+          .withGameRound(20),
         a.match
-          .homeTeam(liverpool)
-          .awayTeam(arsenal)
-          .date('2020-02-14T11:30:00Z')
-          .gameRound(21),
+          .withHomeTeam(liverpool)
+          .withAwayTeam(arsenal)
+          .setDate('2020-02-14T11:30:00Z')
+          .withGameRound(21),
       ),
     )
     .build();
   return gameData;
 }
 
-describe('Matches API', function() {
+describe('Matches API', function () {
   let gameData: GameData;
 
   before(async () => {
@@ -74,7 +74,7 @@ describe('Matches API', function() {
     await memoryDb.close();
   });
 
-  describe('Matches Controller', function() {
+  describe('Matches Controller', function () {
     const matchRepo = MatchRepositoryImpl.getInstance();
     const matchesController = new MatchesController(matchRepo);
 
@@ -101,7 +101,7 @@ describe('Matches API', function() {
     });
   });
 
-  describe('Match Routes', function() {
+  describe('Match Routes', function () {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -112,7 +112,7 @@ describe('Matches API', function() {
       server.close();
     });
 
-    it('should respond with JSON array', async function() {
+    it('should respond with JSON array', async function () {
       const matches: Match[] = await matchsAPI
         .get(`matches/?seasonId=${gameData.seasons[0].id}`)
         .then(res => res.data);

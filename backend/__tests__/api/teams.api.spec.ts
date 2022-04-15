@@ -18,22 +18,22 @@ const expect = chai.expect;
 let server: http.Server, teamsAPI: AxiosInstance, baseURL: string;
 
 const epl = a.competition
-  .name('English Premier League')
-  .slug('english-premier-league')
-  .code('epl');
+  .setName('English Premier League')
+  .setSlug('english-premier-league')
+  .setCode('epl');
 
 const epl2020 = a.season
   .withCompetition(epl)
-  .name('2019-2020')
-  .slug('2019-20')
-  .year(2020)
-  .currentMatchRound(20)
-  .seasonStart('2019-08-09T00:00:00+0200')
-  .seasonEnd('2020-05-17T16:00:00+0200');
+  .setName('2019-2020')
+  .setSlug('2019-20')
+  .setYear(2020)
+  .setCurrentMatchRound(20)
+  .setSeasonStart('2019-08-09T00:00:00+0200')
+  .setSeasonEnd('2020-05-17T16:00:00+0200');
 
-const liverpool = a.team.name('Liverpool').slug('liverpool');
-const chelsea = a.team.name('Chelsea').slug('chelsea');
-const sunderland = a.team.name('Sunderland').slug('sunderland');
+const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
+const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
+const sunderland = a.team.setName('Sunderland').setSlug('sunderland');
 
 async function setupGameData() {
   const gameData = await a.game
@@ -44,7 +44,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Teams API', function() {
+describe('Teams API', function () {
   let gameData: GameData;
 
   before(async () => {
@@ -60,7 +60,7 @@ describe('Teams API', function() {
     await memoryDb.close();
   });
 
-  describe('Teams Controller', function() {
+  describe('Teams Controller', function () {
     const teamRepo = TeamRepositoryImpl.getInstance();
     const teamsController = new TeamsController(teamRepo);
 
@@ -93,7 +93,7 @@ describe('Teams API', function() {
     });
   });
 
-  describe('Team Routes', function() {
+  describe('Team Routes', function () {
     before(async () => {
       server = await startServer();
       baseURL = `http://localhost:${process.env.PORT}/api`;
@@ -104,13 +104,13 @@ describe('Teams API', function() {
       server.close();
     });
 
-    it('should respond with JSON array for all teams', async function() {
+    it('should respond with JSON array for all teams', async function () {
       const teams: Team[] = await teamsAPI.get('teams').then(res => res.data);
       expect(teams).to.be.an.instanceof(Array);
       expect(teams).to.have.length(3);
     });
 
-    it('should respond with JSON array for season teams', async function() {
+    it('should respond with JSON array for season teams', async function () {
       const teams: Team[] = await teamsAPI
         .get(`teams/?seasonId=${gameData.seasons[0].id}`)
         .then(res => res.data);
