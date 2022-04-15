@@ -40,15 +40,6 @@
     "util-promisify": "^2.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-object-rest-spread": "^7.8.3",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-modules-commonjs": "^7.8.3",
-    "@babel/plugin-transform-react-constant-elements": "^7.8.3",
-    "@babel/plugin-transform-react-inline-elements": "^7.8.3",
-    "@babel/preset-env": "^7.8.4",
-    "@babel/preset-react": "^7.8.3",
     "@types/bcrypt-nodejs": "0.0.30",
     "@types/chai": "^4.1.7",
     "@types/chai-http": "^4.2.0",
@@ -63,15 +54,10 @@
     "@types/sinon": "^7.0.11",
     "@types/sinon-chai": "^3.2.2",
     "@types/supertest": "^2.0.8",
-    "@types/webpack": "^4.41.6",
     "axios": "^0.19.2",
-    "babel-loader": "^8.1.0",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
-    "css-loader": "^3.4.2",
     "dotenv-flow": "^3.1.0",
-    "file-loader": "^5.1.0",
-    "html-loader": "^0.5.5",
     "mais-mongoose-seeder": "^1.0.7",
     "mocha": "^7.0.1",
     "mocha-typescript": "^1.1.17",
@@ -89,9 +75,6 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-no-unused-expression-chai": "^0.1.4",
     "typescript": "^3.5.3",
-    "url-loader": "^3.0.0",
-    "webpack": "^4.41.6",
-    "webpack-dev-middleware": "^3.7.2",
-    "webpack-hot-middleware": "^2.25.0"
+    "url-loader": "^3.0.0"
   }
 }
