@@ -13,7 +13,7 @@ export interface TeamRepository extends BaseFootballApiRepository<Team> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<Team>;
   findEachByNameAndUpsert$(teams: any[]): Observable<Team[]>;
   findByName$(name: string): Observable<Team>;
-  getAllBySeason$(seasonId: string | undefined): Observable<Team[]>;
+  getAllBySeason$(seasonId: string | undefined): Observable<Team[] | undefined>;
 }
 
 export class TeamRepositoryImpl
@@ -29,7 +29,7 @@ export class TeamRepositoryImpl
     super(TeamModel, converter);
   }
 
-  public getAllBySeason$(seasonId: string | undefined): Observable<Team[]> {
+  public getAllBySeason$(seasonId: string | undefined): Observable<Team[] | undefined> {
     if (!seasonId) {
       throwError('seasonId cannot be empty');
     }

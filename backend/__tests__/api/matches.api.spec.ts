@@ -22,12 +22,15 @@ const epl = a.competition
   .setSlug('english-premier-league')
   .setCode('epl');
 
+const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
+
 const epl2020 = a.season
   .withCompetition(epl)
   .setName('2019-2020')
   .setSlug('2019-20')
   .setYear(2020)
-  .withGameRounds(20)
+  .withGameRounds(gw1)
   .setSeasonStart('2019-08-09T00:00:00+0200')
   .setSeasonEnd('2020-05-17T16:00:00+0200');
 
@@ -41,18 +44,21 @@ async function setupGameData() {
     .withTeams(liverpool, arsenal, chelsea, manutd)
     .withCompetitions(epl)
     .withSeasons(
-      epl2020.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
-        a.match
-          .withHomeTeam(chelsea)
-          .withAwayTeam(manutd)
-          .setDate('2020-02-10T11:30:00Z')
-          .withGameRound(20),
-        a.match
-          .withHomeTeam(liverpool)
-          .withAwayTeam(arsenal)
-          .setDate('2020-02-14T11:30:00Z')
-          .withGameRound(21),
-      ),
+      epl2020
+        .withGameRounds(gw1, gw2)
+        .withTeams(liverpool, arsenal, chelsea, manutd)
+        .withMatches(
+          a.match
+            .withHomeTeam(chelsea)
+            .withAwayTeam(manutd)
+            .setDate('2020-02-10T11:30:00Z')
+            .withGameRound(gw1),
+          a.match
+            .withHomeTeam(liverpool)
+            .withAwayTeam(arsenal)
+            .setDate('2020-02-14T11:30:00Z')
+            .withGameRound(gw2),
+        ),
     )
     .build();
   return gameData;

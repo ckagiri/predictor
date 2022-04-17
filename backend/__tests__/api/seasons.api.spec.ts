@@ -93,7 +93,7 @@ describe('Seasons API', function () {
 
     it('getSeasons returns all seasons for competition setSlug in the database', async () => {
       const { req, res } = setupReqRes();
-      req.query.competition = gameData.competitions[0].setSlug;
+      req.query.competition = gameData.competitions[0].slug;
       await seasonsController.getSeasons(<any>req, <any>res);
 
       expect(res.json).to.have.been.called;

@@ -25,6 +25,9 @@ const epl = a.competition
   .setSlug('english-premier-league')
   .setCode('epl');
 
+const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
+
 const epl2020 = a.season
   .withCompetition(epl)
   .setName('2019-2020')
@@ -34,10 +37,7 @@ const epl2020 = a.season
   .setSeasonEnd('2020-05-17T16:00:00+0200');
 
 const chelseaFan = a.user.setUsername('chelseafan').setEmail('chelseafan@gmail.com');
-
-const liverpoolFan = a.user
-  .setUsername('liverpoolfan')
-  .setEmail('liverpoolfan@gmail.com');
+const liverpoolFan = a.user.setUsername('liverpoolfan').setEmail('liverpoolfan@gmail.com');
 
 async function setupSimpleGame() {
   const game = await a.game
@@ -45,48 +45,48 @@ async function setupSimpleGame() {
     .withTeams(liverpool, arsenal, chelsea, manutd, sunderland)
     .withCompetitions(epl)
     .withSeasons(
-      epl2020.withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
-        a.match
-          .withHomeTeam(chelsea)
-          .withAwayTeam(manutd)
-          .setDate('2020-02-10T11:30:00Z')
-          .withGameRound()
-          .withPredictions(
-            a.prediction
-              .withUser(chelseaFan)
-              .setHomeScore(3)
-              .setAwayScore(0)
-              .setJoker(true),
-            a.prediction
-              .withUser(liverpoolFan)
-              .setHomeScore(1)
-              .setAwayScore(1),
-          ),
-        a.match
-          .withHomeTeam(liverpool)
-          .withAwayTeam(arsenal)
-          .setDate('2020-02-14T11:30:00Z')
-          .withGameRound(21)
-          .withPredictions(
-            a.prediction
-              .withUser(chelseaFan)
-              .setHomeScore(1)
-              .setAwayScore(0),
-            a.prediction
-              .withUser(liverpoolFan)
-              .setHomeScore(2)
-              .setAwayScore(0)
-              .setJoker(true),
-          ),
-      ),
+      epl2020
+        .withGameRounds(gw1, gw2)
+        .withTeams(liverpool, arsenal, chelsea, manutd).withMatches(
+          a.match
+            .withHomeTeam(chelsea)
+            .withAwayTeam(manutd)
+            .setDate('2020-02-10T11:30:00Z')
+            .withGameRound(gw1)
+            .withPredictions(
+              a.prediction
+                .withUser(chelseaFan)
+                .setHomeScore(3)
+                .setAwayScore(0)
+                .setJoker(true),
+              a.prediction
+                .withUser(liverpoolFan)
+                .setHomeScore(1)
+                .setAwayScore(1),
+            ),
+          a.match
+            .withHomeTeam(liverpool)
+            .withAwayTeam(arsenal)
+            .setDate('2020-02-14T11:30:00Z')
+            .withGameRound(gw2)
+            .withPredictions(
+              a.prediction
+                .withUser(chelseaFan)
+                .setHomeScore(1)
+                .setAwayScore(0),
+              a.prediction
+                .withUser(liverpoolFan)
+                .setHomeScore(2)
+                .setAwayScore(0)
+                .setJoker(true),
+            ),
+        ),
     )
     .build();
   return game;
 }
 
 describe('Game Controller', function () {
-  let simpleGame: GameData;
-
   before(async () => {
     await memoryDb.connect();
   });
@@ -103,7 +103,7 @@ describe('Game Controller', function () {
     };
     before(async () => {
       await memoryDb.dropDb();
-      simpleGame = await setupSimpleGame();
+      await setupSimpleGame();
       const gameController = new GameController(
         CompetitionRepositoryImpl.getInstance(),
         SeasonRepositoryImpl.getInstance(),

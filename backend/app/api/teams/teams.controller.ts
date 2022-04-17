@@ -11,12 +11,12 @@ export class TeamsController {
     return new TeamsController(TeamRepositoryImpl.getInstance());
   }
 
-  constructor(private teamRepo: TeamRepository) {}
+  constructor(private teamRepo: TeamRepository) { }
 
   public getTeams = async (req: Request, res: Response) => {
     try {
       const seasonId = req.query.seasonId as string;
-      const teams: Team[] = seasonId
+      const teams: Team[] | undefined = seasonId
         ? await this.teamRepo.getAllBySeason$(seasonId).toPromise()
         : await this.teamRepo.findAll$().toPromise();
       res.status(200).json(teams);

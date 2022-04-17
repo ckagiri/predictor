@@ -16,17 +16,22 @@ import { Match } from '../../../db/models/match.model';
 import * as _ from 'lodash';
 
 export class MatchesController {
-  public static getInstance() {
+  public static getInstance(
+    matchRepo?: MatchRepository,
+    gameRoundRepo?: GameRoundRepository,
+    seasonRepo?: SeasonRepository,
+  ) {
     return new MatchesController(
-      SeasonRepositoryImpl.getInstance(),
-      GameRoundRepositoryImpl.getInstance(),
-      MatchRepositoryImpl.getInstance());
+      matchRepo ?? MatchRepositoryImpl.getInstance(),
+      gameRoundRepo ?? GameRoundRepositoryImpl.getInstance(),
+      seasonRepo ?? SeasonRepositoryImpl.getInstance(),
+    );
   }
 
   constructor(
-    private seasonRepo: SeasonRepository,
-    private gameRoundRepo: GameRoundRepository,
-    private matchRepo: MatchRepository,
+    private matchRepo?: MatchRepository,
+    private gameRoundRepo?: GameRoundRepository,
+    private seasonRepo?: SeasonRepository,
   ) { }
 
   public getMatches = async (req: Request, res: Response) => {
@@ -42,24 +47,24 @@ export class MatchesController {
         throw new Error('season slug is required');
       }
 
-      const season = await this.seasonRepo.findOne$({
+      const season = await this.seasonRepo?.findOne$({
         $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
       }).toPromise();
 
-      const gameRound = await this.gameRoundRepo.findOne$({
+      const gameRound = await this.gameRoundRepo?.findOne$({
         $or: [
           {
-            $and: [{ season: season.id }, { slug: roundSlugOrPosition }],
+            $and: [{ season: season?.id }, { slug: roundSlugOrPosition }],
           },
           {
-            $and: [{ season: season.id }, { position: parseInt(roundSlugOrPosition, 10) || 0 }],
+            $and: [{ season: season?.id }, { position: parseInt(roundSlugOrPosition, 10) || 0 }],
           },
         ],
       }).toPromise();
 
-      const matches = await this.matchRepo
-        .findAll$({ season: season.id, gameRound: gameRound.id })
-        .toPromise();
+      const matches = await this.matchRepo?.findAll$(
+        { season: season?.id, gameRound: gameRound?.id }
+      ).toPromise();
       res.status(200).json(matches);
     } catch (error) {
       res.status(500).send(error);
@@ -69,12 +74,12 @@ export class MatchesController {
   public getMatch = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let match: Match;
+      let match: Match | undefined;
       if (isMongoId(id)) {
-        match = await this.matchRepo.findById$(id).toPromise();
+        match = await this.matchRepo?.findById$(id).toPromise();
       } else {
         const slug = id;
-        match = await this.matchRepo.findOne$({ slug }).toPromise();
+        match = await this.matchRepo?.findOne$({ slug }).toPromise();
       }
       res.status(200).json(match);
     } catch (error) {

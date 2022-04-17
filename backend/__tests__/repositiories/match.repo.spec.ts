@@ -5,7 +5,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';
-import { GameRound, Match, Season, Team } from '../../db/models';
+import { Match } from '../../db/models';
 import { MatchStatus } from '../../db/models/match.model';
 
 const epl = a.competition
