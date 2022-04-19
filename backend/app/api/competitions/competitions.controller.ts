@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { lastValueFrom } from 'rxjs';
 import {
   CompetitionRepositoryImpl,
   CompetitionRepository,
@@ -15,8 +16,8 @@ export class CompetitionsController {
 
   public getCompetitions = async (_req: Request, res: Response) => {
     try {
-      const competitions = await this.competitionRepo.findAll$().toPromise();
-      res.header('Content-Range', `Competitions 0-${competitions!.length - 1}/${competitions!.length}`);
+      const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+      res.header('Content-Range', `Competitions 0-${competitions.length - 1}/${competitions.length}`);
       res.status(200).json(competitions);
     } catch (error) {
       res.status(500).send(error);
