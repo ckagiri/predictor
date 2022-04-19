@@ -1,5 +1,5 @@
 import { Observable, forkJoin } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { get, omit } from 'lodash';
 
 import MatchModel, {
@@ -78,7 +78,7 @@ export class MatchRepositoryImpl
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
     return (this.converter as MatchConverter).from(obj).pipe(
-      flatMap(data => {
+      mergeMap(data => {
         const { season, homeTeam, awayTeam, gameRound, externalReference } = data;
         const query = {
           season,

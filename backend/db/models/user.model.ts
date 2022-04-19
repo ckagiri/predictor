@@ -1,6 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose';
-mongoose.set('useCreateIndex', true);
-
+import { Schema, model } from 'mongoose';
 import * as bcrypt from 'bcrypt-nodejs';
 
 import { Entity, DocumentEntity, schema } from './base.model';
@@ -85,7 +83,7 @@ const userSchema = schema({
   },
 });
 
-userSchema.pre('save', function(next) {
+userSchema.pre('save', function (next) {
   const user = this as UserDocument;
   if (!user.isModified('local.password')) {
     return next();

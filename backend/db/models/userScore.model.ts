@@ -1,5 +1,4 @@
 import mongoose, { Schema, model } from 'mongoose';
-mongoose.set('useCreateIndex', true);
 
 import { Entity, DocumentEntity, schema } from './base.model';
 

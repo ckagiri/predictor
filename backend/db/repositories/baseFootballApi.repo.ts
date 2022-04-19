@@ -1,5 +1,5 @@
-import { Observable, Observer, Subscriber, forkJoin, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { Observable, forkJoin, of } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 import { Model, Document } from 'mongoose';
 import * as _ from 'lodash';
 
@@ -36,7 +36,7 @@ export class BaseFootballApiRepositoryImpl<
 
   public save$(obj: Entity): Observable<T> {
     return this.converter.from(obj).pipe(
-      flatMap(entity => {
+      mergeMap(entity => {
         return super.save$(entity);
       }),
     );
@@ -48,7 +48,7 @@ export class BaseFootballApiRepositoryImpl<
       obj = id;
       id = obj.id;
       return this.converter.from(obj).pipe(
-        flatMap((entity: any) => {
+        mergeMap((entity: any) => {
           delete entity.externalReference;
           return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
         }),
@@ -85,7 +85,7 @@ export class BaseFootballApiRepositoryImpl<
     return super
       .findOneAndUpdate$(conditions, obj, { new: true, upsert: true })
       .pipe(
-        flatMap((updatedObj: T) => {
+        mergeMap((updatedObj: T) => {
           // todo: find a better way to do this
           if (externalReference === undefined) {
             return of(updatedObj);

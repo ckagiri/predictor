@@ -29,7 +29,7 @@ export class BaseRepositoryImpl<
   TDocument extends T & DocumentEntity
   > extends DocumentDao<TDocument> implements BaseRepository<T> {
   public save$(obj: Entity): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.save(obj).then(
         (result: T) => {
           observer.next(result);
@@ -43,7 +43,7 @@ export class BaseRepositoryImpl<
   }
 
   public saveMany$(objs: Entity[]): Observable<T[]> {
-    return Observable.create((observer: Subscriber<T[]>) => {
+    return new Observable((observer: Subscriber<T[]>) => {
       this.saveMany(objs).then(
         (result: T[]) => {
           observer.next(result);
@@ -57,7 +57,7 @@ export class BaseRepositoryImpl<
   }
 
   public insert$(obj: Entity): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.insert(obj).then(
         (result: T) => {
           observer.next(result);
@@ -71,7 +71,7 @@ export class BaseRepositoryImpl<
   }
 
   public insertMany$(objs: Entity[]): Observable<T[]> {
-    return Observable.create((observer: Subscriber<T[]>) => {
+    return new Observable((observer: Subscriber<T[]>) => {
       this.insertMany(objs).then(
         (result: T[]) => {
           observer.next(result);
@@ -85,7 +85,7 @@ export class BaseRepositoryImpl<
   }
 
   public upsertMany$(objs: Entity[]): Observable<any> {
-    return Observable.create((observer: Subscriber<T[]>) => {
+    return new Observable((observer: Subscriber<T[]>) => {
       this.upsertMany(objs).then(
         (result: T[]) => {
           observer.next(result);
@@ -99,7 +99,7 @@ export class BaseRepositoryImpl<
   }
 
   public updateMany$(objs: Entity[]): Observable<any> {
-    return Observable.create((observer: Subscriber<T[]>) => {
+    return new Observable((observer: Subscriber<T[]>) => {
       this.updateMany(objs).then(
         (result: T[]) => {
           observer.next(result);
@@ -113,7 +113,7 @@ export class BaseRepositoryImpl<
   }
 
   public findByIdAndUpdate$(id: string, update: any): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.findByIdAndUpdate(id, update).then(
         (result: T) => {
           observer.next(result);
@@ -131,7 +131,7 @@ export class BaseRepositoryImpl<
     update: any,
     options: any = { overwrite: false, new: true },
   ): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.findOneAndUpdate(conditions, update, options).then(
         (result: T) => {
           observer.next(result);
@@ -149,7 +149,7 @@ export class BaseRepositoryImpl<
     update: any,
     options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
   ): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.findOneAndUpdate(conditions, update, options).then(
         (result: T) => {
           observer.next(result);
@@ -167,7 +167,7 @@ export class BaseRepositoryImpl<
     _projection?: any,
     options?: any,
   ): Observable<T[]> {
-    return Observable.create((observer: Subscriber<T[]>) => {
+    return new Observable((observer: Subscriber<T[]>) => {
       this.findAll(conditions, '-__v', options).then(
         (result: TDocument[]) => {
           observer.next(result);
@@ -182,10 +182,10 @@ export class BaseRepositoryImpl<
 
   public find$(
     query?: any,
-    _projection?: any, // Todo: figure out
+    _projection?: any,
     options?: any,
   ): Observable<{ result: T[]; count: number }> {
-    return Observable.create(
+    return new Observable(
       (observer: Subscriber<{ result: T[]; count: number }>) => {
         this.find(query, '-__v', options).then(
           ({ result, count }) => {
@@ -201,7 +201,7 @@ export class BaseRepositoryImpl<
   }
 
   public findOne$(conditions: any, projection?: any): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.findOne(conditions).then(
         (result: T) => {
           observer.next(result);
@@ -215,7 +215,7 @@ export class BaseRepositoryImpl<
   }
 
   public findById$(id: string): Observable<T> {
-    return Observable.create((observer: Subscriber<T>) => {
+    return new Observable((observer: Subscriber<T>) => {
       this.findById(id).then(
         (result: T) => {
           observer.next(result);
@@ -229,7 +229,7 @@ export class BaseRepositoryImpl<
   }
 
   public remove$(id: string): Observable<void> {
-    return Observable.create((observer: Subscriber<void>) => {
+    return new Observable((observer: Subscriber<void>) => {
       this.remove(id).then(
         () => {
           observer.next();
@@ -243,7 +243,7 @@ export class BaseRepositoryImpl<
   }
 
   public count$(conditions: any): Observable<number> {
-    return Observable.create((observer: Subscriber<number>) => {
+    return new Observable((observer: Subscriber<number>) => {
       this.count(conditions).then(
         (result: number) => {
           observer.next(result);

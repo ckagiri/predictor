@@ -1,5 +1,5 @@
 import { Observable, of, from, throwError, iif } from 'rxjs';
-import { filter, flatMap, map, catchError, toArray } from 'rxjs/operators';
+import { filter, mergeMap, map, catchError, toArray } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -55,16 +55,16 @@ export class PredictionRepositoryImpl
   findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
     return this.matchRepo.findById$(matchId)
       .pipe(
-        flatMap(match => {
+        mergeMap(match => {
           if (!match) {
-            return throwError(`matchId ${matchId} not found`)
+            return throwError(() => new Error(`matchId ${matchId} not found`))
           }
           if (!(match.status === MatchStatus.SCHEDULED || match.status === MatchStatus.TIMED)) {
             return throwError(`${match.slug} not scheduled to be played`);
           }
           return this.findOne$(userId, matchId)
         }),
-        flatMap(prediction => {
+        mergeMap(prediction => {
           if (!prediction) {
             return throwError('prediction does not exist');
           }
@@ -76,7 +76,7 @@ export class PredictionRepositoryImpl
   pickJoker$(userId: string, matchId: string): Observable<Prediction[]> {
     return this.matchRepo.findById$(matchId)
       .pipe(
-        flatMap(match => {
+        mergeMap(match => {
           if (!match) {
             return throwError(`matchId ${matchId} not found`)
           }
@@ -86,10 +86,10 @@ export class PredictionRepositoryImpl
           return this.findOrCreateJoker$(userId, match.gameRound!)
             .pipe(map(currentJoker => ({ match, currentJoker })))
         }),
-        flatMap(({ match, currentJoker }) => {
+        mergeMap(({ match, currentJoker }) => {
           return this.findOneOrCreate$(userId, match)
             .pipe(
-              flatMap(newJoker => {
+              mergeMap(newJoker => {
                 const jokers = [];
                 if (currentJoker.match.toString() === newJoker.match.toString()) {
                   currentJoker.jokerAutoPicked = false;
@@ -116,7 +116,7 @@ export class PredictionRepositoryImpl
               })
             )
         }),
-        flatMap(({ oldJokerMatch, newJokerMatch }) => {
+        mergeMap(({ oldJokerMatch, newJokerMatch }) => {
           return this.findAll$({
             user: userId,
             match: { $in: uniq([oldJokerMatch, newJokerMatch]) }
@@ -128,7 +128,7 @@ export class PredictionRepositoryImpl
   unsetJoker$(userId: string, matchId: string): Observable<Prediction | null> {
     return super.findOne$({ user: userId, match: matchId, hasJoker: true })
       .pipe(
-        flatMap(pred => {
+        mergeMap(pred => {
           if (pred) {
             pred.hasJoker = false;
             return this.save$(pred)
@@ -141,7 +141,7 @@ export class PredictionRepositoryImpl
   findOrCreatePredictions$(userId: string, roundId: string, withJoker = true, roundMatches: Match[] = []): Observable<Prediction[]> {
     return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
       .pipe(
-        flatMap(matches => {
+        mergeMap(matches => {
           if (matches.length === 0) {
             return of([])
           }
@@ -150,13 +150,13 @@ export class PredictionRepositoryImpl
             this.findOrCreateJoker$(userId, roundId, withJoker, matches),
             of(undefined)
           ).pipe(
-            flatMap(() => {
+            mergeMap(() => {
               return this.findAll$({
                 user: userId,
                 match: { $in: matches.map(n => n.id) },
               })
             }),
-            flatMap(predictions => {
+            mergeMap(predictions => {
               if (matches.length === predictions.length) {
                 return of(predictions);
               }
@@ -178,10 +178,10 @@ export class PredictionRepositoryImpl
                   }),
                   toArray()
                 ).pipe(
-                  flatMap(newPredictions => {
+                  mergeMap(newPredictions => {
                     return this.insertMany$(newPredictions)
                   }),
-                  flatMap(() => {
+                  mergeMap(() => {
                     return this.findAll$({
                       user: userId,
                       match: { $in: matches.map(n => n.id) },
@@ -197,13 +197,13 @@ export class PredictionRepositoryImpl
   findOrCreatePicks$(userId: string, roundId: string, withJoker = true): Observable<Prediction[]> {
     return this.matchRepo.findAll$({ gameRound: roundId })
       .pipe(
-        flatMap(matches => {
+        mergeMap(matches => {
           if (matches.length === 0) {
             return of([])
           }
           return this.findOrCreatePredictions$(userId, roundId, withJoker, matches)
             .pipe(
-              flatMap(predictions => {
+              mergeMap(predictions => {
                 return from(predictions)
                   .pipe(
                     filter(prediction => {
@@ -219,13 +219,13 @@ export class PredictionRepositoryImpl
                     toArray(),
                   )
               }),
-              flatMap(newPicks => {
+              mergeMap(newPicks => {
                 return iif(
                   () => Boolean(newPicks.length),
                   this.updateMany$(newPicks),
                   of(undefined))
               }),
-              flatMap(() => {
+              mergeMap(() => {
                 return this.findAll$({
                   user: userId,
                   match: { $in: matches.map(m => m.id?.toString()) },
@@ -242,7 +242,7 @@ export class PredictionRepositoryImpl
   ): Observable<Prediction> {
     return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
       .pipe(
-        flatMap(matches => {
+        mergeMap(matches => {
           const matchIds = matches.map(m => m.id?.toString())
           return this.findAll$({
             user: userId,
@@ -250,7 +250,7 @@ export class PredictionRepositoryImpl
             hasJoker: true
           })
             .pipe(
-              flatMap(jokerPredictions => {
+              mergeMap(jokerPredictions => {
                 const jokers = [];
                 if (jokerPredictions.length === 0) {
                   const selectableMatchIds = matches
@@ -291,7 +291,7 @@ export class PredictionRepositoryImpl
               catchError((error: any) => {
                 return throwError(error);
               }),
-              flatMap(result => {
+              mergeMap(result => {
                 if (result.constructor.name === 'BulkWriteResult') {
                   return super.findOne$({
                     user: userId,
@@ -316,7 +316,7 @@ export class PredictionRepositoryImpl
   ): Observable<Prediction> {
     return (isString(match) ? this.matchRepo.findById$(match) : of(match))
       .pipe(
-        flatMap(aMatch => {
+        mergeMap(aMatch => {
           if (!aMatch) {
             return throwError(`matchId ${isString(match) ? match : match.id} not found`)
           }
@@ -324,7 +324,7 @@ export class PredictionRepositoryImpl
           const { id: matchId, slug: matchSlug, status: matchStatus } = aMatch;
           return this.findOne$(userId, matchId!)
             .pipe(
-              flatMap(prediction => {
+              mergeMap(prediction => {
                 if (prediction) {
                   return of(prediction);
                 }

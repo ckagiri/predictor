@@ -1,6 +1,6 @@
 import mongoose, { Model, Document } from 'mongoose';
 import { omit } from 'lodash';
-mongoose.set('useFindAndModify', false);
+// mongoose.set('useFindAndModify', false);
 
 import { Entity } from '../models/base.model';
 
@@ -142,13 +142,13 @@ export class DocumentDao<T extends Document> {
           if (Array.isArray(needle)) {
             return {
               [isId ? '_id' : key]: {
-                $in: needle.map(n => (isId ? mongoose.Types.ObjectId(n) : n)),
+                $in: needle.map(n => (isId ? new mongoose.Types.ObjectId(n) : n)),
               },
             };
           }
           return {
             [isId ? '_id' : key]: isId
-              ? mongoose.Types.ObjectId(needle)
+              ? new mongoose.Types.ObjectId(needle)
               : needle,
           };
         });
@@ -198,21 +198,19 @@ export class DocumentDao<T extends Document> {
     update: any,
     options: any = { overwrite: false, new: true },
   ): Promise<T> {
-    return this.Model.findByIdAndUpdate(id, update, options).exec() as Promise<
-      T
-    >;
+    return this.Model.findByIdAndUpdate(id, update, options).exec() as Promise<T | any>;
   }
 
   public findOneAndUpdate(
     conditions: any,
     update: any,
     options: any = { overwrite: false, new: true },
-  ) {
+  ): Promise<T> {
     return this.Model.findOneAndUpdate(
       conditions,
       update,
       options,
-    ).exec() as Promise<T>;
+    ).exec() as Promise<T | any>;
   }
 
   public findOneAndUpsert(
@@ -224,7 +222,7 @@ export class DocumentDao<T extends Document> {
       conditions,
       update,
       options,
-    ).exec() as Promise<T>;
+    ).exec() as Promise<T | any>;
   }
 
   public remove(id: string) {

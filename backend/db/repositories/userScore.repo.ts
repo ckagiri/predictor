@@ -1,5 +1,5 @@
 import { Observable, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 import { ScorePoints } from '../../common/score';
 import UserScoreModel, {
@@ -68,7 +68,7 @@ export class UserScoreRepositoryImpl
 
     // todo: use $nin: [predictionId]
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
-      flatMap(standing => {
+      mergeMap(standing => {
         if (standing === null) {
           score.matches = [matchId];
           score.predictions = [predictionId];

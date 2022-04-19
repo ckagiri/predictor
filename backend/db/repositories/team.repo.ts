@@ -1,5 +1,5 @@
 import { from, Observable, forkJoin, throwError } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import TeamModel, { Team, TeamDocument } from '../models/team.model';
 import SeasonModel from '../models/season.model';
 import {
@@ -72,7 +72,7 @@ export class TeamRepositoryImpl
       return super.findOneAndUpdate$(query, obj);
     }
     return (this.converter as TeamConverter).from(obj).pipe(
-      flatMap(data => {
+      mergeMap(data => {
         const { externalReference } = data;
         delete obj.externalReference;
         // this is a special method to deal with mixed type for externalReference to avoid overwritting existing keys

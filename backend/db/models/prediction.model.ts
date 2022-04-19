@@ -1,5 +1,4 @@
-import mongoose, { Schema, model } from 'mongoose';
-mongoose.set('useCreateIndex', true);
+import { Schema, model } from 'mongoose';
 
 import { Entity, DocumentEntity, schema } from './base.model';
 import { ScorePoints, Score } from '../../common/score';
