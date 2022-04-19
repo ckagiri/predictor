@@ -15,7 +15,7 @@ export class GameRoundsController {
     return new GameRoundsController(SeasonRepositoryImpl.getInstance(), GameRoundRepositoryImpl.getInstance());
   }
 
-  constructor(private seasonRepo: SeasonRepository, private gameRoundRepo: GameRoundRepository) {}
+  constructor(private seasonRepo: SeasonRepository, private gameRoundRepo: GameRoundRepository) { }
 
   public getGameRounds = async (req: Request, res: Response) => {
     try {
@@ -30,11 +30,11 @@ export class GameRoundsController {
       }
 
       const season = await this.seasonRepo.findOne$({
-        $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}],
+        $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
       }).toPromise();
 
       const gameRounds = await this.gameRoundRepo
-        .findAll$({ season: season.id })
+        .findAll$({ season: season?.id })
         .toPromise();
       res.status(200).json(gameRounds);
     } catch (error) {
@@ -45,7 +45,7 @@ export class GameRoundsController {
   public getGameRound = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let gameRound: GameRound;
+      let gameRound: GameRound | undefined;
       if (isMongoId(id)) {
         gameRound = await this.gameRoundRepo.findById$(id).toPromise();
       } else {
@@ -53,16 +53,16 @@ export class GameRoundsController {
         const seasonSlug = req.params.season;
 
         const season = await this.seasonRepo.findOne$({
-          $and: [{'competition.slug': competitionSlug}, {slug: seasonSlug}],
+          $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
         }).toPromise();
 
         gameRound = await this.gameRoundRepo.findOne$({
           $or: [
             {
-              $and: [{ season: season.id }, { slug: id }],
+              $and: [{ season: season?.id }, { slug: id }],
             },
             {
-              $and: [{ season: season.id}, { position: parseInt(id, 10) || 0 }],
+              $and: [{ season: season?.id }, { position: parseInt(id, 10) || 0 }],
             },
           ],
         }).toPromise();

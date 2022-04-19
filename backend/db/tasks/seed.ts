@@ -1,14 +1,14 @@
 import seedData from '../tasks/seedData/seed-epl22.json';
 
 import mongooseSeeder from 'mais-mongoose-seeder';
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 import('../models/competition.model');
 import('../models/season.model');
 import('../models/team.model');
 import('../models/gameRound.model');
 
 function seed() {
-  mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true });
+  mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true } as ConnectOptions);
   mongoose.connection.on('open', () => {
     const seeder = mongooseSeeder(mongoose);
     // tslint:disable-next-line:no-console

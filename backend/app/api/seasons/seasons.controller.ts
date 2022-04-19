@@ -15,9 +15,9 @@ export class SeasonsController {
 
   public getSeasons = async (req: Request, res: Response) => {
     try {
-      const filter = req.query.filter ? JSON.parse(req.query.filter) : {};
+      const filter = req.query.filter ? JSON.parse(req.query.filter as any) : {};
       const competition = req.params.competition || req.query.competition || filter.competition;
-      let seasons: Season[] = [];
+      let seasons: Season[] | undefined = [];
       if (!competition) {
         throw new Error('competition id or slug is required');
       }
@@ -30,7 +30,7 @@ export class SeasonsController {
           .findAll$({ 'competition.slug': competition })
           .toPromise();
       }
-      const count = seasons.length;
+      const count = seasons?.length!;
       res.header('Content-Range', `Seasons 0-${count - 1}/${count}`);
       return res.status(200).json(seasons);
     } catch (error) {
@@ -41,7 +41,7 @@ export class SeasonsController {
   public getSeason = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let season: Season;
+      let season: Season | undefined;
       if (isMongoId(id)) {
         season = await this.seasonRepo.findById$(id).toPromise();
       } else {

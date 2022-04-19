@@ -21,8 +21,8 @@ import {
 } from '../../db/repositories/match.repo';
 
 export interface FinishedMatchesProcessor {
-  processPredictions(matches: Match[]): Promise<number>;
-  setToTrueAllPredictionsProcessed(matches: Match[]): Promise<number>;
+  processPredictions(matches: Match[]): Promise<number | undefined>;
+  setToTrueAllPredictionsProcessed(matches: Match[]): Promise<number | undefined>;
 }
 
 export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {

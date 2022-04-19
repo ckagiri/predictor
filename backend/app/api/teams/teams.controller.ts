@@ -28,7 +28,7 @@ export class TeamsController {
   public getTeam = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let team: Team;
+      let team: Team | undefined;
       if (isMongoId(id)) {
         team = await this.teamRepo.findById$(id).toPromise();
       } else {

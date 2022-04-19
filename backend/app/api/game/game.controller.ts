@@ -34,7 +34,7 @@ export class GameController {
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
     private matchRepo: MatchRepository,
-  ) {}
+  ) { }
 
   public getGameData = async (_req: Request, res: Response) => {
     try {
@@ -77,7 +77,7 @@ export class GameController {
               );
               // Todo: season-teams
               return zip(
-                this.teamRepo.getAllBySeason$(selectedSeason?.id),
+                this.teamRepo.getAllBySeason$(selectedSeason?.id!),
                 this.matchRepo.findAll$({ season: selectedSeason?.id }),
                 (teams, matches) => {
                   const seasonMatches = matches.map(m => {

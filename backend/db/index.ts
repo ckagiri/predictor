@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from "mongoose";
 import CompetitionModel from './models/competition.model';
 import TeamModel from './models/team.model';
 import PredictionModel from './models/prediction.model';
@@ -19,7 +19,7 @@ export const init = (
     (() => {
       /**/
     });
-  mongoose.connect(mongoUri, { useNewUrlParser: true }, (error: any) => {
+  mongoose.connect(mongoUri, { useNewUrlParser: true } as ConnectOptions, (error: any) => {
     if (options.drop) {
       mongoose.connection.db.dropDatabase((err: any) => {
         cb(err);

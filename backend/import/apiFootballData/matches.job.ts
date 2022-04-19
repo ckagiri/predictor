@@ -1,5 +1,5 @@
-import { from } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { from, lastValueFrom } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 import { Job } from '../jobs/job';
 import { Queue } from '../queue';
 import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
@@ -12,9 +12,13 @@ export class MatchesJob implements Job {
   private matchRepo: MatchRepository;
 
   constructor(builder: Builder) {
-    this.apiClient = builder.ApiClient;
-    this.matchRepo = builder.MatchRepo;
-    this.competitionId = builder.CompetitionId;
+    const { apiClient, matchRepo, competitionId } = builder;
+    if (!apiClient || !matchRepo || !competitionId) {
+      throw new Error('Matches Job not properly initialised');
+    }
+    this.apiClient = apiClient;
+    this.matchRepo = matchRepo;
+    this.competitionId = competitionId;
   }
 
   static get Builder(): Builder {
@@ -24,14 +28,15 @@ export class MatchesJob implements Job {
   public start(queue: Queue) {
     // tslint:disable-next-line: no-console
     console.log('** starting ApiFootballData Matches job');
-    return from(this.apiClient.getMatches(this.competitionId))
-      .pipe(
-        flatMap((response: any) => {
-          let matches: any[] = response.data.matches || [];
-          matches = matches.map(m => ({ ...m, gameRound: m.matchday }));
-          return this.matchRepo.findEachBySeasonAndTeamsAndUpsert$(matches);
-        }),
-      )
-      .toPromise();
+    return lastValueFrom(
+      from(this.apiClient?.getMatches(this.competitionId!))
+        .pipe(
+          mergeMap((response: any) => {
+            let matches: any[] = response.data.matches || [];
+            matches = matches.map(m => ({ ...m, gameRound: m.matchday }));
+            return this.matchRepo.findEachBySeasonAndTeamsAndUpsert$(matches);
+          }),
+        )
+    );
   }
 }

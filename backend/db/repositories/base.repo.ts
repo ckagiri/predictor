@@ -1,4 +1,5 @@
 import { Observable, Subscriber } from 'rxjs';
+import { Model, Document } from 'mongoose';
 
 import { DocumentDao } from './document.dao';
 import { Entity, DocumentEntity } from '../models/base.model';
@@ -27,10 +28,17 @@ export interface BaseRepository<T extends Entity> {
 export class BaseRepositoryImpl<
   T extends Entity,
   TDocument extends T & DocumentEntity
-  > extends DocumentDao<TDocument> implements BaseRepository<T> {
+  > implements BaseRepository<T> {
+
+  private documentDao: DocumentDao<TDocument>;
+
+  constructor(SchemaModel: Model<TDocument>) {
+    this.documentDao = new DocumentDao<TDocument>(SchemaModel);
+  }
+
   public save$(obj: Entity): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.save(obj).then(
+      this.documentDao.save(obj).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -44,7 +52,7 @@ export class BaseRepositoryImpl<
 
   public saveMany$(objs: Entity[]): Observable<T[]> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.saveMany(objs).then(
+      this.documentDao.saveMany(objs).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();
@@ -58,7 +66,7 @@ export class BaseRepositoryImpl<
 
   public insert$(obj: Entity): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.insert(obj).then(
+      this.documentDao.insert(obj).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -72,7 +80,7 @@ export class BaseRepositoryImpl<
 
   public insertMany$(objs: Entity[]): Observable<T[]> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.insertMany(objs).then(
+      this.documentDao.insertMany(objs).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();
@@ -86,7 +94,7 @@ export class BaseRepositoryImpl<
 
   public upsertMany$(objs: Entity[]): Observable<any> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.upsertMany(objs).then(
+      this.documentDao.upsertMany(objs).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();
@@ -100,7 +108,7 @@ export class BaseRepositoryImpl<
 
   public updateMany$(objs: Entity[]): Observable<any> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.updateMany(objs).then(
+      this.documentDao.updateMany(objs).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();
@@ -114,7 +122,7 @@ export class BaseRepositoryImpl<
 
   public findByIdAndUpdate$(id: string, update: any): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.findByIdAndUpdate(id, update).then(
+      this.documentDao.findByIdAndUpdate(id, update).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -132,7 +140,7 @@ export class BaseRepositoryImpl<
     options: any = { overwrite: false, new: true },
   ): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.findOneAndUpdate(conditions, update, options).then(
+      this.documentDao.findOneAndUpdate(conditions, update, options).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -150,7 +158,7 @@ export class BaseRepositoryImpl<
     options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
   ): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.findOneAndUpdate(conditions, update, options).then(
+      this.documentDao.findOneAndUpdate(conditions, update, options).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -168,7 +176,7 @@ export class BaseRepositoryImpl<
     options?: any,
   ): Observable<T[]> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.findAll(conditions, '-__v', options).then(
+      this.documentDao.findAll(conditions, '-__v', options).then(
         (result: TDocument[]) => {
           observer.next(result);
           observer.complete();
@@ -187,7 +195,7 @@ export class BaseRepositoryImpl<
   ): Observable<{ result: T[]; count: number }> {
     return new Observable(
       (observer: Subscriber<{ result: T[]; count: number }>) => {
-        this.find(query, '-__v', options).then(
+        this.documentDao.find(query, '-__v', options).then(
           ({ result, count }) => {
             observer.next({ result, count });
             observer.complete();
@@ -202,7 +210,7 @@ export class BaseRepositoryImpl<
 
   public findOne$(conditions: any, projection?: any): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.findOne(conditions).then(
+      this.documentDao.findOne(conditions).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -216,7 +224,7 @@ export class BaseRepositoryImpl<
 
   public findById$(id: string): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.findById(id).then(
+      this.documentDao.findById(id).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -230,7 +238,7 @@ export class BaseRepositoryImpl<
 
   public remove$(id: string): Observable<void> {
     return new Observable((observer: Subscriber<void>) => {
-      this.remove(id).then(
+      this.documentDao.remove(id).then(
         () => {
           observer.next();
           observer.complete();
@@ -244,7 +252,7 @@ export class BaseRepositoryImpl<
 
   public count$(conditions: any): Observable<number> {
     return new Observable((observer: Subscriber<number>) => {
-      this.count(conditions).then(
+      this.documentDao.count(conditions).then(
         (result: number) => {
           observer.next(result);
           observer.complete();

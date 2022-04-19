@@ -1,4 +1,4 @@
-import { from, Observable, forkJoin } from 'rxjs';
+import { from, Observable, forkJoin, lastValueFrom } from 'rxjs';
 import {
   concatMap,
   count,
@@ -33,8 +33,8 @@ import {
 
 export interface LeaderboardUpdater {
   updateScores(matches: Match[]): Promise<number>;
-  updateRankings(seasonId: string): Promise<number>;
-  markLeaderboardsAsRefreshed(seasonId: string): Promise<number>;
+  updateRankings(seasonId: string): Promise<number | undefined>;
+  markLeaderboardsAsRefreshed(seasonId: string): Promise<number | undefined>;
 }
 
 export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
@@ -65,138 +65,139 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
     if (this.cacheService != null) {
       this.cacheService.clear();
     }
-    return from(matches)
-      .pipe(
-        filter(match => {
-          return (
-            match.status === MatchStatus.FINISHED &&
-            match.allPredictionsProcessed === false
-          );
-        }),
-      )
-      .pipe(
-        flatMap(match => {
-          return this.userRepo
-            .findAll$()
-            .pipe(
-              flatMap(users => {
-                return from(users);
-              }),
-            )
-            .pipe(
-              map(user => {
-                return { user, match };
-              }),
+    return lastValueFrom(
+      from(matches)
+        .pipe(
+          filter(match => {
+            return (
+              match.status === MatchStatus.FINISHED &&
+              match.allPredictionsProcessed === false
             );
-        }),
-      )
-      .pipe(
-        flatMap(data => {
-          const { user, match } = data;
-          const { season, gameRound, date } = match;
-          const month = date.getUTCMonth() + 1;
-          const year = date.getFullYear();
+          }),
+        )
+        .pipe(
+          flatMap(match => {
+            return this.userRepo
+              .findAll$()
+              .pipe(
+                flatMap(users => {
+                  return from(users);
+                }),
+              )
+              .pipe(
+                map(user => {
+                  return { user, match };
+                }),
+              );
+          }),
+        )
+        .pipe(
+          flatMap(data => {
+            const { user, match } = data;
+            const { season, gameRound, date } = match;
+            const month = date.getUTCMonth() + 1;
+            const year = date.getFullYear();
 
-          const boards: Array<Observable<Leaderboard>> = [];
-          let sBoard: Observable<Leaderboard>;
-          let mBoard: Observable<Leaderboard>;
-          let rBoard: Observable<Leaderboard>;
+            const boards: Array<Observable<Leaderboard>> = [];
+            let sBoard: Observable<Leaderboard>;
+            let mBoard: Observable<Leaderboard>;
+            let rBoard: Observable<Leaderboard>;
 
-          if (this.cacheService != null) {
-            sBoard = this.cacheService.get(
-              `${season}`,
-              this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
+            if (this.cacheService != null) {
+              sBoard = this.cacheService.get(
+                `${season}`,
+                this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
+                  status: BOARD_STATUS.UPDATING_SCORES,
+                }),
+              );
+              mBoard = this.cacheService.get(
+                `${season}-${year}-${month}`,
+                this.leaderboardRepo.findMonthBoardAndUpsert$(
+                  season!,
+                  year,
+                  month,
+                  {
+                    status: BOARD_STATUS.UPDATING_SCORES,
+                  },
+                ),
+              );
+              rBoard = this.cacheService.get(
+                `${season}-${gameRound}`,
+                this.leaderboardRepo.findRoundBoardAndUpsert$(
+                  season!,
+                  gameRound!,
+                  {
+                    status: BOARD_STATUS.UPDATING_SCORES,
+                  },
+                ),
+              );
+            } else {
+              sBoard = this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
                 status: BOARD_STATUS.UPDATING_SCORES,
-              }),
-            );
-            mBoard = this.cacheService.get(
-              `${season}-${year}-${month}`,
-              this.leaderboardRepo.findMonthBoardAndUpsert$(
+              });
+              mBoard = this.leaderboardRepo.findMonthBoardAndUpsert$(
                 season!,
                 year,
                 month,
                 {
                   status: BOARD_STATUS.UPDATING_SCORES,
                 },
-              ),
-            );
-            rBoard = this.cacheService.get(
-              `${season}-${gameRound}`,
-              this.leaderboardRepo.findRoundBoardAndUpsert$(
+              );
+              rBoard = this.leaderboardRepo.findRoundBoardAndUpsert$(
                 season!,
                 gameRound!,
                 {
                   status: BOARD_STATUS.UPDATING_SCORES,
                 },
-              ),
-            );
-          } else {
-            sBoard = this.leaderboardRepo.findSeasonBoardAndUpsert$(season!, {
-              status: BOARD_STATUS.UPDATING_SCORES,
-            });
-            mBoard = this.leaderboardRepo.findMonthBoardAndUpsert$(
-              season!,
-              year,
-              month,
-              {
-                status: BOARD_STATUS.UPDATING_SCORES,
-              },
-            );
-            rBoard = this.leaderboardRepo.findRoundBoardAndUpsert$(
-              season!,
-              gameRound!,
-              {
-                status: BOARD_STATUS.UPDATING_SCORES,
-              },
-            );
-          }
-          boards.push(sBoard, mBoard, rBoard);
-          return forkJoin(boards)
-            .pipe(
-              flatMap(leaderboards => {
-                return from(leaderboards);
-              }),
-            )
-            .pipe(
-              map(leaderboard => {
-                return { user, match, leaderboard };
-              }),
-            );
-        }),
-      )
-      .pipe(
-        flatMap(data => {
-          const { user, match, leaderboard } = data;
-          const userId = user.id!.toString();
-          const matchId = match.id!.toString()!;
+              );
+            }
+            boards.push(sBoard, mBoard, rBoard);
+            return forkJoin(boards)
+              .pipe(
+                flatMap(leaderboards => {
+                  return from(leaderboards);
+                }),
+              )
+              .pipe(
+                map(leaderboard => {
+                  return { user, match, leaderboard };
+                }),
+              );
+          }),
+        )
+        .pipe(
+          flatMap(data => {
+            const { user, match, leaderboard } = data;
+            const userId = user.id!.toString();
+            const matchId = match.id!.toString()!;
 
-          return this.predictionRepo.findOne$(userId, matchId).pipe(
-            map(prediction => {
-              return { user, match, leaderboard, prediction };
-            }),
-          );
-        }),
-      )
-      .pipe(
-        concatMap(data => {
-          const { user, match, leaderboard, prediction } = data;
-          const userId = user.id!;
-          const matchId = match.id!;
-          const leaderboardId = leaderboard.id!;
-          const predictionId = prediction.id!;
-          const { scorePoints: points, hasJoker } = prediction;
-          return this.userScoreRepo.findScoreAndUpsert$(
-            leaderboardId,
-            userId,
-            matchId,
-            predictionId,
-            points!,
-            hasJoker!,
-          );
-        }),
-      )
-      .pipe(count())
-      .toPromise();
+            return this.predictionRepo.findOne$(userId, matchId).pipe(
+              map(prediction => {
+                return { user, match, leaderboard, prediction };
+              }),
+            );
+          }),
+        )
+        .pipe(
+          concatMap(data => {
+            const { user, match, leaderboard, prediction } = data;
+            const userId = user.id!;
+            const matchId = match.id!;
+            const leaderboardId = leaderboard.id!;
+            const predictionId = prediction.id!;
+            const { scorePoints: points, hasJoker } = prediction;
+            return this.userScoreRepo.findScoreAndUpsert$(
+              leaderboardId,
+              userId,
+              matchId,
+              predictionId,
+              points!,
+              hasJoker!,
+            );
+          }),
+        )
+        .pipe(count())
+    )
   }
 
   public updateRankings(seasonId: string) {

@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 import * as http from 'http';
 import routes from './api/routes';
 
@@ -27,7 +27,7 @@ async function startServer(): Promise<http.Server> {
     await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-    });
+    } as ConnectOptions);
     const db = mongoose.connection;
 
     db.on('error', (err: Error) => {

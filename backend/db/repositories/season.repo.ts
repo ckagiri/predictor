@@ -47,7 +47,7 @@ export class SeasonRepositoryImpl
               if (!season) {
                 reject(new Error('Failed to load Season ' + seasonId));
               }
-              return resolve(season.teams as Team[]);
+              return resolve(season?.teams as Team[] | undefined);
             });
         },
       ),

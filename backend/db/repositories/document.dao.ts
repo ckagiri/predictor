@@ -2,12 +2,12 @@ import mongoose, { Model, Document } from 'mongoose';
 import { omit } from 'lodash';
 // mongoose.set('useFindAndModify', false);
 
-import { Entity } from '../models/base.model';
+import { DocumentEntity, Entity } from '../models/base.model';
 
-export class DocumentDao<T extends Document> {
-  protected Model: Model<Document>;
+export class DocumentDao<T extends DocumentEntity> {
+  protected Model: Model<T>;
 
-  constructor(SchemaModel: Model<Document>) {
+  constructor(SchemaModel: Model<T>) {
     this.Model = SchemaModel;
   }
 

@@ -5,7 +5,7 @@ export interface Entity {
   id?: string;
 }
 
-export interface DocumentEntity extends Entity, Document {
+export interface DocumentEntity extends Document, Entity {
   id?: string;
   createdAt?: Date;
   modifiedAt?: Date;

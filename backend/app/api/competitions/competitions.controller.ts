@@ -16,7 +16,7 @@ export class CompetitionsController {
   public getCompetitions = async (_req: Request, res: Response) => {
     try {
       const competitions = await this.competitionRepo.findAll$().toPromise();
-      res.header('Content-Range', `Competitions 0-${competitions.length - 1}/${competitions.length}`);
+      res.header('Content-Range', `Competitions 0-${competitions!.length - 1}/${competitions!.length}`);
       res.status(200).json(competitions);
     } catch (error) {
       res.status(500).send(error);
@@ -26,7 +26,7 @@ export class CompetitionsController {
   public getCompetition = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let competition: Competition;
+      let competition: Competition | undefined;
       if (isMongoId(id)) {
         competition = await this.competitionRepo.findById$(id).toPromise();
       } else {
