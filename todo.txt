@@ -58,14 +58,8 @@ vose predictor laterz
 refactor tests undefined types
 
 <<< userScore
-- findStandingAndUpsert
+- findScoreAndUpsert
 >>>
-
-<<< pred-repo
- assert more
- withJoker parameter
- handle nil match and empty matches --> rearrange rx pipelines
-<<<
 
 <<< gameRound
   add jokerPickable? -> for last 8 wc
@@ -97,4 +91,28 @@ npm WARN deprecated superagent@3.8.3: Please upgrade to v7.0.2+ of superagent.  
 npm WARN deprecated formidable@1.2.6: Please upgrade to latest, formidable@v2 or formidable@v3! Check these notes: https://bit.ly/2ZEqIau
 >>>
 
-@testdeck/mocha
+@testdeck/mocha? use?
+
+<<<
+auth - simple auth
+remove fb/google/twitter
+oauth after react
+create prediction
+end goal docker with api, postman collection
+seeder -> worldcup -> stadiums, groupings
+dockerize -> node + mongodb
+deploy to aws, heroku, digital-ocean?
+>>>
+
+<<<
+fix tests
+update match model & repo
+update leaderboard model & repo
+update score model & repo
+update gameplay & tests
+move tests to jest pain?
+env setup?
+>>>
+
+
+<<<

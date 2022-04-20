@@ -75,7 +75,8 @@ export class TeamRepositoryImpl
       mergeMap(data => {
         const { externalReference } = data;
         delete obj.externalReference;
-        // this is a special method to deal with mixed type for externalReference to avoid overwritting existing keys
+        // todo: this is a special method to deal with mixed type for externalReference 
+        // to avoid overwritting existing keys
         return this._findOneAndUpsert$(query, obj, externalReference);
       }),
     );
