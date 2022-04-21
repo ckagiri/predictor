@@ -165,7 +165,6 @@ describe('UserScore Repo', function () {
   })
 
   describe('find and upsert', () => {
-
     it('should create a userScore if it does not exist', done => {
       const hasJoker = true;
       userScoreRepo

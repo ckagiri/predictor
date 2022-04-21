@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
@@ -92,7 +92,7 @@ describe('teamRepo', function () {
     teamRepo
       .insert$(manUtd)
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return teamRepo.findByName$(manUtd.name);
         }),
       )
@@ -112,7 +112,7 @@ describe('teamRepo', function () {
     teamRepo
       .insert$(manUtd)
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return teamRepo.findByName$(manUtd.shortName);
         }),
       )
@@ -132,7 +132,7 @@ describe('teamRepo', function () {
     teamRepo
       .insert$(manUtd)
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return teamRepo.findByName$(manUtd.aliases[0]);
         }),
       )
@@ -150,12 +150,11 @@ describe('teamRepo', function () {
       ApiProvider.API_FOOTBALL_DATA,
     );
 
-    // check to see if we have an external reference
-    // check shortName it would be preferable if such prop could be excluded from the patch object
+    //todo: should sanitize patch object props
     teamRepo
       .insert$(manUtd)
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return teamRepo.findByNameAndUpsert$(afdManUtd);
         }),
       )
@@ -184,7 +183,7 @@ describe('teamRepo', function () {
     teamRepo
       .insert$(teamManUtd)
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return teamRepo.findByNameAndUpsert$(afdManUtd);
         }),
       )
@@ -208,7 +207,7 @@ describe('teamRepo', function () {
     teamRepo
       .insertMany$([manUtd, manCity])
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return teamRepo.findEachByNameAndUpsert$([afdManUtd, afdManCity]);
         }),
       )
@@ -255,9 +254,8 @@ describe('teamRepo', function () {
       )
       .build();
 
-    const season = gameData.seasons[0];
     const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
-    const seasonTeams = await teamRepo.getAllBySeason$(season.id).toPromise();
+    const seasonTeams = await teamRepo.getAllBySeason$(epl2022.id).toPromise();
     expect(seasonTeams).to.have.length(2);
   });
 });
