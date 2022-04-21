@@ -61,7 +61,7 @@ describe('Match', () => {
         date: '2018-05-13T14:00:00Z',
         status: MatchStatus.SCHEDULED,
         matchRound: 38,
-        gameRound: 38,
+        gameRound: '4edd40c86762e0fb12000001',
         homeTeam: {
           id: '4edd40c86762e0fb12000001',
           name: 'Arsenal',

@@ -31,8 +31,8 @@ const manc = a.team.setName('Manchester City').setSlug('man-city');
 const che = a.team.setName('Chelsea').setSlug('chelsea');
 const ars = a.team.setName('Arsenal').setSlug('arsenal');
 
-const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
-const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
+const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
 
 const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
 const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');

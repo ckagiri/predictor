@@ -34,7 +34,7 @@ export class MainJob implements Job {
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
     private matchRepo: MatchRepository,
-  ) {}
+  ) { }
 
   public start(queue: Queue) {
     // tslint:disable-next-line: no-console
@@ -47,13 +47,12 @@ export class MainJob implements Job {
           if (comp.id !== 2021) {
             continue;
           }
-          const jobBuilder = CompetitionJob.Builder;
-          const job = jobBuilder
-            .setApiClient(this.apiClient)
-            .setSeasonRepo(this.seasonRepo)
-            .setTeamRepo(this.teamRepo)
-            .setMatchRepo(this.matchRepo)
-            .withCompetition(comp.id)
+          const job = CompetitionJob.builder
+            .withApiClient(this.apiClient)
+            .withSeasonRepo(this.seasonRepo)
+            .withTeamRepo(this.teamRepo)
+            .withMatchRepo(this.matchRepo)
+            .setCompetition(comp.id)
             .build();
           queue.addJob(job);
         }

@@ -54,7 +54,7 @@ describe('ApiFootballData:Main Job', () => {
       );
       await mainJob.start(queueStub);
 
-      expect(spy).to.have.been.calledWith(2018);
+      expect(spy).to.have.been.calledWith(2021);
     });
 
     describe('with given year', () => {

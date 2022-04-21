@@ -68,7 +68,7 @@ export class PredictionRepositoryImpl
           if (!prediction) {
             return throwError('prediction does not exist');
           }
-          return super.findOneAndUpdate$({ user: userId, match: matchId }, { ...choice, isComputerGenerated: false })
+          return super.findOneAndUpdate$({ user: userId, match: matchId }, { choice, isComputerGenerated: false })
         })
       );
   }

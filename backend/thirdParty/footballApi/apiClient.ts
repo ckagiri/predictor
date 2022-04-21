@@ -2,10 +2,10 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 import ApiFootballDataClient from './apiFootballData/apiClient';
 
 export interface FootballApiClient {
-  getCompetitions(year: number): any;
-  getCompetition(competitionId: number | string): any;
-  getTeams(competitionId: number | string): any;
-  getMatches(competitionId: number | string, options?: any): any;
+  getCompetitions(year?: number): any;
+  getCompetition(competitionId?: number | string): any;
+  getTeams(competitionId?: number | string): any;
+  getMatches(competitionId?: number | string, options?: any): any;
   getTodaysMatches(): any;
   getTomorrowsMatches(): any;
   getYesterdaysMatches(): any;

@@ -5,58 +5,58 @@ import { MatchRepository } from '../../db/repositories/match.repo';
 import { CompetitionJob } from '../apiFootballData/competition.job';
 
 export default class Builder {
-  private competitionId!: number | string;
-  private apiClient!: FootballApiClient;
-  private seasonRepo!: SeasonRepository;
-  private teamRepo!: TeamRepository;
-  private matchRepo!: MatchRepository;
+  private _competitionId?: number | string;
+  private _apiClient?: FootballApiClient;
+  private _seasonRepo?: SeasonRepository;
+  private _teamRepo?: TeamRepository;
+  private _matchRepo?: MatchRepository;
 
   public build() {
     return new CompetitionJob(this);
   }
 
-  get ApiClient() {
-    return this.apiClient;
+  get apiClient() {
+    return this._apiClient;
   }
 
-  public setApiClient(value: FootballApiClient) {
-    this.apiClient = value;
+  public withApiClient(value: FootballApiClient) {
+    this._apiClient = value;
     return this;
   }
 
-  get SeasonRepo() {
-    return this.seasonRepo;
+  get seasonRepo() {
+    return this._seasonRepo;
   }
 
-  public setSeasonRepo(value: SeasonRepository): Builder {
-    this.seasonRepo = value;
+  public withSeasonRepo(value: SeasonRepository): Builder {
+    this._seasonRepo = value;
     return this;
   }
 
-  get TeamRepo() {
-    return this.teamRepo;
+  get teamRepo() {
+    return this._teamRepo;
   }
 
-  public setTeamRepo(value: TeamRepository): Builder {
-    this.teamRepo = value;
+  public withTeamRepo(value: TeamRepository): Builder {
+    this._teamRepo = value;
     return this;
   }
 
-  get MatchRepo() {
-    return this.matchRepo;
+  get matchRepo() {
+    return this._matchRepo;
   }
 
-  public setMatchRepo(value: MatchRepository): Builder {
-    this.matchRepo = value;
+  public withMatchRepo(value: MatchRepository): Builder {
+    this._matchRepo = value;
     return this;
   }
 
-  public withCompetition(competitionId: string | number): Builder {
-    this.competitionId = competitionId;
+  public setCompetition(competitionId: string | number): Builder {
+    this._competitionId = competitionId;
     return this;
   }
 
-  get CompetitionId() {
-    return this.competitionId;
+  get competitionId() {
+    return this._competitionId;
   }
 }

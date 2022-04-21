@@ -47,7 +47,7 @@ export class TeamRepositoryImpl
               if (!season) {
                 reject(new Error('Failed to find Season ' + seasonId));
               }
-              return Promise.resolve(season?.teams as any[]);
+              return resolve(season?.teams as any[]);
             });
         },
       ) as Promise<Team[]>,

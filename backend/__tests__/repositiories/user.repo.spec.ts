@@ -45,7 +45,7 @@ describe('User Repo', function () {
   it('should filter users', done => {
     userRepo
       .find$({
-        filter: JSON.stringify({ username: ['chalo'] }),
+        filter: { username: ['chalo'] }
       })
       .subscribe(({ result: users, count }) => {
         expect(users).to.have.length(1);

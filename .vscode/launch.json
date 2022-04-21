@@ -69,6 +69,7 @@
       ],
       "internalConsoleOptions": "openOnSessionStart",
       "env": {
+        "NODE_ENV": "test",
         "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
       },
       "cwd": "${workspaceFolder}/backend",

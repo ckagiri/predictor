@@ -22,11 +22,10 @@ const matchRepoStub: any = {
   },
 };
 const competitionId = 2021;
-const jobBuilder = MatchesJob.Builder;
-const job = jobBuilder
-  .setApiClient(clientStub)
-  .setMatchRepo(matchRepoStub)
-  .withCompetition(competitionId)
+const job = MatchesJob.builder
+  .withApiClient(clientStub)
+  .withMatchRepo(matchRepoStub)
+  .setCompetition(competitionId)
   .build();
 const queueStub: any = sinon.stub();
 

@@ -3,38 +3,38 @@ import { TeamRepository } from '../../db/repositories/team.repo';
 import { TeamsJob } from './teams.job';
 
 export default class Builder {
-  private competitionId!: number | string;
-  private apiClient!: FootballApiClient;
-  private teamRepo!: TeamRepository;
+  private _competitionId?: number | string;
+  private _apiClient?: FootballApiClient;
+  private _teamRepo?: TeamRepository;
 
   public build() {
     return new TeamsJob(this);
   }
 
-  get ApiClient() {
-    return this.apiClient;
+  get apiClient() {
+    return this._apiClient;
   }
 
-  public setApiClient(value: FootballApiClient) {
-    this.apiClient = value;
+  public withApiClient(value?: FootballApiClient) {
+    this._apiClient = value;
     return this;
   }
 
-  get TeamRepo() {
-    return this.teamRepo;
+  get teamRepo() {
+    return this._teamRepo;
   }
 
-  public setTeamRepo(value: TeamRepository): Builder {
-    this.teamRepo = value;
+  public withTeamRepo(value?: TeamRepository): Builder {
+    this._teamRepo = value;
     return this;
   }
 
-  public withCompetition(competitionId: string | number): Builder {
-    this.competitionId = competitionId;
+  public setCompetition(competitionId?: string | number): Builder {
+    this._competitionId = competitionId;
     return this;
   }
 
-  get CompetitionId() {
-    return this.competitionId;
+  get competitionId() {
+    return this._competitionId;
   }
 }

@@ -21,6 +21,11 @@ export const setupReqRes = () => {
   const res: Res = {};
 
   Object.assign(res, {
+    header: sinon.spy(
+      function header(this: Res) {
+        return this;
+      }.bind(res),
+    ),
     status: sinon.spy(
       function status(this: Res) {
         return this;

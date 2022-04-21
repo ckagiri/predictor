@@ -15,7 +15,7 @@ export default class Builder {
     return this._apiClient;
   }
 
-  public setApiClient(value: FootballApiClient) {
+  public withApiClient(value?: FootballApiClient) {
     this._apiClient = value;
     return this;
   }
@@ -24,12 +24,12 @@ export default class Builder {
     return this._matchRepo;
   }
 
-  public setMatchRepo(value: MatchRepository): Builder {
+  public withMatchRepo(value?: MatchRepository): Builder {
     this._matchRepo = value;
     return this;
   }
 
-  public withCompetition(competitionId: string | number): Builder {
+  public setCompetition(competitionId?: string | number): Builder {
     this._competitionId = competitionId;
     return this;
   }

@@ -6,7 +6,7 @@ import { ScorePoints, Score } from '../../common/score';
 import a from '../a';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import memoryDb from '../memoryDb';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { MatchStatus } from '../../db/models/match.model';
 
 const predictionRepo = PredictionRepositoryImpl.getInstance();
@@ -35,8 +35,8 @@ const tot = a.team.setName('Tottenham').setSlug('tottenham');
 const eve = a.team.setName('Everton').setSlug('everton');
 const whu = a.team.setName('West Ham').setSlug('west-ham')
 
-const gw1 = a.gameRound.setName('Gameweek 1').setPosition(1);
-const gw2 = a.gameRound.setName('Gameweek 2').setPosition(2);
+const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
+const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
 
 const manuVmanc = a.match
   .withHomeTeam(manu)
@@ -120,7 +120,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .findOneOrCreate$(userId, matchId)
         .pipe(
-          flatMap(p => {
+          mergeMap(p => {
             prediction = p;
             return predictionRepo.findOneOrCreate$(userId, matchId);
           })
@@ -147,7 +147,7 @@ describe('Prediction repo', function () {
       };
       predictionRepo.insert$(predData)
         .pipe(
-          flatMap(p => {
+          mergeMap(p => {
             prediction = p;
             return predictionRepo.findOne$(userId, matchId)
           })
@@ -166,7 +166,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .findOneOrCreate$(userId, matchId)
         .pipe(
-          flatMap(p => {
+          mergeMap(p => {
             scorePoints = {
               points: 16,
               APoints: 14,
@@ -204,7 +204,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insert$(userId1matchId1Pred)
         .pipe(
-          flatMap(() => {
+          mergeMap(() => {
             return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
           }),
         )
@@ -247,7 +247,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insert$(userId1matchId1Pred)
         .pipe(
-          flatMap(() => {
+          mergeMap(() => {
             return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
           }),
         )
@@ -278,7 +278,7 @@ describe('Prediction repo', function () {
         predictionRepo
           .insertMany$([userId1matchId1Pred])
           .pipe(
-            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
           )
           .subscribe(p => {
             expect(p).to.have.property('hasJoker', true);
@@ -301,7 +301,7 @@ describe('Prediction repo', function () {
         predictionRepo
           .insertMany$([userId1matchId1Pred])
           .pipe(
-            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
           )
           .subscribe(p => {
             expect(p).to.have.property('hasJoker', true);
@@ -335,9 +335,9 @@ describe('Prediction repo', function () {
         predictionRepo
           .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
           .pipe(
-            flatMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
           ).pipe(
-            flatMap(() => predictionRepo.findAll$({
+            mergeMap(() => predictionRepo.findAll$({
               user: userId,
               match: { $in: [manuVmanc.id, cheVars.id] },
               hasJoker: true
@@ -384,7 +384,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insertMany$([userId1matchId1Pred, userId1matchId2Pred, userId1matchId3Pred])
         .pipe(
-          flatMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+          mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
         )
         .subscribe(preds => {
           expect(preds).to.have.length(3)
@@ -418,7 +418,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
         .pipe(
-          flatMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+          mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
         )
         .subscribe(preds => {
           expect(preds).to.have.length(3)
@@ -438,7 +438,7 @@ describe('Prediction repo', function () {
       };
       predictionRepo.insert$(userId1matchId1Pred)
         .pipe(
-          flatMap(() => {
+          mergeMap(() => {
             return predictionRepo.unsetJoker$(user1.id, manuVmanc.id)
           })
         ).subscribe(pred => {
@@ -466,7 +466,7 @@ describe('Prediction repo', function () {
 
         predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
           .pipe(
-            flatMap(() => {
+            mergeMap(() => {
               return predictionRepo.pickJoker$(user1.id, cheVars.id)
             })
           ).subscribe(predictions => {
@@ -498,7 +498,7 @@ describe('Prediction repo', function () {
 
         predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
           .pipe(
-            flatMap(() => {
+            mergeMap(() => {
               return predictionRepo.pickJoker$(user1.id, manuVmanc.id)
             })
           ).subscribe(predictions => {
@@ -536,7 +536,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
         .pipe(
-          flatMap(() => predictionRepo.findOrCreatePicks$(userId1, roundId1))
+          mergeMap(() => predictionRepo.findOrCreatePicks$(userId1, roundId1))
         )
         .subscribe(preds => {
           expect(preds).to.have.length(2)
