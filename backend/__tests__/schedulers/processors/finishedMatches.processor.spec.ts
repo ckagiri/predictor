@@ -30,7 +30,7 @@
 //     awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
 //     status,
 //     result: { goalsHomeTeam: 2, goalsAwayTeam: 1 },
-//     allPredictionsProcessed: false,
+//     allPredictionPointsUpdated: false,
 //     externalReference: {
 //       [ApiProvider.API_FOOTBALL_DATA]: { id },
 //     },
@@ -40,7 +40,7 @@
 // const livVsou = newMatch(2, 'Liverpool', 'Southampton');
 // const eveVwat = newMatch(3, 'Everton', 'Watford', MatchStatus.IN_PLAY);
 // const bouVwat = newMatch(4, 'Bournemouth', 'Watford');
-// bouVwat.allPredictionsProcessed = true;
+// bouVwat.allPredictionPointsUpdated = true;
 // const finishedMatches = [arsVche, livVsou, eveVwat, bouVwat];
 // const chalo = ObjectId().toHexString();
 // const kag = ObjectId().toHexString();
@@ -93,7 +93,7 @@
 //       predictionProcessorStub.getOrCreatePredictions$ = sinon.stub();
 //       predictionProcessorStub.processPrediction$ = sinon.stub();
 //     });
-//     it('should getPredictions for FINISHED but not AllPredictionsProcessed match', async () => {
+//     it('should getPredictions for FINISHED but not allPredictionPointsUpdated match', async () => {
 //       const spy = predictionProcessorStub.getOrCreatePredictions$;
 
 //       await finishedMatchesProcessor.processPredictions(finishedMatches);
@@ -110,5 +110,5 @@
 //     });
 //   });
 
-//   describe('setToTrueAllPredictionsProcessed', () => {});
+//   describe('setToTrueallPredictionPointsUpdated', () => {});
 // });

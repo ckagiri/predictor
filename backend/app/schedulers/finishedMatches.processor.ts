@@ -22,7 +22,7 @@ import {
 
 export interface FinishedMatchesProcessor {
   processPredictions(matches: Match[]): Promise<number | undefined>;
-  setToTrueAllPredictionsProcessed(matches: Match[]): Promise<number | undefined>;
+  setToTrueallPredictionPointsUpdated(matches: Match[]): Promise<number | undefined>;
 }
 
 export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
@@ -52,7 +52,7 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
         filter(match => {
           return (
             match.status === MatchStatus.FINISHED &&
-            match.allPredictionsProcessed === false
+            match.allPredictionPointsUpdated === false
           );
         }),
       )
@@ -84,20 +84,20 @@ export class FinishedMatchesProcessorImpl implements FinishedMatchesProcessor {
       .toPromise();
   }
 
-  public setToTrueAllPredictionsProcessed(matches: Match[]) {
+  public setToTrueallPredictionPointsUpdated(matches: Match[]) {
     return from(matches)
       .pipe(
         filter(match => {
           return (
             match.status === MatchStatus.FINISHED &&
-            match.allPredictionsProcessed === false
+            match.allPredictionPointsUpdated === false
           );
         }),
       )
       .pipe(
         flatMap(match => {
           return this.matchRepo.findByIdAndUpdate$(match.id!, {
-            allPredictionsProcessed: true,
+            allPredictionPointsUpdated: true,
           });
         }),
       )

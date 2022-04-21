@@ -31,7 +31,7 @@
 //     awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
 //     status,
 //     result: { goalsHomeTeam: 2, goalsAwayTeam: 1 },
-//     allPredictionsProcessed: false,
+//     allPredictionPointsUpdated: false,
 //     externalReference: {
 //       [ApiProvider.API_FOOTBALL_DATA]: { id },
 //     },

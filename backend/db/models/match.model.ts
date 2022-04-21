@@ -5,11 +5,17 @@ import { Score, Odds } from '../../common/score';
 
 export enum MatchStatus {
   SCHEDULED = 'SCHEDULED',
-  TIMED = 'TIMED',
   IN_PLAY = 'IN_PLAY',
   CANCELED = 'CANCELED',
   POSTPONED = 'POSTPONED',
   FINISHED = 'FINISHED',
+}
+
+export interface TeamPartial {
+  name: string;
+  slug: string;
+  crestUrl: string;
+  id: string;
 }
 
 export interface Match extends Entity {
@@ -20,22 +26,12 @@ export interface Match extends Entity {
   matchRound?: number;
   gameRound?: string;
   status?: MatchStatus;
-  homeTeam?: {
-    name: string;
-    slug: string;
-    crestUrl: string;
-    id: string;
-  };
-  awayTeam?: {
-    name: string;
-    slug: string;
-    crestUrl: string;
-    id: string;
-  };
+  homeTeam?: TeamPartial;
+  awayTeam?: TeamPartial;
   odds?: Odds;
   result?: Score;
   venue?: string;
-  allPredictionsProcessed?: boolean;
+  allPredictionPointsUpdated?: boolean;
   externalReference?: any;
   [key: string]: any;
 }
@@ -67,7 +63,6 @@ export const matchSchema = schema({
     required: true,
     enum: [
       'SCHEDULED',
-      'TIMED',
       'IN_PLAY',
       'CANCELED',
       'POSTPONED',
@@ -84,7 +79,7 @@ export const matchSchema = schema({
     draw: { type: Number, default: 1 },
   },
   venue: { type: String, trim: true },
-  allPredictionsProcessed: { type: Boolean, default: false },
+  allPredictionPointsUpdated: { type: Boolean, default: false },
   externalReference: { type: Mixed },
 });
 

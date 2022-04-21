@@ -18,10 +18,6 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
-  findSelectableMatches$(
-    seasonId: string,
-    gameRound: string,
-  ): Observable<Match[]>;
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   findAllFinishedWithPendingPredictions$(
@@ -42,38 +38,6 @@ export class MatchRepositoryImpl
 
   constructor(converter: MatchConverter) {
     super(MatchModel, converter);
-  }
-
-  public findSelectableMatches$(seasonId: string, gameRound: string) {
-    const {
-      SCHEDULED,
-      TIMED,
-      IN_PLAY,
-      CANCELED,
-      POSTPONED,
-      FINISHED,
-    } = MatchStatus;
-    const query = {
-      $or: [
-        {
-          $and: [
-            { season: seasonId },
-            { gameRound },
-            { status: { $in: [SCHEDULED, TIMED, IN_PLAY] } },
-          ],
-        },
-        {
-          $and: [
-            { season: seasonId },
-            { gameRound },
-            { status: { $in: [CANCELED, POSTPONED, FINISHED] } },
-            { allPredictionsProcessed: false },
-          ],
-        },
-      ],
-    };
-
-    return this.findAll$(query, null, { sort: 'date' });
   }
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
@@ -111,7 +75,7 @@ export class MatchRepositoryImpl
     const query: any = {
       $and: [
         { season: seasonId },
-        { allPredictionsProcessed: false },
+        { allPredictionPointsUpdated: false },
         { status: { $in: ['CANCELED', 'POSTPONED', 'FINISHED'] } },
       ],
     };

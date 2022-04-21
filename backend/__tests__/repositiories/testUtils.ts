@@ -74,7 +74,7 @@ const team4: Team = {
 const team1Vteam2: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.SCHEDULED,
-  allPredictionsProcessed: false,
+  allPredictionPointsUpdated: false,
   result: {
     goalsHomeTeam: 0,
     goalsAwayTeam: 0,
@@ -84,7 +84,7 @@ const team1Vteam2: Partial<Match> = {
 const team3Vteam4: Partial<Match> = {
   date: '2018-09-10T11:30:00Z',
   status: MatchStatus.FINISHED,
-  allPredictionsProcessed: false,
+  allPredictionPointsUpdated: false,
   result: {
     goalsHomeTeam: 2,
     goalsAwayTeam: 1,

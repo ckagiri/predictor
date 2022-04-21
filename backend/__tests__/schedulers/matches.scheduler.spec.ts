@@ -124,7 +124,7 @@ describe('ApiFootballData: Matches scheduler', () => {
       });
     });
     it('should update after 90secs if any match is within 5 mins to kickOff', done => {
-      arsVcheTd.status = MatchStatus.TIMED;
+      arsVcheTd.status = MatchStatus.SCHEDULED;
       const date = new Date();
       date.setSeconds(+date.getSeconds() + 270);
       arsVcheTd['date'] = date;
@@ -141,7 +141,7 @@ describe('ApiFootballData: Matches scheduler', () => {
     });
 
     it('should update after 6 hours if earliest kickOff is in 6 hours', done => {
-      arsVcheTd.status = MatchStatus.TIMED;
+      arsVcheTd.status = MatchStatus.SCHEDULED;
       const date = new Date();
       date.setHours(+date.getHours() + 6);
       arsVcheTd['date'] = date;
@@ -158,7 +158,7 @@ describe('ApiFootballData: Matches scheduler', () => {
     });
 
     it('should update after 12 hours if any kickOff is in after 12 hours', done => {
-      arsVcheTd.status = MatchStatus.TIMED;
+      arsVcheTd.status = MatchStatus.SCHEDULED;
       const date = new Date();
       date.setHours(+date.getHours() + 15);
       arsVcheTd['date'] = date;

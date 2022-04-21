@@ -71,7 +71,7 @@ export class LeaderboardUpdaterImpl implements LeaderboardUpdater {
           filter(match => {
             return (
               match.status === MatchStatus.FINISHED &&
-              match.allPredictionsProcessed === false
+              match.allPredictionPointsUpdated === false
             );
           }),
         )

@@ -47,9 +47,6 @@
 // const livVsou = newMatch(2, 'Liverpool', 'Southampton');
 
 // const matchRepoStub: any = {
-//   findSelectableMatches$: () => {
-//     return of([livVsou]);
-//   },
 // };
 // const userRepoStub: any = {
 //   findAll$: () => {
@@ -105,15 +102,6 @@
 //       predictionRepoStub.findOrCreateJoker$ = sinon.stub();
 //       predictionRepoStub.findOneOrCreate$ = sinon.stub();
 //     });
-
-//     it('should get the selectable matches of gameRound', async () => {
-//       const spy = sinon.spy(matchRepoStub, 'findSelectableMatches$');
-
-//       await predictionProcessor.getOrCreatePredictions$(arsVche).toPromise();
-
-//       expect(spy).to.have.been.calledOnce;
-//     });
-
 //     it('should get all users', async () => {
 //       const spy = sinon.spy(userRepoStub, 'findAll$');
 

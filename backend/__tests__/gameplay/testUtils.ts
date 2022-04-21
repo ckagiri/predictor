@@ -64,7 +64,7 @@
 //   status: MatchStatus.SCHEDULED,
 //   matchRound: 20,
 //   gameRound: 20,
-//   allPredictionsProcessed: false,
+//   allPredictionPointsUpdated: false,
 // };
 
 // const team3Vteam4: Partial<Match> = {
@@ -72,7 +72,7 @@
 //   status: MatchStatus.FINISHED,
 //   matchRound: 20,
 //   gameRound: 20,
-//   allPredictionsProcessed: false,
+//   allPredictionPointsUpdated: false,
 // };
 
 // const user1: User = {

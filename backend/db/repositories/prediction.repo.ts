@@ -59,7 +59,7 @@ export class PredictionRepositoryImpl
           if (!match) {
             return throwError(() => new Error(`matchId ${matchId} not found`))
           }
-          if (!(match.status === MatchStatus.SCHEDULED || match.status === MatchStatus.TIMED)) {
+          if (match.status !== MatchStatus.SCHEDULED) {
             return throwError(`${match.slug} not scheduled to be played`);
           }
           return this.findOne$(userId, matchId)
@@ -80,7 +80,7 @@ export class PredictionRepositoryImpl
           if (!match) {
             return throwError(`matchId ${matchId} not found`)
           }
-          if (!(match.status === MatchStatus.SCHEDULED || match.status === MatchStatus.TIMED)) {
+          if (match.status !== MatchStatus.SCHEDULED) {
             return throwError(`${match.slug} not scheduled to be played`)
           }
           return this.findOrCreateJoker$(userId, match.gameRound!)
@@ -171,7 +171,7 @@ export class PredictionRepositoryImpl
                       matchSlug,
                     } as Prediction;
 
-                    if (matchStatus === MatchStatus.SCHEDULED || matchStatus === MatchStatus.TIMED) {
+                    if (matchStatus === MatchStatus.SCHEDULED) {
                       prediction.choice = this.getRandomMatchScore();
                     }
                     return prediction;
@@ -208,7 +208,7 @@ export class PredictionRepositoryImpl
                   .pipe(
                     filter(prediction => {
                       const match = find(matches, m => m.id?.toString() === prediction.match.toString());
-                      const matchIsScheduled = match?.status === MatchStatus.SCHEDULED || match?.status === MatchStatus.TIMED;
+                      const matchIsScheduled = match?.status === MatchStatus.SCHEDULED;
                       return Boolean(prediction.choice.isComputerGenerated) && Boolean(matchIsScheduled);
                     }),
                     map(prediction => {
@@ -254,7 +254,7 @@ export class PredictionRepositoryImpl
                 const jokers = [];
                 if (jokerPredictions.length === 0) {
                   const selectableMatchIds = matches
-                    .filter(m => m.status === MatchStatus.SCHEDULED || m.status === MatchStatus.TIMED)
+                    .filter(m => m.status === MatchStatus.SCHEDULED)
                     .map(m => m.id?.toString());
 
                   if (selectableMatchIds.length) {
@@ -335,9 +335,7 @@ export class PredictionRepositoryImpl
                   matchSlug,
                 } as Prediction;
 
-                if (matchStatus === MatchStatus.SCHEDULED ||
-                  matchStatus === MatchStatus.TIMED) {
-
+                if (matchStatus === MatchStatus.SCHEDULED) {
                   pred.choice = this.getRandomMatchScore();
                 }
                 return this.save$(pred);

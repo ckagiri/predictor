@@ -66,7 +66,7 @@ export class FinishedMatchesScheduler extends EventEmitter
       // await leaderboardUpdater.updateScores(finishedMatches)
       // await leaderboardUpdater.updateRankigs()
       // await leaderboardUpdater.markLeaderboardsAsRefreshed()
-      // await finishedMatchesProcessor.setToTrueAllPredictionsProcessed(matches)
+      // await finishedMatchesProcessor.setToTrueallPredictionPointsUpdated(matches)
     }
     this.eventMediator.publish('predictions:processed');
   };
