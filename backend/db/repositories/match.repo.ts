@@ -20,10 +20,6 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
-  findAllFinishedWithPendingPredictions$(
-    seasonId: string,
-    gameRound?: string,
-  ): Observable<Match[]>;
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
 }
 
@@ -66,24 +62,6 @@ export class MatchRepositoryImpl
       obs.push(this.findBySeasonAndTeamsAndUpsert$(obj));
     }
     return forkJoin(obs);
-  }
-
-  public findAllFinishedWithPendingPredictions$(
-    seasonId: string,
-    gameRound?: string,
-  ) {
-    const query: any = {
-      $and: [
-        { season: seasonId },
-        { allPredictionPointsUpdated: false },
-        { status: { $in: ['CANCELED', 'POSTPONED', 'FINISHED'] } },
-      ],
-    };
-    // todo: why? for a season I can get all the rounds and iterate over them
-    if (gameRound) {
-      query.$and.push({ gameRound });
-    }
-    return this.findAll$(query);
   }
 
   public find$(query?: any, projection?: any, options?: any) {

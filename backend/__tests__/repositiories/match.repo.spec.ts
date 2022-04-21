@@ -124,218 +124,185 @@ describe('MatchRepo', function () {
           done();
         });
     });
+  })
 
-    it('should find finished matches with pending predictions', done => {
+  describe('filter | sort | page', function () {
+    let gameData: GameData;
+
+    const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
+    const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
+    const arsenal = a.team.setName('Arsenal').setSlug('arsenal');
+    const everton = a.team.setName('Everton').setSlug('everton');
+    const teams = [liverpool, arsenal, chelsea, manutd, mancity, everton];
+
+    beforeEach(async () => {
+      gameData = await a.game
+        .withTeams(...teams)
+        .withCompetitions(epl)
+        .withSeasons(epl2020
+          .withTeams(...teams)
+          .withGameRounds(gw1, gw2)
+          .withMatches(
+            a.match
+              .withHomeTeam(chelsea)
+              .withAwayTeam(manutd)
+              .setDate('2020-02-11T11:30:00Z')
+              .withGameRound(gw1),
+            a.match
+              .withHomeTeam(liverpool)
+              .withAwayTeam(arsenal)
+              .setDate('2020-02-10T11:30:00Z')
+              .withGameRound(gw1),
+            a.match
+              .withHomeTeam(everton)
+              .withAwayTeam(mancity)
+              .setDate('2020-02-15T11:30:00Z')
+              .withGameRound(gw2),
+            a.match
+              .withHomeTeam(chelsea)
+              .withAwayTeam(liverpool)
+              .setDate('2020-02-14T11:30:00Z')
+              .withGameRound(gw2),
+            a.match
+              .withHomeTeam(arsenal)
+              .withAwayTeam(manutd)
+              .setDate('2020-02-16T11:30:00Z')
+              .withGameRound(gw2),
+          ),
+        )
+        .build();
+    });
+
+    afterEach(async () => {
+      await memoryDb.dropDb();
+    });
+
+    it('should filter matches by id', done => {
+      const id = gameData.matches[0].id;
       ligiMatchRepo
-        .save$(manuVsmanc)
-        .pipe(
-          flatMap(_ =>
-            matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVsManc),
-          ),
-        )
-        .pipe(
-          flatMap(_ =>
-            matchRepo.findAllFinishedWithPendingPredictions$(epl2020.id),
-          ),
-        )
-        .subscribe(ms => {
-          expect(ms).to.have.length(1);
+        .find$({
+          filter: { id },
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(count).to.equal(1);
+          expect(matches[0].id).to.equal(id);
           done();
         });
     });
 
-    describe('filter | sort | page', function () {
-      let gameData: GameData;
+    it('should filter matches by home/away team', done => {
+      const chelseaId = gameData.teams.find(t => t.slug === 'chelsea')?.id;
+      ligiMatchRepo
+        .find$({
+          filter: { 'homeTeam.id': chelseaId },
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(matches[0].homeTeam?.id.toString()).to.equal(chelseaId);
+          expect(matches[1].homeTeam?.id.toString()).to.equal(chelseaId);
+          expect(count).to.equal(2);
+          done();
+        });
+    });
 
-      const liverpool = a.team.setName('Liverpool').setSlug('liverpool');
-      const chelsea = a.team.setName('Chelsea').setSlug('chelsea');
-      const arsenal = a.team.setName('Arsenal').setSlug('arsenal');
-      const everton = a.team.setName('Everton').setSlug('everton');
-      const teams = [liverpool, arsenal, chelsea, manutd, mancity, everton];
+    it('should filter matches by slug', done => {
+      ligiMatchRepo
+        .find$({
+          filter: { 'homeTeam.slug': ['chelsea'] },
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(matches).to.have.length(2);
+          expect(count).to.equal(2);
+          done();
+        });
+    });
 
-      beforeEach(async () => {
-        gameData = await a.game
-          .withTeams(...teams)
-          .withCompetitions(epl)
-          .withSeasons(epl2020
-            .withTeams(...teams)
-            .withGameRounds(gw1, gw2)
-            .withMatches(
-              a.match
-                .withHomeTeam(chelsea)
-                .withAwayTeam(manutd)
-                .setDate('2020-02-11T11:30:00Z')
-                .withGameRound(gw1),
-              a.match
-                .withHomeTeam(liverpool)
-                .withAwayTeam(arsenal)
-                .setDate('2020-02-10T11:30:00Z')
-                .withGameRound(gw1),
-              a.match
-                .withHomeTeam(everton)
-                .withAwayTeam(mancity)
-                .setDate('2020-02-15T11:30:00Z')
-                .withGameRound(gw2),
-              a.match
-                .withHomeTeam(chelsea)
-                .withAwayTeam(liverpool)
-                .setDate('2020-02-14T11:30:00Z')
-                .withGameRound(gw2),
-              a.match
-                .withHomeTeam(arsenal)
-                .withAwayTeam(manutd)
-                .setDate('2020-02-16T11:30:00Z')
-                .withGameRound(gw2),
-            ),
-          )
-          .build();
-      });
+    it('should filter matches by multiple slug', done => {
+      ligiMatchRepo
+        .find$({
+          filter: { 'homeTeam.slug': ['chelsea', 'everton'] },
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(matches).to.have.length(3);
+          expect(count).to.equal(3);
+          done();
+        });
+    });
 
-      afterEach(async () => {
-        await memoryDb.dropDb();
-      });
+    it('should filter matches by gameRound', done => {
+      const season = gameData.seasons[0];
+      const gameRound = gameData.gameRounds.find(r => r.season!.toString() == season.id && r.position === 1)!
 
-      it('should filter matches by id', done => {
-        const id = gameData.matches[0].id;
-        ligiMatchRepo
-          .find$({
-            filter: { id },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(count).to.equal(1);
-            expect(matches[0].id).to.equal(id);
-            done();
-          });
-      });
+      ligiMatchRepo
+        .find$({
+          filter: {
+            'homeTeam.slug': ['chelsea', 'everton'],
+            gameRound: gameRound.id,
+          },
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(matches).to.have.length(1);
+          expect(count).to.equal(1);
+          done();
+        });
+    });
 
-      it('should filter matches by team', done => {
-        const chelseaId = gameData.teams.find(t => t.slug === 'chelsea')?.id;
-        ligiMatchRepo
-          .find$({
-            filter: { 'homeTeam.id': chelseaId },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches[0].homeTeam?.id.toString()).to.equal(chelseaId);
-            expect(matches[1].homeTeam?.id.toString()).to.equal(chelseaId);
-            expect(count).to.equal(2);
-            done();
-          });
-      });
+    it('should filter matches by search term', done => {
+      ligiMatchRepo
+        .find$({
+          filter: { q: 'man' },
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(matches).to.have.length(3);
+          expect(count).to.equal(3);
+          done();
+        });
+    });
 
-      it('should filter matches by home/away team', done => {
-        const chelseaId = gameData.teams.find(t => t.slug === 'chelsea')?.id;
-        ligiMatchRepo
-          .find$({
-            filter: { 'homeTeam.id': chelseaId },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches[0].homeTeam?.id.toString()).to.equal(chelseaId);
-            expect(matches[1].homeTeam?.id.toString()).to.equal(chelseaId);
-            expect(count).to.equal(2);
-            done();
-          });
-      });
+    it('should sort matches by date', done => {
+      ligiMatchRepo
+        .find$({
+          sort: ['date', 'ASC'],
+        })
+        .subscribe(({ result: matches }) => {
+          expect(matches[0].homeTeam?.slug).to.equal('liverpool');
+          expect(matches[0].awayTeam?.slug).to.equal('arsenal');
+          done();
+        });
+    });
 
-      it('should filter matches by slug', done => {
-        ligiMatchRepo
-          .find$({
-            filter: { 'homeTeam.slug': ['chelsea'] },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches).to.have.length(2);
-            expect(count).to.equal(2);
-            done();
-          });
-      });
+    it('should sort matches by date and filter by team', done => {
+      ligiMatchRepo
+        .find$({
+          filter: { 'team.id': arsenal.id },
+          sort: ['date', 'ASC'],
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(matches[0].homeTeam?.id.toString()).to.equal(liverpool.id);
+          expect(matches[0].awayTeam?.id.toString()).to.equal(arsenal.id);
 
-      it('should filter matches by multiple slug', done => {
-        ligiMatchRepo
-          .find$({
-            filter: { 'homeTeam.slug': ['chelsea', 'everton'] },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches).to.have.length(3);
-            expect(count).to.equal(3);
-            done();
-          });
-      });
+          expect(matches[1].homeTeam?.id.toString()).to.equal(arsenal.id);
+          expect(matches[1].awayTeam?.id.toString()).to.equal(manutd.id);
 
-      it('should filter matches by gameRound', done => {
-        const season = gameData.seasons[0];
-        const gameRound = gameData.gameRounds.find(r => r.season!.toString() == season.id && r.position === 1)!
+          expect(count).to.equal(2);
+          done();
+        });
+    });
 
-        ligiMatchRepo
-          .find$({
-            filter: {
-              'homeTeam.slug': ['chelsea', 'everton'],
-              gameRound: gameRound.id,
-            },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches).to.have.length(1);
-            expect(count).to.equal(1);
-            done();
-          });
-      });
-
-      it('should filter matches by search term', done => {
-        ligiMatchRepo
-          .find$({
-            filter: { q: 'man' },
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches).to.have.length(3);
-            expect(count).to.equal(3);
-            done();
-          });
-      });
-
-      it('should sort matches by date', done => {
-        ligiMatchRepo
-          .find$({
-            sort: ['date', 'ASC'],
-          })
-          .subscribe(({ result: matches }) => {
-            expect(matches[0].homeTeam?.slug).to.equal('liverpool');
-            expect(matches[0].awayTeam?.slug).to.equal('arsenal');
-            done();
-          });
-      });
-
-      it('should sort matches by date and filter by team', done => {
-        ligiMatchRepo
-          .find$({
-            filter: { 'team.id': arsenal.id },
-            sort: ['date', 'ASC'],
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(matches[0].homeTeam?.id.toString()).to.equal(liverpool.id);
-            expect(matches[0].awayTeam?.id.toString()).to.equal(arsenal.id);
-
-            expect(matches[1].homeTeam?.id.toString()).to.equal(arsenal.id);
-            expect(matches[1].awayTeam?.id.toString()).to.equal(manutd.id);
-
-            expect(count).to.equal(2);
-            done();
-          });
-      });
-
-      it('should paginate matches', done => {
-        ligiMatchRepo
-          .find$({
-            sort: ['date', 'ASC'],
-            range: [0, 2],
-          })
-          .subscribe(({ result: matches, count }) => {
-            expect(count).to.equal(5);
-            expect(matches.length).to.equal(2);
-            expect(matches[0].homeTeam?.slug).to.equal('liverpool');
-            expect(matches[0].awayTeam?.slug).to.equal('arsenal');
-            expect(matches[1].homeTeam?.slug).to.equal('chelsea');
-            expect(matches[1].awayTeam?.slug).to.equal('man-utd');
-            done();
-          });
-      });
+    it('should paginate matches', done => {
+      ligiMatchRepo
+        .find$({
+          sort: ['date', 'ASC'],
+          range: [0, 2],
+        })
+        .subscribe(({ result: matches, count }) => {
+          expect(count).to.equal(5);
+          expect(matches.length).to.equal(2);
+          expect(matches[0].homeTeam?.slug).to.equal('liverpool');
+          expect(matches[0].awayTeam?.slug).to.equal('arsenal');
+          expect(matches[1].homeTeam?.slug).to.equal('chelsea');
+          expect(matches[1].awayTeam?.slug).to.equal('man-utd');
+          done();
+        });
     });
   });
 });

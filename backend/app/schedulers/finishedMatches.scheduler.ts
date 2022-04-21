@@ -56,7 +56,6 @@ export class FinishedMatchesScheduler extends EventEmitter
     if (this._processing) {
       return;
     }
-    // let matches = await this.matchRepo.findAllFinishedWithPendingPredictions$();
     // await processPredictions(fs);
   };
 

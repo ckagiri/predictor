@@ -60,7 +60,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
   public start = async () => {
     this._polling = true;
     while (this._polling) {
-      await this.taskRunner.run({
+      this.taskRunner.run({
         whenToExecute: this._nextUpdate,
         context: this,
         task: async () => {
@@ -118,8 +118,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
         hasLiveMatch = true;
       }
       if (
-        match.status === MatchStatus.SCHEDULED ||
-        match.status === MatchStatus.TIMED
+        match.status === MatchStatus.SCHEDULED
       ) {
         const matchStart = moment(match.date);
         const diff = matchStart.diff(moment(), 'minutes');
