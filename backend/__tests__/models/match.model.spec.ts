@@ -13,42 +13,42 @@ describe('Match', () => {
       });
 
       it('should require a slug', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err.errors.slug).to.exist;
           done();
         });
       });
 
       it('should require a date', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err.errors.date).to.exist;
           done();
         });
       });
 
       it('should require gameRound', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err.errors.gameRound).to.exist;
           done();
         });
       });
 
       it('should require a home team', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err.errors['homeTeam.id']).to.exist;
           done();
         });
       });
 
       it('should require an away team', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err.errors['awayTeam.id']).to.exist;
           done();
         });
       });
 
       it('should require status', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err.errors.status).to.exist;
           done();
         });
@@ -76,7 +76,7 @@ describe('Match', () => {
       };
       const m = new MatchModel(match);
       it('should have 0 errors', done => {
-        m.validate(err => {
+        m.validate((err: any) => {
           expect(err).to.not.exist;
           done();
         });

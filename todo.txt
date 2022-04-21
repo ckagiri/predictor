@@ -116,3 +116,38 @@ env setup?
 
 
 <<<
+/game -> /game/competitions
+{
+  competions: [],
+  defaultCompetition: {
+    record: {},
+    seasons: [],
+    currentSeason: {
+      record: {},
+      teams: [],
+      stadiums?: [],
+      groupings?: [],
+      gameRounds: [],
+      currentGameRound: { <- last if finished
+        record: {},
+        matches: [] <- with or without predictions
+      }
+    }
+  }
+}
+competitions ->
+api/game -> api/game/competitions
+api/game/competitions/:competition-slug
+api/game/competitions/:competition-slug/:season-slug
+api/game/competitions/:competition-slug/:season-slug/round-slug
+getCompetition -> apiCompetition
+getSeason -> gameSeason
+getRound -> gameRound
+game -> /game GameController /game-season /
+competitions/english-premier-league/2020/gameweek-1
+competitions
+world-cup | add-to-defaults | matches | seasons
+english-premier-league
+seasons
+2021-22 matches
+>>>

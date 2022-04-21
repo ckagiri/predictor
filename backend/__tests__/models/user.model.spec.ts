@@ -9,14 +9,14 @@ describe('Users', () => {
     describe('an empty user', () => {
       const u = new UserModel();
       it('should have 1 mandatory property', done => {
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(Object.keys(err.errors)).to.have.lengthOf(1);
           done();
         });
       });
 
       it('should require an email', done => {
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err.errors.email).to.exist;
           done();
         });
@@ -33,14 +33,14 @@ describe('Users', () => {
       const u = new UserModel(user);
 
       it('should have 0 errors', done => {
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           done();
         });
       });
 
       it('should not be admin', done => {
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('isAdmin', false);
           done();
@@ -55,7 +55,7 @@ describe('Users', () => {
       });
 
       it('should not be admin', done => {
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('isAdmin', false);
           done();
@@ -74,7 +74,7 @@ describe('Users', () => {
       const u = new UserModel(user);
 
       it('should be admin', done => {
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('isAdmin', true);
           done();
@@ -94,7 +94,7 @@ describe('Users', () => {
       it('should fail on comparePassword with empty pwd', done => {
         const u = new UserModel(user);
 
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('local');
         });
@@ -110,7 +110,7 @@ describe('Users', () => {
         user.local = { password: 'test' };
         const u = new UserModel(user);
 
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('local');
         });
@@ -126,7 +126,7 @@ describe('Users', () => {
         user.local = { password: bcrypt.hashSync('test', salt) };
         const u = new UserModel(user);
 
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('local');
           expect(u.local).to.have.property('password');
@@ -143,7 +143,7 @@ describe('Users', () => {
         user.local = { password: bcrypt.hashSync('test', salt) };
         const u = new UserModel(user);
 
-        u.validate(err => {
+        u.validate((err: any) => {
           expect(err).to.eql(null);
           expect(u).to.have.property('local');
           expect(u.local).to.have.property('password');

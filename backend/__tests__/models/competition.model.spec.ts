@@ -12,21 +12,21 @@ describe('Competition', () => {
       });
 
       it('should require a name', done => {
-        c.validate(err => {
+        c.validate((err: any) => {
           expect(err.errors.name).to.exist;
           done();
         });
       });
 
       it('should require a slug', done => {
-        c.validate(err => {
+        c.validate((err: any) => {
           expect(err.errors.slug).to.exist;
           done();
         });
       });
 
       it('should not require a code', done => {
-        c.validate(err => {
+        c.validate((err: any) => {
           expect(err.errors.code).to.not.exist;
           done();
         });
@@ -41,7 +41,7 @@ describe('Competition', () => {
       };
       const c = new CompetitionModel(competition);
       it('should have 0 errors', done => {
-        c.validate(err => {
+        c.validate((err: any) => {
           expect(err).to.eql(null);
           done();
         });

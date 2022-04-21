@@ -80,7 +80,7 @@ describe('TaskRunnerImpl', () => {
         task: () => {
           return new Promise((resolve, reject) => {
             setTimeout(() => {
-              resolve();
+              resolve(null);
             }, 5);
           });
         },

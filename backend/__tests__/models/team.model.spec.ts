@@ -12,14 +12,14 @@ describe('Team', () => {
       });
 
       it('should require a name', done => {
-        t.validate(err => {
+        t.validate((err: any) => {
           expect(err.errors.name).to.exist;
           done();
         });
       });
 
       it('should require a slug', done => {
-        t.validate(err => {
+        t.validate((err: any) => {
           expect(err.errors.slug).to.exist;
           done();
         });
@@ -38,7 +38,7 @@ describe('Team', () => {
       };
       const t = new TeamModel(team);
       it('should have 0 errors', done => {
-        t.validate(err => {
+        t.validate((err: any) => {
           expect(err).to.not.exist;
           done();
         });

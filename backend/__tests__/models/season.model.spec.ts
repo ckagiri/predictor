@@ -12,42 +12,42 @@ describe('Season', () => {
       });
 
       it('should require a name', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err.errors.name).to.exist;
           done();
         });
       });
 
       it('should require a slug', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err.errors.slug).to.exist;
           done();
         });
       });
 
       it('should require year', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err.errors.year).to.exist;
           done();
         });
       });
 
       it('should require start date', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err.errors.seasonStart).to.exist;
           done();
         });
       });
 
       it('should require end date', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err.errors.seasonEnd).to.exist;
           done();
         });
       });
 
       it('should require partial competition info', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err.errors['competition.id']).to.exist;
           done();
         });
@@ -69,7 +69,7 @@ describe('Season', () => {
       };
       const s = new SeasonModel(season);
       it('should have 0 errors', done => {
-        s.validate(err => {
+        s.validate((err: any) => {
           expect(err).to.not.exist;
           done();
         });

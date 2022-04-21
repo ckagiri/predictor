@@ -13,7 +13,7 @@ import { Types } from 'mongoose';
 const ObjectId = Types.ObjectId;
 
 const taskRunnerStub: any = {
-  run: async ({ whenToExecute, task = () => {}, context }: any) => {
+  run: async ({ whenToExecute, task = () => { }, context }: any) => {
     await task.call(context);
   },
 };
@@ -21,7 +21,7 @@ const matchesProcessorStub: any = {
   processPredictions: (matches: any[]) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve();
+        resolve(null);
       }, 5);
     });
   },
@@ -54,10 +54,10 @@ describe('ApiFootballData: FinishedMatches scheduler', () => {
       status: string = MatchStatus.FINISHED,
     ) => {
       return {
-        id: ObjectId().toHexString(),
+        id: new ObjectId().toHexString(),
         slug: `${homeTeamName}V${awayTeamName}`,
-        homeTeam: { id: ObjectId().toHexString(), name: homeTeamName },
-        awayTeam: { id: ObjectId().toHexString(), name: awayTeamName },
+        homeTeam: { id: new ObjectId().toHexString(), name: homeTeamName },
+        awayTeam: { id: new ObjectId().toHexString(), name: awayTeamName },
         status,
       } as Match;
     };

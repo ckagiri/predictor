@@ -1,14 +1,17 @@
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-const mongod = new MongoMemoryServer();
+
+let mongoServer: MongoMemoryServer;
+
+const mongooseOpts = {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+} as ConnectOptions;
 
 const connect = async () => {
-  const uri = await mongod.getConnectionString();
-
-  const mongooseOpts = {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-  };
+  await mongoose.disconnect();
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
 
   await mongoose.connect(uri, mongooseOpts);
 };
@@ -20,7 +23,7 @@ const dropDb = async () => {
 const close = async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
-  await mongod.stop();
+  await mongoServer.stop();
 };
 
 export default {

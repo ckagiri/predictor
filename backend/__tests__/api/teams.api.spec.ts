@@ -10,6 +10,7 @@ import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 import startServer from '../../app/server';
+import { lastValueFrom } from 'rxjs';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -88,7 +89,7 @@ describe('Teams API', function () {
       const firstArg = firstCall[0];
       const teams = firstArg;
       expect(teams.length).to.equal(2);
-      const seasonTeams = await teamRepo.getAllBySeason$(seasonId).toPromise();
+      const seasonTeams = await lastValueFrom(teamRepo.getAllBySeason$(seasonId!));
       expect(seasonTeams).to.have.length(2);
     });
   });
