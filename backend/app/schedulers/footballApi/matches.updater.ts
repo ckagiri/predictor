@@ -8,25 +8,25 @@ import {
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 
 export interface MatchesUpdater {
-  updateGameDetails(apiMatches: any[]): Promise<Match | undefined>;
+  updateGameDetails(externalMatches: any[]): Promise<Match | undefined>;
 }
 
-const matchChanged = (apiMatch: any, dbMatch: Match) => {
-  if (apiMatch.status !== dbMatch.status) {
+const matchChanged = (externalMatch: any, dbMatch: Match) => {
+  if (externalMatch.status !== dbMatch.status) {
     return true;
   }
 
   if (
-    apiMatch.result.goalsHomeTeam !== dbMatch!.result!.goalsHomeTeam ||
-    apiMatch.result.goalsAwayTeam !== dbMatch!.result!.goalsAwayTeam
+    externalMatch.result.goalsHomeTeam !== dbMatch.result?.goalsHomeTeam ||
+    externalMatch.result.goalsAwayTeam !== dbMatch.result?.goalsAwayTeam
   ) {
     return true;
   }
 
   if (
-    (apiMatch.odds && apiMatch.odds.homeWin) !== dbMatch!.odds!.homeWin ||
-    (apiMatch.odds && apiMatch.odds.awayWin) !== dbMatch!.odds!.awayWin ||
-    (apiMatch.odds && apiMatch.odds.draw) !== dbMatch!.odds!.draw
+    (externalMatch.odds && externalMatch.odds.homeWin) !== dbMatch.odds?.homeWin ||
+    (externalMatch.odds && externalMatch.odds.awayWin) !== dbMatch.odds?.awayWin ||
+    (externalMatch.odds && externalMatch.odds.draw) !== dbMatch.odds?.draw
   ) {
     return true;
   }
@@ -35,18 +35,18 @@ const matchChanged = (apiMatch: any, dbMatch: Match) => {
 };
 
 export class MatchesUpdaterImpl implements MatchesUpdater {
-  public static getInstance(provider: ApiProvider) {
-    return new MatchesUpdaterImpl(MatchRepositoryImpl.getInstance(provider));
+  public static getInstance() {
+    return new MatchesUpdaterImpl(MatchRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA));
   }
 
   constructor(private matchRepo: MatchRepository) { }
 
-  public updateGameDetails(apiMatches: any[]) {
-    const externalIdToApiMatchMap: any = new Map<string, any>();
+  public updateGameDetails(externalMatches: any[]) {
+    const externalIdToExternalMatchMap: any = new Map<string, any>();
     const externalIds: string[] = [];
-    for (const apiMatch of apiMatches) {
-      externalIdToApiMatchMap[apiMatch.id] = apiMatch;
-      externalIds.push(apiMatch.id);
+    for (const externalMatch of externalMatches) {
+      externalIdToExternalMatchMap[externalMatch.id] = externalMatch;
+      externalIds.push(externalMatch.id);
     }
     return this.matchRepo
       .findByExternalIds$(externalIds)
@@ -57,13 +57,12 @@ export class MatchesUpdaterImpl implements MatchesUpdater {
       )
       .pipe(
         flatMap(dbMatch => {
-          const provider = this.matchRepo.FootballApiProvider;
-          const extId = dbMatch.externalReference[provider].id;
-          const apiMatch = externalIdToApiMatchMap[extId];
+          const externalId = dbMatch.externalReference[ApiProvider.API_FOOTBALL_DATA].id;
+          const externalMatch = externalIdToExternalMatchMap[externalId];
 
-          if (matchChanged(apiMatch, dbMatch)) {
+          if (matchChanged(externalMatch, dbMatch)) {
             const id = dbMatch.id;
-            const { result, status, odds } = apiMatch;
+            const { result, status, odds } = externalMatch;
             const update: any = { result, status, odds };
             Object.keys(update).forEach(
               key => update[key] == null && delete update[key],

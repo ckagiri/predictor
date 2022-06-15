@@ -12,21 +12,16 @@ import {
   EventMediator,
   EventMediatorImpl,
 } from '../../../common/eventMediator';
-import {
-  MatchConverter,
-  MatchConverterImpl,
-} from '../../../db/converters/match.converter';
 import { Match, MatchStatus } from '../../../db/models/match.model';
 
 import { MatchesUpdater, MatchesUpdaterImpl } from './matches.updater';
 
 export class MatchesScheduler extends EventEmitter implements Scheduler {
-  public static getInstance(provider: ApiProvider) {
+  public static getInstance() {
     return new MatchesScheduler(
       new TaskRunnerImpl(),
-      FootballApiClientImpl.getInstance(provider),
-      MatchConverterImpl.getInstance(provider),
-      MatchesUpdaterImpl.getInstance(provider),
+      FootballApiClientImpl.getInstance(ApiProvider.API_FOOTBALL_DATA),
+      MatchesUpdaterImpl.getInstance(),
       EventMediatorImpl.getInstance(),
     );
   }
@@ -38,22 +33,21 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
   constructor(
     private taskRunner: TaskRunner,
     private apiClient: FootballApiClient,
-    private matchConverter: MatchConverter,
     private matchesUpdater: MatchesUpdater,
     private eventMedidatior: EventMediator,
   ) {
     super();
   }
 
-  get IsPolling() {
+  get isPolling() {
     return this._polling;
   }
 
-  get NextUpdate() {
+  get nextUpdate() {
     return this._nextUpdate;
   }
 
-  get PreviousUpdate() {
+  get previousUpdate() {
     return this._previousUpdate;
   }
 
@@ -65,30 +59,22 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
         context: this,
         task: async () => {
           let matches: any = [];
+          // next 6h
           if (this._nextUpdate > 6 * 60 * 60 * 1000) {
-            // 6h
-            const tommorowsMatchesRes = await this.apiClient.getTomorrowsMatches();
-            const tommorowsMatches = this.matchConverter.map(
-              tommorowsMatchesRes.data.matches,
-            );
-            const yesterdaysMatchesRes = await this.apiClient.getYesterdaysMatches();
-            const yesterdaysMatches = this.matchConverter.map(
-              yesterdaysMatchesRes.data.matches,
-            );
+            const tommorowsMatchesResult = await this.apiClient.getTomorrowsMatches();
+            const tommorowsMatches = tommorowsMatchesResult.data.matches;
 
-            matches = [].concat(
-              ...([tommorowsMatches, yesterdaysMatches] as any[]),
-            );
+            const yesterdaysMatchesResult = await this.apiClient.getYesterdaysMatches();
+            const yesterdaysMatches = yesterdaysMatchesResult.data.matches;
+
+            matches = [].concat(tommorowsMatches, yesterdaysMatches);
           }
-          const todaysMatchesRes = await this.apiClient.getTodaysMatches();
-          const todaysMatches = this.matchConverter.map(
-            todaysMatchesRes.data.matches,
-          );
+
+          const todaysMatchesResult = await this.apiClient.getTodaysMatches();
+          const todaysMatches = todaysMatchesResult.data.matches;
 
           matches = matches.concat(todaysMatches);
-          const changedDbMatches = await this.matchesUpdater.updateGameDetails(
-            matches,
-          );
+          const changedDbMatches = await this.matchesUpdater.updateGameDetails(matches);
           this._previousUpdate = this._nextUpdate;
           this._nextUpdate = this.calculateNextUpdate(matches);
           const finishedMatches = [].filter.call(
@@ -116,16 +102,12 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
     for (const match of matches) {
       if (match.status === MatchStatus.IN_PLAY) {
         hasLiveMatch = true;
-      }
-      if (
-        match.status === MatchStatus.SCHEDULED
-      ) {
+      } else if (match.status === MatchStatus.SCHEDULED) {
         const matchStart = moment(match.date);
         const diff = matchStart.diff(moment(), 'minutes');
         if (diff <= 5) {
           hasLiveMatch = true;
-        }
-        if (matchStart.isAfter(moment()) && matchStart.isBefore(nextUpdate)) {
+        } else if (matchStart.isAfter(moment()) && matchStart.isBefore(nextUpdate)) {
           nextUpdate = matchStart;
         }
       }
@@ -134,8 +116,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
     if (hasLiveMatch) {
       nextUpdate = moment().add(90, 'seconds');
     }
-    const theUpdate: any = nextUpdate;
-    const theMoment: any = moment();
-    return theUpdate - theMoment;
+
+    return nextUpdate.diff(moment());
   };
 }
