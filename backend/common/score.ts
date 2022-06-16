@@ -6,13 +6,13 @@ export interface Score {
 
 export interface ScorePoints {
   points: number;
-  APoints: number;
-  BPoints: number;
-  CorrectMatchOutcomePoints: number;
-  ExactGoalDifferencePoints: number;
-  ExactMatchScorePoints: number;
-  CloseMatchScorePoints: number;
-  ExactTeamScorePoints: number;
+  resultPoints: number;
+  scorePoints: number;
+  correctMatchOutcomePoints: number;
+  exactGoalDifferencePoints: number;
+  closeMatchScorePoints: number;
+  exactTeamScorePoints: number;
+  exactMatchScorePoints: number;
   [key: string]: number;
 }
 

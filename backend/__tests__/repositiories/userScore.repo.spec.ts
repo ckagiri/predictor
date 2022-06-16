@@ -130,8 +130,8 @@ describe('UserScore Repo', function () {
     // result 2-1 prediction 1-0
     user1_manuVmanc_pred_points = {
       points: 8,
-      APoints: 8,
-      BPoints: 0,
+      ResultPoints: 8,
+      ScorePoints: 0,
       CorrectMatchOutcomePoints: 7,
       ExactGoalDifferencePoints: 1,
       ExactMatchScorePoints: 0,
@@ -142,8 +142,8 @@ describe('UserScore Repo', function () {
     // result 2-1 prediction 1-0
     user1_cheVars_pred_points = {
       points: 16,
-      APoints: 14,
-      BPoints: 2,
+      ResultPoints: 14,
+      ScorePoints: 2,
       CorrectMatchOutcomePoints: 7,
       ExactGoalDifferencePoints: 1,
       ExactMatchScorePoints: 6,
@@ -154,8 +154,8 @@ describe('UserScore Repo', function () {
     // result 2-1 prediction 3-0
     user2_manuVmanc_pred_points = {
       points: 7,
-      APoints: 7,
-      BPoints: 0,
+      ResultPoints: 7,
+      ScorePoints: 0,
       CorrectMatchOutcomePoints: 7,
       ExactGoalDifferencePoints: 0,
       ExactMatchScorePoints: 0,
@@ -178,11 +178,11 @@ describe('UserScore Repo', function () {
         )
         .subscribe(score => {
           expect(score.pointsExcludingJoker).to.equal(8);
-          expect(score.APointsExcludingJoker).to.equal(8);
-          expect(score.BPointsExcludingJoker).to.equal(0);
+          expect(score.ResultPointsExcludingJoker).to.equal(8);
+          expect(score.ScorePointsExcludingJoker).to.equal(0);
           expect(score.points).to.equal(16);
-          expect(score.APoints).to.equal(16);
-          expect(score.BPoints).to.equal(0);
+          expect(score.ResultPoints).to.equal(16);
+          expect(score.ScorePoints).to.equal(0);
           expect(score.matches).to.contain(matchId1);
           expect(score.predictions).to.contain(userId1matchId1Pred);
           done();
@@ -193,8 +193,8 @@ describe('UserScore Repo', function () {
       // result 2-1 prediction 1-0 (is joker)
       const user1_manuVmanc_predJoker_points: ScorePoints = {
         points: 16,
-        APoints: 16,
-        BPoints: 0,
+        ResultPoints: 16,
+        ScorePoints: 0,
         CorrectMatchOutcomePoints: 14,
         ExactGoalDifferencePoints: 2,
         ExactMatchScorePoints: 0,
@@ -202,7 +202,7 @@ describe('UserScore Repo', function () {
         ExactTeamScorePoints: 0,
       };
 
-      let { points, APoints, BPoints } = user1_manuVmanc_predJoker_points;
+      let { points, ResultPoints, ScorePoints } = user1_manuVmanc_predJoker_points;
       const user1_manuVmanc_predJoker_score: UserScore = {
         ...user1_manuVmanc_predJoker_points,
         leaderboard: leaderboardId,
@@ -210,8 +210,8 @@ describe('UserScore Repo', function () {
         matches: [matchId1],
         predictions: [userId1matchId1Pred],
         pointsExcludingJoker: points / 2,
-        APointsExcludingJoker: APoints / 2,
-        BPointsExcludingJoker: BPoints / 2,
+        ResultPointsExcludingJoker: ResultPoints / 2,
+        ScorePointsExcludingJoker: ScorePoints / 2,
       }
 
       userScoreRepo.insert$(user1_manuVmanc_predJoker_score)
@@ -229,11 +229,11 @@ describe('UserScore Repo', function () {
           })
         ).subscribe(score => {
           expect(score.pointsExcludingJoker).to.equal(24);
-          expect(score.APointsExcludingJoker).to.equal(22);
-          expect(score.BPointsExcludingJoker).to.equal(2);
+          expect(score.ResultPointsExcludingJoker).to.equal(22);
+          expect(score.ScorePointsExcludingJoker).to.equal(2);
           expect(score.points).to.equal(32);
-          expect(score.APoints).to.equal(30);
-          expect(score.BPoints).to.equal(2);
+          expect(score.ResultPoints).to.equal(30);
+          expect(score.ScorePoints).to.equal(2);
           expect(score.matches).to.contain(matchId1, matchId2);
           expect(score.predictions).to.contain(userId1matchId1Pred, userId1matchId2Pred);
           done();
@@ -241,7 +241,7 @@ describe('UserScore Repo', function () {
     });
 
     it('should find by leaderboard and order by points', done => {
-      let { points: points1, APoints: APoints1, BPoints: BPoints1 } = user1_manuVmanc_pred_points;
+      let { points: points1, ResultPoints: APoints1, ScorePoints: BPoints1 } = user1_manuVmanc_pred_points;
       const user1_manuVmanc_pred_score: UserScore = {
         ...user1_manuVmanc_pred_points,
         leaderboard: leaderboardId,
@@ -249,11 +249,11 @@ describe('UserScore Repo', function () {
         matches: [matchId1],
         predictions: [userId1matchId1Pred],
         pointsExcludingJoker: points1,
-        APointsExcludingJoker: APoints1,
-        BPointsExcludingJoker: BPoints1,
+        ResultPointsExcludingJoker: APoints1,
+        ScorePointsExcludingJoker: BPoints1,
       }
 
-      let { points: points2, APoints: APoints2, BPoints: BPoints2 } = user1_manuVmanc_pred_points;
+      let { points: points2, ResultPoints: APoints2, ScorePoints: BPoints2 } = user1_manuVmanc_pred_points;
       const user2_manuVmanc_pred_score: UserScore = {
         ...user2_manuVmanc_pred_points,
         leaderboard: leaderboardId,
@@ -261,8 +261,8 @@ describe('UserScore Repo', function () {
         matches: [matchId1],
         predictions: [userId2matchId1Pred],
         pointsExcludingJoker: points2,
-        APointsExcludingJoker: APoints2,
-        BPointsExcludingJoker: BPoints2,
+        ResultPointsExcludingJoker: APoints2,
+        ScorePointsExcludingJoker: BPoints2,
       }
 
       userScoreRepo
@@ -279,7 +279,7 @@ describe('UserScore Repo', function () {
     })
 
     it('should find by id and update positions', done => {
-      let { points, APoints, BPoints } = user1_manuVmanc_pred_points;
+      let { points, ResultPoints, ScorePoints } = user1_manuVmanc_pred_points;
       const user1_manuVmanc_pred_score: UserScore = {
         ...user1_manuVmanc_pred_points,
         leaderboard: leaderboardId,
@@ -287,8 +287,8 @@ describe('UserScore Repo', function () {
         matches: [matchId1],
         predictions: [userId1matchId1Pred],
         pointsExcludingJoker: points,
-        APointsExcludingJoker: APoints,
-        BPointsExcludingJoker: BPoints,
+        ResultPointsExcludingJoker: ResultPoints,
+        ScorePointsExcludingJoker: ScorePoints,
         positionNew: 1,
         positionOld: 2,
       }

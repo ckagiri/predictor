@@ -146,8 +146,12 @@ getRound -> gameRound
 game -> /game GameController /game-season /
 competitions/english-premier-league/2020/gameweek-1
 competitions
-world-cup | add-to-defaults | matches | seasons
+world-cup | matches | seasons
 english-premier-league
 seasons
 2021-22 matches
 >>>
+
+
+fix mongoose merge (cleanup)
+fix points resultPoints scorePoints

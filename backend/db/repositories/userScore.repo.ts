@@ -7,18 +7,22 @@ import UserScoreModel, {
   UserScoreDocument,
 } from '../models/userScore.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
-
 export interface UserScoreRepository extends BaseRepository<UserScore> {
-  // todo: pass object literal for search-criteria
-  findScoreAndUpsert$(
+  findScoreAndUpsert$({
+    leaderboardId,
+    userId,
+    matchId,
+    predictionId,
+    hasJoker
+  }: {
     leaderboardId: string,
     userId: string,
     matchId: string,
     predictionId: string,
-    predictionPoints: ScorePoints,
     hasJoker: boolean,
-  ): Observable<UserScore>;
-  findByLeaderboardOrderByPoints$(
+  }, predictionPoints: ScorePoints): Observable<UserScore>;
+
+  findByLeaderboardIdOrderByPoints$(
     leaderboardId: string,
   ): Observable<UserScore[]>;
 }
@@ -34,103 +38,114 @@ export class UserScoreRepositoryImpl
     super(UserScoreModel);
   }
 
-  public findScoreAndUpsert$(
+  public findScoreAndUpsert$({
+    leaderboardId,
+    userId,
+    matchId,
+    predictionId,
+    hasJoker
+  }: {
     leaderboardId: string,
     userId: string,
     matchId: string,
     predictionId: string,
-    predictionPoints: ScorePoints,
     hasJoker: boolean,
-  ) {
+  }, predictionPoints: ScorePoints) {
+
     const {
       points,
-      APoints,
-      BPoints,
-      CorrectMatchOutcomePoints,
-      ExactGoalDifferencePoints,
-      ExactMatchScorePoints,
-      CloseMatchScorePoints,
-      ExactTeamScorePoints,
+      resultPoints,
+      scorePoints,
+      correctMatchOutcomePoints,
+      exactGoalDifferencePoints,
+      closeMatchScorePoints,
+      exactTeamScorePoints,
+      exactMatchScorePoints,
     } = predictionPoints;
 
     const score: UserScore = {
       leaderboard: leaderboardId,
       user: userId,
       points,
-      APoints,
-      BPoints,
-      CorrectMatchOutcomePoints,
-      ExactTeamScorePoints,
-      ExactMatchScorePoints,
-      CloseMatchScorePoints,
-      ExactGoalDifferencePoints,
+      resultPoints,
+      scorePoints,
+      correctMatchOutcomePoints,
+      exactTeamScorePoints,
+      exactMatchScorePoints,
+      closeMatchScorePoints,
+      exactGoalDifferencePoints,
     };
 
-    // todo: use $nin: [predictionId]
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
-      mergeMap(standing => {
-        if (standing === null) {
+      mergeMap(userScore => {
+        if (userScore === null) {
           score.matches = [matchId];
           score.predictions = [predictionId];
+          score.matchesPredicted = 1;
           score.pointsExcludingJoker = points;
-          score.APointsExcludingJoker = APoints;
-          score.BPointsExcludingJoker = BPoints;
+          score.resultPointsExcludingJoker = resultPoints;
+          score.scorePointsExcludingJoker = scorePoints;
+
           if (hasJoker) {
             score.points *= 2;
-            score.APoints *= 2;
-            score.BPoints *= 2;
-            score.CorrectMatchOutcomePoints *= 2;
-            score.ExactGoalDifferencePoints *= 2;
-            score.ExactMatchScorePoints *= 2;
-            score.CloseMatchScorePoints *= 2;
-            score.ExactTeamScorePoints *= 2;
+            score.correctMatchOutcomePoints *= 2;
+            score.exactGoalDifferencePoints *= 2;
+            score.exactMatchScorePoints *= 2;
+            score.closeMatchScorePoints *= 2;
+            score.exactTeamScorePoints *= 2;
+
+            score.resultPoints *= 2;
+            score.scorePoints *= 2;
           }
+
           return this.insert$(score);
         } else {
-          // todo: remove, no need
-          const matches = standing.matches as string[];
+          const matches = userScore.matches as string[];
           const matchExists = matches.some(n => n.toString() === matchId);
           if (matchExists) {
-            return of(standing);
+            return of(userScore);
           }
 
-          standing.pointsExcludingJoker! += points;
-          standing.APointsExcludingJoker! += APoints;
-          standing.BPointsExcludingJoker! += BPoints;
+          userScore.pointsExcludingJoker! += points;
+          userScore.correctMatchOutcomePoints += hasJoker
+            ? correctMatchOutcomePoints * 2
+            : correctMatchOutcomePoints;
+          userScore.exactGoalDifferencePoints += hasJoker
+            ? exactGoalDifferencePoints * 2
+            : exactGoalDifferencePoints;
+          userScore.closeMatchScorePoints += hasJoker
+            ? closeMatchScorePoints * 2
+            : closeMatchScorePoints;
+          userScore.exactMatchScorePoints += hasJoker
+            ? exactMatchScorePoints * 2
+            : exactMatchScorePoints;
+          userScore.exactTeamScorePoints += hasJoker
+            ? exactTeamScorePoints * 2
+            : exactTeamScorePoints;
 
-          standing.CorrectMatchOutcomePoints += hasJoker
-            ? CorrectMatchOutcomePoints * 2
-            : CorrectMatchOutcomePoints;
-          standing.ExactGoalDifferencePoints += hasJoker
-            ? ExactGoalDifferencePoints * 2
-            : ExactGoalDifferencePoints;
-          standing.ExactMatchScorePoints += hasJoker
-            ? ExactMatchScorePoints * 2
-            : ExactMatchScorePoints;
-          standing.ExactMatchScorePoints += hasJoker
-            ? ExactMatchScorePoints * 2
-            : ExactMatchScorePoints;
-          standing.ExactTeamScorePoints += hasJoker
-            ? ExactTeamScorePoints * 2
-            : ExactTeamScorePoints;
-          standing.APoints += hasJoker ? APoints * 2 : APoints;
-          standing.BPoints += hasJoker ? BPoints * 2 : BPoints;
-          standing.points += hasJoker ? points * 2 : points;
+          userScore.resultPointsExcludingJoker! += resultPoints;
+          userScore.scorePointsExcludingJoker! += scorePoints;
 
-          return this.findByIdAndUpdate$(standing.id!, {
+          userScore.resultPoints += (userScore.correctMatchOutcomePoints + userScore.exactGoalDifferencePoints);
+          userScore.scorePoints += (userScore.closeMatchScorePoints + userScore.exactTeamScorePoints +
+            userScore.exactMatchScorePoints);
+          userScore.points += (userScore.resultPoints + userScore.scorePoints);
+
+          return this.findByIdAndUpdate$(userScore.id!, {
             $set: {
-              points: standing.points,
-              APoints: standing.APoints,
-              BPoints: standing.BPoints,
-              CorrectMatchOutcomePoints: standing.CorrectMatchOutcomePoints,
-              ExactGoalDifferencePoints: standing.ExactGoalDifferencePoints,
-              ExactMatchScorePoints: standing.ExactMatchScorePoints,
-              ExactTeamScorePoints: standing.ExactTeamScorePoints,
-              CloseMatchScorePoints: standing.CloseMatchScorePoints,
-              pointsExcludingJoker: standing.pointsExcludingJoker,
-              APointsExcludingJoker: standing.APointsExcludingJoker,
-              BPointsExcludingJoker: standing.BPointsExcludingJoker,
+              points: userScore.points,
+              ResultPoints: userScore.resultPoints,
+              ScorePoints: userScore.scorePoints,
+              CorrectMatchOutcomePoints: userScore.correctMatchOutcomePoints,
+              ExactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
+              ExactMatchScorePoints: userScore.exactMatchScorePoints,
+              ExactTeamScorePoints: userScore.exactTeamScorePoints,
+              CloseMatchScorePoints: userScore.closeMatchScorePoints,
+              pointsExcludingJoker: userScore.pointsExcludingJoker,
+              ResultPointsExcludingJoker: userScore.resultPointsExcludingJoker,
+              ScorePointsExcludingJoker: userScore.scorePointsExcludingJoker,
             },
+            $inc: { matchesPredicted: 1 },
             $push: { matches: matchId, predictions: predictionId },
           });
         }
@@ -138,17 +153,17 @@ export class UserScoreRepositoryImpl
     );
   }
 
-  public findByLeaderboardOrderByPoints$(leaderboardId: string) {
+  public findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
         points: -1,
-        APoints: -1,
-        BPoints: -1,
-        CorrectMatchOutcomePoints: -1,
-        ExactGoalDifferencePoints: -1,
-        ExactMatchScorePoints: -1,
-        CloseMatchScorePoints: -1,
-        ExactTeamScorePoints: -1,
+        resultPoints: -1,
+        scorePoints: -1,
+        correctMatchOutcomePoints: -1,
+        exactGoalDifferencePoints: -1,
+        closeMatchScorePoints: -1,
+        exactTeamScorePoints: -1,
+        exactMatchScorePoints: -1,
       },
     });
   }

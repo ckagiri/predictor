@@ -169,8 +169,8 @@ describe('Prediction repo', function () {
           mergeMap(p => {
             scorePoints = {
               points: 16,
-              APoints: 14,
-              BPoints: 2,
+              ResultPoints: 14,
+              ScorePoints: 2,
               CorrectMatchOutcomePoints: 7,
               ExactGoalDifferencePoints: 1,
               ExactMatchScorePoints: 6,

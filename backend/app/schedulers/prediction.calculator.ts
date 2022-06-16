@@ -8,8 +8,8 @@ export class PredictionCalculator {
   public calculateScore(result: Score, choice: Score): ScorePoints {
     const scorePoints: ScorePoints = {
       points: 0,
-      APoints: 0,
-      BPoints: 0,
+      ResultPoints: 0,
+      ScorePoints: 0,
       CorrectMatchOutcomePoints: 0,
       ExactGoalDifferencePoints: 0,
       ExactMatchScorePoints: 0,
@@ -26,14 +26,14 @@ export class PredictionCalculator {
     );
     if (choiceOutcome === resultOutcome) {
       scorePoints.CorrectMatchOutcomePoints = 7;
-      scorePoints.APoints += 7;
+      scorePoints.ResultPoints += 7;
     }
 
     const choiceGd = choice.goalsHomeTeam - choice.goalsAwayTeam;
     const resultGd = result.goalsHomeTeam - result.goalsAwayTeam;
     if (choiceGd === resultGd) {
       scorePoints.ExactGoalDifferencePoints = 1;
-      scorePoints.APoints += 1;
+      scorePoints.ResultPoints += 1;
     }
 
     if (
@@ -41,7 +41,7 @@ export class PredictionCalculator {
       choice.goalsAwayTeam === result.goalsAwayTeam
     ) {
       scorePoints.ExactMatchScorePoints = 6;
-      scorePoints.APoints += 6;
+      scorePoints.ScorePoints += 6;
     }
 
     const homeGoalsGd = Math.abs(choice.goalsHomeTeam - result.goalsHomeTeam);
@@ -49,21 +49,21 @@ export class PredictionCalculator {
     if (homeGoalsGd === 0 || awayGoalsGd === 0) {
       if (homeGoalsGd === 1 || awayGoalsGd === 1) {
         scorePoints.CloseMatchScorePoints = 1;
-        scorePoints.BPoints += 1;
+        scorePoints.ScorePoints += 1;
       }
     }
 
     if (choice.goalsHomeTeam === result.goalsHomeTeam) {
       scorePoints.ExactTeamScorePoints += 1;
-      scorePoints.BPoints += 1;
+      scorePoints.ScorePoints += 1;
     }
 
     if (choice.goalsAwayTeam === result.goalsAwayTeam) {
       scorePoints.ExactTeamScorePoints += 1;
-      scorePoints.BPoints += 1;
+      scorePoints.ScorePoints += 1;
     }
 
-    scorePoints.points = scorePoints.APoints + scorePoints.BPoints;
+    scorePoints.points = scorePoints.ResultPoints + scorePoints.ScorePoints;
     return scorePoints;
   }
 }

@@ -8,16 +8,17 @@ export interface UserScore extends Entity {
   user: string;
   matches?: string[];
   predictions?: string[];
+  matchesPredicted?: number;
   points: number;
-  APoints: number;
-  BPoints: number;
-  CorrectMatchOutcomePoints: number;
-  ExactGoalDifferencePoints: number;
-  ExactMatchScorePoints: number;
-  CloseMatchScorePoints: number;
-  ExactTeamScorePoints: number;
-  APointsExcludingJoker?: number;
-  BPointsExcludingJoker?: number;
+  resultPoints: number;
+  scorePoints: number;
+  correctMatchOutcomePoints: number;
+  exactGoalDifferencePoints: number;
+  closeMatchScorePoints: number;
+  exactTeamScorePoints: number;
+  exactMatchScorePoints: number;
+  resultPointsExcludingJoker?: number;
+  scorePointsExcludingJoker?: number;
   pointsExcludingJoker?: number;
   pointsOld?: number;
   pointsNew?: number;
@@ -39,16 +40,17 @@ const userScoreSchema = schema({
   },
   matches: [{ type: ObjectId, ref: 'Match' }],
   predictions: [{ type: ObjectId, ref: 'Prediction' }],
+  matchesPredicted: { type: Number },
   points: { type: Number },
-  APoints: { type: Number },
-  BPoints: { type: Number },
-  CorrectMatchOutcomePoints: { type: Number },
-  ExactGoalDifferencePoints: { type: Number },
-  ExactMatchScorePoints: { type: Number },
-  CloseMatchScorePoints: { type: Number },
-  ExactTeamScorePoints: { type: Number },
-  APointsExcludingJoker: { type: Number },
-  BPointsExcludingJoker: { type: Number },
+  resultPoints: { type: Number },
+  scorePoints: { type: Number },
+  correctMatchOutcomePoints: { type: Number },
+  exactGoalDifferencePoints: { type: Number },
+  closeMatchScorePoints: { type: Number },
+  exactMatchScorePoints: { type: Number },
+  exactTeamScorePoints: { type: Number },
+  resultPointsExcludingJoker: { type: Number },
+  scorePointsExcludingJoker: { type: Number },
   pointsExcludingJoker: { type: Number },
   pointsOld: { type: Number },
   pointsNew: { type: Number },

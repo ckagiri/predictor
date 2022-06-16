@@ -1,5 +1,5 @@
-import { from, of } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
+import { from, lastValueFrom, of } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 import { Match } from '../../../db/models/match.model';
 import {
   MatchRepository,
@@ -48,30 +48,29 @@ export class MatchesUpdaterImpl implements MatchesUpdater {
       externalIdToExternalMatchMap[externalMatch.id] = externalMatch;
       externalIds.push(externalMatch.id);
     }
-    return this.matchRepo
-      .findByExternalIds$(externalIds)
-      .pipe(
-        flatMap(dbMatches => {
-          return from(dbMatches);
-        }),
-      )
-      .pipe(
-        flatMap(dbMatch => {
-          const externalId = dbMatch.externalReference[ApiProvider.API_FOOTBALL_DATA].id;
-          const externalMatch = externalIdToExternalMatchMap[externalId];
+    return lastValueFrom(
+      this.matchRepo
+        .findByExternalIds$(externalIds)
+        .pipe(
+          mergeMap(dbMatches => dbMatches)
+        )
+        .pipe(
+          mergeMap(dbMatch => {
+            const externalId = dbMatch.externalReference[ApiProvider.API_FOOTBALL_DATA].id;
+            const externalMatch = externalIdToExternalMatchMap[externalId];
 
-          if (matchChanged(externalMatch, dbMatch)) {
-            const id = dbMatch.id;
-            const { result, status, odds } = externalMatch;
-            const update: any = { result, status, odds };
-            Object.keys(update).forEach(
-              key => update[key] == null && delete update[key],
-            );
-            return this.matchRepo.findByIdAndUpdate$(id!, update);
-          }
-          return of(dbMatch);
-        }),
-      )
-      .toPromise();
+            if (matchChanged(externalMatch, dbMatch)) {
+              const id = dbMatch.id;
+              const { result, status, odds } = externalMatch;
+              const update: any = { result, status, odds };
+              Object.keys(update).forEach(
+                key => update[key] == null && delete update[key],
+              );
+              return this.matchRepo.findByIdAndUpdate$(id!, update);
+            }
+            return of(dbMatch);
+          }),
+        )
+    );
   }
 }

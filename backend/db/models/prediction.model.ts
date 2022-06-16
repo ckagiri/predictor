@@ -2,12 +2,6 @@ import { Schema, model } from 'mongoose';
 
 import { Entity, DocumentEntity, schema } from './base.model';
 import { ScorePoints, Score } from '../../common/score';
-
-export enum PredictionStatus {
-  PENDING = 'PENDING',
-  PROCESSED = 'PROCESSED',
-}
-
 export interface Prediction extends Entity {
   id?: string;
   user: string;
@@ -15,7 +9,6 @@ export interface Prediction extends Entity {
   matchSlug?: string;
   choice: Score;
   scorePoints?: ScorePoints;
-  status?: PredictionStatus;
   hasJoker?: boolean;
   jokerAutoPicked?: boolean;
 }
@@ -23,10 +16,10 @@ export interface Prediction extends Entity {
 export interface PredictionDocument extends Prediction, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
-const Status = PredictionStatus;
 
 const predictionSchema = schema({
   user: { type: ObjectId, ref: 'User', required: true, index: true },
+  season: { type: ObjectId, ref: 'Season', required: true, index: true },
   match: { type: ObjectId, ref: 'Match', required: true, index: true },
   matchSlug: { type: String, trim: true },
   choice: {
@@ -37,8 +30,8 @@ const predictionSchema = schema({
   timestamp: { type: Schema.Types.Date, default: Date.now() },
   scorePoints: {
     points: { type: Number },
-    APoints: { type: Number },
-    BPoints: { type: Number },
+    ResultPoints: { type: Number },
+    ScorePoints: { type: Number },
     CorrectMatchOutcomePoints: { type: Number },
     ExactGoalDifferencePoints: { type: Number },
     ExactMatchScorePoints: { type: Number },
@@ -47,11 +40,6 @@ const predictionSchema = schema({
   },
   hasJoker: { type: Boolean, default: false },
   jokerAutoPicked: { type: Boolean, default: false },
-  status: {
-    type: String,
-    enum: [Status.PENDING, Status.PROCESSED],
-    default: Status.PENDING,
-  },
 });
 
 const PredictionModel = model<PredictionDocument>(

@@ -111,8 +111,8 @@ const user1_team1Vteam2: Partial<Prediction> = {
 
 const user1_team1Vteam2_points: ScorePoints = {
   points: 4,
-  APoints: 0,
-  BPoints: 4,
+  ResultPoints: 0,
+  ScorePoints: 4,
   CorrectMatchOutcomePoints: 0,
   ExactGoalDifferencePoints: 0,
   ExactMatchScorePoints: 0,
@@ -130,8 +130,8 @@ const user1_team3Vteam4: Partial<Prediction> = {
 
 const user1_team3Vteam4_points: ScorePoints = {
   points: 9,
-  APoints: 5,
-  BPoints: 4,
+  ResultPoints: 5,
+  ScorePoints: 4,
   CorrectMatchOutcomePoints: 5,
   ExactGoalDifferencePoints: 0,
   ExactMatchScorePoints: 0,
@@ -149,8 +149,8 @@ const user2_team1Vteam2: Partial<Prediction> = {
 
 const user2_team1Vteam2_points: ScorePoints = {
   points: 6,
-  APoints: 6,
-  BPoints: 0,
+  ResultPoints: 6,
+  ScorePoints: 0,
   CorrectMatchOutcomePoints: 5,
   ExactGoalDifferencePoints: 1,
   ExactMatchScorePoints: 0,
@@ -169,8 +169,8 @@ const user2_team3Vteam4: Partial<Prediction> = {
 
 const user2_team3Vteam4_points: ScorePoints = {
   points: 15,
-  APoints: 11,
-  BPoints: 4,
+  ResultPoints: 11,
+  ScorePoints: 4,
   CorrectMatchOutcomePoints: 5,
   ExactGoalDifferencePoints: 1,
   ExactMatchScorePoints: 5,

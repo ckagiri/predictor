@@ -28,18 +28,14 @@ export class SeasonScheduler extends EventEmitter implements Scheduler {
     super();
   }
 
-  get IsPolling() {
+  get isPolling() {
     return this._polling;
-  }
-
-  get PollingInterval() {
-    return this._pollingInterval;
   }
 
   public start = async () => {
     this._polling = true;
     while (this._polling) {
-      await this.taskRunner.run({
+      this.taskRunner.run({
         whenToExecute: this._pollingInterval,
         context: this,
         task: async () => {

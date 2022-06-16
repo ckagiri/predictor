@@ -3,26 +3,14 @@ import { Observable } from 'rxjs';
 import LeaderboardModel, {
   Leaderboard,
   LeaderboardDocument,
-  BOARD_TYPE,
 } from '../models/leaderboard.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
-  findSeasonBoardAndUpsert$(
-    seasonId: string,
-    update: any,
-  ): Observable<Leaderboard>;
-  findMonthBoardAndUpsert$(
-    seasonId: string,
-    year: number,
-    month: number,
-    update: any,
-  ): Observable<Leaderboard>;
-  findRoundBoardAndUpsert$(
-    seasonId: string,
-    gameRound: string,
-    update: any,
-  ): Observable<Leaderboard>;
+  findSeasonLeaderboard(seasonId: string): Observable<Leaderboard>;
+  findSeasonLeaderboardOrCreate(seasonId: string): Observable<Leaderboard>;
+  findRoundLeaderboard(seasonId: string, gameRoundId: string): Observable<Leaderboard>;
+  findRoundLeaderboardOrCreate(seasonId: string, gameRoundId: string): Observable<Leaderboard>;
 }
 
 export class LeaderboardRepositoryImpl
@@ -36,39 +24,16 @@ export class LeaderboardRepositoryImpl
     super(LeaderboardModel);
   }
 
-  public findSeasonBoardAndUpsert$(seasonId: string, update: any) {
-    const query: any = {
-      season: seasonId,
-      boardType: BOARD_TYPE.GLOBAL_SEASON,
-    };
-    return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
+  findSeasonLeaderboard(seasonId: string): Observable<Leaderboard> {
+    throw new Error('Method not implemented.');
   }
-
-  public findMonthBoardAndUpsert$(
-    seasonId: string,
-    year: number,
-    month: number,
-    update: any,
-  ) {
-    const query: any = {
-      season: seasonId,
-      year,
-      month,
-      boardType: BOARD_TYPE.GLOBAL_MONTH,
-    };
-    return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
+  findSeasonLeaderboardOrCreate(seasonId: string): Observable<Leaderboard> {
+    throw new Error('Method not implemented.');
   }
-
-  public findRoundBoardAndUpsert$(
-    seasonId: string,
-    gameRound: string,
-    update: any,
-  ) {
-    const query: any = {
-      season: seasonId,
-      gameRound,
-      boardType: BOARD_TYPE.GLOBAL_ROUND,
-    };
-    return this.findOneAndUpdate$(query, update, { upsert: true, new: true });
+  findRoundLeaderboard(seasonId: string, gameRoundId: string): Observable<Leaderboard> {
+    throw new Error('Method not implemented.');
+  }
+  findRoundLeaderboardOrCreate(seasonId: string, gameRoundId: string): Observable<Leaderboard> {
+    throw new Error('Method not implemented.');
   }
 }

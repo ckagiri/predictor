@@ -2,31 +2,18 @@ import GameRoundModel, {
   GameRound,
   GameRoundDocument,
 } from '../models/gameRound.model';
-import {
-  BaseFootballApiRepository,
-  BaseFootballApiRepositoryImpl,
-} from './baseFootballApi.repo';
-import {
-  GameRoundConverter,
-  GameRoundConverterImpl,
-} from '../converters/gameRound.converter';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-export interface GameRoundRepository
-  extends BaseFootballApiRepository<GameRound> {}
-
-export class GameRoundRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<GameRound, GameRoundDocument>
+export interface GameRoundRepository extends BaseRepository<GameRound> {
+}
+export class GameRoundRepositoryImpl extends BaseRepositoryImpl<GameRound, GameRoundDocument>
   implements GameRoundRepository {
-  public static getInstance(
-    provider: ApiProvider = ApiProvider.LIGI,
-  ): GameRoundRepository {
-    return new GameRoundRepositoryImpl(
-      GameRoundConverterImpl.getInstance(provider),
-    );
+
+  public static getInstance(): GameRoundRepository {
+    return new GameRoundRepositoryImpl();
   }
 
-  constructor(converter: GameRoundConverter) {
-    super(GameRoundModel, converter);
+  constructor() {
+    super(GameRoundModel);
   }
 }
