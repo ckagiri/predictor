@@ -128,6 +128,7 @@ describe('UserScore Repo', function () {
     userId2matchId2Pred = user2_cheVars_pred.id;
 
     // result 2-1 prediction 1-0
+    // userId1matchId1Pred
     user1_manuVmanc_pred_points = {
       points: 8,
       resultPoints: 8,
@@ -140,6 +141,7 @@ describe('UserScore Repo', function () {
     };
 
     // result 2-1 prediction 2-1
+    // userId1matchId2Pred
     user1_cheVars_pred_points = {
       points: 16,
       resultPoints: 8,
@@ -152,6 +154,7 @@ describe('UserScore Repo', function () {
     };
 
     // result 2-1 prediction 3-0
+    // userId2matchId1Pred
     user2_manuVmanc_pred_points = {
       points: 7,
       resultPoints: 7,
@@ -164,151 +167,149 @@ describe('UserScore Repo', function () {
     };
   })
 
-  describe('find and upsert', () => {
-    it('should create a userScore if it does not exist', done => {
-      userScoreRepo
-        .findScoreAndUpsert$({
-          leaderboardId,
-          userId: userId1,
-          matchId: matchId1,
-          predictionId: userId1matchId1Pred,
-          hasJoker: true,
-        }, { predictionPoints: user1_manuVmanc_pred_points })
-        .subscribe(score => {
-          expect(score.pointsExcludingJoker).to.equal(8);
-          expect(score.resultPointsExcludingJoker).to.equal(8);
-          expect(score.scorePointsExcludingJoker).to.equal(0);
-          expect(score.points).to.equal(16);
-          expect(score.resultPoints).to.equal(16);
-          expect(score.scorePoints).to.equal(0);
-          expect(score.matches).to.contain(matchId1);
-          expect(score.predictions).to.contain(userId1matchId1Pred);
-          done();
-        });
-    });
+  it('should create a userScore if it does not exist', done => {
+    // result 2-1 prediction 1-0 (& joker)
+    userScoreRepo
+      .findScoreAndUpsert$({
+        leaderboardId,
+        userId: userId1,
+        matchId: matchId1,
+        predictionId: userId1matchId1Pred,
+        hasJoker: true,
+      }, { predictionPoints: user1_manuVmanc_pred_points })
+      .subscribe(score => {
+        expect(score.pointsExcludingJoker).to.equal(8);
+        expect(score.correctMatchOutcomes).to.equal(1);
+        expect(score.closeMatchScorePoints).to.equal(0);
+        expect(score.exactMatchScores).to.equal(0);
+        expect(score.points).to.equal(16);
+        expect(score.resultPoints).to.equal(16);
+        expect(score.scorePoints).to.equal(0);
+        expect(score.matches).to.contain(matchId1);
+        expect(score.predictions).to.contain(userId1matchId1Pred);
+        done();
+      });
+  });
 
-    it('should update a userScore if it exists', done => {
-      // result 2-1 prediction 1-0 (is joker)
-      const user1_manuVmanc_predJoker_score: UserScore = {
-        leaderboard: leaderboardId,
-        user: userId1,
-        matches: [matchId1],
-        predictions: [userId1matchId1Pred],
-        matchesPredicted: 1,
-        pointsExcludingJoker: 8,
-        resultPointsExcludingJoker: 8,
-        scorePointsExcludingJoker: 0,
-        points: 16,
-        resultPoints: 16,
-        scorePoints: 0,
-        correctMatchOutcomePoints: 7,
-        exactGoalDifferencePoints: 1,
-        closeMatchScorePoints: 0,
-        exactTeamScorePoints: 0,
-        exactMatchScorePoints: 0,
-      }
+  it('should update a userScore if it exists', done => {
+    // result 2-1 prediction 1-0 (& joker)
+    const user1_manuVmanc_predJoker_score: UserScore = {
+      leaderboard: leaderboardId,
+      user: userId1,
+      matches: [matchId1],
+      predictions: [userId1matchId1Pred],
+      matchesPredicted: 1,
+      pointsExcludingJoker: 8,
+      correctMatchOutcomes: 1,
+      closeMatchScores: 0,
+      exactMatchScores: 0,
+      points: 16,
+      resultPoints: 16,
+      scorePoints: 0,
+      correctMatchOutcomePoints: 14,
+      exactGoalDifferencePoints: 2,
+      closeMatchScorePoints: 0,
+      exactTeamScorePoints: 0,
+      exactMatchScorePoints: 0,
+    }
 
-      userScoreRepo.insert$(user1_manuVmanc_predJoker_score)
-        .pipe(
-          mergeMap(_ => {
-            return userScoreRepo.findScoreAndUpsert$({
-              leaderboardId,
-              userId: userId1,
-              matchId: matchId2,
-              predictionId: userId1matchId2Pred,
-              hasJoker: false,
-            }, {
-              // result 2-1 prediction 2-1
-              predictionPoints: user1_cheVars_pred_points
-            });
-          })
-        ).subscribe(score => {
-          expect(score.pointsExcludingJoker).to.equal(24);
-          expect(score.resultPointsExcludingJoker).to.equal(16);
-          expect(score.scorePointsExcludingJoker).to.equal(8);
-          expect(score.points).to.equal(32);
-          expect(score.resultPoints).to.equal(24);
-          expect(score.scorePoints).to.equal(8);
-          expect(score.matches).to.contain(matchId1, matchId2);
-          expect(score.matchesPredicted).to.equal(2)
-          expect(score.predictions).to.contain(userId1matchId1Pred, userId1matchId2Pred);
-          done();
-        });
-    });
+    userScoreRepo.insert$(user1_manuVmanc_predJoker_score)
+      .pipe(
+        mergeMap(_ => {
+          return userScoreRepo.findScoreAndUpsert$({
+            leaderboardId,
+            userId: userId1,
+            matchId: matchId2,
+            predictionId: userId1matchId2Pred,
+            hasJoker: false,
+          }, {
+            // result 2-1 prediction 2-1
+            predictionPoints: user1_cheVars_pred_points
+          });
+        })
+      ).subscribe(score => {
+        expect(score.pointsExcludingJoker).to.equal(24);
+        expect(score.correctMatchOutcomes).to.equal(2);
+        expect(score.closeMatchScores).to.equal(0);
+        expect(score.exactMatchScores).to.equal(1);
+        expect(score.points).to.equal(32);
+        expect(score.resultPoints).to.equal(24);
+        expect(score.scorePoints).to.equal(8);
+        expect(score.matches).to.contain(matchId1, matchId2);
+        expect(score.matchesPredicted).to.equal(2)
+        expect(score.predictions).to.contain(userId1matchId1Pred, userId1matchId2Pred);
+        done();
+      });
+  });
 
-    it('should find by leaderboard and order by points', done => {
-      let { points: pts1, resultPoints: rp1, scorePoints: sp1 } = user1_manuVmanc_pred_points;
-      const user1_manuVmanc_pred_score: UserScore = {
-        ...user1_manuVmanc_pred_points, // result 2-1 prediction 1-0
-        leaderboard: leaderboardId,
-        user: userId1,
-        matches: [matchId1],
-        predictions: [userId1matchId1Pred],
-        matchesPredicted: 1,
-        pointsExcludingJoker: pts1,
-        resultPointsExcludingJoker: rp1,
-        scorePointsExcludingJoker: sp1,
-      }
+  it('should find by leaderboard and order by points', done => {
+    const user1_manuVmanc_pred_score: UserScore = {
+      ...user1_manuVmanc_pred_points, // result 2-1 prediction 1-0
+      leaderboard: leaderboardId,
+      user: userId1,
+      matches: [matchId1],
+      predictions: [userId1matchId1Pred],
+      matchesPredicted: 1,
+      pointsExcludingJoker: user1_manuVmanc_pred_points.points,
+      correctMatchOutcomes: 1,
+      closeMatchScores: 0,
+      exactMatchScores: 0,
+    }
 
-      let { points: pts2, resultPoints: rp2, scorePoints: sp2 } = user2_manuVmanc_pred_points;
-      const user2_manuVmanc_pred_score: UserScore = {
-        ...user2_manuVmanc_pred_points, // result 2-1 prediction 3-0
-        leaderboard: leaderboardId,
-        user: userId2,
-        matches: [matchId1],
-        predictions: [userId2matchId1Pred],
-        matchesPredicted: 1,
-        pointsExcludingJoker: pts2,
-        resultPointsExcludingJoker: rp2,
-        scorePointsExcludingJoker: sp2,
-      }
+    const user2_manuVmanc_pred_score: UserScore = {
+      ...user2_manuVmanc_pred_points, // result 2-1 prediction 3-0
+      leaderboard: leaderboardId,
+      user: userId2,
+      matches: [matchId1],
+      predictions: [userId2matchId1Pred],
+      matchesPredicted: 1,
+      pointsExcludingJoker: user2_manuVmanc_pred_points.points,
+      correctMatchOutcomes: 1,
+      closeMatchScores: 0,
+      exactMatchScores: 0,
+    }
 
-      userScoreRepo
-        .insertMany$([user1_manuVmanc_pred_score, user2_manuVmanc_pred_score])
-        .pipe(
-          mergeMap(_ => {
-            return userScoreRepo.findByLeaderboardIdOrderByPoints$(leaderboardId);
-          }),
-        )
-        .subscribe(standings => {
-          expect(standings[1].points).to.be.lte(standings[0].points);
-          done();
-        });
-    })
+    userScoreRepo
+      .insertMany$([user1_manuVmanc_pred_score, user2_manuVmanc_pred_score])
+      .pipe(
+        mergeMap(_ => {
+          return userScoreRepo.findByLeaderboardIdOrderByPoints$(leaderboardId);
+        }),
+      )
+      .subscribe(standings => {
+        expect(standings[1].points).to.be.lte(standings[0].points);
+        done();
+      });
+  })
 
-    it('should find by id and update positions', done => {
-      let { points, resultPoints, scorePoints } = user1_manuVmanc_pred_points;
-      const user1_manuVmanc_pred_score: UserScore = {
-        ...user1_manuVmanc_pred_points,
-        leaderboard: leaderboardId,
-        user: userId1,
-        matches: [matchId1],
-        predictions: [userId1matchId1Pred],
-        pointsExcludingJoker: points,
-        resultPointsExcludingJoker: resultPoints,
-        scorePointsExcludingJoker: scorePoints,
-        positionNew: 1,
-        positionOld: 2,
-      }
+  it('should find by id and update positions', done => {
+    const user1_manuVmanc_pred_score: UserScore = {
+      ...user1_manuVmanc_pred_points,
+      leaderboard: leaderboardId,
+      user: userId1,
+      matches: [matchId1],
+      predictions: [userId1matchId1Pred],
+      positionNew: 1,
+      positionOld: 2,
+    }
 
-      userScoreRepo
-        .insert$(user1_manuVmanc_pred_score)
-        .pipe(
-          mergeMap(userScore => {
-            const prevPosition = userScore.positionNew!;
-            const positionOld = prevPosition;
-            const positionNew = prevPosition + 1;
-            return userScoreRepo.findByIdAndUpdate$(userScore.id!, {
-              positionNew,
-              positionOld,
-            });
-          }),
-        )
-        .subscribe(standing => {
-          expect(standing.positionNew).to.equal(2);
-          expect(standing.positionOld).to.equal(1);
-          done();
-        });
-    });
+    userScoreRepo
+      .insert$(user1_manuVmanc_pred_score)
+      .pipe(
+        mergeMap(userScore => {
+          const prevPosition = userScore.positionNew!;
+          const positionOld = prevPosition;
+          const positionNew = prevPosition + 1;
+          return userScoreRepo.findByIdAndUpdate$(userScore.id!, {
+            positionNew,
+            positionOld,
+          });
+        }),
+      )
+      .subscribe(standing => {
+        expect(standing.positionNew).to.equal(2);
+        expect(standing.positionOld).to.equal(1);
+        done();
+      });
   });
 });

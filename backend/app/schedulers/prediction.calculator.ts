@@ -25,45 +25,46 @@ export class PredictionCalculator {
       result.goalsAwayTeam,
     );
     if (choiceOutcome === resultOutcome) {
-      scorePoints.CorrectMatchOutcomePoints = 7;
-      scorePoints.ResultPoints += 7;
+      scorePoints.correctMatchOutcomePoints = 7;
+      scorePoints.resultPoints += 7;
     }
 
     const choiceGd = choice.goalsHomeTeam - choice.goalsAwayTeam;
     const resultGd = result.goalsHomeTeam - result.goalsAwayTeam;
     if (choiceGd === resultGd) {
-      scorePoints.ExactGoalDifferencePoints = 1;
-      scorePoints.ResultPoints += 1;
-    }
-
-    if (
-      choice.goalsHomeTeam === result.goalsHomeTeam &&
-      choice.goalsAwayTeam === result.goalsAwayTeam
-    ) {
-      scorePoints.ExactMatchScorePoints = 6;
-      scorePoints.ScorePoints += 6;
+      scorePoints.exactGoalDifferencePoints = 1;
+      scorePoints.resultPoints += 1;
     }
 
     const homeGoalsGd = Math.abs(choice.goalsHomeTeam - result.goalsHomeTeam);
     const awayGoalsGd = Math.abs(choice.goalsAwayTeam - result.goalsAwayTeam);
     if (homeGoalsGd === 0 || awayGoalsGd === 0) {
       if (homeGoalsGd === 1 || awayGoalsGd === 1) {
-        scorePoints.CloseMatchScorePoints = 1;
-        scorePoints.ScorePoints += 1;
+        scorePoints.closeMatchScorePoints = 1;
+        scorePoints.scorePoints += 1;
       }
     }
 
     if (choice.goalsHomeTeam === result.goalsHomeTeam) {
-      scorePoints.ExactTeamScorePoints += 1;
-      scorePoints.ScorePoints += 1;
+      scorePoints.exactTeamScorePoints += 1;
+      scorePoints.scorePoints += 1;
     }
 
     if (choice.goalsAwayTeam === result.goalsAwayTeam) {
-      scorePoints.ExactTeamScorePoints += 1;
-      scorePoints.ScorePoints += 1;
+      scorePoints.exactTeamScorePoints += 1;
+      scorePoints.scorePoints += 1;
     }
 
-    scorePoints.points = scorePoints.ResultPoints + scorePoints.ScorePoints;
+    if (
+      choice.goalsHomeTeam === result.goalsHomeTeam &&
+      choice.goalsAwayTeam === result.goalsAwayTeam
+    ) {
+      scorePoints.exactMatchScorePoints = 6;
+      scorePoints.scorePoints += 6;
+    }
+
+
+    scorePoints.points = scorePoints.resultPoints + scorePoints.scorePoints;
     return scorePoints;
   }
 }

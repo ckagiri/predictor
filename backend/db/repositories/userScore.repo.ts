@@ -83,8 +83,9 @@ export class UserScoreRepositoryImpl
           score.predictions = [predictionId];
           score.matchesPredicted = 1;
           score.pointsExcludingJoker = points;
-          score.resultPointsExcludingJoker = resultPoints;
-          score.scorePointsExcludingJoker = scorePoints;
+          score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
+          score.closeMatchScores = closeMatchScorePoints;
+          score.exactMatchScores = exactMatchScorePoints / 6;
 
           if (hasJoker) {
             score.points *= 2;
@@ -106,7 +107,6 @@ export class UserScoreRepositoryImpl
             return of(userScore);
           }
 
-          userScore.pointsExcludingJoker! += points;
           userScore.correctMatchOutcomePoints += hasJoker
             ? correctMatchOutcomePoints * 2
             : correctMatchOutcomePoints;
@@ -116,34 +116,38 @@ export class UserScoreRepositoryImpl
           userScore.closeMatchScorePoints += hasJoker
             ? closeMatchScorePoints * 2
             : closeMatchScorePoints;
-          userScore.exactMatchScorePoints += hasJoker
-            ? exactMatchScorePoints * 2
-            : exactMatchScorePoints;
           userScore.exactTeamScorePoints += hasJoker
             ? exactTeamScorePoints * 2
             : exactTeamScorePoints;
+          userScore.exactMatchScorePoints += hasJoker
+            ? exactMatchScorePoints * 2
+            : exactMatchScorePoints;
 
-          userScore.resultPointsExcludingJoker! += resultPoints;
-          userScore.scorePointsExcludingJoker! += scorePoints;
+          userScore.pointsExcludingJoker! += points;
+          userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
+          userScore.closeMatchScores! += closeMatchScorePoints;
+          userScore.exactMatchScores! += (exactMatchScorePoints / 6);
 
-          userScore.resultPoints += (userScore.correctMatchOutcomePoints + userScore.exactGoalDifferencePoints);
-          userScore.scorePoints += (userScore.closeMatchScorePoints + userScore.exactTeamScorePoints +
-            userScore.exactMatchScorePoints);
-          userScore.points += (userScore.resultPoints + userScore.scorePoints);
+          const resultPoints = correctMatchOutcomePoints + exactGoalDifferencePoints;
+          const scorePoints = closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
+          userScore.resultPoints += resultPoints;
+          userScore.scorePoints += scorePoints;
+          userScore.points += (resultPoints + scorePoints);
 
           return this.findByIdAndUpdate$(userScore.id!, {
             $set: {
+              resultPoints: userScore.resultPoints,
+              scorePoints: userScore.scorePoints,
               points: userScore.points,
-              ResultPoints: userScore.resultPoints,
-              ScorePoints: userScore.scorePoints,
-              CorrectMatchOutcomePoints: userScore.correctMatchOutcomePoints,
-              ExactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
-              ExactMatchScorePoints: userScore.exactMatchScorePoints,
-              ExactTeamScorePoints: userScore.exactTeamScorePoints,
-              CloseMatchScorePoints: userScore.closeMatchScorePoints,
+              correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
+              exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
+              closeMatchScorePoints: userScore.closeMatchScorePoints,
+              exactTeamScorePoints: userScore.exactTeamScorePoints,
+              exactMatchScorePoints: userScore.exactMatchScorePoints,
               pointsExcludingJoker: userScore.pointsExcludingJoker,
-              ResultPointsExcludingJoker: userScore.resultPointsExcludingJoker,
-              ScorePointsExcludingJoker: userScore.scorePointsExcludingJoker,
+              correctMatchOutcomes: userScore.correctMatchOutcomes,
+              closeMatchScores: userScore.closeMatchScores,
+              exactMatchScores: userScore.exactMatchScores,
             },
             $inc: { matchesPredicted: 1 },
             $push: { matches: matchId, predictions: predictionId },
