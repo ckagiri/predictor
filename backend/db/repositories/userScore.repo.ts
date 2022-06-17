@@ -20,7 +20,7 @@ export interface UserScoreRepository extends BaseRepository<UserScore> {
     matchId: string,
     predictionId: string,
     hasJoker: boolean,
-  }, predictionPoints: ScorePoints): Observable<UserScore>;
+  }, { predictionPoints }: { predictionPoints: ScorePoints }): Observable<UserScore>;
 
   findByLeaderboardIdOrderByPoints$(
     leaderboardId: string,
@@ -50,7 +50,7 @@ export class UserScoreRepositoryImpl
     matchId: string,
     predictionId: string,
     hasJoker: boolean,
-  }, predictionPoints: ScorePoints) {
+  }, { predictionPoints }: { predictionPoints: ScorePoints }) {
 
     const {
       points,

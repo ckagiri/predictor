@@ -256,14 +256,15 @@ export class PredictionRepositoryImpl
                   const selectableMatchIds = matches
                     .filter(m => m.status === MatchStatus.SCHEDULED)
                     .map(m => m.id?.toString());
-
                   if (selectableMatchIds.length) {
                     const jokerMatchId = selectableMatchIds[Math.floor(Math.random() * selectableMatchIds.length)]!;
                     const { slug: jokerMatchSlug } = matches.find(m => m.id?.toString() === jokerMatchId) as Match
                     const randomMatchScore = this.getRandomMatchScore();
+                    const { season } = matches[0];
 
                     const joker: Prediction = {
                       user: userId,
+                      season,
                       match: jokerMatchId,
                       matchSlug: jokerMatchSlug,
                       hasJoker: true,
@@ -321,7 +322,7 @@ export class PredictionRepositoryImpl
             return throwError(`matchId ${isString(match) ? match : match.id} not found`)
           }
 
-          const { id: matchId, slug: matchSlug, status: matchStatus } = aMatch;
+          const { id: matchId, season, slug: matchSlug, status: matchStatus } = aMatch;
           return this.findOne$(userId, matchId!)
             .pipe(
               mergeMap(prediction => {
@@ -331,6 +332,7 @@ export class PredictionRepositoryImpl
 
                 const pred = {
                   user: userId,
+                  season,
                   match: matchId,
                   matchSlug,
                 } as Prediction;

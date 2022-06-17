@@ -417,7 +417,7 @@ class MatchBuilder implements Builder<Match> {
   }
 
   async build(): Promise<Match> {
-    this.built.season = this.season?.id;
+    this.built.season = this.season.id!;
     const { name: homeTeamName, id: homeTeamId, slug: homeTeamSlug, crestUrl: homeTeamCrestUrl } = this.homeTeam;
     this.built.homeTeam = { id: homeTeamId!, name: homeTeamName, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
 
@@ -448,6 +448,9 @@ class PredictionBuilder implements Builder<Prediction> {
       isComputerGenerated: false,
     },
     status: 'PENDING',
+    user: '',
+    season: '',
+    match: '',
   } as Prediction;
   private userBuilder?: UserBuilder;
   private matchBuilder?: MatchBuilder;
@@ -506,12 +509,14 @@ class PredictionBuilder implements Builder<Prediction> {
 
     const {
       id: matchId,
+      season,
       slug: matchSlug,
     } = this.match as Required<Match>;
 
     const { id: userId } = this.user as Required<User>;
     this.built.match = matchId;
     this.built.matchSlug = matchSlug;
+    this.built.season = season;
     this.built.user = userId;
 
     this.prediction = await db.Prediction.create(this.built);

@@ -38,7 +38,7 @@ export class AfdMatchConverter implements MatchConverter {
       this.teamRepo.findByName$(data.awayTeam.name),
       (season: Season, homeTeam: Team, awayTeam: Team) => {
         return {
-          season: season.id,
+          season: season.id!,
           date: data.utcDate,
           matchRound: data.matchday,
           status: data.status,

@@ -141,6 +141,7 @@ describe('Prediction repo', function () {
       let prediction: Prediction;
       const predData: Prediction = {
         user: userId,
+        season: epl2022.id,
         match: matchId,
         matchSlug,
         choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
@@ -167,15 +168,15 @@ describe('Prediction repo', function () {
         .findOneOrCreate$(userId, matchId)
         .pipe(
           mergeMap(p => {
-            scorePoints = {
+            scorePoints = { // actual score pred
               points: 16,
-              ResultPoints: 14,
-              ScorePoints: 2,
-              CorrectMatchOutcomePoints: 7,
-              ExactGoalDifferencePoints: 1,
-              ExactMatchScorePoints: 6,
-              CloseMatchScorePoints: 0,
-              ExactTeamScorePoints: 2,
+              resultPoints: 8,
+              scorePoints: 8,
+              correctMatchOutcomePoints: 7,
+              exactGoalDifferencePoints: 1,
+              closeMatchScorePoints: 0,
+              exactTeamScorePoints: 2,
+              exactMatchScorePoints: 6,
             };
             return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
           }),
@@ -196,6 +197,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId1Pred: Prediction = {
         user: userId,
+        season: epl2022.id,
         match: manuVmanc.id,
         matchSlug: manuVmanc.slug,
         choice: origChoice,
@@ -239,6 +241,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId1Pred: Prediction = {
         user: userId,
+        season: epl2022.id,
         match: manuVmanc.id,
         matchSlug: manuVmanc.slug,
         choice: origChoice,
@@ -268,6 +271,7 @@ describe('Prediction repo', function () {
 
         const userId1matchId1Pred: Prediction = {
           user: userId,
+          season: epl2022.id,
           match: manuVmanc.id,
           matchSlug: manuVmanc.slug,
           choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
@@ -293,6 +297,7 @@ describe('Prediction repo', function () {
 
         const userId1matchId1Pred: Prediction = {
           user: userId,
+          season: epl2022.id,
           match: manuVmanc.id,
           matchSlug: manuVmanc.slug,
           choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
@@ -316,6 +321,7 @@ describe('Prediction repo', function () {
 
         const userId1matchId1Pred: Prediction = {
           user: userId,
+          season: epl2022.id,
           match: manuVmanc.id,
           matchSlug: manuVmanc.slug,
           choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
@@ -325,6 +331,7 @@ describe('Prediction repo', function () {
 
         const userId1matchId2Pred: Prediction = {
           user: userId,
+          season: epl2022.id,
           match: cheVars.id,
           matchSlug: cheVars.slug,
           choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
@@ -356,6 +363,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId1Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: manuVmanc.id,
         matchSlug: manuVmanc.slug,
         hasJoker: true,
@@ -365,6 +373,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId2Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: cheVars.id,
         matchSlug: cheVars.slug,
         hasJoker: false,
@@ -374,6 +383,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId3Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: livVtot.id,
         matchSlug: livVtot.slug,
         hasJoker: false,
@@ -399,6 +409,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId1Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: manuVmanc.id,
         matchSlug: manuVmanc.slug,
         hasJoker: true,
@@ -408,6 +419,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId2Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: cheVars.id,
         matchSlug: cheVars.slug,
         hasJoker: true,
@@ -430,6 +442,7 @@ describe('Prediction repo', function () {
     it('should unset joker', done => {
       const userId1matchId1Pred: Prediction = {
         user: user1.id,
+        season: epl2022.id,
         match: manuVmanc.id,
         matchSlug: manuVmanc.slug,
         hasJoker: true,
@@ -451,6 +464,7 @@ describe('Prediction repo', function () {
       it('should pick a different joker if joker exists', done => {
         const userId1matchId1Pred: Prediction = {
           user: user1.id,
+          season: epl2022.id,
           match: manuVmanc.id,
           matchSlug: manuVmanc.slug,
           choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
@@ -459,6 +473,7 @@ describe('Prediction repo', function () {
         };
         const userId1matchId2Pred: Prediction = {
           user: user1.id,
+          season: epl2022.id,
           match: cheVars.id,
           matchSlug: cheVars.slug,
           choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
@@ -483,6 +498,7 @@ describe('Prediction repo', function () {
       it('should pick same joker if it is same match', done => {
         const userId1matchId1Pred: Prediction = {
           user: user1.id,
+          season: epl2022.id,
           match: manuVmanc.id,
           matchSlug: manuVmanc.slug,
           choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
@@ -491,6 +507,7 @@ describe('Prediction repo', function () {
         };
         const userId1matchId2Pred: Prediction = {
           user: user1.id,
+          season: epl2022.id,
           match: cheVars.id,
           matchSlug: cheVars.slug,
           choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
@@ -517,6 +534,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId1Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: manuVmanc.id,
         matchSlug: manuVmanc.slug,
         hasJoker: true,
@@ -526,6 +544,7 @@ describe('Prediction repo', function () {
 
       const userId1matchId2Pred: Prediction = {
         user: userId1,
+        season: epl2022.id,
         match: cheVars.id,
         matchSlug: cheVars.slug,
         hasJoker: false,

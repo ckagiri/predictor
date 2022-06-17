@@ -5,6 +5,7 @@ import { ScorePoints, Score } from '../../common/score';
 export interface Prediction extends Entity {
   id?: string;
   user: string;
+  season: string;
   match: string;
   matchSlug?: string;
   choice: Score;

@@ -20,7 +20,7 @@ export interface TeamPartial {
 
 export interface Match extends Entity {
   id?: string;
-  season?: string;
+  season: string;
   slug: string;
   date?: any;
   matchRound?: number;

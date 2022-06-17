@@ -8,13 +8,13 @@ export class PredictionCalculator {
   public calculateScore(result: Score, choice: Score): ScorePoints {
     const scorePoints: ScorePoints = {
       points: 0,
-      ResultPoints: 0,
-      ScorePoints: 0,
-      CorrectMatchOutcomePoints: 0,
-      ExactGoalDifferencePoints: 0,
-      ExactMatchScorePoints: 0,
-      CloseMatchScorePoints: 0,
-      ExactTeamScorePoints: 0,
+      resultPoints: 0,
+      scorePoints: 0,
+      correctMatchOutcomePoints: 0,
+      exactGoalDifferencePoints: 0,
+      closeMatchScorePoints: 0,
+      exactTeamScorePoints: 0,
+      exactMatchScorePoints: 0,
     };
     const choiceOutcome = calcOutcome(
       choice.goalsHomeTeam,
