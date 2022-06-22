@@ -84,6 +84,10 @@ export class DocumentDao<T extends DocumentEntity> {
     return this.Model.bulkWrite(ops);
   }
 
+  public distinct(field: string, conditions: any = {}): Promise<string[]> {
+    return this.Model.find(conditions).distinct(field).exec()
+  }
+
   public findAll(
     conditions: any = {},
     projection?: any,

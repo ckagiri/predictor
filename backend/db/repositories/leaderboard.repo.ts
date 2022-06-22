@@ -9,10 +9,15 @@ import LeaderboardModel, {
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
 export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
-  findSeasonLeaderboard$(seasonId: string): Observable<Leaderboard>;
-  findSeasonLeaderboardOrCreate$(seasonId: string): Observable<Leaderboard>;
-  findRoundLeaderboard$(seasonId: string, gameRoundId: string): Observable<Leaderboard>;
-  findRoundLeaderboardOrCreate$(seasonId: string, gameRoundId: string): Observable<Leaderboard>;
+  findOrCreateSeasonLeaderboardAndUpdate$(
+    seasonId: string, update: any): Observable<Leaderboard>;
+  findOrCreateRoundLeaderboardAndUpdate$(
+    seasonId: string,
+    gameRoundId: string,
+    update: any): Observable<Leaderboard>;
+  findAllFor$(
+    { seasonId, gameRoundId }: { seasonId: string, gameRoundId?: string }
+  ): Observable<Leaderboard[]>
 }
 
 export class LeaderboardRepositoryImpl
@@ -26,23 +31,27 @@ export class LeaderboardRepositoryImpl
     super(LeaderboardModel);
   }
 
-  findSeasonLeaderboard$(seasonId: string): Observable<Leaderboard> {
-    return this.findOne$({ season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON })
-  }
-
-  findSeasonLeaderboardOrCreate$(seasonId: string): Observable<Leaderboard> {
+  findOrCreateSeasonLeaderboardAndUpdate$(seasonId: string, update: any)
+    : Observable<Leaderboard> {
     return this.findOneAndUpdate$({
       season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON
-    }, { status: STATUS.UPDATING }, { upsert: true, new: true })
+    }, update, { upsert: true, new: true })
   }
 
-  findRoundLeaderboard$(seasonId: string, gameRoundId: string): Observable<Leaderboard> {
-    return this.findOne$({ season: seasonId, gameRound: gameRoundId, boardType: BOARD_TYPE.GLOBAL_ROUND })
-  }
-
-  findRoundLeaderboardOrCreate$(seasonId: string, gameRoundId: string): Observable<Leaderboard> {
+  findOrCreateRoundLeaderboardAndUpdate$(seasonId: string, gameRoundId: string, update: any)
+    : Observable<Leaderboard> {
     return this.findOneAndUpdate$({
       season: seasonId, gameRound: gameRoundId, boardType: BOARD_TYPE.GLOBAL_ROUND
-    }, { status: STATUS.UPDATING }, { upsert: true, new: true })
+    }, update, { upsert: true, new: true })
+  }
+
+  findAllFor$({ seasonId, gameRoundId }: { seasonId: string, gameRoundId?: string })
+    : Observable<Leaderboard[]> {
+    return this.findAll$({
+      $or: [
+        { $and: [{ season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON }] },
+        { $and: [{ season: seasonId, gameRound: gameRoundId, boardType: BOARD_TYPE.GLOBAL_ROUND }] }
+      ]
+    })
   }
 }

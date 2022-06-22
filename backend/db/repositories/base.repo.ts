@@ -3,6 +3,7 @@ import { Model, Document } from 'mongoose';
 
 import { DocumentDao } from './document.dao';
 import { Entity, DocumentEntity } from '../models/base.model';
+import { cond } from 'lodash';
 
 export interface BaseRepository<T extends Entity> {
   save$(obj: Entity): Observable<T>;
@@ -13,6 +14,7 @@ export interface BaseRepository<T extends Entity> {
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
   findOneAndUpsert$(conditions: any, update: any, options?: any): Observable<T>;
+  distinct$(field: string, conditions?: any): Observable<string[]>
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
   find$(
     query?: any,
@@ -160,6 +162,20 @@ export class BaseRepositoryImpl<
     return new Observable((observer: Subscriber<T>) => {
       this.documentDao.findOneAndUpdate(conditions, update, options).then(
         (result: T) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        },
+      );
+    });
+  }
+
+  public distinct$(field: string, conditions?: any): Observable<string[]> {
+    return new Observable((observer: Subscriber<string[]>) => {
+      this.documentDao.distinct(field, conditions).then(
+        (result: string[]) => {
           observer.next(result);
           observer.complete();
         },

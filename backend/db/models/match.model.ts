@@ -24,7 +24,7 @@ export interface Match extends Entity {
   slug: string;
   date?: any;
   matchRound?: number;
-  gameRound?: string;
+  gameRound: string;
   status?: MatchStatus;
   homeTeam?: TeamPartial;
   awayTeam?: TeamPartial;
