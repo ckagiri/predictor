@@ -2,8 +2,10 @@ import { Schema, model } from 'mongoose';
 import { Entity, DocumentEntity, schema } from './base.model';
 
 export enum STATUS {
-  UPDATING = 'UPDATING',
-  UPDATED = 'UPDATED',
+  UPDATING_SCORES = 'UPDATING_SCORES',
+  SCORES_UPDATED = 'SCORES_UPDATED',
+  UPDATING_RANKINGS = 'UPDATING_RANKINGS',
+  RANKINGS_UPDATED = 'RANKINGS_UPDATED',
 }
 
 export enum BOARD_TYPE {

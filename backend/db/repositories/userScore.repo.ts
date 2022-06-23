@@ -7,20 +7,23 @@ import UserScoreModel, {
   UserScoreDocument,
 } from '../models/userScore.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
+
+type FindOneQuery = {
+  leaderboardId: string,
+  userId: string,
+}
+
+type Metadata = {
+  matchId: string,
+  predictionId: string,
+  hasJoker: boolean,
+}
 export interface UserScoreRepository extends BaseRepository<UserScore> {
-  findScoreAndUpsert$({
-    leaderboardId,
-    userId,
-    matchId,
-    predictionId,
-    hasJoker
-  }: {
-    leaderboardId: string,
-    userId: string,
-    matchId: string,
-    predictionId: string,
-    hasJoker: boolean,
-  }, { predictionPoints }: { predictionPoints: ScorePoints }): Observable<UserScore>;
+  findScoreAndUpsert$(
+    query: FindOneQuery,
+    predictionPoints: ScorePoints,
+    rest: Metadata
+  ): Observable<UserScore>;
 
   findByLeaderboardIdOrderByPoints$(
     leaderboardId: string,
@@ -38,20 +41,12 @@ export class UserScoreRepositoryImpl
     super(UserScoreModel);
   }
 
-  public findScoreAndUpsert$({
-    leaderboardId,
-    userId,
-    matchId,
-    predictionId,
-    hasJoker
-  }: {
-    leaderboardId: string,
-    userId: string,
-    matchId: string,
-    predictionId: string,
-    hasJoker: boolean,
-  }, { predictionPoints }: { predictionPoints: ScorePoints }) {
-
+  findScoreAndUpsert$(
+    query: FindOneQuery,
+    predictionPoints: ScorePoints,
+    rest: Metadata
+  ): Observable<UserScore> {
+    const { leaderboardId, userId } = query;
     const {
       points,
       resultPoints,
@@ -62,6 +57,7 @@ export class UserScoreRepositoryImpl
       exactTeamScorePoints,
       exactMatchScorePoints,
     } = predictionPoints;
+    const { matchId, predictionId, hasJoker } = rest;
 
     const score: UserScore = {
       leaderboard: leaderboardId,

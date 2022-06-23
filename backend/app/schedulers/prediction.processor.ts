@@ -1,4 +1,4 @@
-import { from, mergeMap, Observable, of } from 'rxjs';
+import { from, lastValueFrom, mergeMap, of } from 'rxjs';
 import { count, map } from 'rxjs/operators';
 import { Match } from '../../db/models';
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
@@ -6,7 +6,7 @@ import { PredictionRepository, PredictionRepositoryImpl } from '../../db/reposit
 import PredictionCalculator from './prediction.calculator';
 
 export interface PredictionProcessor {
-  calculatePredictionPoints(match: Match): Observable<number>;
+  calculatePredictionPoints(match: Match): Promise<number>;
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
@@ -29,34 +29,36 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) { }
 
-  public calculatePredictionPoints(match: Match): Observable<number> {
+  public calculatePredictionPoints(match: Match): Promise<number> {
     const { season, gameRound, result } = match;
 
-    return this.predictionRepo.distinct$('user', { season })
-      .pipe(
-        mergeMap(users => from(users)),
-        mergeMap(user => {
-          return this.predictionRepo.findOrCreateJoker$(user, gameRound)
-            .pipe(
-              mergeMap(jokerPrediction => {
-                const matchId = match.id!
-                if (jokerPrediction.match.toString() == matchId) {
-                  return of(jokerPrediction)
-                }
-                return this.predictionRepo.findOneOrCreate$(user, matchId)
-              })
-            )
-        }),
-        mergeMap(prediction => {
-          const { choice } = prediction;
-          const scorePoints = this.predictionCalculator.calculateScore(result!, choice);
-          return this.predictionRepo.findByIdAndUpdate$(prediction.id!, { scorePoints })
-        }),
-        count(),
-        mergeMap(predsUpdated => {
-          return this.matchRepo.findByIdAndUpdate$(match.id!, { allPredictionPointsCalculated: true })
-            .pipe(map(() => predsUpdated))
-        }),
-      )
+    return lastValueFrom(
+      this.predictionRepo.distinct$('user', { season })
+        .pipe(
+          mergeMap(users => from(users)),
+          mergeMap(user => {
+            return this.predictionRepo.findOrCreateJoker$(user, gameRound)
+              .pipe(
+                mergeMap(jokerPrediction => {
+                  const matchId = match.id!
+                  if (jokerPrediction.match.toString() == matchId) {
+                    return of(jokerPrediction)
+                  }
+                  return this.predictionRepo.findOneOrCreate$(user, matchId)
+                })
+              )
+          }),
+          mergeMap(prediction => {
+            const { choice } = prediction;
+            const scorePoints = this.predictionCalculator.calculateScore(result!, choice);
+            return this.predictionRepo.findByIdAndUpdate$(prediction.id!, { scorePoints })
+          }),
+          count(),
+          mergeMap(predsUpdated => {
+            return this.matchRepo.findByIdAndUpdate$(match.id!, { allPredictionPointsCalculated: true })
+              .pipe(map(() => predsUpdated))
+          }),
+        )
+    );
   }
 }
