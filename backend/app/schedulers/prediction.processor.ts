@@ -1,5 +1,4 @@
-import { from, lastValueFrom, mergeMap, of } from 'rxjs';
-import { count, map } from 'rxjs/operators';
+import { count, from, lastValueFrom, map, mergeMap, of } from 'rxjs';
 import { Match } from '../../db/models';
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';

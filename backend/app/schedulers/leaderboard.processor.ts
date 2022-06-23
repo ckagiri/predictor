@@ -1,9 +1,10 @@
-import { BOARD_TYPE, STATUS as BOARD_STATUS } from "db/models/leaderboard.model";
-import { LeaderboardRepository } from "db/repositories/leaderboard.repo";
-import { MatchRepository } from "db/repositories/match.repo";
-import { PredictionRepository } from "db/repositories/prediction.repo";
-import { UserScoreRepository } from "db/repositories/userScore.repo";
-import { count, forkJoin, from, last, lastValueFrom, map, mergeMap, of } from "rxjs";
+import { count, forkJoin, from, last, lastValueFrom, map, mergeMap } from "rxjs";
+
+import { STATUS as BOARD_STATUS } from "../../db/models/leaderboard.model";
+import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
+import { MatchRepository, MatchRepositoryImpl } from "../../db/repositories/match.repo";
+import { PredictionRepository, PredictionRepositoryImpl } from "../../db/repositories/prediction.repo";
+import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositories/userScore.repo";
 import { Match } from "../../db/models/match.model";
 
 export interface LeaderboardProcessor {
@@ -12,6 +13,22 @@ export interface LeaderboardProcessor {
 }
 
 export class LeaderboardProcessorImpl implements LeaderboardProcessor {
+  public static getInstance(
+    matchRepo?: MatchRepository,
+    predictionRepo?: PredictionRepository,
+    leaderboardRepo?: LeaderboardRepository,
+    userScoreRepo?: UserScoreRepository,
+  ) {
+    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance();
+    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance(matchRepoImpl);
+    const leaderboardRepoImpl = leaderboardRepo ?? LeaderboardRepositoryImpl.getInstance();
+    const userScoreRepoImpl = userScoreRepo ?? UserScoreRepositoryImpl.getInstance();
+
+    return new LeaderboardProcessorImpl(
+      matchRepoImpl, predictionRepoImpl, leaderboardRepoImpl, userScoreRepoImpl
+    );
+  }
+
   constructor(
     private matchRepo: MatchRepository,
     private predictionRepo: PredictionRepository,
@@ -19,7 +36,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     private userScoreRepo: UserScoreRepository,
   ) { }
 
-  updateScores(match: Match): any {
+  updateScores(match: Match): Promise<number> {
     const { season, gameRound } = match;
     const seasonLeaderboard$ = this.leaderboardRepo.findOrCreateSeasonLeaderboardAndUpdate$(
       season, { status: BOARD_STATUS.UPDATING_SCORES });
@@ -82,6 +99,44 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
   }
 
   updateRankings(match: Match): Promise<number> {
-    throw new Error("Method not implemented.");
+    const { season, gameRound } = match;
+
+    return lastValueFrom(
+      this.leaderboardRepo.findAllFor$({ seasonId: season, gameRoundId: gameRound })
+        .pipe(
+          mergeMap(leaderboards => from(leaderboards)),
+          mergeMap(leaderboard => {
+            return this.leaderboardRepo.findByIdAndUpdate$(leaderboard.id!, {
+              status: BOARD_STATUS.UPDATING_RANKINGS
+            })
+          }),
+          mergeMap(leaderboard => {
+            return this.userScoreRepo.findByLeaderboardIdOrderByPoints$(leaderboard.id!)
+              .pipe(
+                mergeMap(userScores => from(userScores)),
+                mergeMap((userScore, index) => {
+                  const previousPosition = userScore.positionNew || 0;
+                  const positionOld = previousPosition;
+                  const positionNew = index + 1;
+                  return this.userScoreRepo.findByIdAndUpdate$(userScore.id!, {
+                    positionNew,
+                    positionOld,
+                  })
+                }),
+                last(),
+                mergeMap(() => {
+                  return this.leaderboardRepo.findByIdAndUpdate$(leaderboard.id!, {
+                    status: BOARD_STATUS.RANKINGS_UPDATED
+                  })
+                })
+              )
+          }),
+          count(),
+          mergeMap(leaderboardsUpdated => {
+            return this.matchRepo.findByIdAndUpdate$(match.id!, { allLeaderboardRankingsUpdated: true })
+              .pipe(map(() => leaderboardsUpdated))
+          })
+        )
+    )
   }
 }
