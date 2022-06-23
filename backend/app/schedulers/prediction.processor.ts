@@ -1,4 +1,4 @@
-import { from, mergeMap, Observable } from 'rxjs';
+import { from, mergeMap, Observable, of } from 'rxjs';
 import { count, map } from 'rxjs/operators';
 import { Match } from '../../db/models';
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
@@ -36,9 +36,17 @@ export class PredictionProcessorImpl implements PredictionProcessor {
       .pipe(
         mergeMap(users => from(users)),
         mergeMap(user => {
-          return this.predictionRepo.findOrCreatePredictions$(user, gameRound)
+          return this.predictionRepo.findOrCreateJoker$(user, gameRound)
+            .pipe(
+              mergeMap(jokerPrediction => {
+                const matchId = match.id!
+                if (jokerPrediction.match.toString() == matchId) {
+                  return of(jokerPrediction)
+                }
+                return this.predictionRepo.findOneOrCreate$(user, matchId)
+              })
+            )
         }),
-        mergeMap(predictions => from(predictions)),
         mergeMap(prediction => {
           const { choice } = prediction;
           const scorePoints = this.predictionCalculator.calculateScore(result!, choice);
