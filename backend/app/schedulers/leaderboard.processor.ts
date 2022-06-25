@@ -8,7 +8,10 @@ import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositor
 import { Match } from "../../db/models/match.model";
 
 export interface LeaderboardProcessor {
+  // todo
+  //updateScores(seasonId: string, matches: Match[]): Promise<number>;
   updateScores(match: Match): Promise<number>;
+  //updateRankings(seasonId: string, matches: Match[]): Promise<number>;
   updateRankings(match: Match): Promise<number>;
 }
 
@@ -36,6 +39,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     private userScoreRepo: UserScoreRepository,
   ) { }
 
+  // todo filterMatchesBySeason userScoresVisitedCount
   updateScores(match: Match): Promise<number> {
     const { season, gameRound } = match;
     const seasonLeaderboard$ = this.leaderboardRepo.findOrCreateSeasonLeaderboardAndUpdate$(
@@ -99,6 +103,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
   }
 
   updateRankings(match: Match): Promise<number> {
+    // todo getGameRounds from matches
     const { season, gameRound } = match;
 
     return lastValueFrom(

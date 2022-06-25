@@ -5,6 +5,7 @@ import { PredictionRepository, PredictionRepositoryImpl } from '../../db/reposit
 import PredictionCalculator from './prediction.calculator';
 
 export interface PredictionProcessor {
+  // todo seasonId: string, matches: Match[] filter matches by seasonId
   calculatePredictionPoints(match: Match): Promise<number>;
 }
 

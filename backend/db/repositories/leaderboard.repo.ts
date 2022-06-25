@@ -18,6 +18,8 @@ export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
   findAllFor$(
     { seasonId, gameRoundId }: { seasonId: string, gameRoundId?: string }
   ): Observable<Leaderboard[]>
+  //todo
+  //findAllAndUpdateFor$({ season: string, gameRounds: string[]})
 }
 
 export class LeaderboardRepositoryImpl
