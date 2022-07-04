@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { mergeMap, Observable, toArray } from 'rxjs';
 
 import LeaderboardModel, {
   BOARD_TYPE,
@@ -15,11 +15,10 @@ export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
     seasonId: string,
     gameRoundId: string,
     update: any): Observable<Leaderboard>;
-  findAllFor$(
-    { seasonId, gameRoundId }: { seasonId: string, gameRoundId?: string }
-  ): Observable<Leaderboard[]>
-  //todo
-  //findAllAndUpdateFor$({ season: string, gameRounds: string[]})
+  findAllFor$({ seasonId, gameRoundIds }:
+    { seasonId: string, gameRoundIds: string[] }): Observable<Leaderboard[]>
+  findAndUpdateAllFor$({ seasonId, gameRoundIds }:
+    { seasonId: string, gameRoundIds: string[] }, update: any): Observable<Leaderboard[]>
 }
 
 export class LeaderboardRepositoryImpl
@@ -31,6 +30,18 @@ export class LeaderboardRepositoryImpl
 
   constructor() {
     super(LeaderboardModel);
+  }
+
+  findAndUpdateAllFor$({ seasonId, gameRoundIds }: {
+    seasonId: string, gameRoundIds: string[]
+  }, update: any): Observable<Leaderboard[]> {
+    return this.findAllFor$({ seasonId, gameRoundIds }).pipe(
+      mergeMap(leaderboards => leaderboards),
+      mergeMap(leaderboard => {
+        return this.findByIdAndUpdate$(leaderboard.id!, update)
+      }),
+      toArray()
+    );
   }
 
   findOrCreateSeasonLeaderboardAndUpdate$(seasonId: string, update: any)
@@ -47,12 +58,12 @@ export class LeaderboardRepositoryImpl
     }, update, { upsert: true, new: true })
   }
 
-  findAllFor$({ seasonId, gameRoundId }: { seasonId: string, gameRoundId?: string })
+  findAllFor$({ seasonId, gameRoundIds }: { seasonId: string, gameRoundIds: string[] })
     : Observable<Leaderboard[]> {
     return this.findAll$({
       $or: [
-        { $and: [{ season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON }] },
-        { $and: [{ season: seasonId, gameRound: gameRoundId, boardType: BOARD_TYPE.GLOBAL_ROUND }] }
+        { season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON },
+        { gameRound: { $in: gameRoundIds }, boardType: BOARD_TYPE.GLOBAL_ROUND }
       ]
     })
   }

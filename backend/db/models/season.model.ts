@@ -17,6 +17,7 @@ export interface Season extends Entity {
   seasonEnd?: any;
   externalReference?: any;
   teams?: string[];
+  isCurrent?: boolean;
 }
 
 export interface SeasonDocument extends Season, DocumentEntity { }
@@ -46,6 +47,7 @@ export const seasonSchema = schema({
     },
   ],
   externalReference: { type: Mixed },
+  isCurrent: { type: Boolean, default: false }
 });
 
 const SeasonModel = model<SeasonDocument>('Season', seasonSchema);

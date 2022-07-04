@@ -1,4 +1,4 @@
-import { Observable, forkJoin } from 'rxjs';
+import { Observable, forkJoin, from } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { get, omit } from 'lodash';
 
@@ -16,24 +16,40 @@ import {
   MatchConverterImpl,
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { SeasonRepository, SeasonRepositoryImpl } from './season.repo';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
+  findAllFinishedForCurrentSeasons(): Observable<Match[]>
 }
 
 export class MatchRepositoryImpl
   extends BaseFootballApiRepositoryImpl<Match, MatchDocument>
   implements MatchRepository {
   public static getInstance(
-    provider: ApiProvider = ApiProvider.LIGI,
+    provider?: ApiProvider,
+    seasonRepo?: SeasonRepository
   ): MatchRepository {
-    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider));
+    const footballApiProvider = provider || seasonRepo?.FootballApiProvider || ApiProvider.LIGI;
+    const seasonRepoImpl = seasonRepo ?? SeasonRepositoryImpl.getInstance(footballApiProvider);
+
+    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(footballApiProvider), seasonRepoImpl);
   }
 
-  constructor(converter: MatchConverter) {
+  constructor(converter: MatchConverter, private seasonRepo: SeasonRepository) {
     super(MatchModel, converter);
+  }
+
+  findAllFinishedForCurrentSeasons(): Observable<Match[]> {
+    return this.seasonRepo.findAll$({ isCurrent: true })
+      .pipe(
+        mergeMap(seasons => from(seasons)),
+        mergeMap(season => {
+          return this.findAll$({ season: season.id })
+        })
+      );
   }
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {

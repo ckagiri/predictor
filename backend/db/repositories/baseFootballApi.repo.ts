@@ -10,6 +10,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
+  // todo: lowercase getter
   FootballApiProvider: ApiProvider;
   save$(obj: Entity): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;

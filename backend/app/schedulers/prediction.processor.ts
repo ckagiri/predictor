@@ -1,12 +1,13 @@
-import { count, from, lastValueFrom, map, mergeMap, of } from 'rxjs';
+import { MatchStatus } from '../../db/models/match.model';
+import { count, from, last, lastValueFrom, map, mergeMap, of } from 'rxjs';
 import { Match } from '../../db/models';
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import PredictionCalculator from './prediction.calculator';
+import { uniq } from 'lodash';
 
 export interface PredictionProcessor {
-  // todo seasonId: string, matches: Match[] filter matches by seasonId
-  calculatePredictionPoints(match: Match): Promise<number>;
+  calculatePredictionPoints(seasonId: string, matches: Match[]): Promise<number>;
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
@@ -29,36 +30,66 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) { }
 
-  public calculatePredictionPoints(match: Match): Promise<number> {
-    const { season, gameRound, result } = match;
+  public calculatePredictionPoints(seasonId: string, matchesArray: Match[]): Promise<number> {
+    const matches = matchesArray.filter(
+      m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
+    const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
 
     return lastValueFrom(
-      this.predictionRepo.distinct$('user', { season })
+      this.predictionRepo.distinct$('user', { season: seasonId })
         .pipe(
-          mergeMap(users => from(users)),
-          mergeMap(user => {
-            return this.predictionRepo.findOrCreateJoker$(user, gameRound)
+          mergeMap(userIds => from(matches)
+            .pipe(
+              map(match => ({ match, userIds }))
+            )
+          ),
+          mergeMap(({ match, userIds }) => from(gameRoundIds)
+            .pipe(
+              map(gameRoundId => ({
+                match, gameRoundId, userIds
+              }))
+            )
+          ),
+          mergeMap(({ match, gameRoundId, userIds }) => from(userIds)
+            .pipe(
+              map(userId => ({
+                match, gameRoundId, userId
+              })
+              )
+            )
+          ),
+          mergeMap(({ match, gameRoundId, userId }) => {
+            const matchId = match.id!.toString();
+            return this.predictionRepo.findOrCreateJoker$(userId, gameRoundId)
               .pipe(
                 mergeMap(jokerPrediction => {
-                  const matchId = match.id!
-                  if (jokerPrediction.match.toString() == matchId) {
+                  if (jokerPrediction.match.toString() === matchId) {
                     return of(jokerPrediction)
                   }
-                  return this.predictionRepo.findOneOrCreate$(user, matchId)
-                })
+                  return this.predictionRepo.findOneOrCreate$(userId, matchId)
+                }),
+                map(prediction => ({ match, prediction }))
               )
           }),
-          mergeMap(prediction => {
+          mergeMap(({ match, prediction }) => {
+            const { result } = match;
             const { choice } = prediction;
+
             const scorePoints = this.predictionCalculator.calculateScore(result!, choice);
             return this.predictionRepo.findByIdAndUpdate$(prediction.id!, { scorePoints })
           }),
           count(),
           mergeMap(predsUpdated => {
-            return this.matchRepo.findByIdAndUpdate$(match.id!, { allPredictionPointsCalculated: true })
-              .pipe(map(() => predsUpdated))
-          }),
+            return from(matches)
+              .pipe(
+                mergeMap(match => {
+                  return this.matchRepo.findByIdAndUpdate$(match.id!, { allPredictionPointsCalculated: true })
+                }),
+                last(),
+                map(() => predsUpdated)
+              )
+          })
         )
-    );
+    )
   }
 }

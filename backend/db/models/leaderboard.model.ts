@@ -35,8 +35,8 @@ const leaderboardSchema = schema({
   month: { type: Number, index: true },
   status: {
     type: String,
-    enum: [STATUS.UPDATING, STATUS.UPDATED],
-    default: STATUS.UPDATED,
+    enum: [Object.keys(STATUS)],
+    default: STATUS.RANKINGS_UPDATED,
   },
   boardType: {
     type: String,
