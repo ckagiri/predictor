@@ -155,3 +155,6 @@ seasons
 
 fix mongoose merge (cleanup)
 fix points resultPoints scorePoints
+
+>>>>
+update leaderboard processors to update match globalscores/rankings status

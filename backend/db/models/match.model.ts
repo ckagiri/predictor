@@ -80,6 +80,8 @@ export const matchSchema = schema({
   },
   venue: { type: String, trim: true },
   allPredictionPointsUpdated: { type: Boolean, default: false },
+  allGlobalLeaderboardScoresUpdated: { type: Boolean, default: false },
+  allGlobalLeaderboardRankingsUpdated: { type: Boolean, default: false },
   externalReference: { type: Mixed },
 });
 
