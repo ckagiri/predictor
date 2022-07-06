@@ -19,7 +19,6 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreateJoker$(
     userId: string,
     roundId: string,
-    autoPicked?: boolean,
     roundMatches?: Match[]
   ): Observable<Prediction>;
   findOne$(userId: string, matchId: string): Observable<Prediction>;
@@ -34,7 +33,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
   pickJoker$(userId: string, matchId: string): Observable<Prediction[]>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction | null>;
-  createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction>;
+  createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction[]>;
 }
 
 export class PredictionRepositoryImpl
@@ -53,7 +52,7 @@ export class PredictionRepositoryImpl
     this.matchRepo = matchRepo;
   }
 
-  createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction> {
+  createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction[]> {
     throw new Error('Method not implemented.');
   }
 
@@ -101,6 +100,7 @@ export class PredictionRepositoryImpl
                   jokers.push(currentJoker);
                 } else {
                   currentJoker.hasJoker = false;
+                  currentJoker.jokerAutoPicked = false;
 
                   newJoker.hasJoker = true;
                   newJoker.jokerAutoPicked = false;
@@ -152,7 +152,7 @@ export class PredictionRepositoryImpl
           // todo: flip withJoker predictions
           return iif(
             () => withJoker,
-            this.findOrCreateJoker$(userId, roundId, withJoker, matches),
+            this.findOrCreateJoker$(userId, roundId, matches),
             of(undefined)
           ).pipe(
             mergeMap(() => {
@@ -212,13 +212,14 @@ export class PredictionRepositoryImpl
                 return from(predictions)
                   .pipe(
                     filter(prediction => {
-                      const match = find(matches, m => m.id?.toString() === prediction.match.toString());
-                      const matchIsScheduled = match?.status === MatchStatus.SCHEDULED;
-                      return matchIsScheduled && Boolean(prediction.choice.isComputerGenerated);
+                      return Boolean(prediction.choice.isComputerGenerated);
                     }),
                     map(prediction => {
                       const isComputerGenerated = false;
                       prediction.choice = this.getRandomMatchScore(isComputerGenerated); // use VosePredictor
+                      if (prediction.hasJoker!) {
+                        prediction.jokerAutoPicked = false;
+                      }
                       return prediction;
                     }),
                     toArray(),
@@ -243,7 +244,7 @@ export class PredictionRepositoryImpl
   }
 
   findOrCreateJoker$(
-    userId: string, roundId: string, autoPicked: boolean = true, roundMatches: Match[] = []
+    userId: string, roundId: string, roundMatches: Match[] = []
   ): Observable<Prediction> {
     return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
       .pipe(
@@ -273,7 +274,7 @@ export class PredictionRepositoryImpl
                       match: jokerMatchId,
                       matchSlug: jokerMatchSlug,
                       hasJoker: true,
-                      jokerAutoPicked: autoPicked,
+                      jokerAutoPicked: true,
                       choice: randomMatchScore,
                     };
                     jokers.push(joker);
