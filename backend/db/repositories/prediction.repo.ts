@@ -34,6 +34,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction>;
   pickJoker$(userId: string, matchId: string): Observable<Prediction[]>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction | null>;
+  createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction>;
 }
 
 export class PredictionRepositoryImpl
@@ -50,6 +51,10 @@ export class PredictionRepositoryImpl
   constructor(matchRepo: MatchRepository) {
     super(PredictionModel);
     this.matchRepo = matchRepo;
+  }
+
+  createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction> {
+    throw new Error('Method not implemented.');
   }
 
   findOneAndUpdate$(userId: string, matchId: string, choice: Score): Observable<Prediction> {
@@ -93,7 +98,6 @@ export class PredictionRepositoryImpl
                 const jokers = [];
                 if (currentJoker.match.toString() === newJoker.match.toString()) {
                   currentJoker.jokerAutoPicked = false;
-
                   jokers.push(currentJoker);
                 } else {
                   currentJoker.hasJoker = false;
@@ -145,6 +149,7 @@ export class PredictionRepositoryImpl
           if (matches.length === 0) {
             return of([])
           }
+          // todo: flip withJoker predictions
           return iif(
             () => withJoker,
             this.findOrCreateJoker$(userId, roundId, withJoker, matches),
@@ -209,11 +214,11 @@ export class PredictionRepositoryImpl
                     filter(prediction => {
                       const match = find(matches, m => m.id?.toString() === prediction.match.toString());
                       const matchIsScheduled = match?.status === MatchStatus.SCHEDULED;
-                      return Boolean(prediction.choice.isComputerGenerated) && Boolean(matchIsScheduled);
+                      return matchIsScheduled && Boolean(prediction.choice.isComputerGenerated);
                     }),
                     map(prediction => {
                       const isComputerGenerated = false;
-                      prediction.choice = this.getRandomMatchScore(isComputerGenerated);
+                      prediction.choice = this.getRandomMatchScore(isComputerGenerated); // use VosePredictor
                       return prediction;
                     }),
                     toArray(),
@@ -223,7 +228,7 @@ export class PredictionRepositoryImpl
                 return iif(
                   () => Boolean(newPicks.length),
                   this.updateMany$(newPicks),
-                  of(undefined))
+                  of([]))
               }),
               mergeMap(() => {
                 return this.findAll$({
@@ -273,7 +278,7 @@ export class PredictionRepositoryImpl
                     };
                     jokers.push(joker);
                   }
-                } else if (jokerPredictions.length > 1) {
+                } else if (jokerPredictions.length > 1) { // Precautionary - this should never happen
                   // poor: use reverse for latest joker; better - use last modified
                   const [, ...otherJokers] = jokerPredictions.reverse();
                   otherJokers.forEach(j => {
@@ -313,16 +318,16 @@ export class PredictionRepositoryImpl
 
   public findOneOrCreate$(
     userId: string,
-    match: Match | string,
+    aMatch: Match | string
   ): Observable<Prediction> {
-    return (isString(match) ? this.matchRepo.findById$(match) : of(match))
+    return (isString(aMatch) ? this.matchRepo.findById$(aMatch) : of(aMatch))
       .pipe(
-        mergeMap(aMatch => {
-          if (!aMatch) {
-            return throwError(`matchId ${isString(match) ? match : match.id} not found`)
+        mergeMap(match => {
+          if (!match) {
+            return throwError(() => new Error(`matchId ${isString(aMatch) ? aMatch : aMatch.id} not found`))
           }
 
-          const { id: matchId, season, slug: matchSlug, status: matchStatus } = aMatch;
+          const { id: matchId, season, slug: matchSlug, status: matchStatus } = match;
           return this.findOne$(userId, matchId!)
             .pipe(
               mergeMap(prediction => {

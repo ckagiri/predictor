@@ -121,7 +121,7 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
   };
 }
 
-// MatchesScheduler Schedule { whenToExecute?: WhenSchedule, ri?: boolean }
+// MatchesScheduler Schedule { whenToExecute?: number, milliseconds, ri?: boolean }
 // async jobTask { running: true; await result running: false return result } // async or promise
 // scheduleJob(schedule?) { whenToExecute: 0, runImmediately: false }?
 // if job == null return
