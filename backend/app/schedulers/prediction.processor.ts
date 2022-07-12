@@ -33,8 +33,6 @@ export class PredictionProcessorImpl implements PredictionProcessor {
   public calculatePredictionPoints(seasonId: string, matchesArray: Match[]): Promise<number> {
     const matches = matchesArray.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
-    const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
-
     return lastValueFrom(
       this.predictionRepo.distinct$('user', { season: seasonId })
         .pipe(
@@ -43,31 +41,18 @@ export class PredictionProcessorImpl implements PredictionProcessor {
               map(match => ({ match, userIds }))
             )
           ),
-          mergeMap(({ match, userIds }) => from(gameRoundIds)
-            .pipe(
-              map(gameRoundId => ({
-                match, gameRoundId, userIds
-              }))
-            )
-          ),
-          mergeMap(({ match, gameRoundId, userIds }) => from(userIds)
+          mergeMap(({ match, userIds }) => from(userIds)
             .pipe(
               map(userId => ({
-                match, gameRoundId, userId
+                match, userId
               })
               )
             )
           ),
-          mergeMap(({ match, gameRoundId, userId }) => {
+          mergeMap(({ match, userId }) => {
             const matchId = match.id!.toString();
-            return this.predictionRepo.findOrCreateJoker$(userId, gameRoundId)
+            return this.predictionRepo.findOne$(userId, matchId)
               .pipe(
-                mergeMap(jokerPrediction => {
-                  if (jokerPrediction.match.toString() === matchId) {
-                    return of(jokerPrediction)
-                  }
-                  return this.predictionRepo.findOneOrCreate$(userId, matchId)
-                }),
                 map(prediction => ({ match, prediction }))
               )
           }),

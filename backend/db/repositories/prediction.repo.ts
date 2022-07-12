@@ -22,7 +22,6 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     roundMatches?: Match[]
   ): Observable<Prediction>;
   findOne$(userId: string, matchId: string): Observable<Prediction>;
-  findOneOrCreate$(userId: string, match: Match | string): Observable<Prediction>;
   findOrCreatePredictions$(
     userId: string,
     roundId: string,
@@ -53,6 +52,7 @@ export class PredictionRepositoryImpl
   }
 
   createPick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction[]> {
+    // createPreds then update pick pred then return preds
     throw new Error('Method not implemented.');
   }
 
@@ -64,13 +64,13 @@ export class PredictionRepositoryImpl
             return throwError(() => new Error(`matchId ${matchId} not found`))
           }
           if (match.status !== MatchStatus.SCHEDULED) {
-            return throwError(`${match.slug} not scheduled to be played`);
+            return throwError(() => new Error(`${match.slug} not scheduled to be played`));
           }
           return this.findOne$(userId, matchId)
         }),
         mergeMap(prediction => {
           if (!prediction) {
-            return throwError('prediction does not exist');
+            return throwError(() => new Error('prediction does not exist'));
           }
           return super.findOneAndUpdate$({ user: userId, match: matchId }, { choice, isComputerGenerated: false })
         })
@@ -82,9 +82,8 @@ export class PredictionRepositoryImpl
       .pipe(
         mergeMap(matches => {
           // findJoker(userId, roundId, matches)
-          // if (!joker) { createPredictions createJoker() }
-          // else joker
-          // 
+          // if (!joker) { findOrCreatePredictions; findJoker }
+          // remove findOrCreateJoker
           return this.findOrCreateJoker$(userId, roundId, matches)
             .pipe(
               mergeMap(currentJoker => {
@@ -293,10 +292,10 @@ export class PredictionRepositoryImpl
                     .map(m => m.id?.toString());
                   if (selectableMatchIds.length) {
                     const jokerMatchId = selectableMatchIds[Math.floor(Math.random() * selectableMatchIds.length)]!;
-                    const { slug: jokerMatchSlug } = matches.find(m => m.id?.toString() === jokerMatchId) as Match
-                    const randomMatchScore = this.getRandomMatchScore();
-                    const { season } = matches[0];
+                    const jokerMatch = matches.find(m => m.id?.toString() === jokerMatchId) as Match;
 
+                    const { season, slug: jokerMatchSlug } = jokerMatch;
+                    const randomMatchScore = this.getRandomMatchScore();
                     const joker: Prediction = {
                       user: userId,
                       season,
@@ -348,36 +347,32 @@ export class PredictionRepositoryImpl
 
   public findOneOrCreate$(
     userId: string,
-    aMatch: Match | string
+    aMatch: Match
   ): Observable<Prediction> {
-    return (isString(aMatch) ? this.matchRepo.findById$(aMatch) : of(aMatch))
+    if (!aMatch) {
+      return throwError(() => new Error('Match does not exist'))
+    }
+
+    const { id: matchId, season, slug: matchSlug, status: matchStatus } = aMatch;
+
+    return this.findOne$(userId, matchId!)
       .pipe(
-        mergeMap(match => {
-          if (!match) {
-            return throwError(() => new Error(`matchId ${isString(aMatch) ? aMatch : aMatch.id} not found`))
+        mergeMap(prediction => {
+          if (prediction) {
+            return of(prediction);
           }
 
-          const { id: matchId, season, slug: matchSlug, status: matchStatus } = match;
-          return this.findOne$(userId, matchId!)
-            .pipe(
-              mergeMap(prediction => {
-                if (prediction) {
-                  return of(prediction);
-                }
+          const pred = {
+            user: userId,
+            season,
+            match: matchId,
+            matchSlug,
+          } as Prediction;
 
-                const pred = {
-                  user: userId,
-                  season,
-                  match: matchId,
-                  matchSlug,
-                } as Prediction;
-
-                if (matchStatus === MatchStatus.SCHEDULED) {
-                  pred.choice = this.getRandomMatchScore();
-                }
-                return this.save$(pred);
-              })
-            )
+          if (matchStatus === MatchStatus.SCHEDULED) {
+            pred.choice = this.getRandomMatchScore();
+          }
+          return this.save$(pred);
         })
       )
   }
