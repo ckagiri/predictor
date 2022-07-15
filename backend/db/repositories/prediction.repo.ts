@@ -19,7 +19,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
   findOrCreatePicks$(userId: string, roundId: string, withJoker?: boolean): Observable<Prediction[]>;
   pickJoker$(userId: string, roundId: string, matchId: string): Observable<Prediction[]>;
-  makePick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction>;
+  createOrUpdatePick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction | undefined>;
 }
 
@@ -39,7 +39,7 @@ export class PredictionRepositoryImpl
     this.matchRepo = matchRepo;
   }
 
-  makePick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction> {
+  createOrUpdatePick$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction> {
     return this.matchRepo.findOne$({ id: matchId, gameRound: roundId })
       .pipe(
         mergeMap(match => {
