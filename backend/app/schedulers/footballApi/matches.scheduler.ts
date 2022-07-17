@@ -120,18 +120,3 @@ export class MatchesScheduler extends EventEmitter implements Scheduler {
     return nextUpdate.diff(moment());
   };
 }
-
-// MatchesScheduler Schedule { whenToExecute?: number, milliseconds, ri?: boolean }
-// async jobTask { running: true; await result running: false return result } // async or promise
-// scheduleJob(schedule?) { whenToExecute: 0, runImmediately: false }?
-// if job == null return
-// if runImmediately { this.jobTask() }
-// this.job = new schedule.Job(this.jobTask)
-// this.job.runOnDate(new Date(now + whenToExecuteMs)) }
-// this.job.on('success', this.jobSuccess)
-// this.mediator.on('matches', this.runJob } { this.jobTask().then((result) => this.jobSuccess(result, true)) }
-// jobSuccess { job.schedule (nextUpdate, reschedule = false) }
-// nextUpdate(result) { }
-// cancelJob
-//   this.job.cancel; this.job = null;
-//
