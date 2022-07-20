@@ -4,6 +4,7 @@ type SchedulerOptions = {
   runImmediately?: boolean,
 };
 
+const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000; // 7 hours
 class MatchesScheduler {
   private job: Job = new schedule.Job('Matches Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
@@ -12,20 +13,20 @@ class MatchesScheduler {
 
 
   constructor() {
-    this.job.on('success', answer => {
-      this.jobSuccess(answer);
+    this.job.on('success', result => {
+      this.jobSuccess(result);
     });
     this.job.on('scheduled', () => {
-      console.log('sche')
+      console.log('scheduled for ??'); // nice to have
     })
   }
 
-  scheduleJob({ whenToExecute, runImmediately = false }: SchedulerOptions) {
+  scheduleJob({ whenToExecute = DEFAULT_INTERVAL, runImmediately = false }: SchedulerOptions) {
     if (this.jobScheduled) throw new Error('Job already sheduled.');
     if (runImmediately) {
       console.log('runImmediately + scheduleJob in 2s');
-      this.jobTask().then(() => {
-        this.job.runOnDate(new Date(Date.now() + whenToExecute));
+      this.jobTask().then(result => {
+        this.jobSuccess(result);
       });
     } else {
       console.log('scheduleJob');
@@ -44,6 +45,7 @@ class MatchesScheduler {
   }
 
   cancelJob() {
+    this.job.cancel();
     this.jobScheduled = false;
   }
 
@@ -57,7 +59,6 @@ class MatchesScheduler {
       console.log('schedule again in 3s')
       this.job.schedule(nextUpdate)
       this.runJob();
-
     }
   }
 
@@ -69,16 +70,16 @@ class MatchesScheduler {
   runJob() {
     if (this.jobRescheduled) return;
     console.log('run job')
-    this.jobTask().then(() => {
+    return this.jobTask().then(result => {
       this.jobRescheduled = true;
-      this.jobSuccess('barfoo', true);
+      this.jobSuccess(result, true);
     });
   }
 }
 
 // runImmediately task - which task
-const ms = new MatchesScheduler();
-ms.scheduleJob({ whenToExecute: 2000, runImmediately: true });
+const matchesScheduler = new MatchesScheduler();
+matchesScheduler.scheduleJob({ whenToExecute: 2000, runImmediately: true });
 // (async () => { await new Promise(resolve => setTimeout(resolve, 6000)); })();
 // ms.runJob()
 // MatchesScheduler Schedule { whenToExecute?: number, milliseconds, ri?: boolean }
