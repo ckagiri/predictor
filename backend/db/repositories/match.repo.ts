@@ -24,18 +24,14 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
   findAllFinishedForCurrentSeasons(): Observable<Match[]>
 }
-
 export class MatchRepositoryImpl
   extends BaseFootballApiRepositoryImpl<Match, MatchDocument>
   implements MatchRepository {
   public static getInstance(
-    provider?: ApiProvider,
-    seasonRepo?: SeasonRepository
+    provider: ApiProvider = ApiProvider.LIGI,
+    seasonRepoImpl: SeasonRepository = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI)
   ): MatchRepository {
-    const footballApiProvider = provider || seasonRepo?.FootballApiProvider || ApiProvider.LIGI;
-    const seasonRepoImpl = seasonRepo ?? SeasonRepositoryImpl.getInstance(footballApiProvider);
-
-    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(footballApiProvider), seasonRepoImpl);
+    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider), seasonRepoImpl);
   }
 
   constructor(converter: MatchConverter, private seasonRepo: SeasonRepository) {
