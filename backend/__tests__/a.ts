@@ -425,7 +425,7 @@ class MatchBuilder implements Builder<Match> {
     this.built.awayTeam = { id: awayTeamId!, name: awayTeamName, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
 
     this.built.slug = `${this.built.homeTeam?.slug}-${this.built.awayTeam?.slug}`;
-    this.built.gameRound = this.gameRound.id;
+    this.built.gameRound = this.gameRound.id!;
     this.match = await db.Match.create(this.built);
 
     await Promise.all(

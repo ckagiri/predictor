@@ -35,16 +35,13 @@ const leaderboardSchema = schema({
   month: { type: Number, index: true },
   status: {
     type: String,
-    enum: [Object.keys(STATUS)],
+    enum: Object.values(STATUS),
     default: STATUS.RANKINGS_UPDATED,
   },
   boardType: {
     type: String,
     required: true,
-    enum: [
-      BOARD_TYPE.GLOBAL_SEASON,
-      BOARD_TYPE.GLOBAL_ROUND,
-    ],
+    enum: Object.values(BOARD_TYPE),
   },
   userCount: { type: Number },
   lastStatusUpdate: { type: Schema.Types.Date },

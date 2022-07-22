@@ -65,7 +65,7 @@ export class AfdMatchConverter implements MatchConverter {
               id: data.id,
             },
           },
-        };
+        } as Match;
       },
     );
   }
