@@ -139,7 +139,7 @@ competitions ->
 api/game -> api/game/competitions
 api/game/competitions/:competition-slug
 api/game/competitions/:competition-slug/:season-slug
-api/game/competitions/:competition-slug/:season-slug/round-slug
+api/game/competitions/:competition-slug/:season-slug/round-slug or round-position
 getCompetition -> apiCompetition
 getSeason -> gameSeason
 getRound -> gameRound
@@ -158,3 +158,6 @@ fix points resultPoints scorePoints
 
 >>>>
 update leaderboard processors to update match globalscores/rankings status
+
+>>>>
+handle client-side filters

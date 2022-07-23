@@ -13,7 +13,8 @@ import {
 } from '../../../db/repositories/gameRound.repo';
 import { isMongoId } from '../utils';
 import { Match } from '../../../db/models/match.model';
-import * as _ from 'lodash';
+import { Season } from '../../../db/models/season.model';
+import { lastValueFrom } from 'rxjs';
 
 export class MatchesController {
   public static getInstance(
@@ -29,9 +30,9 @@ export class MatchesController {
   }
 
   constructor(
-    private matchRepo?: MatchRepository,
-    private gameRoundRepo?: GameRoundRepository,
-    private seasonRepo?: SeasonRepository,
+    private matchRepo: MatchRepository,
+    private gameRoundRepo: GameRoundRepository,
+    private seasonRepo: SeasonRepository,
   ) { }
 
   public getMatches = async (req: Request, res: Response) => {
@@ -40,6 +41,7 @@ export class MatchesController {
       const seasonSlug = req.params.season;
       const roundSlugOrPosition = req.params.gameround;
 
+      //todo: handle filters
       if (!competitionSlug) {
         throw new Error('competition slug is required');
       }
@@ -47,11 +49,14 @@ export class MatchesController {
         throw new Error('season slug is required');
       }
 
-      const season = await this.seasonRepo?.findOne$({
-        $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
-      }).toPromise();
+      const season: Season = await lastValueFrom(
+        this.seasonRepo.findOne$({
+          $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }]
+        })
+      );
 
-      const gameRound = await this.gameRoundRepo?.findOne$({
+      // Todo: check if number
+      const gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
         $or: [
           {
             $and: [{ season: season?.id }, { slug: roundSlugOrPosition }],
@@ -60,11 +65,11 @@ export class MatchesController {
             $and: [{ season: season?.id }, { position: parseInt(roundSlugOrPosition, 10) || 0 }],
           },
         ],
-      }).toPromise();
+      }));
 
-      const matches = await this.matchRepo?.findAll$(
-        { season: season?.id, gameRound: gameRound?.id }
-      ).toPromise();
+      const matches = await lastValueFrom(this.matchRepo.findAll$({
+        season: season?.id, gameRound: gameRound?.id
+      }));
       res.status(200).json(matches);
     } catch (error) {
       res.status(500).send(error);
@@ -74,12 +79,11 @@ export class MatchesController {
   public getMatch = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let match: Match | undefined;
+      let match: Match;
       if (isMongoId(id)) {
-        match = await this.matchRepo?.findById$(id).toPromise();
+        match = await lastValueFrom(this.matchRepo.findById$(id));
       } else {
-        const slug = id;
-        match = await this.matchRepo?.findOne$({ slug }).toPromise();
+        match = await lastValueFrom(this.matchRepo.findOne$({ slug: id }));
       }
       res.status(200).json(match);
     } catch (error) {

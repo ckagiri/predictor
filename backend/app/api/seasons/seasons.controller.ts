@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { lastValueFrom } from 'rxjs';
 import {
   SeasonRepositoryImpl,
   SeasonRepository,
@@ -7,8 +8,8 @@ import { isMongoId } from '../utils';
 import { Season } from '../../../db/models/season.model';
 
 export class SeasonsController {
-  public static getInstance() {
-    return new SeasonsController(SeasonRepositoryImpl.getInstance());
+  public static getInstance(seasonRepo?: SeasonRepository) {
+    return new SeasonsController(seasonRepo ?? SeasonRepositoryImpl.getInstance());
   }
 
   constructor(private seasonRepo: SeasonRepository) { }
@@ -16,22 +17,11 @@ export class SeasonsController {
   public getSeasons = async (req: Request, res: Response) => {
     try {
       const filter = req.query.filter ? JSON.parse(req.query.filter as any) : {};
-      const competition = req.params.competition || req.query.competition || filter.competition;
-      let seasons: Season[] | undefined = [];
+      const competition = req.params.competition || filter.competition;
       if (!competition) {
         throw new Error('competition id or slug is required');
       }
-      if (isMongoId(competition)) {
-        seasons = await this.seasonRepo
-          .findAll$({ 'competition.id': competition })
-          .toPromise();
-      } else {
-        seasons = await this.seasonRepo
-          .findAll$({ 'competition.slug': competition })
-          .toPromise();
-      }
-      const count = seasons?.length!;
-      res.header('Content-Range', `Seasons 0-${count - 1}/${count}`);
+      const seasons = await lastValueFrom(this.seasonRepo.findAll$({ 'competition.slug': competition }));
       return res.status(200).json(seasons);
     } catch (error) {
       return res.status(500).send(error);
@@ -43,10 +33,9 @@ export class SeasonsController {
       const id = req.params.id;
       let season: Season | undefined;
       if (isMongoId(id)) {
-        season = await this.seasonRepo.findById$(id).toPromise();
+        season = await lastValueFrom(this.seasonRepo.findById$(id));
       } else {
-        const slug = id;
-        season = await this.seasonRepo.findOne$({ slug }).toPromise();
+        season = await lastValueFrom(this.seasonRepo.findOne$({ slug: id }));
       }
       if (season) {
         return res.status(200).json(season);

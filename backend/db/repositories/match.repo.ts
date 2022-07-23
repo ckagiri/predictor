@@ -29,7 +29,7 @@ export class MatchRepositoryImpl
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
-    seasonRepoImpl: SeasonRepository = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI)
+    seasonRepoImpl: SeasonRepository = SeasonRepositoryImpl.getInstance(provider)
   ): MatchRepository {
     return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider), seasonRepoImpl);
   }

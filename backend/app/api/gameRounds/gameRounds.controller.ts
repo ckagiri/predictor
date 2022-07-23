@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { lastValueFrom } from 'rxjs';
 import {
   SeasonRepository,
   SeasonRepositoryImpl,
@@ -11,8 +12,13 @@ import { isMongoId } from '../utils';
 import { GameRound } from '../../../db/models/gameRound.model';
 
 export class GameRoundsController {
-  public static getInstance() {
-    return new GameRoundsController(SeasonRepositoryImpl.getInstance(), GameRoundRepositoryImpl.getInstance());
+  public static getInstance(
+    seasonRepo?: SeasonRepository, gameRoundRepo?: GameRoundRepository
+  ) {
+    return new GameRoundsController(
+      seasonRepo ?? SeasonRepositoryImpl.getInstance(),
+      gameRoundRepo ?? GameRoundRepositoryImpl.getInstance()
+    );
   }
 
   constructor(private seasonRepo: SeasonRepository, private gameRoundRepo: GameRoundRepository) { }
@@ -29,13 +35,11 @@ export class GameRoundsController {
         throw new Error('season slug is required');
       }
 
-      const season = await this.seasonRepo.findOne$({
+      const season = await lastValueFrom(this.seasonRepo.findOne$({
         $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
-      }).toPromise();
+      }));
 
-      const gameRounds = await this.gameRoundRepo
-        .findAll$({ season: season?.id })
-        .toPromise();
+      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season?.id }));
       res.status(200).json(gameRounds);
     } catch (error) {
       res.status(500).send(error);
@@ -45,27 +49,27 @@ export class GameRoundsController {
   public getGameRound = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let gameRound: GameRound | undefined;
+      let gameRound: GameRound;
       if (isMongoId(id)) {
-        gameRound = await this.gameRoundRepo.findById$(id).toPromise();
+        gameRound = await lastValueFrom(this.gameRoundRepo.findById$(id));
       } else {
         const competitionSlug = req.params.competition;
         const seasonSlug = req.params.season;
 
-        const season = await this.seasonRepo.findOne$({
+        const season = await lastValueFrom(this.seasonRepo.findOne$({
           $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }],
-        }).toPromise();
+        }));
 
-        gameRound = await this.gameRoundRepo.findOne$({
+        gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
           $or: [
             {
-              $and: [{ season: season?.id }, { slug: id }],
+              $and: [{ season: season.id }, { slug: id }],
             },
             {
-              $and: [{ season: season?.id }, { position: parseInt(id, 10) || 0 }],
+              $and: [{ season: season.id }, { position: parseInt(id, 10) || 0 }],
             },
           ],
-        }).toPromise();
+        }));
       }
       res.status(200).json(gameRound);
     } catch (error) {

@@ -15,29 +15,6 @@ export interface User extends Entity {
   local?: {
     password: string;
   };
-  google?: {
-    id: string;
-    token: string;
-    email: string;
-    name: string;
-    imageUrl: string;
-    profileUrl: string;
-  };
-  facebook?: {
-    id: string;
-    token: string;
-    email: string;
-    name: string;
-    imageUrl: string;
-    profileUrl: string;
-  };
-  twitter?: {
-    id: string;
-    token: string;
-    displayName: string;
-    username: string;
-    imageUrl: string;
-  };
 }
 
 export interface UserDocument extends User, DocumentEntity {
@@ -55,32 +32,6 @@ const userSchema = schema({
   isAdmin: { type: Boolean, default: false },
   phone: { type: String },
   imageUrl: { type: String },
-  google: {
-    id: { type: String },
-    token: { type: String },
-    email: { type: String },
-    name: { type: String },
-    imageUrl: { type: String },
-    profileUrl: { type: String },
-    required: false,
-  },
-  facebook: {
-    id: { type: String },
-    token: { type: String },
-    email: { type: String },
-    name: { type: String },
-    imageUrl: { type: String },
-    profileUrl: { type: String },
-    required: false,
-  },
-  twitter: {
-    id: { type: String },
-    token: { type: String },
-    displayName: { type: String },
-    username: { type: String },
-    imageUrl: { type: String },
-    required: false,
-  },
 });
 
 userSchema.pre('save', function (next) {
