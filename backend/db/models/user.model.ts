@@ -22,7 +22,7 @@ export interface UserDocument extends User, DocumentEntity {
 }
 
 const userSchema = schema({
-  email: { type: String, required: true, unique: true, lowercase: true },
+  email: { type: String, required: false, lowercase: true },
   local: {
     password: { type: Schema.Types.String },
     required: false,

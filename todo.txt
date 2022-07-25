@@ -161,3 +161,11 @@ update leaderboard processors to update match globalscores/rankings status
 
 >>>>
 handle client-side filters
+
+chai-assertions-count
+
+crypto 
+passport
+express-jwt
+passport-local
+jsonwebtoken
