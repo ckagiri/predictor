@@ -5,15 +5,11 @@ export interface Score {
 }
 
 export interface ScorePoints {
-  points: number;
-  resultPoints: number;
-  scorePoints: number;
   correctMatchOutcomePoints: number;
   exactGoalDifferencePoints: number;
   closeMatchScorePoints: number;
   exactTeamScorePoints: number;
   exactMatchScorePoints: number;
-  [key: string]: number;
 }
 
 export interface Odds {

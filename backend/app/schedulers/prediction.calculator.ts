@@ -6,10 +6,7 @@ export class PredictionCalculator {
   }
 
   public calculateScore(result: Score, choice: Score): ScorePoints {
-    const scorePoints: ScorePoints = {
-      points: 0,
-      resultPoints: 0,
-      scorePoints: 0,
+    const points: ScorePoints = {
       correctMatchOutcomePoints: 0,
       exactGoalDifferencePoints: 0,
       closeMatchScorePoints: 0,
@@ -25,47 +22,40 @@ export class PredictionCalculator {
       result.goalsAwayTeam,
     );
     if (choiceOutcome === resultOutcome) {
-      scorePoints.correctMatchOutcomePoints = 7;
-      scorePoints.resultPoints += 7;
+      points.correctMatchOutcomePoints = 7;
     }
 
     const choiceGd = choice.goalsHomeTeam - choice.goalsAwayTeam;
     const resultGd = result.goalsHomeTeam - result.goalsAwayTeam;
     if (choiceGd === resultGd) {
-      scorePoints.exactGoalDifferencePoints = 1;
-      scorePoints.resultPoints += 1;
+      points.exactGoalDifferencePoints = 1;
     }
 
     const homeGoalsGd = Math.abs(choice.goalsHomeTeam - result.goalsHomeTeam);
     const awayGoalsGd = Math.abs(choice.goalsAwayTeam - result.goalsAwayTeam);
     if (homeGoalsGd === 0 || awayGoalsGd === 0) {
       if (homeGoalsGd === 1 || awayGoalsGd === 1) {
-        scorePoints.closeMatchScorePoints = 1;
-        scorePoints.scorePoints += 1;
+        points.closeMatchScorePoints = 1;
       }
     }
 
     if (choice.goalsHomeTeam === result.goalsHomeTeam) {
-      scorePoints.exactTeamScorePoints += 1;
-      scorePoints.scorePoints += 1;
+      points.exactTeamScorePoints += 1;
     }
 
     if (choice.goalsAwayTeam === result.goalsAwayTeam) {
-      scorePoints.exactTeamScorePoints += 1;
-      scorePoints.scorePoints += 1;
+      points.exactTeamScorePoints += 1;
     }
 
     if (
       choice.goalsHomeTeam === result.goalsHomeTeam &&
       choice.goalsAwayTeam === result.goalsAwayTeam
     ) {
-      scorePoints.exactMatchScorePoints = 6;
-      scorePoints.scorePoints += 6;
+      points.exactMatchScorePoints = 6;
     }
 
 
-    scorePoints.points = scorePoints.resultPoints + scorePoints.scorePoints;
-    return scorePoints;
+    return points;
   }
 }
 

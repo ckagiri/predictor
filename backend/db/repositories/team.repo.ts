@@ -41,7 +41,6 @@ export class TeamRepositoryImpl
         ) => {
           SeasonModel.findOne({ _id: seasonId })
             .populate('teams', '-__v -externalReference')
-            .lean()
             .exec((err, season) => {
               if (err) { reject(err); }
               if (!season) {

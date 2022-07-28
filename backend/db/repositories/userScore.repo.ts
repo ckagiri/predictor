@@ -8,7 +8,7 @@ import UserScoreModel, {
 } from '../models/userScore.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
-type FindOneQuery = {
+type Query = {
   leaderboardId: string,
   userId: string,
 }
@@ -20,7 +20,7 @@ type Metadata = {
 }
 export interface UserScoreRepository extends BaseRepository<UserScore> {
   findScoreAndUpsert$(
-    query: FindOneQuery,
+    query: Query,
     predictionPoints: ScorePoints,
     rest: Metadata
   ): Observable<UserScore>;
@@ -42,15 +42,12 @@ export class UserScoreRepositoryImpl
   }
 
   findScoreAndUpsert$(
-    query: FindOneQuery,
+    query: Query,
     predictionPoints: ScorePoints,
     rest: Metadata
   ): Observable<UserScore> {
     const { leaderboardId, userId } = query;
     const {
-      points,
-      resultPoints,
-      scorePoints,
       correctMatchOutcomePoints,
       exactGoalDifferencePoints,
       closeMatchScorePoints,
@@ -58,33 +55,38 @@ export class UserScoreRepositoryImpl
       exactMatchScorePoints,
     } = predictionPoints;
     const { matchId, predictionId, hasJoker } = rest;
+    const resultPoints = correctMatchOutcomePoints + exactGoalDifferencePoints;
+    const scorePoints = closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
+    const points = resultPoints + scorePoints;
 
     const score: UserScore = {
       leaderboard: leaderboardId,
       user: userId,
-      points,
-      resultPoints,
-      scorePoints,
       correctMatchOutcomePoints,
       exactTeamScorePoints,
       exactMatchScorePoints,
       closeMatchScorePoints,
       exactGoalDifferencePoints,
+      resultPoints,
+      scorePoints,
+      points,
     };
 
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
       mergeMap(userScore => {
-        if (userScore === null) {
+        if (userScore == null) {
           score.matches = [matchId];
           score.predictions = [predictionId];
           score.matchesPredicted = 1;
-          score.pointsExcludingJoker = points;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
           score.closeMatchScores = closeMatchScorePoints;
           score.exactMatchScores = exactMatchScorePoints / 6;
+          score.resultPoints = resultPoints;
+          score.scorePoints = scorePoints;
+          score.points = points;
+          score.pointsExcludingJoker = points;
 
           if (hasJoker) {
-            score.points *= 2;
             score.correctMatchOutcomePoints *= 2;
             score.exactGoalDifferencePoints *= 2;
             score.exactMatchScorePoints *= 2;
@@ -93,6 +95,7 @@ export class UserScoreRepositoryImpl
 
             score.resultPoints *= 2;
             score.scorePoints *= 2;
+            score.points *= 2;
           }
 
           return this.insert$(score);
@@ -103,53 +106,46 @@ export class UserScoreRepositoryImpl
             return of(userScore);
           }
 
-          userScore.correctMatchOutcomePoints += hasJoker
-            ? correctMatchOutcomePoints * 2
-            : correctMatchOutcomePoints;
-          userScore.exactGoalDifferencePoints += hasJoker
-            ? exactGoalDifferencePoints * 2
-            : exactGoalDifferencePoints;
-          userScore.closeMatchScorePoints += hasJoker
-            ? closeMatchScorePoints * 2
-            : closeMatchScorePoints;
-          userScore.exactTeamScorePoints += hasJoker
-            ? exactTeamScorePoints * 2
-            : exactTeamScorePoints;
-          userScore.exactMatchScorePoints += hasJoker
-            ? exactMatchScorePoints * 2
-            : exactMatchScorePoints;
+          userScore.correctMatchOutcomePoints += hasJoker ?
+            correctMatchOutcomePoints * 2 : correctMatchOutcomePoints;
+          userScore.exactGoalDifferencePoints += hasJoker ?
+            exactGoalDifferencePoints * 2 : exactGoalDifferencePoints;
+          userScore.closeMatchScorePoints += hasJoker ?
+            closeMatchScorePoints * 2 : closeMatchScorePoints;
+          userScore.exactTeamScorePoints += hasJoker ?
+            exactTeamScorePoints * 2 : exactTeamScorePoints;
+          userScore.exactMatchScorePoints += hasJoker ?
+            exactMatchScorePoints * 2 : exactMatchScorePoints;
+
+          userScore.resultPoints += hasJoker ? resultPoints * 2 : resultPoints;
+          userScore.scorePoints += hasJoker ? scorePoints * 2 : scorePoints;
+          userScore.points += hasJoker ? points * 2 : points;
 
           userScore.pointsExcludingJoker! += points;
           userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
           userScore.closeMatchScores! += closeMatchScorePoints;
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
 
-          const resultPoints = correctMatchOutcomePoints + exactGoalDifferencePoints;
-          const scorePoints = closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
-          userScore.resultPoints += resultPoints;
-          userScore.scorePoints += scorePoints;
-          userScore.points += (resultPoints + scorePoints);
-
-          return this.findByIdAndUpdate$(userScore.id!, {
-            $set: {
-              resultPoints: userScore.resultPoints,
-              scorePoints: userScore.scorePoints,
-              points: userScore.points,
-              correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
-              exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
-              closeMatchScorePoints: userScore.closeMatchScorePoints,
-              exactTeamScorePoints: userScore.exactTeamScorePoints,
-              exactMatchScorePoints: userScore.exactMatchScorePoints,
-              pointsExcludingJoker: userScore.pointsExcludingJoker,
-              correctMatchOutcomes: userScore.correctMatchOutcomes,
-              closeMatchScores: userScore.closeMatchScores,
-              exactMatchScores: userScore.exactMatchScores,
-            },
-            $inc: { matchesPredicted: 1 },
-            $push: { matches: matchId, predictions: predictionId },
-          });
         }
-      }),
+        return this.findByIdAndUpdate$(userScore.id!, {
+          $set: {
+            resultPoints: userScore.resultPoints,
+            scorePoints: userScore.scorePoints,
+            points: userScore.points,
+            correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
+            exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
+            closeMatchScorePoints: userScore.closeMatchScorePoints,
+            exactTeamScorePoints: userScore.exactTeamScorePoints,
+            exactMatchScorePoints: userScore.exactMatchScorePoints,
+            pointsExcludingJoker: userScore.pointsExcludingJoker,
+            correctMatchOutcomes: userScore.correctMatchOutcomes,
+            closeMatchScores: userScore.closeMatchScores,
+            exactMatchScores: userScore.exactMatchScores,
+          },
+          $inc: { matchesPredicted: 1 },
+          $push: { matches: matchId, predictions: predictionId },
+        });
+      })
     );
   }
 
