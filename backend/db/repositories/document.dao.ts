@@ -4,6 +4,13 @@ import { omit } from 'lodash';
 
 import { DocumentEntity, Entity } from '../models/base.model';
 
+const transform = (doc: any) => {
+  doc.id = doc._id.toString();
+  delete doc._id;
+  delete doc.__v;
+  return doc;
+};
+
 export class DocumentDao<T extends DocumentEntity> {
   protected Model: Model<T>;
 
@@ -94,7 +101,7 @@ export class DocumentDao<T extends DocumentEntity> {
     options?: any,
   ): Promise<T[]> {
     return this.Model.find(conditions, projection, options)
-      .lean()
+      .lean({ transform })
       .exec() as Promise<T[]>;
   }
 
@@ -184,17 +191,17 @@ export class DocumentDao<T extends DocumentEntity> {
           const [start, end] = range;
           query = query.skip(start).limit(end - start);
         }
-        const result = await query.lean().exec();
+        const result = await query.lean({ transform }).exec();
         return Promise.resolve({ result, count });
       }) as Promise<{ result: T[]; count: number }>;
   }
 
   public findOne(conditions: any, projection?: any) {
-    return this.Model.findOne(conditions, projection).exec() as Promise<T>;
+    return this.Model.findOne(conditions, projection).lean({ transform }).exec() as Promise<T>;
   }
 
   public findById(id: string) {
-    return this.Model.findById(id).exec() as Promise<T>;
+    return this.Model.findById(id).lean({ transform }).exec() as Promise<T>;
   }
 
   public findByIdAndUpdate(

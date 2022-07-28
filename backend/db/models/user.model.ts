@@ -32,7 +32,7 @@ const userSchema = schema({
   isAdmin: { type: Boolean, default: false },
   phone: { type: String },
   imageUrl: { type: String },
-});
+}) as Schema<UserDocument>;
 
 userSchema.pre('save', function (next) {
   const user = this as UserDocument;
