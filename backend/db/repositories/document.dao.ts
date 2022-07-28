@@ -184,7 +184,7 @@ export class DocumentDao<T extends DocumentEntity> {
           const [start, end] = range;
           query = query.skip(start).limit(end - start);
         }
-        const result = await query.exec();
+        const result = await query.lean().exec();
         return Promise.resolve({ result, count });
       }) as Promise<{ result: T[]; count: number }>;
   }

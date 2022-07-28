@@ -1,13 +1,17 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose, { ConnectOptions } from 'mongoose';
+import passport from 'passport'
 import * as http from 'http';
-import routes from './api/routes';
 
-async function startServer(): Promise<http.Server> {
-  if (!process.env.NODE_ENV || !process.env.PORT || !process.env.MONGO_URI) {
+import { getLocalStrategy } from './api/auth/passport';
+import errorMiddleware from './api/auth/error.middleware';
+import router from './api/routes';
+
+async function startServer({ port = process.env.PORT } = {}): Promise<http.Server> {
+  if (!process.env.NODE_ENV || !process.env.MONGO_URI) {
     console.error(
-      'ENV variables are missing.',
+      'NODE_ENV or MONGO_URI ENV variables missing.',
       'Verify that you have set them directly or in a .env file.',
     );
     process.exit(1);
@@ -15,13 +19,13 @@ async function startServer(): Promise<http.Server> {
     console.log('Using ENV variables');
   }
 
-  const port = process.env.PORT;
   const mongoUri = process.env.MONGO_URI;
   const app = express();
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
-
-  app.use('/api', routes);
+  app.use(passport.initialize())
+  passport.use(getLocalStrategy())
+  app.use('/api', router);
+  app.use(errorMiddleware)
 
   if (process.env.NODE_ENV !== 'test') {
     await mongoose.connect(mongoUri, {

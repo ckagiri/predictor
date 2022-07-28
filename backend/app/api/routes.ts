@@ -1,4 +1,5 @@
 import express from 'express';
+import authRouter from './auth/auth.router';
 import { competitionsRouter } from './competitions/competitions.router';
 import { seasonsRouter } from './seasons/seasons.router';
 import { teamsRouter } from './teams/teams.router';
@@ -7,6 +8,7 @@ import { gameRoundsRouter } from './gameRounds/gameRounds.router';
 
 const router = express.Router();
 
+router.use('/auth', authRouter);
 router.use('/competitions', competitionsRouter);
 router.use('/seasons', seasonsRouter);
 router.use('/gamerounds', gameRoundsRouter);

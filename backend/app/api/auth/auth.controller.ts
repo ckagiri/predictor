@@ -1,15 +1,16 @@
 import passport from 'passport'
 import { Request, Response, NextFunction } from 'express';
-import User, { User as IUser } from '../../../db/models/user.model';
-import { getUserToken, isPasswordAllowed, userToJSON } from './utils';
+import User, { User as IUser, UserDocument } from '../../../db/models/user.model';
+import { getUserToken, isPasswordAllowed, isUsernameAllowed, userToJSON } from './utils';
+import { NativeError } from "mongoose";
 
 const authUserToJSON = (user: IUser) => ({
   ...userToJSON(user),
   token: getUserToken(user),
 })
 
-export async function register(req: Request, res: Response) {
-  const { email, username, password } = req.body
+async function register(req: Request, res: Response) {
+  const { username, password } = req.body
   if (!username) {
     return res.status(400).json({ message: `username can't be blank` })
   }
@@ -19,19 +20,25 @@ export async function register(req: Request, res: Response) {
   if (!isPasswordAllowed(password)) {
     return res.status(400).json({ message: `password is not strong enough` })
   }
-  // Todo: twitter like username & validation
-  // Todo: email validation
-  const existingUser = await User.findOne({ username });
+  if (!isUsernameAllowed(username)) {
+    return res.status(400).json({ message: `username limited to 4-15 alphanumeric (except underscore) characters` })
+  }
+  let existingUser: UserDocument | null = null;
+  try {
+    existingUser = await User.findOne({ username }).exec();
+  } catch (error: unknown) {
+    res.status(500).send({ message: (<NativeError>error).message });
+  }
   if (existingUser) {
     return res.status(409).send({ message: 'Username is already taken' });
   }
-  const user = new User({ email, username, password });
-  // ...getSaltAndHash(password),
-  const newUser = await user.save();
-  return res.json({ user: authUserToJSON(newUser) })
+  const user = new User({ username, password });
+  const newUser = (await user.save()).toObject();
+  const authUser = authUserToJSON(newUser)
+  return res.json({ user: authUser })
 }
 
-export async function login(req: Request, res: Response, next: NextFunction) {
+async function login(req: Request, res: Response, next: NextFunction) {
   if (!req.body.username) {
     return res.status(400).json({ message: `username can't be blank` })
   }
@@ -63,8 +70,10 @@ function authenticate(req: Request, res: Response, next: NextFunction) {
 
 function me(req: Request, res: Response) {
   if (req.user) {
-    return res.json({ user: authUserToJSON(req['user'] as IUser) })
+    return res.json({ user: authUserToJSON(req.user) })
   } else {
     return res.status(404).send()
   }
 }
+
+export { me, login, register }

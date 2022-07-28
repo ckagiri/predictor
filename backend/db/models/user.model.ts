@@ -1,11 +1,11 @@
 import { Schema, model } from 'mongoose';
-import * as bcrypt from 'bcrypt-nodejs';
+import * as bcrypt from 'bcryptjs';
 
 import { Entity, DocumentEntity, schema } from './base.model';
 
 export interface User extends Entity {
   id?: string;
-  email: string;
+  email?: string;
   isAdmin?: boolean;
   phone?: string;
   username?: string;
@@ -39,15 +39,14 @@ userSchema.pre('save', function (next) {
   if (!user.isModified('local.password')) {
     return next();
   }
-  bcrypt.genSalt(10, (error, salt) => {
-    if (error) {
-      return next(error);
+  bcrypt.genSalt(10, (err, salt) => {
+    if (err) {
+      return next(err);
     }
     bcrypt.hash(
       user.local!.password,
       salt,
-      () => undefined,
-      (err: any, hash: any) => {
+      (err, hash) => {
         if (err) {
           return next(err);
         }
@@ -60,14 +59,10 @@ userSchema.pre('save', function (next) {
 
 userSchema.methods.comparePassword = function comparePassword(
   candidatePassword: string,
-  cb: any,
+  cb: (err: any, isMatch: any) => void,
 ) {
   bcrypt.compare(candidatePassword, this.local.password, (err, isMatch) => {
-    if (err) {
-      return cb(err);
-    } else {
-      return cb(null, isMatch);
-    }
+    cb(err, isMatch);
   });
 };
 
