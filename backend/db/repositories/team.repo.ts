@@ -1,5 +1,6 @@
-import { from, Observable, forkJoin, throwError } from 'rxjs';
+import { from, Observable, forkJoin, throwError, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
+import { merge } from 'lodash';
 import TeamModel, { Team, TeamDocument } from '../models/team.model';
 import SeasonModel from '../models/season.model';
 import {
@@ -53,32 +54,27 @@ export class TeamRepositoryImpl
     );
   }
 
-  public findByNameAndUpsert$(name: any, obj?: any): Observable<Team> {
-    // we call this method by passing an api team object or name & patch
-    // if a patch is not passed then I call it a partial update not sure why -- this not clear
-    // also when patch is not passed treat the object as an api object therefore need to convert
-    let partialUpdate = true;
-    if (obj === undefined) {
-      partialUpdate = false;
-      // maintain call structure (name, object) even though only object was passed in
-      obj = name;
-      name = obj.name;
-    }
+  public findByNameAndUpsert$(obj: any): Observable<Team> {
+    const name = obj.name;
     const query = {
       $or: [{ name }, { shortName: name }, { aliases: name }],
     };
-    if (partialUpdate) {
-      return super.findOneAndUpdate$(query, obj);
-    }
+
     return (this.converter as TeamConverter).from(obj).pipe(
       mergeMap(data => {
         const { externalReference } = data;
         delete obj.externalReference;
-        // todo: this is a special method to deal with mixed type for externalReference
-        // to avoid overwritting existing keys
-        // todo: replace _findOneAndUpsert$
-        return this._findOneAndUpsert$(query, obj, externalReference);
-      }),
+        return this.findOneAndUpsert$(query, obj)
+          .pipe(
+            mergeMap((team: Team) => {
+              if (externalReference === undefined) {
+                return of(team);
+              }
+              merge(team, { externalReference });
+              return this.insert$(team);
+            })
+          );
+      })
     );
   }
 

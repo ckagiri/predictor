@@ -160,7 +160,7 @@ export class BaseRepositoryImpl<
     options: any = { upsert: true, new: true, setDefaultsOnInsert: true },
   ): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOneAndUpdate(conditions, update, options).then(
+      this.documentDao.findOneAndUpsert(conditions, update, options).then(
         (result: T) => {
           observer.next(result);
           observer.complete();

@@ -10,8 +10,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
-  // todo: lowercase getter
-  FootballApiProvider: ApiProvider;
+  footballApiProvider: ApiProvider;
   save$(obj: Entity): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
@@ -31,7 +30,7 @@ export class BaseFootballApiRepositoryImpl<
     this.converter = converter;
   }
 
-  get FootballApiProvider() {
+  get footballApiProvider() {
     return this.converter.footballApiProvider;
   }
 
@@ -44,7 +43,7 @@ export class BaseFootballApiRepositoryImpl<
   }
 
   public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
-    const externalIdKey = `externalReference.${this.FootballApiProvider}.id`;
+    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
     if (obj === undefined) {
       obj = id;
       id = obj.id;
@@ -68,32 +67,13 @@ export class BaseFootballApiRepositoryImpl<
   }
 
   public findByExternalId$(id: string | number): Observable<T> {
-    const externalIdKey = `externalReference.${this.FootballApiProvider}.id`;
+    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
     return this.findOne$({ [externalIdKey]: id });
   }
 
   public findByExternalIds$(ids: Array<string | number>): Observable<T[]> {
-    const externalIdKey = `externalReference.${this.FootballApiProvider}.id`;
+    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
 
     return this.findAll$({ [externalIdKey]: { $in: ids } });
-  }
-
-  protected _findOneAndUpsert$(
-    conditions: any,
-    obj: Entity,
-    externalReference: any,
-  ): Observable<T> {
-    return super
-      .findOneAndUpdate$(conditions, obj, { new: true, upsert: true })
-      .pipe(
-        mergeMap((updatedObj: T) => {
-          // todo: find a better way to do this
-          if (externalReference === undefined) {
-            return of(updatedObj);
-          }
-          _.merge(updatedObj, { externalReference });
-          return super.save$(updatedObj);
-        }),
-      );
   }
 }

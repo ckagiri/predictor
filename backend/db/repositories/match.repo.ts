@@ -1,11 +1,10 @@
-import { Observable, forkJoin, from } from 'rxjs';
+import { Observable, forkJoin, from, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-import { get, omit } from 'lodash';
+import { get, merge, omit } from 'lodash';
 
 import MatchModel, {
   Match,
   MatchDocument,
-  MatchStatus,
 } from '../models/match.model';
 import {
   BaseFootballApiRepository,
@@ -51,19 +50,26 @@ export class MatchRepositoryImpl
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
     return (this.converter as MatchConverter).from(obj).pipe(
       mergeMap(data => {
-        const { season, homeTeam, awayTeam, gameRound, externalReference } = data;
+        const { season, homeTeam, awayTeam, externalReference } = data;
         const query = {
           season,
           'homeTeam.id': homeTeam && homeTeam.id,
           'awayTeam.id': awayTeam && awayTeam.id,
         };
-        // todo: what is goin on here?
         delete data.externalReference;
-        data.gameRound = gameRound;
         Object.keys(data).forEach(key => data[key] == null && delete data[key]);
 
-        return this._findOneAndUpsert$(query, data, externalReference);
-      }),
+        return this.findOneAndUpsert$(query, obj)
+          .pipe(
+            mergeMap((match: Match) => {
+              if (externalReference === undefined) {
+                return of(match);
+              }
+              merge(match, { externalReference });
+              return this.insert$(match);
+            }),
+          );
+      })
     );
   }
 

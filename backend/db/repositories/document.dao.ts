@@ -26,19 +26,19 @@ export class DocumentDao<T extends DocumentEntity> {
       model = new this.Model(obj) as T;
     }
 
-    return model.save();
+    return model.save().then(model => model.toObject() as T);
   }
 
   public saveMany(objs: Entity[]): Promise<T[]> {
-    return this.Model.create(objs) as Promise<T[]>;
+    return this.Model.create(objs).then(models => models.map(m => m.toObject()) as T[]);
   }
 
   public insert(obj: Entity): Promise<T> {
-    return this.Model.create(obj) as Promise<T>;
+    return this.Model.create(obj).then(model => model.toObject() as T)
   }
 
   public insertMany(objs: Entity[]): Promise<T[]> {
-    return this.Model.insertMany(objs) as Promise<T[]>;
+    return this.Model.insertMany(objs).then(models => models.map(m => m.toObject()) as T[]);
   }
 
   public upsertMany(objs: Entity[]): Promise<any> {
@@ -209,7 +209,7 @@ export class DocumentDao<T extends DocumentEntity> {
     update: any,
     options: any = { overwrite: false, new: true },
   ): Promise<T> {
-    return this.Model.findByIdAndUpdate(id, update, options).exec() as Promise<T | any>;
+    return this.Model.findByIdAndUpdate(id, update, options).lean({ transform }).exec() as Promise<T | any>;
   }
 
   public findOneAndUpdate(
@@ -221,7 +221,7 @@ export class DocumentDao<T extends DocumentEntity> {
       conditions,
       update,
       options,
-    ).exec() as Promise<T | any>;
+    ).lean({ transform }).exec() as Promise<T | any>;
   }
 
   public findOneAndUpsert(
@@ -233,7 +233,7 @@ export class DocumentDao<T extends DocumentEntity> {
       conditions,
       update,
       options,
-    ).exec() as Promise<T | any>;
+    ).lean({ transform }).exec() as Promise<T | any>;
   }
 
   public remove(id: string) {

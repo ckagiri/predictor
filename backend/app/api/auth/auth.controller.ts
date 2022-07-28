@@ -9,6 +9,7 @@ const authUserToJSON = (user: IUser) => ({
   token: getUserToken(user),
 })
 
+// todo use a controller and userRepo
 async function register(req: Request, res: Response) {
   const { username, password } = req.body
   if (!username) {

@@ -34,7 +34,7 @@ export class SeasonUpdaterImpl implements SeasonUpdater {
       )
       .pipe(
         flatMap(dbSeason => {
-          const provider = this.seasonRepo.FootballApiProvider;
+          const provider = this.seasonRepo.footballApiProvider;
           // tslint:disable-next-line: no-string-literal
           const extId = dbSeason['externalReference'][provider]['id'];
           const extCurrentMatchRound =
