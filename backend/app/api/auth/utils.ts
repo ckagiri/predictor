@@ -1,4 +1,4 @@
-import { expressjwt as expressJWT } from 'express-jwt'
+import { expressjwt } from 'express-jwt'
 import { omit } from "lodash"
 import jwt from 'jsonwebtoken'
 import { User as IUser } from '../../../db/models/user.model';
@@ -26,7 +26,7 @@ function getUserToken({ id, username }: IUser): string {
   )
 }
 
-const authMiddleware = expressJWT({ algorithms: ['HS256'], secret })
+const authMiddleware = expressjwt({ algorithms: ['HS256'], secret })
 
 function userToJSON(user: any) {
   return omit(user, ['createdAt', 'updatedAt', 'isAdmin', 'exp', 'iat', 'hash', 'salt'])

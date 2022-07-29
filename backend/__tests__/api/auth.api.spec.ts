@@ -36,22 +36,20 @@ describe('Auth API', function () {
   it('Auth flow', async () => {
     const { username, password } = loginForm()
 
-    console.log(username, password)
     // register
     const rData: any = await api.post('auth/register', { username, password })
     expect(rData.user).to.include.all.keys('id', 'token', 'username')
 
     // login
-    // const lData: any = await api.post('auth/login', { username, password })
-    // console.log('what')
-    // expect(lData.user).to.eql(rData.user)
+    const lData: any = await api.post('auth/login', { username, password })
+    expect(lData.user).to.eql(rData.user)
 
-    // // authenticated request
-    // const mData: any = await api.get('auth/me', {
-    //   headers: {
-    //     Authorization: `Bearer ${lData.user.token}`,
-    //   },
-    // })
-    // expect(mData.user).to.have.all.keys('id', 'token', 'username')
+    // authenticated request
+    const mData: any = await api.get('auth/me', {
+      headers: {
+        Authorization: `Bearer ${lData.user.token}`,
+      },
+    })
+    expect(mData.user).to.have.all.keys('id', 'username')
   })
 });

@@ -2,13 +2,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose, { ConnectOptions } from 'mongoose';
 import passport from 'passport'
-import * as http from 'http';
+import { Server } from 'http';
 
 import { getLocalStrategy } from './api/auth/passport';
 import errorMiddleware from './api/auth/error.middleware';
 import router from './api/routes';
 
-async function startServer({ port = process.env.PORT } = {}): Promise<http.Server> {
+async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   if (!process.env.NODE_ENV || !process.env.MONGO_URI) {
     console.error(
       'NODE_ENV or MONGO_URI ENV variables missing.',

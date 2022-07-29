@@ -1,5 +1,7 @@
 import passport from 'passport'
 import { Request, Response, NextFunction } from 'express';
+import { Request as JWTRequest } from "express-jwt";
+
 import User, { UserDocument } from '../../../db/models/user.model';
 import { getUserToken, isPasswordAllowed, isUsernameAllowed, userToJSON } from './utils';
 
@@ -58,7 +60,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
 
 function authenticate(req: Request, res: Response, next: NextFunction) {
   return new Promise((resolve, reject) => {
-    passport.authenticate('local', { session: false }, (err, user, info) => {
+    passport.authenticate('local', (err, user, info) => {
       if (err) {
         reject(err)
       } else {
@@ -68,9 +70,9 @@ function authenticate(req: Request, res: Response, next: NextFunction) {
   })
 }
 
-function me(req: Request, res: Response) {
-  if (req.user) {
-    return res.json({ user: authUserToJSON(req.user) })
+function me(req: JWTRequest, res: Response) {
+  if (req.auth) {
+    return res.json({ user: userToJSON(req.auth) })
   } else {
     return res.status(404).send()
   }
