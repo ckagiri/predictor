@@ -29,7 +29,7 @@ function getUserToken({ id, username }: IUser): string {
 const authMiddleware = expressJWT({ algorithms: ['HS256'], secret })
 
 function userToJSON(user: any) {
-  return omit(user, ['exp', 'iat', 'hash', 'salt'])
+  return omit(user, ['createdAt', 'updatedAt', 'isAdmin', 'exp', 'iat', 'hash', 'salt'])
 }
 
 function isPasswordAllowed(password: string) {

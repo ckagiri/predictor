@@ -1,13 +1,12 @@
 import passport from 'passport'
 import { Request, Response, NextFunction } from 'express';
-import User, { User as IUser, UserDocument } from '../../../db/models/user.model';
+import User, { UserDocument } from '../../../db/models/user.model';
 import { getUserToken, isPasswordAllowed, isUsernameAllowed, userToJSON } from './utils';
-import { NativeError } from "mongoose";
 
-const authUserToJSON = (user: IUser) => ({
+const authUserToJSON = (user: any) => ({
   ...userToJSON(user),
   token: getUserToken(user),
-})
+});
 
 // todo use a controller and userRepo
 async function register(req: Request, res: Response) {
@@ -28,7 +27,7 @@ async function register(req: Request, res: Response) {
   try {
     existingUser = await User.findOne({ username }).exec();
   } catch (error: unknown) {
-    res.status(500).send({ message: (<NativeError>error).message });
+    res.status(500).send({ message: (<Error>error).message });
   }
   if (existingUser) {
     return res.status(409).send({ message: 'Username is already taken' });
