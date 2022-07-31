@@ -59,7 +59,7 @@ export class MatchRepositoryImpl
         delete data.externalReference;
         Object.keys(data).forEach(key => data[key] == null && delete data[key]);
 
-        return this.findOneAndUpsert$(query, obj)
+        return this.findOneAndUpsert$(query, data)
           .pipe(
             mergeMap((match: Match) => {
               if (externalReference === undefined) {

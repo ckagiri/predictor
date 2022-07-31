@@ -18,7 +18,8 @@
     "test2": "TS_NODE_PROJECT='tsconfig.json' NODE_ENV=test mocha --require ts-node/register --require dotenv-flow/config --recursive '__tests__/repositiories/competition.repo.spec.ts' --node-env=test",
     "drop:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/drop.js",
     "seed:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/seed.js",
-    "import:test": "NODE_ENV=test node -r dotenv-flow/config build/import/start.js"
+    "import:test": "NODE_ENV=test node -r dotenv-flow/config build/import/start.js",
+    "cdsi": "npm run compile && npm run drop:test && npm run seed:test && npm run import:test"
   },
   "author": "",
   "license": "ISC",

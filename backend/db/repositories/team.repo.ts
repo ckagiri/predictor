@@ -40,6 +40,7 @@ export class TeamRepositoryImpl
           resolve: (value?: Team[]) => void,
           reject: (reason?: Error) => void,
         ) => {
+          // Todo: inject season-repo or team-repo
           SeasonModel.findOne({ _id: seasonId })
             .populate('teams', '-__v -externalReference')
             .exec((err, season) => {
@@ -63,8 +64,10 @@ export class TeamRepositoryImpl
     return (this.converter as TeamConverter).from(obj).pipe(
       mergeMap(data => {
         const { externalReference } = data;
-        delete obj.externalReference;
-        return this.findOneAndUpsert$(query, obj)
+        delete data.externalReference;
+        // todo: remove nils from object
+
+        return this.findOneAndUpsert$(query, data)
           .pipe(
             mergeMap((team: Team) => {
               if (externalReference === undefined) {

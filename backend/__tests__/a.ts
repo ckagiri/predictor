@@ -127,11 +127,6 @@ class UserBuilder implements Builder<User> {
     return this;
   }
 
-  setEmail(value: string) {
-    this.built.email = value;
-    return this;
-  }
-
   async build(): Promise<User> {
     this.user = await db.User.create(this.built);
     return this.user;

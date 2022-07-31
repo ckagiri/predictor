@@ -5,9 +5,7 @@
       "name": "English Premier League",
       "code": "EPL",
       "slug": "english-premier-league",
-      "aliases": [
-        "english-first-division"
-      ]
+      "aliases": []
     }
   },
   "teams": {
@@ -15,7 +13,7 @@
     "arsenal": {
       "name": "Arsenal FC",
       "shortName": "Arsenal",
-      "code": "ARS",
+      "tla": "ARS",
       "slug": "arsenal",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
       "aliases": []
@@ -23,7 +21,7 @@
     "aston_villa": {
       "name": "Aston Villa FC",
       "shortName": "Aston Villa",
-      "code": "AST",
+      "tla": "AST",
       "slug": "aston-villa",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/de/9/9f/Aston_Villa_logo.svg",
       "aliases": []
@@ -31,7 +29,7 @@
     "bournemouth": {
       "name": "AFC Bournemouth",
       "shortName": "Bournemouth",
-      "code": "BOU",
+      "tla": "BOU",
       "slug": "bournemouth",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/de/4/41/Afc_bournemouth.svg",
       "aliases": []
@@ -39,7 +37,7 @@
     "brentford": {
       "name": "Brentford FC",
       "shortName": "Brentford",
-      "code": "BRE",
+      "tla": "BRE",
       "slug": "brentford",
       "crestUrl": "https://crests.football-data.org/402.svg",
       "aliases": []
@@ -47,7 +45,7 @@
     "brighton": {
       "name": "Brighton & Hove Albion FC",
       "shortName": "Brighton",
-      "code": "BRI",
+      "tla": "BRI",
       "slug": "brighton-&-hove-albion",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/f/fd/Brighton_&_Hove_Albion_logo.svg",
       "aliases": []
@@ -55,7 +53,7 @@
     "burnley": {
       "name": "Burnley FC",
       "shortName": "Burnley",
-      "code": "BUR",
+      "tla": "BUR",
       "slug": "burnley",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/0/02/Burnley_FC_badge.png",
       "aliases": []
@@ -63,7 +61,7 @@
     "cardiff": {
       "name": "Cardiff City FC",
       "shortName": "Cardiff",
-      "code": "CAR",
+      "tla": "CAR",
       "slug": "cardiff-city",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/3/3c/Cardiff_City_crest.svg",
       "aliases": []
@@ -71,7 +69,7 @@
     "chelsea": {
       "name": "Chelsea FC",
       "shortName": "Chelsea",
-      "code": "CHE",
+      "tla": "CHE",
       "slug": "chelsea",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/5/5c/Chelsea_crest.svg",
       "aliases": []
@@ -79,7 +77,7 @@
     "crystal_palace": {
       "name": "Crystal Palace FC",
       "shortName": "Crystal Palace",
-      "code": "CRY",
+      "tla": "CRY",
       "slug": "crystal-palace",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/b/bf/Crystal_Palace_F.C._logo_(2013).png",
       "aliases": []
@@ -87,7 +85,7 @@
     "everton": {
       "name": "Everton FC",
       "shortName": "Everton",
-      "code": "EVE",
+      "tla": "EVE",
       "slug": "everton",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/f/f9/Everton_FC.svg",
       "aliases": []
@@ -95,7 +93,7 @@
     "fulham": {
       "name": "Fulham FC",
       "shortName": "Fulham",
-      "code": "FUL",
+      "tla": "FUL",
       "slug": "fulham",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/a/a8/Fulham_fc.svg",
       "aliases": []
@@ -103,7 +101,7 @@
     "huddersfield": {
       "name": "Huddersfield Town AFC",
       "shortName": "Huddersfield",
-      "code": "HDD",
+      "tla": "HDD",
       "slug": "huddersfield-town",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/5/5a/Huddersfield_Town_A.F.C._logo.svg",
       "aliases": []
@@ -111,7 +109,7 @@
     "leeds": {
       "name": "Leeds United FC",
       "shortName": "Leeds United",
-      "code": "LEE",
+      "tla": "LEE",
       "slug": "leeds-united",
       "crestUrl": "https://crests.football-data.org/341.svg",
       "aliases": []
@@ -119,7 +117,7 @@
     "leicester_city": {
       "name": "Leicester City FC",
       "shortName": "Leicester",
-      "code": "LEI",
+      "tla": "LEI",
       "slug": "leicester-city",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/en/6/63/Leicester02.png",
       "aliases": []
@@ -127,7 +125,7 @@
     "liverpool": {
       "name": "Liverpool FC",
       "shortName": "Liverpool",
-      "code": "LIV",
+      "tla": "LIV",
       "slug": "liverpool",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/0/0a/FC_Liverpool.svg",
       "aliases": []
@@ -135,8 +133,8 @@
     "man_city": {
       "name": "Manchester City FC",
       "shortName": "Man City",
-      "code": "MCI",
-      "slug": "man-city",
+      "tla": "MCI",
+      "slug": "manchester-city",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
       "aliases": [
         "ManC"
@@ -145,8 +143,8 @@
     "man_united": {
       "name": "Manchester United FC",
       "shortName": "Man United",
-      "code": "MUN",
-      "slug": "man-united",
+      "tla": "MUN",
+      "slug": "manchester-united",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg",
       "aliases": [
         "ManU",
@@ -156,23 +154,31 @@
     "newcastle": {
       "name": "Newcastle United FC",
       "shortName": "Newcastle",
-      "code": "NEW",
-      "slug": "newcastle",
+      "tla": "NEW",
+      "slug": "newcastle-united",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/5/56/Newcastle_United_Logo.svg",
       "aliases": []
     },
     "norwich": {
       "name": "Norwich City FC",
       "shortName": "Norwich",
-      "code": "NOR",
-      "slug": "norwich",
+      "tla": "NOR",
+      "slug": "norwich-city",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/8/8c/Norwich_City.svg",
+      "aliases": []
+    },
+    "nottingham": {
+      "name": "Nottingham Forest FC",
+      "shortName": "Nottingham",
+      "tla": "NOT",
+      "slug": "nottingham-forest",
+      "crestUrl": "https://crests.football-data.org/351.png",
       "aliases": []
     },
     "sheffield_utd": {
       "name": "Sheffield United FC",
       "shortName": "Sheffield Utd",
-      "code": "SHE",
+      "tla": "SHE",
       "slug": "sheffield",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/9/9c/Sheffield_United_FC_logo.svg",
       "aliases": []
@@ -180,7 +186,7 @@
     "southampton": {
       "name": "Southampton FC",
       "shortName": "Southampton",
-      "code": "SOU",
+      "tla": "SOU",
       "slug": "southampton",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/c/c9/FC_Southampton.svg",
       "aliases": []
@@ -188,7 +194,7 @@
     "stoke_city": {
       "name": "Stoke City FC",
       "shortName": "Stoke",
-      "code": "STK",
+      "tla": "STK",
       "slug": "stoke-city",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/a/a3/Stoke_City.svg",
       "aliases": []
@@ -196,7 +202,7 @@
     "swansea_city": {
       "name": "Swansea City FC",
       "shortName": "Swansea",
-      "code": "SWA",
+      "tla": "SWA",
       "slug": "swansea-city",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/a/ab/Swansea_City_Logo.svg",
       "aliases": []
@@ -204,7 +210,7 @@
     "tottenham": {
       "name": "Tottenham Hotspur FC",
       "shortName": "Tottenham",
-      "code": "TOT",
+      "tla": "TOT",
       "slug": "tottenham",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/b/b4/Tottenham_Hotspur.svg",
       "aliases": []
@@ -212,7 +218,7 @@
     "watford": {
       "name": "Watford FC",
       "shortName": "Watford",
-      "code": "WAT",
+      "tla": "WAT",
       "slug": "watford",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/e/e2/Watford.svg",
       "aliases": []
@@ -220,7 +226,7 @@
     "wolves": {
       "name": "Wolverhampton Wanderers FC",
       "shortName": "Wolverhampton",
-      "code": "WOL",
+      "tla": "WOL",
       "slug": "wolves",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg",
       "aliases": []
@@ -228,7 +234,7 @@
     "west_bromwich": {
       "name": "West Bromwich Albion FC",
       "shortName": "West Brom",
-      "code": "WBA",
+      "tla": "WBA",
       "slug": "west-bromwich",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/8/8b/West_Bromwich_Albion.svg",
       "aliases": []
@@ -236,7 +242,7 @@
     "west_ham": {
       "name": "West Ham United FC",
       "shortName": "West Ham",
-      "code": "WHU",
+      "tla": "WHU",
       "slug": "west-ham",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/e/e0/West_Ham_United_FC.svg",
       "aliases": []
@@ -247,7 +253,7 @@
     "epl_22": {
       "externalReference": {
         "API_FOOTBALL_DATA": {
-          "id": 733
+          "id": 1490
         }
       },
       "competition": {
@@ -255,36 +261,37 @@
         "name": "->competitions.epl.name",
         "slug": "->competitions.epl.slug"
       },
-      "name": "2021-2022",
-      "slug": "2021-22",
+      "name": "2022-2023",
+      "slug": "2022-23",
       "year": "2022",
       "teams": [
         "->teams.arsenal",
         "->teams.aston_villa",
+        "->teams.bournemouth",
         "->teams.brentford",
         "->teams.brighton",
-        "->teams.burnley",
         "->teams.chelsea",
         "->teams.crystal_palace",
         "->teams.everton",
+        "->teams.fulham",
         "->teams.leeds",
         "->teams.leicester_city",
         "->teams.liverpool",
         "->teams.man_city",
         "->teams.man_united",
         "->teams.newcastle",
-        "->teams.norwich",
+        "->teams.nottingham",
         "->teams.southampton",
         "->teams.tottenham",
-        "->teams.watford",
         "->teams.west_ham",
         "->teams.wolves"
       ],
+      "currentMatchRound": 1,
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
-      "seasonStart": "=new Date('2021-08-14T00:00:00+0200')",
-      "seasonEnd": "=new Date('2022-05-23T00:00:00+0200')"
+      "seasonStart": "=new Date('2022-08-05T00:00:00+0200')",
+      "seasonEnd": "=new Date('2023-05-28T00:00:00+0200')"
     }
   },
   "gameRounds": {

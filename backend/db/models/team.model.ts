@@ -7,7 +7,7 @@ export interface Team extends Entity {
   name: string;
   slug?: string;
   shortName?: string;
-  code?: string;
+  tla?: string;
   aliases?: string[];
   crestUrl?: string;
   externalReference?: any;
@@ -21,7 +21,7 @@ export const teamSchema = schema({
   name: { type: String, required: true, trim: true },
   slug: { type: String, required: true, trim: true },
   shortName: { type: String, trim: true },
-  code: { type: String },
+  tla: { type: String },
   aliases: { type: [String] },
   crestUrl: { type: String },
   externalReference: { type: Mixed },

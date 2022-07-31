@@ -34,7 +34,6 @@ export class MatchesJob implements Job {
         .pipe(
           mergeMap((response: any) => {
             let matches: any[] = response.data.matches || [];
-            matches = matches.map(m => ({ ...m, gameRound: m.matchday }));
             return this._matchRepo?.findEachBySeasonAndTeamsAndUpsert$(matches) as Observable<Match[]>;
           }),
         )
