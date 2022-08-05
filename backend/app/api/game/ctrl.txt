@@ -1,0 +1,10 @@
+api/game
+/game/competitions getCompetitions [competitions, defaultCompetitionId]
+/game/competitions/english-premier-league getCompetitionSeasons [competitionId, seasons, currentSeasonId]
+/game/competitions/english-premier-league/2022-23 getCompetitionSeason [seasonId, teams, rounds, currentGameRoundId]
+/game/competitions/english-premier-league/2022-23/gameweek-1 getSeasonGameRound [gameRoundId, matches]
+/game/competitions/english-premier-league/2022-23/gameweek-1/auto-pick autoPickPredictions(lucky-spin)
+/game/competitions/english-premier-league/2022-23/gameweek-1/ars-che getGameRoundMatchPrediction [match+prediction]
+/game/competitions/english-premier-league/2022-23/gameweek-1/ars-che pick-joker|pick-score [pickPredictionScore pickGameRoundJoker]
+
+8

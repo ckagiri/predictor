@@ -1,4 +1,4 @@
-import { from, Observable, throwError } from 'rxjs';
+import { mergeMap, Observable } from 'rxjs';
 import SeasonModel, { Season, SeasonDocument } from '../models/season.model';
 import { Team } from '../models/team.model';
 
@@ -11,9 +11,10 @@ import {
   SeasonConverterImpl,
 } from '../converters/season.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { TeamRepository, TeamRepositoryImpl } from './team.repo';
 
 export interface SeasonRepository extends BaseFootballApiRepository<Season> {
-  getTeamsForSeason$(seasonId: string): Observable<Team[] | undefined>;
+  getTeamsForSeason$(seasonId: string): Observable<Team[]>;
 }
 
 export class SeasonRepositoryImpl
@@ -21,36 +22,23 @@ export class SeasonRepositoryImpl
   implements SeasonRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
+    teamRepo: TeamRepository = TeamRepositoryImpl.getInstance()
   ): SeasonRepository {
-    return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider));
+    return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider), teamRepo);
   }
 
-  constructor(converter: SeasonConverter) {
+  constructor(converter: SeasonConverter, private teamRepo: TeamRepository) {
     super(SeasonModel, converter);
   }
 
-  public getTeamsForSeason$(seasonId: string): Observable<Team[] | undefined> {
-    if (!seasonId) {
-      throwError('seasonId cannot be empty');
-    }
-    return from(
-      new Promise(
-        (
-          resolve: (value?: Team[]) => void,
-          reject: (reason?: Error) => void,
-        ) => {
-          SeasonModel.findOne({ _id: seasonId })
-            .populate('teams', '-__v -externalReference')
-            .lean()
-            .exec((err, season) => {
-              if (err) { reject(err); }
-              if (!season) {
-                reject(new Error('Failed to load Season ' + seasonId));
-              }
-              return resolve(season?.teams as Team[] | undefined);
-            });
-        },
-      ),
-    );
+  public getTeamsForSeason$(seasonId: string): Observable<Team[]> {
+    return this.findById$(seasonId)
+      .pipe(
+        mergeMap(({ teams }) => {
+          return this.teamRepo.findAll$({
+            _id: { $in: teams }
+          })
+        })
+      )
   }
 }

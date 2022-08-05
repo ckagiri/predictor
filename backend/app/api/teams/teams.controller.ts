@@ -5,20 +5,23 @@ import {
   TeamRepository,
 } from '../../../db/repositories/team.repo';
 import { isMongoId } from '../utils';
-import { Team } from '../../../db/models/team.model';
+import { SeasonRepository, SeasonRepositoryImpl } from 'db/repositories/season.repo';
 
 export class TeamsController {
-  public static getInstance(teamRepo?: TeamRepository) {
-    return new TeamsController(teamRepo ?? TeamRepositoryImpl.getInstance());
+  public static getInstance(
+    teamRepo = TeamRepositoryImpl.getInstance(),
+    seasonRepo = SeasonRepositoryImpl.getInstance(teamRepo.footballApiProvider, teamRepo)
+  ) {
+    return new TeamsController(teamRepo, seasonRepo);
   }
 
-  constructor(private teamRepo: TeamRepository) { }
+  constructor(private teamRepo: TeamRepository, private seasonRepo: SeasonRepository) { }
 
   public getTeams = async (req: Request, res: Response) => {
     try {
       const seasonId = req.query.seasonId as string;
       const teams = seasonId
-        ? await lastValueFrom(this.teamRepo.getAllBySeason$(seasonId))
+        ? await lastValueFrom(this.seasonRepo.getTeamsForSeason$(seasonId))
         : await lastValueFrom(this.teamRepo.findAll$());
       res.status(200).json(teams);
     } catch (error) {
@@ -29,13 +32,15 @@ export class TeamsController {
   public getTeam = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let team: Team;
-      if (isMongoId(id)) {
-        team = await lastValueFrom(this.teamRepo.findById$(id));
-      } else {
-        team = await lastValueFrom(this.teamRepo.findOne$({ slug: id }));
+      if (!isMongoId(id)) {
+        throw new Error('wrong id format');
       }
-      res.status(200).json(team);
+      const team = await lastValueFrom(this.teamRepo.findById$(id));
+      if (team) {
+        return res.status(200).json(team);
+      } else {
+        return res.status(404).send();
+      }
     } catch (error) {
       res.status(500).send(error);
     }

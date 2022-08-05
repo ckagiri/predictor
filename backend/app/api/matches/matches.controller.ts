@@ -12,64 +12,74 @@ import {
   GameRoundRepository,
 } from '../../../db/repositories/gameRound.repo';
 import { isMongoId } from '../utils';
-import { Match } from '../../../db/models/match.model';
 import { Season } from '../../../db/models/season.model';
+import { GameRound } from '../../../db/models/gameRound.model';
 import { lastValueFrom } from 'rxjs';
 
 export class MatchesController {
   public static getInstance(
-    matchRepo?: MatchRepository,
-    gameRoundRepo?: GameRoundRepository,
-    seasonRepo?: SeasonRepository,
+    matchRepo = MatchRepositoryImpl.getInstance(),
+    seasonRepo = SeasonRepositoryImpl.getInstance(),
+    gameRoundRepo = GameRoundRepositoryImpl.getInstance(),
   ) {
-    return new MatchesController(
-      matchRepo ?? MatchRepositoryImpl.getInstance(),
-      gameRoundRepo ?? GameRoundRepositoryImpl.getInstance(),
-      seasonRepo ?? SeasonRepositoryImpl.getInstance(),
-    );
+    return new MatchesController(matchRepo, seasonRepo, gameRoundRepo);
   }
 
   constructor(
     private matchRepo: MatchRepository,
-    private gameRoundRepo: GameRoundRepository,
     private seasonRepo: SeasonRepository,
+    private gameRoundRepo: GameRoundRepository,
   ) { }
 
   public getMatches = async (req: Request, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
-      const seasonSlug = req.params.season;
+      const seasonYearOrSlug = req.params.season;
       const roundSlugOrPosition = req.params.gameround;
 
-      //todo: handle filters
       if (!competitionSlug) {
         throw new Error('competition slug is required');
       }
-      if (!seasonSlug) {
-        throw new Error('season slug is required');
+      if (!seasonYearOrSlug) {
+        throw new Error('season year or slug is required');
       }
 
-      const season: Season = await lastValueFrom(
-        this.seasonRepo.findOne$({
-          $and: [{ 'competition.slug': competitionSlug }, { slug: seasonSlug }]
-        })
-      );
+      const isSeasonYear = /^\d{4}$/.test(seasonYearOrSlug);
+      let season: Season | undefined;
+      if (isSeasonYear) {
+        season = await lastValueFrom(this.seasonRepo.findOne$({
+          'competition.slug': competitionSlug, year: seasonYearOrSlug
+        }));
+      } else {
+        season = await lastValueFrom(this.seasonRepo.findOne$({
+          'competition.slug': competitionSlug, slug: seasonYearOrSlug
+        }));
+      }
 
-      // Todo: check if number
-      const gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
-        $or: [
-          {
-            $and: [{ season: season?.id }, { slug: roundSlugOrPosition }],
-          },
-          {
-            $and: [{ season: season?.id }, { position: parseInt(roundSlugOrPosition, 10) || 0 }],
-          },
-        ],
-      }));
+      if (!season) {
+        throw new Error('season not found');
+      }
 
-      const matches = await lastValueFrom(this.matchRepo.findAll$({
-        season: season?.id, gameRound: gameRound?.id
-      }));
+      let gameRound: GameRound | undefined;
+      const isGameRoundPosition = (param: string) => /^\d{1,2}$/.test(param);
+      if (roundSlugOrPosition == undefined) {
+        gameRound = undefined;
+      } else if (isGameRoundPosition(roundSlugOrPosition)) {
+        gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
+          season: season?.id, position: parseInt(roundSlugOrPosition, 10)
+        }));
+      } else {
+        gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
+          season: season?.id, slug: roundSlugOrPosition
+        }));
+      }
+
+      type FindGameRoundQuery = { season: string, gameRound?: string };
+      let query: FindGameRoundQuery = { season: season.id! };
+      if (gameRound) {
+        query = { ...query, gameRound: gameRound?.id }
+      }
+      const matches = await lastValueFrom(this.matchRepo.findAll$(query));
       res.status(200).json(matches);
     } catch (error) {
       res.status(500).send(error);
@@ -79,13 +89,15 @@ export class MatchesController {
   public getMatch = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let match: Match;
-      if (isMongoId(id)) {
-        match = await lastValueFrom(this.matchRepo.findById$(id));
-      } else {
-        match = await lastValueFrom(this.matchRepo.findOne$({ slug: id }));
+      if (!isMongoId(id)) {
+        throw new Error('wrong id format');
       }
-      res.status(200).json(match);
+      const match = await lastValueFrom(this.matchRepo.findById$(id));
+      if (match) {
+        return res.status(200).json(match);
+      } else {
+        return res.status(404).send();
+      }
     } catch (error) {
       res.status(500).send(error);
     }

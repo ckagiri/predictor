@@ -103,9 +103,9 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
   }
 
   updateRankings(seasonId: string, matchesArray: Match[]): any {
-    const sanitizedMatches = matchesArray.filter(
+    const matches = matchesArray.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
-    const gameRoundIds = uniq(sanitizedMatches.map(m => m.gameRound.toString()));
+    const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
 
     return lastValueFrom(
       this.leaderboardRepo.findAllFor$({ seasonId, gameRoundIds })

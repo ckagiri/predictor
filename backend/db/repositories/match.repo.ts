@@ -15,7 +15,7 @@ import {
   MatchConverterImpl,
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { SeasonRepository, SeasonRepositoryImpl } from './season.repo';
+import { CompetitionRepository, CompetitionRepositoryImpl } from './competition.repo';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
@@ -28,21 +28,26 @@ export class MatchRepositoryImpl
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
-    seasonRepoImpl: SeasonRepository = SeasonRepositoryImpl.getInstance(provider)
+    competitionRepo: CompetitionRepository = CompetitionRepositoryImpl.getInstance(provider)
   ): MatchRepository {
-    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider), seasonRepoImpl);
+    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider), competitionRepo);
   }
 
-  constructor(converter: MatchConverter, private seasonRepo: SeasonRepository) {
+  constructor(converter: MatchConverter, private competitionRepo: CompetitionRepository) {
     super(MatchModel, converter);
   }
 
   findAllFinishedForCurrentSeasons(): Observable<Match[]> {
-    return this.seasonRepo.findAll$({ isCurrent: true })
+    return this.competitionRepo.findAll$()
       .pipe(
-        mergeMap(seasons => from(seasons)),
-        mergeMap(season => {
-          return this.findAll$({ season: season.id })
+        mergeMap(competitions => from(competitions)),
+        mergeMap(competition => {
+          const { currentSeason } = competition;
+          if (currentSeason) {
+            return this.findAll$({ season: currentSeason })
+          } else {
+            return of([]);
+          }
         })
       );
   }

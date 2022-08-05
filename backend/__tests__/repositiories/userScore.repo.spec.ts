@@ -34,8 +34,8 @@ const ars = a.team.setName('Arsenal').setSlug('arsenal');
 const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
 const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
 
-const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
-const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
+const user1 = a.user.setUsername('charles');
+const user2 = a.user.setUsername('kagiri');
 
 const user1_manuVmanc_pred = a.prediction
   .withUser(user1)

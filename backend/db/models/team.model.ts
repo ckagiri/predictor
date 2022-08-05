@@ -11,6 +11,7 @@ export interface Team extends Entity {
   aliases?: string[];
   crestUrl?: string;
   externalReference?: any;
+  [key: string]: any;
 }
 
 export interface TeamDocument extends Team, DocumentEntity { }

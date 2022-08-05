@@ -5,11 +5,12 @@ import {
   CompetitionRepository,
 } from '../../../db/repositories/competition.repo';
 import { isMongoId } from '../utils';
-import { Competition } from '../../../db/models/competition.model';
 
 export class CompetitionsController {
-  public static getInstance(competitionRepo?: CompetitionRepository) {
-    return new CompetitionsController(competitionRepo ?? CompetitionRepositoryImpl.getInstance());
+  public static getInstance(
+    competitionRepo = CompetitionRepositoryImpl.getInstance()
+  ) {
+    return new CompetitionsController(competitionRepo);
   }
 
   constructor(private competitionRepo: CompetitionRepository) { }
@@ -26,13 +27,15 @@ export class CompetitionsController {
   public getCompetition = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let competition: Competition;
-      if (isMongoId(id)) {
-        competition = await lastValueFrom(this.competitionRepo.findById$(id));
-      } else {
-        competition = await lastValueFrom(this.competitionRepo.findOne$({ slug: id }));
+      if (!isMongoId(id)) {
+        throw new Error('wrong id format');
       }
-      res.status(200).json(competition);
+      const competition = await lastValueFrom(this.competitionRepo.findById$(id));
+      if (competition) {
+        return res.status(200).json(competition);
+      } else {
+        return res.status(404).send();
+      }
     } catch (error) {
       res.status(500).send(error);
     }

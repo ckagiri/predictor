@@ -14,7 +14,6 @@ export interface TeamRepository extends BaseFootballApiRepository<Team> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<Team>;
   findEachByNameAndUpsert$(teams: any[]): Observable<Team[]>;
   findByName$(name: string): Observable<Team>;
-  getAllBySeason$(seasonId?: string): Observable<Team[]>;
 }
 
 export class TeamRepositoryImpl
@@ -30,31 +29,6 @@ export class TeamRepositoryImpl
     super(TeamModel, converter);
   }
 
-  public getAllBySeason$(seasonId?: string): Observable<Team[]> {
-    if (!seasonId) {
-      return throwError(() => 'seasonId cannot be empty');
-    }
-    return from(
-      new Promise(
-        (
-          resolve: (value?: Team[]) => void,
-          reject: (reason?: Error) => void,
-        ) => {
-          // Todo: inject season-repo or team-repo
-          SeasonModel.findOne({ _id: seasonId })
-            .populate('teams', '-__v -externalReference')
-            .exec((err, season) => {
-              if (err) { reject(err); }
-              if (!season) {
-                reject(new Error('Failed to find Season ' + seasonId));
-              }
-              return resolve(season?.teams as any[]);
-            });
-        },
-      ) as Promise<Team[]>,
-    );
-  }
-
   public findByNameAndUpsert$(obj: any): Observable<Team> {
     const name = obj.name;
     const query = {
@@ -65,7 +39,7 @@ export class TeamRepositoryImpl
       mergeMap(data => {
         const { externalReference } = data;
         delete data.externalReference;
-        // todo: remove nils from object
+        Object.keys(data).forEach(key => data[key] == null && delete data[key]);
 
         return this.findOneAndUpsert$(query, data)
           .pipe(
