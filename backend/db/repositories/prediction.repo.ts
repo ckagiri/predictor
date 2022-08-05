@@ -17,6 +17,7 @@ import { find, head, isNumber, isString, uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
+  findOrCreatePredictions$(userId: string, roundId: string, withJoker?: boolean, roundMatches?: Match[]): Observable<Prediction[]>
   findOrCreatePicks$(userId: string, roundId: string, withJoker?: boolean): Observable<Prediction[]>;
   pickJoker$(userId: string, roundId: string, matchId: string): Observable<Prediction[]>;
   pickScore$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction>;
@@ -197,13 +198,12 @@ export class PredictionRepositoryImpl
           }
 
           const predictionMatchIds = predictions.map(p => p.match);
-          const newPredictionMatches = scheduledMatches.filter(m => {
-            return !predictionMatchIds.includes(m.id?.toString() || '');
-          });
+          const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!.toString() || ''));
           const newPredictions = newPredictionMatches.map(match => {
-            const { id: matchId, slug: matchSlug } = match;
+            const { id: matchId, slug: matchSlug, season } = match;
             const prediction = {
               user: userId,
+              season,
               match: matchId,
               matchSlug,
               choice: this.getRandomMatchScore(),

@@ -12,6 +12,7 @@ export interface Prediction extends Entity {
   scorePoints?: ScorePoints;
   hasJoker?: boolean;
   jokerAutoPicked?: boolean;
+  [key: string]: any;
 }
 
 export interface PredictionDocument extends Prediction, DocumentEntity { }

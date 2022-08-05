@@ -24,35 +24,26 @@ export class GameRoundsController {
   public getGameRounds = async (req: Request, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
-      const seasonYearOrSlug = req.params.season;
+      const seasonSlug = req.params.season;
 
       if (!competitionSlug) {
         throw new Error('competition slug is required');
       }
-      if (!seasonYearOrSlug) {
-        throw new Error('season year or slug is required');
+      if (!seasonSlug) {
+        throw new Error('season slug is required');
       }
 
-      const isSeasonYear = /^\d{4}$/.test(seasonYearOrSlug);
-      let season: Season | undefined;
-      if (isSeasonYear) {
-        season = await lastValueFrom(this.seasonRepo.findOne$({
-          'competition.slug': competitionSlug, year: seasonYearOrSlug
-        }));
-      } else {
-        season = await lastValueFrom(this.seasonRepo.findOne$({
-          'competition.slug': competitionSlug, slug: seasonYearOrSlug
-        }));
-      }
-
+      const season = await lastValueFrom(this.seasonRepo.findOne$({
+        'competition.slug': competitionSlug, slug: seasonSlug
+      }));
       if (!season) {
         throw new Error('season not found');
       }
 
-      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season?.id }));
+      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }));
       res.status(200).json(gameRounds);
-    } catch (error) {
-      res.status(500).send(error);
+    } catch (error: any) {
+      res.status(500).send(error.message);
     }
   };
 

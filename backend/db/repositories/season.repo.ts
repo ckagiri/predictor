@@ -1,4 +1,4 @@
-import { mergeMap, Observable } from 'rxjs';
+import { mergeMap, Observable, throwError } from 'rxjs';
 import SeasonModel, { Season, SeasonDocument } from '../models/season.model';
 import { Team } from '../models/team.model';
 
@@ -14,7 +14,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 import { TeamRepository, TeamRepositoryImpl } from './team.repo';
 
 export interface SeasonRepository extends BaseFootballApiRepository<Season> {
-  getTeamsForSeason$(seasonId: string): Observable<Team[]>;
+  getTeamsForSeason$(seasonId?: string): Observable<Team[]>;
 }
 
 export class SeasonRepositoryImpl
@@ -31,7 +31,10 @@ export class SeasonRepositoryImpl
     super(SeasonModel, converter);
   }
 
-  public getTeamsForSeason$(seasonId: string): Observable<Team[]> {
+  public getTeamsForSeason$(seasonId?: string): Observable<Team[]> {
+    if (seasonId == undefined) {
+      return throwError(() => new Error('seasonId cannot be blank'));
+    }
     return this.findById$(seasonId)
       .pipe(
         mergeMap(({ teams }) => {

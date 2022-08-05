@@ -34,51 +34,35 @@ export class MatchesController {
   public getMatches = async (req: Request, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
-      const seasonYearOrSlug = req.params.season;
-      const roundSlugOrPosition = req.params.gameround;
+      const seasonSlug = req.params.season;
+      const roundSlug = req.params.gameround;
 
       if (!competitionSlug) {
         throw new Error('competition slug is required');
       }
-      if (!seasonYearOrSlug) {
-        throw new Error('season year or slug is required');
+      if (!seasonSlug) {
+        throw new Error('season slug is required');
       }
 
-      const isSeasonYear = /^\d{4}$/.test(seasonYearOrSlug);
-      let season: Season | undefined;
-      if (isSeasonYear) {
-        season = await lastValueFrom(this.seasonRepo.findOne$({
-          'competition.slug': competitionSlug, year: seasonYearOrSlug
-        }));
-      } else {
-        season = await lastValueFrom(this.seasonRepo.findOne$({
-          'competition.slug': competitionSlug, slug: seasonYearOrSlug
-        }));
-      }
-
+      const season = await lastValueFrom(this.seasonRepo.findOne$({
+        'competition.slug': competitionSlug, slug: seasonSlug
+      }));
       if (!season) {
         throw new Error('season not found');
       }
 
       let gameRound: GameRound | undefined;
-      const isGameRoundPosition = (param: string) => /^\d{1,2}$/.test(param);
-      if (roundSlugOrPosition == undefined) {
-        gameRound = undefined;
-      } else if (isGameRoundPosition(roundSlugOrPosition)) {
+      if (roundSlug) {
         gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
-          season: season?.id, position: parseInt(roundSlugOrPosition, 10)
-        }));
-      } else {
-        gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
-          season: season?.id, slug: roundSlugOrPosition
+          season: season?.id, slug: roundSlug
         }));
       }
-
       type FindGameRoundQuery = { season: string, gameRound?: string };
       let query: FindGameRoundQuery = { season: season.id! };
       if (gameRound) {
         query = { ...query, gameRound: gameRound?.id }
       }
+
       const matches = await lastValueFrom(this.matchRepo.findAll$(query));
       res.status(200).json(matches);
     } catch (error) {

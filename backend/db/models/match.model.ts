@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 
 import { Entity, DocumentEntity, schema } from './base.model';
 import { Score, Odds } from '../../common/score';
+import { Prediction } from './prediction.model';
 
 export enum MatchStatus {
   SCHEDULED = 'SCHEDULED',
@@ -31,8 +32,10 @@ export interface Match extends Entity {
   odds?: Odds;
   result?: Score;
   venue?: string;
-  allPredictionPointsUpdated?: boolean;
+  allPredictionPointsCalculated?: boolean;
+  allGlobalLeaderboardScoresProcessed?: boolean;
   externalReference?: any;
+  prediction?: Prediction | undefined | null;
   [key: string]: any;
 }
 
@@ -79,9 +82,8 @@ export const matchSchema = schema({
     draw: { type: Number, default: 1 },
   },
   venue: { type: String, trim: true },
-  allPredictionPointsUpdated: { type: Boolean, default: false },
-  allGlobalLeaderboardScoresUpdated: { type: Boolean, default: false },
-  allGlobalLeaderboardRankingsUpdated: { type: Boolean, default: false },
+  allPredictionPointsCalculated: { type: Boolean, default: false },
+  allGlobalLeaderboardScoresProcessed: { type: Boolean, default: false },
   externalReference: { type: Mixed },
 });
 
