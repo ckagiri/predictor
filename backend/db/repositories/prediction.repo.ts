@@ -1,5 +1,5 @@
 import { Observable, of, from, throwError, iif } from 'rxjs';
-import { filter, mergeMap, map, catchError, toArray } from 'rxjs/operators';
+import { filter, mergeMap, map, catchError, toArray, concatMap } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -172,9 +172,13 @@ export class PredictionRepositoryImpl
     return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
       .pipe(
         mergeMap(matches => {
-          if (matches.length === 0) {
-            return of({ matches: [], predictions: [] })
-          }
+          return iif(
+            () => withJoker,
+            this.findOrCreateJoker$(userId, roundId, matches),
+            of(undefined)
+          ).pipe(map(() => matches))
+        }),
+        mergeMap(matches => {
           return this.findAll$({
             user: userId,
             match: { $in: matches.map(n => n.id) },
@@ -184,9 +188,6 @@ export class PredictionRepositoryImpl
             )
         }),
         mergeMap(({ matches, predictions }) => {
-          if (matches.length === 0) {
-            return of([]);
-          }
           const areAllMatchesFinished = matches.every(m => m.status === MatchStatus.FINISHED);
           if (areAllMatchesFinished) {
             return of(predictions);
@@ -197,8 +198,8 @@ export class PredictionRepositoryImpl
             return of(predictions);
           }
 
-          const predictionMatchIds = predictions.map(p => p.match);
-          const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!.toString() || ''));
+          const predictionMatchIds: string[] = predictions.map(p => p.match.toString());
+          const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!));
           const newPredictions = newPredictionMatches.map(match => {
             const { id: matchId, slug: matchSlug, season } = match;
             const prediction = {
@@ -210,16 +211,8 @@ export class PredictionRepositoryImpl
             } as Prediction;
             return prediction
           });
-
-          return iif(
-            () => withJoker,
-            this.findOrCreateJoker$(userId, roundId, matches),
-            of(undefined)
-          )
+          return this.insertMany$(newPredictions)
             .pipe(
-              mergeMap(() => {
-                return this.insertMany$(newPredictions)
-              }),
               mergeMap(() => {
                 return this.findAll$({
                   user: userId,
