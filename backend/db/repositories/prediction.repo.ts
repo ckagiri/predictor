@@ -19,8 +19,8 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
   findOrCreatePredictions$(userId: string, roundId: string, withJoker?: boolean, roundMatches?: Match[]): Observable<Prediction[]>
   findOrCreatePicks$(userId: string, roundId: string, withJoker?: boolean): Observable<Prediction[]>;
+  pickScore$(userId: string, match: Match, choice: Score): Observable<Prediction>;
   pickJoker$(userId: string, roundId: string, matchId: string): Observable<Prediction[]>;
-  pickScore$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction | undefined>;
 }
 
@@ -40,27 +40,24 @@ export class PredictionRepositoryImpl
     this.matchRepo = matchRepo;
   }
 
-  pickScore$(userId: string, roundId: string, matchId: string, choice: Score): Observable<Prediction> {
-    return this.matchRepo.findOne$({ id: matchId, gameRound: roundId })
+  pickScore$(userId: string, match: Match, choice: Score): Observable<Prediction> {
+    if (!match) {
+      return throwError(() => new Error('Match not found in round'))
+    }
+    if (match.status !== MatchStatus.SCHEDULED) {
+      return throwError(() => new Error("Match not scheduled"))
+    }
+    const matchId = match.id!;
+    const roundId = match.gameRound.toString();
+    return this.findOne$(userId, matchId)
       .pipe(
-        mergeMap(match => {
-          if (!match) {
-            return throwError(() => new Error('Match not found in round'))
-          }
-          if (match.status !== MatchStatus.SCHEDULED) {
-            return throwError(() => new Error("Match not scheduled."))
-          }
-          return this.findOne$(userId, matchId)
-            .pipe(
-              map(prediction => ({ match, prediction }))
-            )
-        }),
+        map(prediction => ({ match, prediction })),
         mergeMap(({ match, prediction }) => {
           if (!prediction) {
             return this.findOrCreatePredictions$(userId, roundId)
               .pipe(
                 map(predictions => {
-                  const pickPrediction = predictions.find(p => p.match === match.id?.toString());
+                  const pickPrediction = predictions.find(p => p.match.toString() === match.id);
                   return pickPrediction
                 })
               )
@@ -71,7 +68,7 @@ export class PredictionRepositoryImpl
           if (!prediction) {
             return throwError(() => new Error('prediction does not exist'));
           }
-          return this.findByIdAndUpdate$(prediction?.id!, { choice, isComputerGenerated: false })
+          return this.findByIdAndUpdate$(prediction?.id!, { choice: { ...choice, isComputerGenerated: false } })
         })
       )
   }

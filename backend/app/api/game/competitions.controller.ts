@@ -297,7 +297,7 @@ export class GameCompetitionsController {
     const roundSlug = req.params.round;
     const matchSlug = req.params.match;
     const userId = req.auth?.id;
-    const choice: Score = req.body.choice;
+    const choice: Score = req.body;
 
     if (!userId) {
       throw new Error('user id is required')
@@ -331,12 +331,13 @@ export class GameCompetitionsController {
 
     const match = await lastValueFrom(this.matchRepo.findOne$({
       season: season.id,
+      gameRound: round.id,
       slug: matchSlug
     }))
     if (!match) {
       throw Error('match not found')
     }
-    const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, round.id!, match.id!, choice))
+    const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, choice))
     const pick = omit(_pick, ['createdAt', 'updatedAt']);
 
     res.status(200).json(pick);
