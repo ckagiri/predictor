@@ -216,8 +216,8 @@ export class GameCompetitionsController {
     const competitionSlug = req.params.competition;
     const seasonSlug = req.params.season;
     const roundSlug = req.params.round;
+    const matchSlug = req.params.match;
     const userId = req.auth?.id;
-    const matchId: string = req.body.matchId;
 
     if (!userId) {
       throw new Error('user id is required')
@@ -230,6 +230,9 @@ export class GameCompetitionsController {
     }
     if (!roundSlug) {
       throw new Error('round slug is required');
+    }
+    if (!matchSlug) {
+      throw new Error('match slug is required');
     }
 
     const season = await lastValueFrom(this.seasonRepo.findOne$({
@@ -246,7 +249,16 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, round.id!, matchId))
+    const match = await lastValueFrom(this.matchRepo.findOne$({
+      season: season.id,
+      gameRound: round.id,
+      slug: matchSlug
+    }))
+    if (!match) {
+      throw Error('match not found')
+    }
+
+    const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match))
     const jokerPredictions = _jokerPredictions.map(p => omit(p, ['createdAt', 'updatedAt']));
 
     res.status(200).json(jokerPredictions)
@@ -312,7 +324,7 @@ export class GameCompetitionsController {
       throw new Error('round slug is required');
     }
     if (!matchSlug) {
-      throw new Error('round slug is required');
+      throw new Error('match slug is required');
     }
 
     const season = await lastValueFrom(this.seasonRepo.findOne$({
@@ -337,6 +349,7 @@ export class GameCompetitionsController {
     if (!match) {
       throw Error('match not found')
     }
+
     const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, choice))
     const pick = omit(_pick, ['createdAt', 'updatedAt']);
 

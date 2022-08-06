@@ -1,4 +1,4 @@
-import mongoose, { Model, Document } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { omit } from 'lodash';
 // mongoose.set('useFindAndModify', false);
 
@@ -60,7 +60,7 @@ export class DocumentDao<T extends DocumentEntity> {
 
       return {
         updateOne: {
-          filter: { _id: obj.id },
+          filter: { _id: new mongoose.Types.ObjectId(obj.id) },
           update: obj,
           upsert: true
         }
@@ -83,7 +83,7 @@ export class DocumentDao<T extends DocumentEntity> {
 
       return {
         updateOne: {
-          filter: { _id: obj.id },
+          filter: { matchSlug: obj.matchSlug },
           update: obj,
         }
       }
@@ -237,7 +237,7 @@ export class DocumentDao<T extends DocumentEntity> {
   }
 
   public remove(id: string) {
-    return this.Model.remove({ _id: id }).exec();
+    return this.Model.remove({ _id: new mongoose.Types.ObjectId(id) }).exec();
   }
 
   public count(conditions: any) {

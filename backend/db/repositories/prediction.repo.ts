@@ -20,7 +20,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreatePredictions$(userId: string, roundId: string, withJoker?: boolean, roundMatches?: Match[]): Observable<Prediction[]>
   findOrCreatePicks$(userId: string, roundId: string, withJoker?: boolean): Observable<Prediction[]>;
   pickScore$(userId: string, match: Match, choice: Score): Observable<Prediction>;
-  pickJoker$(userId: string, roundId: string, matchId: string): Observable<Prediction[]>;
+  pickJoker$(userId: string, match: Match): Observable<Prediction[]>;
   unsetJoker$(userId: string, matchId: string): Observable<Prediction | undefined>;
 }
 
@@ -41,9 +41,6 @@ export class PredictionRepositoryImpl
   }
 
   pickScore$(userId: string, match: Match, choice: Score): Observable<Prediction> {
-    if (!match) {
-      return throwError(() => new Error('Match not found in round'))
-    }
     if (match.status !== MatchStatus.SCHEDULED) {
       return throwError(() => new Error("Match not scheduled"))
     }
@@ -73,11 +70,16 @@ export class PredictionRepositoryImpl
       )
   }
 
-  pickJoker$(userId: string, roundId: string, matchId: string): Observable<Prediction[]> {
+  pickJoker$(userId: string, match: Match): Observable<Prediction[]> {
+    if (match.status !== MatchStatus.SCHEDULED) {
+      return throwError(() => new Error("Match not scheduled"))
+    }
+    const matchId = match.id!;
+    const roundId = match.gameRound;
     return this.matchRepo.findAll$({ gameRound: roundId })
       .pipe(
         mergeMap(matches => {
-          const match = matches.find(m => m.id?.toString() === matchId);
+          const match = matches.find(m => m.id === matchId);
           if (!match) {
             return throwError(() => new Error('Match not found in round'))
           }
