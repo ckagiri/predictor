@@ -71,7 +71,7 @@ export class MatchRepositoryImpl
                 return of(match);
               }
               merge(match, { externalReference });
-              return this.insert$(match);
+              return super.save$(match);
             }),
           );
       })

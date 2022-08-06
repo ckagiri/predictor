@@ -23,7 +23,7 @@ export interface Match extends Entity {
   id?: string;
   season: string;
   slug: string;
-  date?: any;
+  utcDate?: string;
   matchRound?: number;
   gameRound: string;
   status?: MatchStatus;
@@ -48,7 +48,7 @@ export const matchSchema = schema({
   slug: { type: String, required: true, trim: true },
   matchRound: { type: Number },
   gameRound: { type: ObjectId, ref: 'GameRound', index: true, required: true },
-  date: { type: Date, required: true },
+  utcDate: { type: Date, required: true },
   homeTeam: {
     name: { type: String, required: true },
     slug: { type: String, required: true },

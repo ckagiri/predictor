@@ -62,6 +62,7 @@ export class AfdMatchConverter implements MatchConverter {
             crestUrl: awayTeam.crestUrl!,
           },
           slug: `${homeTeam.tla?.toLowerCase()}-${awayTeam.tla?.toLowerCase()}`,
+          utcDate: data.utcDate,
           result: {
             goalsHomeTeam: data.score.fullTime.homeTeam,
             goalsAwayTeam: data.score.fullTime.awayTeam,

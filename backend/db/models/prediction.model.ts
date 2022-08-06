@@ -29,7 +29,6 @@ const predictionSchema = schema({
     goalsAwayTeam: { type: Number },
     isComputerGenerated: { type: Boolean, default: true },
   },
-  timestamp: { type: Schema.Types.Date, default: Date.now() },
   scorePoints: {
     points: { type: Number },
     resultPoints: { type: Number },

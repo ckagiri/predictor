@@ -52,8 +52,8 @@ export class GameCompetitionsController {
       throw new Error('competition not found')
     }
 
-    const seasonList = await lastValueFrom(this.seasonRepo.findAll$({ 'competition.id': competition.id }));
-    const seasons = seasonList.map(s => omit(s, ['competition', 'teams', 'externalReference', 'createdAt', 'updatedAt']))
+    const _seasons = await lastValueFrom(this.seasonRepo.findAll$({ 'competition.id': competition.id }));
+    const seasons = _seasons.map(s => omit(s, ['competition', 'teams', 'externalReference', 'createdAt', 'updatedAt']))
     return res.status(200).json({
       competitionId: competition.id,
       seasons,
@@ -80,10 +80,10 @@ export class GameCompetitionsController {
       throw new Error('season not found');
     }
 
-    const teamList = await lastValueFrom(this.seasonRepo.getTeamsForSeason$(season.id))
-    const teams = teamList.map(t => omit(t, ['aliases', 'createdAt', 'updatedAt']))
-    const roundList = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }))
-    const rounds = roundList.map(r => omit(r, ['createdAt', 'updatedAt']))
+    const _teams = await lastValueFrom(this.seasonRepo.getTeamsForSeason$(season.id))
+    const teams = _teams.map(t => omit(t, ['aliases', 'createdAt', 'updatedAt']))
+    const _rounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }))
+    const rounds = _rounds.map(r => omit(r, ['createdAt', 'updatedAt']))
 
     res.status(200).json({
       seasonId: season.id,
@@ -120,11 +120,11 @@ export class GameCompetitionsController {
         season: season.id,
         slug: roundSlug
       }));
-      const matchList = await lastValueFrom(this.matchRepo.findAll$({
+      const _matches = await lastValueFrom(this.matchRepo.findAll$({
         season: season.id,
         gameRound: round.id
       }))
-      const matches = matchList.map(m => omit(m, [
+      const matches = _matches.map(m => omit(m, [
         'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt'
       ]))
       matches.forEach(m => {
@@ -134,8 +134,8 @@ export class GameCompetitionsController {
 
       const userId = req.auth?.id;
       if (userId) {
-        const predictionList = await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, round.id!))
-        const predictions = predictionList.map(p => omit(p, ['createdAt', 'updatedAt']));
+        const _predictions = await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, round.id!))
+        const predictions = _predictions.map(p => omit(p, ['createdAt', 'updatedAt']));
         matches.forEach(m => {
           const pred = predictions.find(p => p.match?.toString() === m.id?.toString());
           if (pred) {
@@ -187,15 +187,22 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const match = await lastValueFrom(this.matchRepo.findOne$({
+    const _match = await lastValueFrom(this.matchRepo.findOne$({
       season: season.id,
       slug: matchSlug
     }))
     const userId = req.auth?.id;
     if (userId) {
-      const prediction = await lastValueFrom(this.predictionRepo.findOne$(userId, match?.id!))
-      match.prediction = prediction || null;
+      const _prediction = await lastValueFrom(this.predictionRepo.findOne$(userId, _match?.id!))
+      const prediction = omit(_prediction, ['createdAt', 'updatedAt']) as Prediction;
+      if (prediction) {
+        prediction.kickOff = prediction.timestamp;
+      }
+      _match.prediction = prediction || null;
     }
+    const match: any = omit(_match, ['allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt']);
+    match.homeTeam = match.homeTeam.id
+    match.awayTeam = match.awayTeam.id
     res.status(200).json(match);
   }
 
@@ -233,7 +240,9 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, round.id!, matchId))
+    const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, round.id!, matchId))
+    const jokerPredictions = _jokerPredictions.map(p => omit(p, ['createdAt', 'updatedAt']));
+
     res.status(200).json(jokerPredictions)
   }
 
@@ -270,7 +279,9 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const picks = await lastValueFrom(this.predictionRepo.findOrCreatePicks$(userId, round.id!))
+    const _picks = await lastValueFrom(this.predictionRepo.findOrCreatePicks$(userId, round.id!))
+    const picks = _picks.map(p => omit(p, ['createdAt', 'updatedAt']));
+
     res.status(200).json(picks);
   }
 
@@ -319,7 +330,9 @@ export class GameCompetitionsController {
     if (!match) {
       throw Error('match not found')
     }
-    const pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, round.id!, match.id!, choice))
+    const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, round.id!, match.id!, choice))
+    const pick = omit(_pick, ['createdAt', 'updatedAt']);
+
     res.status(200).json(pick);
   }
 }
