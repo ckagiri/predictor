@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 import { Competition } from '../../db/models/competition.model';
 import { Season } from '../../db/models/season.model';
@@ -8,6 +8,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 import memoryDb from '../memoryDb';
 import a from '../a';
+import { lastValueFrom } from 'rxjs';
 
 let epl: Competition;
 let epl21: Season;
@@ -120,7 +121,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(epl22)
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return seasonRepo.findByExternalId$(EPL_22_REF);
         }),
       )
@@ -140,7 +141,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insertMany$([epl21, epl22])
       .pipe(
-        flatMap(_ => {
+        mergeMap(_ => {
           return seasonRepo.findByExternalIds$([EPL_21_REF, EPL_22_REF]);
         }),
       )
@@ -162,7 +163,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(epl22)
       .pipe(
-        flatMap(s => {
+        mergeMap(s => {
           const update = { currentMatchRound: 21 };
           return seasonRepo.findByIdAndUpdate$(s.id!, update);
         }),
@@ -181,7 +182,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(epl22)
       .pipe(
-        flatMap(() => {
+        mergeMap(() => {
           afdEpl22.currentSeason.currentMatchday = 21;
           // we need to pass an afd season here -- there will be a converter to reformat the data
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl22);
@@ -201,7 +202,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(epl22)
       .pipe(
-        flatMap(() => {
+        mergeMap(() => {
           const update = { currentMatchRound: 21 };
           return seasonRepo.findByExternalIdAndUpdate$(EPL_22_REF, update);
         }),
@@ -228,7 +229,7 @@ describe('seasonRepo', function () {
     seasonRepo
       .insert$(epl22)
       .pipe(
-        flatMap(() => {
+        mergeMap(() => {
           afdEpl22.currentSeason.currentMatchday = 21;
           return seasonRepo.findByExternalIdAndUpdate$(afdEpl22);
         }),
@@ -238,5 +239,39 @@ describe('seasonRepo', function () {
         expect(s.externalReference).to.deep.equal(epl22.externalReference);
         done();
       });
+  });
+
+  it('should getTeams by season', async () => {
+    const epl = a.competition
+      .setName('English Premier League')
+      .setSlug('english-premier-league')
+      .setCode('epl');
+
+    const epl2022 = a.season
+      .withCompetition(epl)
+      .setName('2021-2022')
+      .setSlug('2021-22')
+      .setYear(2022)
+      .setSeasonStart('2021-08-09T00:00:00+0200')
+      .setSeasonEnd('2022-05-17T16:00:00+0200')
+      .setExternalReference({
+        [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
+      })
+
+    const manUtd = a.team.setName('Manchester United').setSlug('man-utd');
+    const manCity = a.team.setName('Manchester City').setSlug('man-city');
+    const brazil = a.team.setName('Brazil').setSlug('brazil');
+
+    await a.game
+      .withTeams(manUtd, manCity, brazil)
+      .withCompetitions(epl)
+      .withSeasons(epl2022
+        .withTeams(manUtd, manCity)
+      )
+      .build();
+
+    const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
+    const seasonTeams = await lastValueFrom(seasonRepo.getTeamsForSeason$(epl2022.id));
+    expect(seasonTeams).to.have.length(2);
   });
 })

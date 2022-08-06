@@ -125,11 +125,11 @@ export class GameCompetitionsController {
         gameRound: round.id
       }))
       const matches = _matches.map(m => omit(m, [
-        'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt'
+        'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
       ]))
       matches.forEach(m => {
-        m.homeTeam = m.homeTeam.id
-        m.awayTeam = m.awayTeam.id
+        m.homeTeamId = m.homeTeam.id
+        m.awayTeamId = m.awayTeam.id
       })
 
       const userId = req.auth?.id;
@@ -201,8 +201,8 @@ export class GameCompetitionsController {
       _match.prediction = prediction || null;
     }
     const match: any = omit(_match, ['allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt']);
-    match.homeTeam = match.homeTeam.id
-    match.awayTeam = match.awayTeam.id
+    match.homeTeamId = match.homeTeam.id
+    match.awayTeamId = match.awayTeam.id
     res.status(200).json(match);
   }
 

@@ -11,7 +11,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
   footballApiProvider: ApiProvider;
-  save$(obj: Entity): Observable<T>;
+  save$(obj: Entity, useConverter?: boolean): Observable<T>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
   findByExternalId$(id: string | number): Observable<T>;
@@ -34,12 +34,13 @@ export class BaseFootballApiRepositoryImpl<
     return this.converter.footballApiProvider;
   }
 
-  public save$(obj: Entity): Observable<T> {
-    return this.converter.from(obj).pipe(
-      mergeMap(entity => {
-        return super.save$(entity);
-      }),
-    );
+  public save$(obj: Entity, useConverter: boolean = true): Observable<T> {
+    return (useConverter ? this.converter.from(obj) : of(obj))
+      .pipe(
+        mergeMap(entity => {
+          return super.save$(entity);
+        })
+      );
   }
 
   public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
@@ -75,5 +76,24 @@ export class BaseFootballApiRepositoryImpl<
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
 
     return this.findAll$({ [externalIdKey]: { $in: ids } });
+  }
+
+  protected _findOneAndUpsert$(
+    conditions: any,
+    obj: Entity,
+    externalReference: any,
+  ): Observable<T> {
+    return super
+      .findOneAndUpdate$(conditions, obj, { new: true, upsert: true })
+      .pipe(
+        mergeMap((updatedObj: T) => {
+          // todo: find a better way to do this
+          if (externalReference === undefined) {
+            return of(updatedObj);
+          }
+          _.merge(updatedObj, { externalReference });
+          return super.save$(updatedObj);
+        }),
+      );
   }
 }

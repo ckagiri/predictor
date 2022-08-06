@@ -48,7 +48,7 @@ export class TeamRepositoryImpl
                 return of(team);
               }
               merge(team, { externalReference });
-              return super.save$(team);
+              return this.findOneAndUpdate$(query, team);
             })
           );
       })

@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import { flatMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import memoryDb from '../memoryDb';
@@ -114,7 +114,7 @@ describe('MatchRepo', function () {
       ligiMatchRepo
         .save$(manuVsmanc)
         .pipe(
-          flatMap(_ =>
+          mergeMap(_ =>
             matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVsManc),
           ),
         )
