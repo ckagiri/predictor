@@ -29,6 +29,8 @@ export interface Match extends Entity {
   status?: MatchStatus;
   homeTeam?: TeamPartial;
   awayTeam?: TeamPartial;
+  homeTeamId?: string;
+  awayTeamId?: string;
   odds?: Odds;
   result?: Score;
   venue?: string;

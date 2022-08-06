@@ -4,10 +4,6 @@ import { Match } from '../../models/match.model';
 import { MatchConverter } from '../match.converter';
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
 import {
-  SeasonRepository,
-  SeasonRepositoryImpl,
-} from '../../repositories/season.repo';
-import {
   TeamRepository,
   TeamRepositoryImpl,
 } from '../../repositories/team.repo';
@@ -15,7 +11,6 @@ import {
 export class LigiMatchConverter implements MatchConverter {
   public static getInstance(): MatchConverter {
     return new LigiMatchConverter(
-      SeasonRepositoryImpl.getInstance(ApiProvider.LIGI),
       TeamRepositoryImpl.getInstance(ApiProvider.LIGI),
     );
   }
@@ -23,7 +18,6 @@ export class LigiMatchConverter implements MatchConverter {
   public footballApiProvider: ApiProvider;
 
   constructor(
-    private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
   ) {
     this.footballApiProvider = ApiProvider.LIGI;
@@ -31,13 +25,11 @@ export class LigiMatchConverter implements MatchConverter {
 
   public from(data: any): Observable<Match> {
     return zip(
-      this.seasonRepo.findById$(data.seasonId),
       this.teamRepo.findById$(data.homeTeamId),
       this.teamRepo.findById$(data.awayTeamId),
-      (season: any, homeTeam: any, awayTeam: any) => {
+      (homeTeam: any, awayTeam: any) => {
         return {
           ...data,
-          season: season.id,
           homeTeam: {
             id: homeTeam.id!,
             name: homeTeam.name,

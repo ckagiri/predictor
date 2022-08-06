@@ -125,7 +125,7 @@ export class GameCompetitionsController {
         gameRound: round.id
       }))
       const matches = _matches.map(m => omit(m, [
-        'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
+        'homeTeam', 'awayTeam', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
       ]))
       matches.forEach(m => {
         m.homeTeamId = m.homeTeam.id
@@ -200,7 +200,9 @@ export class GameCompetitionsController {
       }
       _match.prediction = prediction || null;
     }
-    const match: any = omit(_match, ['allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt']);
+    const match: any = omit(_match, [
+      'homeTeam', 'awayTeam', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt'
+    ]);
     match.homeTeamId = match.homeTeam.id
     match.awayTeamId = match.awayTeam.id
     res.status(200).json(match);

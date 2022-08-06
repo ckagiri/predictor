@@ -88,7 +88,7 @@ describe('MatchRepo', function () {
 
       manuVsmanc = {
         id: undefined,
-        seasonId: epl2020.id,
+        season: epl2020.id,
         date: '2019-09-10T11:30:00Z',
         status: MatchStatus.SCHEDULED,
         gameRound: gw1.id,
