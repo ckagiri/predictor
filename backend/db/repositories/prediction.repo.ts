@@ -1,5 +1,5 @@
 import { Observable, of, from, throwError, iif } from 'rxjs';
-import { filter, mergeMap, map, catchError, toArray, concatMap } from 'rxjs/operators';
+import { filter, mergeMap, map, toArray } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
@@ -13,7 +13,7 @@ import {
 } from '../repositories/match.repo';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
-import { find, head, isNumber, isString, uniq } from 'lodash';
+import { head, uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
