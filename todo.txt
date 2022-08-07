@@ -164,8 +164,18 @@ handle client-side filters
 
 chai-assertions-count
 
-crypto 
+crypto
 passport
 express-jwt
 passport-local
 jsonwebtoken
+
+>>>>>
+id toString remove
+update matches process status in schedulers
+test calculatePoints
+test processLeaderboards
+onMatchRound ifCurrentRound position Changed
+findOrCreatePredictions timer
+updateScorenRankings timer
+>>>>

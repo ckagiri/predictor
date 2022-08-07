@@ -63,17 +63,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
             const scorePoints = this.predictionCalculator.calculateScore(result!, choice);
             return this.predictionRepo.findByIdAndUpdate$(prediction.id!, { scorePoints })
           }),
-          count(),
-          mergeMap(predsUpdated => {
-            return from(matches)
-              .pipe(
-                mergeMap(match => {
-                  return this.matchRepo.findByIdAndUpdate$(match.id!, { allPredictionPointsCalculated: true })
-                }),
-                last(),
-                map(() => predsUpdated)
-              )
-          })
+          count()
         )
     )
   }

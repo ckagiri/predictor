@@ -5,6 +5,7 @@ import { get, merge, omit } from 'lodash';
 import MatchModel, {
   Match,
   MatchDocument,
+  MatchStatus,
 } from '../models/match.model';
 import {
   BaseFootballApiRepository,
@@ -21,7 +22,7 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
-  findAllFinishedForCurrentSeasons(): Observable<Match[]>
+  findAllFinishedForCurrentSeasons(filter: any): Observable<Match[]>
 }
 export class MatchRepositoryImpl
   extends BaseFootballApiRepositoryImpl<Match, MatchDocument>
@@ -37,14 +38,14 @@ export class MatchRepositoryImpl
     super(MatchModel, converter);
   }
 
-  findAllFinishedForCurrentSeasons(): Observable<Match[]> {
+  findAllFinishedForCurrentSeasons(filter: any = {}): Observable<Match[]> {
     return this.competitionRepo.findAll$()
       .pipe(
         mergeMap(competitions => from(competitions)),
         mergeMap(competition => {
           const { currentSeason } = competition;
           if (currentSeason) {
-            return this.findAll$({ season: currentSeason })
+            return this.findAll$({ ...filter, season: currentSeason, status: MatchStatus.FINISHED })
           } else {
             return of([]);
           }

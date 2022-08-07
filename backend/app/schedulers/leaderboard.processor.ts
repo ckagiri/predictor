@@ -87,10 +87,10 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
               )
           }),
           mergeMap(userScoresVisited => {
-            const seasonLeaderboard$ = this.leaderboardRepo.findOrCreateSeasonLeaderboardAndUpdate$(
+            const seasonLeaderboard$ = this.leaderboardRepo.findSeasonLeaderboardAndUpdate$(
               seasonId, { status: BOARD_STATUS.SCORES_UPDATED });
             const roundLeaderboard$Array: Observable<Leaderboard>[] = gameRoundIds.map(gameRoundId => {
-              return this.leaderboardRepo.findOrCreateRoundLeaderboardAndUpdate$(
+              return this.leaderboardRepo.findRoundLeaderboardAndUpdate$(
                 seasonId, gameRoundId, { status: BOARD_STATUS.SCORES_UPDATED })
             });
             return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
