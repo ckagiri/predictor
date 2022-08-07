@@ -68,9 +68,6 @@ export class MatchRepositoryImpl
         return this.findOneAndUpsert$(query, data)
           .pipe(
             mergeMap((match: Match) => {
-              if (externalReference === undefined) {
-                return of(match);
-              }
               merge(match, { externalReference });
               return this.findOneAndUpdate$(query, match);
             }),

@@ -43,11 +43,6 @@ export class LigiMatchConverter implements MatchConverter {
             crestUrl: awayTeam.crestUrl!,
           },
           slug: `${homeTeam.slug}-v-${awayTeam.slug}`,
-          externalReference: {
-            [this.footballApiProvider]: {
-              id: data.id,
-            },
-          },
         };
       },
     );

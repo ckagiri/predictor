@@ -44,9 +44,6 @@ export class TeamRepositoryImpl
         return this.findOneAndUpsert$(query, data)
           .pipe(
             mergeMap((team: Team) => {
-              if (externalReference === undefined) {
-                return of(team);
-              }
               merge(team, { externalReference });
               return this.findOneAndUpdate$(query, team);
             })
