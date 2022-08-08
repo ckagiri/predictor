@@ -1,5 +1,5 @@
 import { from, lastValueFrom, Observable } from 'rxjs';
-import { mergeMap, map } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 import { Job } from '../jobs/job';
 import { Queue } from '../queue';
 import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
@@ -8,14 +8,18 @@ import Builder from './teamsJob.builder';
 import { Team } from '../../db/models/team.model';
 
 export class TeamsJob implements Job {
-  private _competitionId?: number | string;
-  private _apiClient?: FootballApiClient;
-  private _teamRepo?: TeamRepository;
+  private _competitionId: number | string;
+  private _apiClient: FootballApiClient;
+  private _teamRepo: TeamRepository;
 
   constructor(builder: Builder) {
-    this._apiClient = builder.apiClient;
-    this._teamRepo = builder.teamRepo;
-    this._competitionId = builder.competitionId;
+    const { competitionId, apiClient, teamRepo } = builder;
+    if (!competitionId || !apiClient || !teamRepo) {
+      throw new Error('Teams Job not properly initialised');
+    }
+    this._competitionId = competitionId;
+    this._apiClient = apiClient;
+    this._teamRepo = teamRepo;
   }
 
   static get builder(): Builder {

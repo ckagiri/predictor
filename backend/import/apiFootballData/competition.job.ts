@@ -12,18 +12,22 @@ import Builder from './competitionJob.builder';
 import { Season } from '../../db/models/season.model';
 
 export class CompetitionJob implements Job {
-  private _competitionId?: number | string;
-  private _apiClient?: FootballApiClient;
-  private _seasonRepo?: SeasonRepository;
-  private _teamRepo?: TeamRepository;
-  private _matchRepo?: MatchRepository;
+  private _competitionId: number | string;
+  private _apiClient: FootballApiClient;
+  private _seasonRepo: SeasonRepository;
+  private _teamRepo: TeamRepository;
+  private _matchRepo: MatchRepository;
 
   constructor(builder: Builder) {
-    this._apiClient = builder.apiClient;
-    this._seasonRepo = builder.seasonRepo;
-    this._teamRepo = builder.teamRepo;
-    this._matchRepo = builder.matchRepo;
-    this._competitionId = builder.competitionId;
+    const { competitionId, apiClient, teamRepo, seasonRepo, matchRepo } = builder;
+    if (!competitionId || !apiClient || !teamRepo || !seasonRepo || !matchRepo) {
+      throw new Error('Matches Job not properly initialised');
+    }
+    this._competitionId = competitionId;
+    this._apiClient = apiClient;
+    this._seasonRepo = seasonRepo;
+    this._teamRepo = teamRepo;
+    this._matchRepo = matchRepo;
   }
 
   static get builder(): Builder {
@@ -34,14 +38,14 @@ export class CompetitionJob implements Job {
     // tslint:disable-next-line: no-console
     console.log('** starting ApiFootballData Competition job');
     return lastValueFrom(
-      from(this._apiClient?.getCompetition(this._competitionId))
+      from(this._apiClient.getCompetition(this._competitionId))
         .pipe(
           mergeMap((response: any) => {
             const competition = response.data;
             delete competition.seasons;
             const { currentSeason } = competition;
             const season = { ...competition, id: currentSeason.id };
-            return this._seasonRepo?.findByExternalIdAndUpdate$(season) as Observable<Season[]>;
+            return this._seasonRepo.findByExternalIdAndUpdate$(season) as Observable<Season[]>;
           }),
           map(() => {
             const matchesJob = MatchesJob.builder
