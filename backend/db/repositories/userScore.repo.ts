@@ -3,8 +3,7 @@ import { mergeMap } from 'rxjs/operators';
 
 import { ScorePoints } from '../../common/score';
 import UserScoreModel, {
-  UserScore,
-  UserScoreDocument,
+  UserScore
 } from '../models/userScore.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
@@ -31,7 +30,7 @@ export interface UserScoreRepository extends BaseRepository<UserScore> {
 }
 
 export class UserScoreRepositoryImpl
-  extends BaseRepositoryImpl<UserScore, UserScoreDocument>
+  extends BaseRepositoryImpl<UserScore>
   implements UserScoreRepository {
   public static getInstance() {
     return new UserScoreRepositoryImpl();

@@ -1,7 +1,8 @@
 import { Schema, model } from 'mongoose';
 
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 import { ScorePoints, Score } from '../../common/score';
+
 export interface Prediction extends Entity {
   id?: string;
   user: string;
@@ -14,8 +15,6 @@ export interface Prediction extends Entity {
   jokerAutoPicked?: boolean;
   [key: string]: any;
 }
-
-export interface PredictionDocument extends Prediction, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 
@@ -43,7 +42,7 @@ const predictionSchema = schema({
   jokerAutoPicked: { type: Boolean, default: false },
 });
 
-const PredictionModel = model<PredictionDocument>(
+const PredictionModel = model<Prediction>(
   'Prediction',
   predictionSchema,
 );

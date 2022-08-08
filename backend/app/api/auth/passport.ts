@@ -1,5 +1,6 @@
+import { HydratedDocument } from 'mongoose';
 import passportLocal from "passport-local";
-import User, { UserDocument } from "../../../db/models/user.model";
+import UserModel, { User } from "../../../db/models/user.model";
 
 const LocalStrategy = passportLocal.Strategy;
 
@@ -8,7 +9,7 @@ const LocalStrategy = passportLocal.Strategy;
  */
 function getLocalStrategy() {
   return new LocalStrategy({ usernameField: "username" }, (username, password, done) => {
-    User.findOne({ username: username.toLowerCase() }, (err: Error, user: UserDocument) => {
+    UserModel.findOne({ username: username.toLowerCase() }, (err: Error, user: HydratedDocument<User>) => {
       if (err) { return done(err); }
       if (!user) {
         return done(undefined, false, { message: 'username not found' });

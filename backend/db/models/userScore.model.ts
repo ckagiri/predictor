@@ -1,6 +1,6 @@
-import mongoose, { Schema, model } from 'mongoose';
+import { Schema, model } from 'mongoose';
 
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 
 export interface UserScore extends Entity {
   id?: string;
@@ -26,8 +26,6 @@ export interface UserScore extends Entity {
   positionOld?: number;
   positionNew?: number;
 }
-
-export interface UserScoreDocument extends UserScore, DocumentEntity { }
 
 const { ObjectId } = Schema.Types;
 
@@ -60,6 +58,6 @@ const userScoreSchema = schema({
   positionNew: { type: Number },
 });
 
-const UserScoreModel = model<UserScoreDocument>('UserScore', userScoreSchema);
+const UserScoreModel = model<UserScore>('UserScore', userScoreSchema);
 
 export default UserScoreModel;

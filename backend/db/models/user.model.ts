@@ -1,16 +1,12 @@
 import { Schema, model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 
 export interface User extends Entity {
-  id?: string;
   username?: string;
   password?: string;
   isAdmin?: boolean;
-}
-
-export interface UserDocument extends User, DocumentEntity {
   comparePassword(candidatePassword: string, cb: any): void;
 }
 
@@ -18,10 +14,10 @@ const userSchema = schema({
   username: { type: String, unique: true, lowercase: true },
   password: { type: String },
   isAdmin: { type: Boolean, default: false },
-}) as Schema<UserDocument>;
+}) as Schema<User>;
 
 userSchema.pre('save', function (next) {
-  const user = this as UserDocument;
+  const user = this;
   if (!user.isModified('password')) {
     return next();
   }
@@ -52,6 +48,6 @@ userSchema.methods.comparePassword = function comparePassword(
   });
 };
 
-const UserModel = model<UserDocument>('User', userSchema);
+const UserModel = model<User>('User', userSchema);
 
 export default UserModel;

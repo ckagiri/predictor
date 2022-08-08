@@ -4,7 +4,6 @@ import { get, merge, omit } from 'lodash';
 
 import MatchModel, {
   Match,
-  MatchDocument,
   MatchStatus,
 } from '../models/match.model';
 import { Competition } from '../models/competition.model';
@@ -26,7 +25,7 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
 }
 
 export class MatchRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<Match, MatchDocument>
+  extends BaseFootballApiRepositoryImpl<Match>
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,

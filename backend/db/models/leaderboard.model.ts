@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 
 export enum STATUS {
   UPDATING_SCORES = 'UPDATING_SCORES',
@@ -24,8 +24,6 @@ export interface Leaderboard extends Entity {
   lastStatusUpdate?: Date;
 }
 
-export interface LeaderboardDocument extends Leaderboard, DocumentEntity { }
-
 const { ObjectId } = Schema.Types;
 
 const leaderboardSchema = schema({
@@ -47,7 +45,7 @@ const leaderboardSchema = schema({
   lastStatusUpdate: { type: Schema.Types.Date },
 });
 
-const LeaderboardModel = model<LeaderboardDocument>(
+const LeaderboardModel = model<Leaderboard>(
   'Leaderboard',
   leaderboardSchema,
 );

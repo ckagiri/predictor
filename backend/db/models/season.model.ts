@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 
 export interface Season extends Entity {
   name?: string;
@@ -18,8 +18,6 @@ export interface Season extends Entity {
   externalReference?: any;
   teams?: string[];
 }
-
-export interface SeasonDocument extends Season, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -48,6 +46,6 @@ export const seasonSchema = schema({
   externalReference: { type: Mixed },
 });
 
-const SeasonModel = model<SeasonDocument>('Season', seasonSchema);
+const SeasonModel = model<Season>('Season', seasonSchema);
 
 export default SeasonModel;

@@ -1,14 +1,8 @@
-import { Schema, Document, SchemaDefinition, SchemaOptions } from 'mongoose';
+import { Schema, SchemaDefinition, SchemaOptions } from 'mongoose';
 import Plugin from './plugin';
 
 export interface Entity {
   id?: string;
-}
-
-export interface DocumentEntity extends Document, Entity {
-  id?: string;
-  createdAt?: Date;
-  modifiedAt?: Date;
 }
 
 export function schema(definition: SchemaDefinition, options?: SchemaOptions) {

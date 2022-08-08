@@ -1,6 +1,6 @@
 import { Schema, model } from 'mongoose';
 
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 import { Score, Odds } from '../../common/score';
 import { Prediction } from './prediction.model';
 
@@ -40,8 +40,6 @@ export interface Match extends Entity {
   prediction?: Prediction | undefined | null;
   [key: string]: any;
 }
-
-export interface MatchDocument extends Match, DocumentEntity { }
 
 const { ObjectId, Mixed } = Schema.Types;
 
@@ -89,6 +87,6 @@ export const matchSchema = schema({
   externalReference: { type: Mixed },
 });
 
-const MatchModel = model<MatchDocument>('Match', matchSchema);
+const MatchModel = model<Match>('Match', matchSchema);
 
 export default MatchModel;

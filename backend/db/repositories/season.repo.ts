@@ -1,4 +1,4 @@
-import SeasonModel, { Season, SeasonDocument } from '../models/season.model';
+import SeasonModel, { Season } from '../models/season.model';
 
 import {
   BaseFootballApiRepository,
@@ -13,7 +13,7 @@ import { FootballApiProvider as ApiProvider } from '../../common/footballApiProv
 export interface SeasonRepository extends BaseFootballApiRepository<Season> {
 }
 export class SeasonRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<Season, SeasonDocument>
+  extends BaseFootballApiRepositoryImpl<Season>
   implements SeasonRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI

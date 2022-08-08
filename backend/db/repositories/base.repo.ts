@@ -1,9 +1,8 @@
 import { Observable, Subscriber } from 'rxjs';
-import { Model, Document } from 'mongoose';
+import { Model } from 'mongoose';
 
 import { DocumentDao } from './document.dao';
-import { Entity, DocumentEntity } from '../models/base.model';
-import { cond } from 'lodash';
+import { Entity } from '../models/base.model';
 
 export interface BaseRepository<T extends Entity> {
   save$(obj: Entity): Observable<T>;
@@ -27,15 +26,12 @@ export interface BaseRepository<T extends Entity> {
   count$(conditions: any): Observable<number>;
 }
 
-export class BaseRepositoryImpl<
-  T extends Entity,
-  TDocument extends T & DocumentEntity
-  > implements BaseRepository<T> {
+export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
 
-  private documentDao: DocumentDao<TDocument>;
+  private documentDao: DocumentDao<T>;
 
-  constructor(SchemaModel: Model<TDocument>) {
-    this.documentDao = new DocumentDao<TDocument>(SchemaModel);
+  constructor(SchemaModel: Model<T>) {
+    this.documentDao = new DocumentDao<T>(SchemaModel);
   }
 
   public save$(obj: Entity): Observable<T> {
@@ -193,7 +189,7 @@ export class BaseRepositoryImpl<
   ): Observable<T[]> {
     return new Observable((observer: Subscriber<T[]>) => {
       this.documentDao.findAll(conditions, '-__v', options).then(
-        (result: TDocument[]) => {
+        (result: T[]) => {
           observer.next(result);
           observer.complete();
         },

@@ -1,10 +1,7 @@
 import { Observable, of, from, throwError, iif } from 'rxjs';
 import { filter, mergeMap, map, toArray } from 'rxjs/operators';
 
-import PredictionModel, {
-  Prediction,
-  PredictionDocument,
-} from '../models/prediction.model';
+import PredictionModel, { Prediction } from '../models/prediction.model';
 import { Match, MatchStatus } from '../models/match.model';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
@@ -20,7 +17,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
 }
 
 export class PredictionRepositoryImpl
-  extends BaseRepositoryImpl<Prediction, PredictionDocument>
+  extends BaseRepositoryImpl<Prediction>
   implements PredictionRepository {
   public static getInstance() {
     return new PredictionRepositoryImpl();

@@ -1,10 +1,10 @@
 import { Observable, forkJoin, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-import { Model, Document } from 'mongoose';
+import { Model } from 'mongoose';
 import _ from 'lodash';
 
 import { BaseRepositoryImpl, BaseRepository } from '../repositories/base.repo';
-import { Entity, DocumentEntity } from '../models/base.model';
+import { Entity } from '../models/base.model';
 import { Converter } from '../converters/converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
@@ -20,12 +20,11 @@ export interface BaseFootballApiRepository<T extends Entity>
 
 export class BaseFootballApiRepositoryImpl<
   T extends Entity,
-  TDocument extends T & DocumentEntity
-  > extends BaseRepositoryImpl<T, TDocument>
+  > extends BaseRepositoryImpl<T>
   implements BaseFootballApiRepository<T> {
   protected converter: Converter;
 
-  constructor(SchemaModel: Model<TDocument>, converter: Converter) {
+  constructor(SchemaModel: Model<T>, converter: Converter) {
     super(SchemaModel);
     this.converter = converter;
   }

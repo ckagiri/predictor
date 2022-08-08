@@ -1,8 +1,7 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, HydratedDocument } from 'mongoose';
 import { omit } from 'lodash';
-// mongoose.set('useFindAndModify', false);
 
-import { DocumentEntity, Entity } from '../models/base.model';
+import { Entity } from '../models/base.model';
 
 const transform = (doc: any) => {
   doc.id = doc._id.toString();
@@ -11,7 +10,7 @@ const transform = (doc: any) => {
   return doc;
 };
 
-export class DocumentDao<T extends DocumentEntity> {
+export class DocumentDao<T extends Entity> {
   protected Model: Model<T>;
 
   constructor(SchemaModel: Model<T>) {
@@ -19,11 +18,11 @@ export class DocumentDao<T extends DocumentEntity> {
   }
 
   public save(obj: Entity): Promise<T> {
-    let model: T;
+    let model: HydratedDocument<T>;
     if (obj instanceof this.Model) {
-      model = obj as T;
+      model = obj as HydratedDocument<T>;
     } else {
-      model = new this.Model(obj) as T;
+      model = new this.Model(obj) as HydratedDocument<T>;
     }
 
     return model.save().then(model => model.toObject() as T);

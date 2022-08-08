@@ -1,8 +1,9 @@
+import { HydratedDocument } from 'mongoose'
 import passport from 'passport'
 import { Request, Response, NextFunction } from 'express';
 import { Request as JWTRequest } from "express-jwt";
 
-import User, { UserDocument } from '../../../db/models/user.model';
+import UserModel, { User } from '../../../db/models/user.model';
 import { getUserToken, isPasswordAllowed, isUsernameAllowed, userToJSON } from './utils';
 
 const authUserToJSON = (user: any) => ({
@@ -25,16 +26,16 @@ async function register(req: Request, res: Response) {
   if (!isUsernameAllowed(username)) {
     return res.status(400).json({ message: `username limited to 4-15 alphanumeric (except underscore) characters` })
   }
-  let existingUser: UserDocument | null = null;
+  let existingUser: HydratedDocument<User> | null = null;
   try {
-    existingUser = await User.findOne({ username }).exec();
+    existingUser = await UserModel.findOne({ username }).exec();
   } catch (error: unknown) {
     res.status(500).send({ message: (<Error>error).message });
   }
   if (existingUser) {
     return res.status(409).send({ message: 'Username is already taken' });
   }
-  const user = new User({ username, password });
+  const user = new UserModel({ username, password });
   const newUser = (await user.save()).toObject();
   const authUser = authUserToJSON(newUser)
   return res.json({ user: authUser })

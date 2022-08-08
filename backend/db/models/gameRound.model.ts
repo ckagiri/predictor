@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Entity, DocumentEntity, schema } from './base.model';
+import { Entity, schema } from './base.model';
 
 export interface GameRound extends Entity {
   season?: string;
@@ -8,8 +8,6 @@ export interface GameRound extends Entity {
   position?: number;
 }
 
-export interface GameRoundDocument extends GameRound, DocumentEntity { }
-
 const GameRoundSchema = schema({
   season: { type: Schema.Types.ObjectId, ref: 'Season', index: true, required: true },
   name: { type: String, required: true },
@@ -17,7 +15,7 @@ const GameRoundSchema = schema({
   position: { type: Number, required: true },
 });
 
-const GameRoundModel = model<GameRoundDocument>(
+const GameRoundModel = model<GameRound>(
   'GameRound',
   GameRoundSchema,
 );

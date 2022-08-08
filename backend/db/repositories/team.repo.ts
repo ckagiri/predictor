@@ -1,7 +1,7 @@
 import { Observable, forkJoin } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { merge } from 'lodash';
-import TeamModel, { Team, TeamDocument } from '../models/team.model';
+import TeamModel, { Team } from '../models/team.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
@@ -17,7 +17,7 @@ export interface TeamRepository extends BaseFootballApiRepository<Team> {
 }
 
 export class TeamRepositoryImpl
-  extends BaseFootballApiRepositoryImpl<Team, TeamDocument>
+  extends BaseFootballApiRepositoryImpl<Team>
   implements TeamRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,

@@ -3,7 +3,6 @@ import { mergeMap, Observable, toArray } from 'rxjs';
 import LeaderboardModel, {
   BOARD_TYPE,
   Leaderboard,
-  LeaderboardDocument,
 } from '../models/leaderboard.model';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 
@@ -27,7 +26,7 @@ export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
 }
 
 export class LeaderboardRepositoryImpl
-  extends BaseRepositoryImpl<Leaderboard, LeaderboardDocument>
+  extends BaseRepositoryImpl<Leaderboard>
   implements LeaderboardRepository {
   public static getInstance() {
     return new LeaderboardRepositoryImpl();
