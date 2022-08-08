@@ -80,9 +80,6 @@ export class UserScoreRepositoryImpl
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
           score.closeMatchScores = closeMatchScorePoints;
           score.exactMatchScores = exactMatchScorePoints / 6;
-          score.resultPoints = resultPoints;
-          score.scorePoints = scorePoints;
-          score.points = points;
           score.pointsExcludingJoker = points;
 
           if (hasJoker) {
@@ -100,7 +97,7 @@ export class UserScoreRepositoryImpl
           return this.insert$(score);
         } else {
           const matches = userScore.matches as string[];
-          const matchExists = matches.some(n => n.toString() === matchId);
+          const matchExists = matches.some(m => m === matchId);
           if (matchExists) {
             return of(userScore);
           }

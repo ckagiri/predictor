@@ -1,7 +1,6 @@
 import { Observable, forkJoin, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { Model } from 'mongoose';
-import _ from 'lodash';
 
 import { BaseRepositoryImpl, BaseRepository } from '../repositories/base.repo';
 import { Entity } from '../models/base.model';
@@ -75,24 +74,5 @@ export class BaseFootballApiRepositoryImpl<
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
 
     return this.findAll$({ [externalIdKey]: { $in: ids } });
-  }
-
-  protected _findOneAndUpsert$(
-    conditions: any,
-    obj: Entity,
-    externalReference: any,
-  ): Observable<T> {
-    return super
-      .findOneAndUpdate$(conditions, obj, { new: true, upsert: true })
-      .pipe(
-        mergeMap((updatedObj: T) => {
-          // todo: find a better way to do this
-          if (externalReference === undefined) {
-            return of(updatedObj);
-          }
-          _.merge(updatedObj, { externalReference });
-          return super.save$(updatedObj);
-        }),
-      );
   }
 }
