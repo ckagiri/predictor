@@ -1,10 +1,8 @@
 import { MatchStatus } from '../../db/models/match.model';
-import { count, from, last, lastValueFrom, map, mergeMap, of } from 'rxjs';
+import { count, from, lastValueFrom, map, mergeMap, of } from 'rxjs';
 import { Match } from '../../db/models';
-import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import PredictionCalculator from './prediction.calculator';
-import { uniq } from 'lodash';
 
 export interface PredictionProcessor {
   calculatePredictionPoints(seasonId: string, matches: Match[]): Promise<number>;
@@ -12,20 +10,15 @@ export interface PredictionProcessor {
 
 export class PredictionProcessorImpl implements PredictionProcessor {
   public static getInstance(
-    matchRepo?: MatchRepository,
     predictionRepo?: PredictionRepository,
     predictionCalculator?: PredictionCalculator,
   ) {
-    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance();
-    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance(matchRepoImpl);
+    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance();
     const predictionCalc = predictionCalculator ?? PredictionCalculator.getInstance();
-    return new PredictionProcessorImpl(
-      matchRepoImpl, predictionRepoImpl, predictionCalc,
-    );
+    return new PredictionProcessorImpl(predictionRepoImpl, predictionCalc);
   }
 
   constructor(
-    private matchRepo: MatchRepository,
     private predictionRepo: PredictionRepository,
     private predictionCalculator: PredictionCalculator,
   ) { }

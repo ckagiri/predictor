@@ -2,9 +2,8 @@ import { Request, Response } from 'express';
 import { Request as JWTRequest } from "express-jwt";
 import { lastValueFrom } from "rxjs";
 
-import { FootballApiProvider } from "../../../common/footballApiProvider";
 import { SeasonRepository, SeasonRepositoryImpl } from "../../../db/repositories/season.repo";
-import { TeamRepositoryImpl } from "../../../db/repositories/team.repo";
+import { TeamRepository, TeamRepositoryImpl } from "../../../db/repositories/team.repo";
 import { CompetitionRepository, CompetitionRepositoryImpl } from "../../../db/repositories/competition.repo";
 import { MatchRepository, MatchRepositoryImpl } from "../../../db/repositories/match.repo";
 import { PredictionRepository, PredictionRepositoryImpl } from "../../../db/repositories/prediction.repo";
@@ -16,16 +15,18 @@ import { omit } from 'lodash';
 export class GameCompetitionsController {
   public static getInstance(
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(FootballApiProvider.LIGI, TeamRepositoryImpl.getInstance()),
+    teamRepo = TeamRepositoryImpl.getInstance(),
+    seasonRepo = SeasonRepositoryImpl.getInstance(),
     gameRoundRepo = GameRoundRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(FootballApiProvider.LIGI, competitionRepo),
-    predictionRepo = PredictionRepositoryImpl.getInstance(matchRepo)
+    matchRepo = MatchRepositoryImpl.getInstance(),
+    predictionRepo = PredictionRepositoryImpl.getInstance()
   ) {
-    return new GameCompetitionsController(competitionRepo, seasonRepo, gameRoundRepo, matchRepo, predictionRepo);
+    return new GameCompetitionsController(competitionRepo, teamRepo, seasonRepo, gameRoundRepo, matchRepo, predictionRepo);
   }
 
   constructor(
     private competitionRepo: CompetitionRepository,
+    private teamRepo: TeamRepository,
     private seasonRepo: SeasonRepository,
     private gameRoundRepo: GameRoundRepository,
     private matchRepo: MatchRepository,
@@ -80,10 +81,10 @@ export class GameCompetitionsController {
       throw new Error('season not found');
     }
 
-    const _teams = await lastValueFrom(this.seasonRepo.getTeamsForSeason$(season.id))
-    const teams = _teams.map(t => omit(t, ['aliases', 'createdAt', 'updatedAt']))
-    const _rounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }))
-    const rounds = _rounds.map(r => omit(r, ['createdAt', 'updatedAt']))
+    const _teams = await lastValueFrom(this.teamRepo.findAllByIds$(season.teams));
+    const teams = _teams.map(t => omit(t, ['aliases', 'createdAt', 'updatedAt']));
+    const _rounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }));
+    const rounds = _rounds.map(r => omit(r, ['createdAt', 'updatedAt']));
 
     res.status(200).json({
       seasonId: season.id,
@@ -120,11 +121,22 @@ export class GameCompetitionsController {
         season: season.id,
         slug: roundSlug
       }));
-      const _matches = await lastValueFrom(this.matchRepo.findAll$({
+      const roundMatches = await lastValueFrom(this.matchRepo.findAll$({
         season: season.id,
         gameRound: round.id
       }))
-      const matches = _matches.map(m => omit(m, [
+
+      const userId = req.auth?.id;
+      if (userId) {
+        const predictions = await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, roundMatches))
+        roundMatches.forEach(m => {
+          const _prediction = predictions.find(p => p.match?.toString() === m.id);
+          const prediction = omit(_prediction, ['createdAt', 'updatedAt']) as Prediction;
+          m.prediction = prediction || null;
+        });
+      }
+
+      const matches = roundMatches.map(m => omit(m, [
         'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
       ]))
       matches.forEach(m => {
@@ -133,20 +145,6 @@ export class GameCompetitionsController {
         delete m.homeTeam;
         delete m.awayTeam;
       })
-
-      const userId = req.auth?.id;
-      if (userId) {
-        const _predictions = await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, round.id!))
-        const predictions = _predictions.map(p => omit(p, ['createdAt', 'updatedAt']));
-        matches.forEach(m => {
-          const pred = predictions.find(p => p.match?.toString() === m.id?.toString());
-          if (pred) {
-            pred.kickOff = pred.timestamp;
-          }
-          m.prediction = pred || null;
-        });
-      }
-
       res.status(200).json({
         roundId: round.id,
         matches
@@ -197,9 +195,6 @@ export class GameCompetitionsController {
     if (userId) {
       const _prediction = await lastValueFrom(this.predictionRepo.findOne$(userId, _match?.id!))
       const prediction = omit(_prediction, ['createdAt', 'updatedAt']) as Prediction;
-      if (prediction) {
-        prediction.kickOff = prediction.timestamp;
-      }
       _match.prediction = prediction || null;
     }
     const match: any = omit(_match, [
@@ -249,16 +244,16 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const match = await lastValueFrom(this.matchRepo.findOne$({
+    const roundMatches = await lastValueFrom(this.matchRepo.findAll$({
       season: season.id,
-      gameRound: round.id,
-      slug: matchSlug
+      gameRound: round.id
     }))
+    const match = roundMatches.find(m => m.slug === matchSlug);
     if (!match) {
       throw Error('match not found')
     }
 
-    const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match))
+    const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match, roundMatches))
     const jokerPredictions = _jokerPredictions.map(p => omit(p, ['createdAt', 'updatedAt']));
 
     res.status(200).json(jokerPredictions)
@@ -297,7 +292,11 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const _picks = await lastValueFrom(this.predictionRepo.findOrCreatePicks$(userId, round.id!))
+    const roundMatches = await lastValueFrom(this.matchRepo.findAll$({
+      season: season.id,
+      gameRound: round.id
+    }))
+    const _picks = await lastValueFrom(this.predictionRepo.findOrCreatePicks$(userId, roundMatches))
     const picks = _picks.map(p => omit(p, ['createdAt', 'updatedAt']));
 
     res.status(200).json(picks);
@@ -341,16 +340,16 @@ export class GameCompetitionsController {
       throw new Error('round not found');
     }
 
-    const match = await lastValueFrom(this.matchRepo.findOne$({
+    const roundMatches = await lastValueFrom(this.matchRepo.findAll$({
       season: season.id,
-      gameRound: round.id,
-      slug: matchSlug
+      gameRound: round.id
     }))
+    const match = roundMatches.find(m => m.slug === matchSlug);
     if (!match) {
       throw Error('match not found')
     }
 
-    const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, choice))
+    const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, roundMatches, choice))
     const pick = omit(_pick, ['createdAt', 'updatedAt']);
 
     res.status(200).json(pick);

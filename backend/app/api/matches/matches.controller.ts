@@ -12,7 +12,6 @@ import {
   GameRoundRepository,
 } from '../../../db/repositories/gameRound.repo';
 import { isMongoId } from '../utils';
-import { Season } from '../../../db/models/season.model';
 import { GameRound } from '../../../db/models/gameRound.model';
 import { lastValueFrom } from 'rxjs';
 

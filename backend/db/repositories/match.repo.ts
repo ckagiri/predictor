@@ -7,6 +7,7 @@ import MatchModel, {
   MatchDocument,
   MatchStatus,
 } from '../models/match.model';
+import { Competition } from '../models/competition.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
@@ -16,7 +17,6 @@ import {
   MatchConverterImpl,
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { CompetitionRepository, CompetitionRepositoryImpl } from './competition.repo';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
@@ -24,24 +24,23 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
   findAllFinishedForCurrentSeasons(filter: any): Observable<Match[]>
 }
+
 export class MatchRepositoryImpl
   extends BaseFootballApiRepositoryImpl<Match, MatchDocument>
   implements MatchRepository {
   public static getInstance(
     provider: ApiProvider = ApiProvider.LIGI,
-    competitionRepo: CompetitionRepository = CompetitionRepositoryImpl.getInstance(provider)
   ): MatchRepository {
-    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider), competitionRepo);
+    return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider));
   }
 
-  constructor(converter: MatchConverter, private competitionRepo: CompetitionRepository) {
+  constructor(converter: MatchConverter) {
     super(MatchModel, converter);
   }
 
-  findAllFinishedForCurrentSeasons(filter: any = {}): Observable<Match[]> {
-    return this.competitionRepo.findAll$()
+  findAllFinishedForCurrentSeasons(competitions: Competition[], filter: any = {}): Observable<Match[]> {
+    return from(competitions)
       .pipe(
-        mergeMap(competitions => from(competitions)),
         mergeMap(competition => {
           const { currentSeason } = competition;
           if (currentSeason) {
@@ -50,7 +49,7 @@ export class MatchRepositoryImpl
             return of([]);
           }
         })
-      );
+      )
   }
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {

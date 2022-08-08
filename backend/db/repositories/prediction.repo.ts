@@ -1,56 +1,45 @@
 import { Observable, of, from, throwError, iif } from 'rxjs';
 import { filter, mergeMap, map, toArray } from 'rxjs/operators';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 
 import PredictionModel, {
   Prediction,
   PredictionDocument,
 } from '../models/prediction.model';
 import { Match, MatchStatus } from '../models/match.model';
-import {
-  MatchRepository,
-  MatchRepositoryImpl,
-} from '../repositories/match.repo';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 import { head, uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
-  findOrCreatePredictions$(userId: string, roundId: string, withJoker?: boolean, roundMatches?: Match[]): Observable<Prediction[]>
-  findOrCreatePicks$(userId: string, roundId: string, withJoker?: boolean): Observable<Prediction[]>;
-  pickScore$(userId: string, match: Match, choice: Score): Observable<Prediction>;
-  pickJoker$(userId: string, match: Match): Observable<Prediction[]>;
-  unsetJoker$(userId: string, matchId: string): Observable<Prediction | undefined>;
+  findOrCreatePredictions$(userId: string, roundMatches: Match[], withJoker?: boolean): Observable<Prediction[]>
+  findOrCreatePicks$(userId: string, roundMatches: Match[], withJoker?: boolean): Observable<Prediction[]>;
+  pickScore$(userId: string, match: Match, roundMatches: Match[], choice: Score): Observable<Prediction>;
+  pickJoker$(userId: string, match: Match, roundMatches: Match[]): Observable<Prediction[]>;
+  unsetJoker$(userId: string, match: Match): Observable<Prediction | undefined>;
 }
 
 export class PredictionRepositoryImpl
   extends BaseRepositoryImpl<Prediction, PredictionDocument>
   implements PredictionRepository {
-  public static getInstance(matchRepo?: MatchRepository) {
-    const matchRepoImpl = matchRepo ?? MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
-
-    return new PredictionRepositoryImpl(matchRepoImpl);
+  public static getInstance() {
+    return new PredictionRepositoryImpl();
   }
 
-  private matchRepo: MatchRepository;
-
-  constructor(matchRepo: MatchRepository) {
+  constructor() {
     super(PredictionModel);
-    this.matchRepo = matchRepo;
   }
 
-  pickScore$(userId: string, match: Match, choice: Score): Observable<Prediction> {
+  pickScore$(userId: string, match: Match, roundMatches: Match[], choice: Score): Observable<Prediction> {
     if (match.status !== MatchStatus.SCHEDULED) {
-      return throwError(() => new Error("Match not scheduled"))
+      return throwError(() => new Error('Match not scheduled'))
     }
     const matchId = match.id!;
-    const roundId = match.gameRound.toString();
     return this.findOne$(userId, matchId)
       .pipe(
         mergeMap(prediction => {
           if (!prediction) {
-            return this.findOrCreatePredictions$(userId, roundId)
+            return this.findOrCreatePredictions$(userId, roundMatches)
               .pipe(
                 map(predictions => {
                   const pickPrediction = predictions.find(p => p.match.toString() === match.id);
@@ -69,46 +58,41 @@ export class PredictionRepositoryImpl
       )
   }
 
-  pickJoker$(userId: string, match: Match): Observable<Prediction[]> {
+  pickJoker$(userId: string, match: Match, roundMatches: Match[]): Observable<Prediction[]> {
     if (match.status !== MatchStatus.SCHEDULED) {
-      return throwError(() => new Error("Match not scheduled"))
+      return throwError(() => new Error('Match not scheduled'))
     }
     const matchId = match.id!;
-    const roundId = match.gameRound;
-    return this.matchRepo.findAll$({ gameRound: roundId })
+    const areAllMatchesFinished = roundMatches.every(m => m.status === MatchStatus.FINISHED);
+    if (areAllMatchesFinished) {
+      return throwError(() => new Error('All matches finished for the round'))
+    }
+    return this.findJoker$(userId, roundMatches)
       .pipe(
-        mergeMap(matches => {
-          const areAllMatchesFinished = matches.every(m => m.status === MatchStatus.FINISHED);
-          if (areAllMatchesFinished) {
-            return throwError(() => new Error('All matches finished for the round'))
-          }
-          return this.findJoker$(userId, roundId, matches)
-            .pipe(
-              mergeMap(currentJoker => {
-                if (!currentJoker) {
-                  return this.findOrCreatePredictions$(userId, roundId, true, matches)
-                    .pipe(
-                      map(predictions => {
-                        const currentJoker = predictions.find(p => p.hasJoker === true);
-                        return ({ matches, currentJoker: currentJoker })
-                      })
-                    )
-                }
-                return of({ matches, currentJoker })
-              })
-            )
-        }),
-        mergeMap(({ matches, currentJoker }) => {
+        mergeMap(currentJoker => {
           if (!currentJoker) {
-            return throwError(() => new Error("Could not find or create round joker."))
+            return this.findOrCreatePredictions$(userId, roundMatches)
+              .pipe(
+                map(predictions => {
+                  const currentJoker = predictions.find(p => p.hasJoker === true);
+                  return currentJoker
+                })
+              )
+          }
+          return of(currentJoker)
+        }),
+        mergeMap(currentJoker => {
+          if (!currentJoker) {
+            return throwError(() => new Error('Could not find or create round joker'))
           }
           if (currentJoker.match.toString() === matchId && currentJoker.jokerAutoPicked === false) {
             return of([currentJoker])
           }
-          const currentJokerMatch = matches.find(m => m.id === currentJoker.id);
+          const currentJokerMatch = roundMatches.find(m => m.id === currentJoker.id);
           if (currentJokerMatch?.status == MatchStatus.FINISHED) {
-            return throwError(() => new Error("Current joker match already played."))
+            return throwError(() => new Error('Current joker match already played'))
           }
+
           return this.findOneOrCreate$(userId, match)
             .pipe(
               mergeMap(newJoker => {
@@ -145,8 +129,8 @@ export class PredictionRepositoryImpl
       )
   }
 
-  unsetJoker$(userId: string, matchId: string): Observable<Prediction | undefined> {
-    return super.findOne$({ user: userId, match: matchId, hasJoker: true })
+  unsetJoker$(userId: string, match: Match): Observable<Prediction | undefined> {
+    return super.findOne$({ user: userId, match: match.id, hasJoker: true })
       .pipe(
         mergeMap(pred => {
           if (pred) {
@@ -158,180 +142,152 @@ export class PredictionRepositoryImpl
       )
   }
 
-  findOrCreatePredictions$(userId: string, roundId: string, withJoker = true, roundMatches: Match[] = []): Observable<Prediction[]> {
-    return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
+  findOrCreatePredictions$(userId: string, roundMatches: Match[], withJoker = true): Observable<Prediction[]> {
+    return iif(
+      () => withJoker, this.findOrCreateJoker$(userId, roundMatches), of(undefined)
+    ).pipe(
+      mergeMap(() => {
+        return this.findAll$({
+          user: userId,
+          match: { $in: roundMatches.map(n => n.id) },
+        })
+      }),
+      mergeMap(predictions => {
+        const areAllMatchesFinished = roundMatches.every(m => m.status === MatchStatus.FINISHED);
+        if (areAllMatchesFinished) {
+          return of(predictions);
+        }
+
+        const scheduledMatches: Match[] = roundMatches.filter(m => m.status === MatchStatus.SCHEDULED);
+        if (scheduledMatches.length === predictions.length) {
+          return of(predictions);
+        }
+
+        const predictionMatchIds: string[] = predictions.map(p => p.match.toString());
+        const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!));
+        const newPredictions = newPredictionMatches.map(match => {
+          const { id: matchId, slug: matchSlug, season } = match;
+          const prediction: Prediction = {
+            user: userId,
+            season,
+            match: matchId!,
+            matchSlug,
+            choice: this.getRandomMatchScore(),
+          };
+          return prediction
+        });
+        return this.insertMany$(newPredictions)
+          .pipe(
+            mergeMap(() => {
+              return this.findAll$({
+                user: userId,
+                match: { $in: roundMatches.map(m => m.id) },
+              })
+            })
+          )
+      })
+    )
+  }
+
+  findOrCreatePicks$(userId: string, roundMatches: Match[], withJoker = true): Observable<Prediction[]> {
+    return this.findOrCreatePredictions$(userId, roundMatches, withJoker)
       .pipe(
-        mergeMap(matches => {
+        mergeMap(predictions => {
+          return from(predictions)
+            .pipe(
+              filter(prediction => {
+                return Boolean(prediction.choice.isComputerGenerated);
+              }),
+              map(prediction => {
+                const isComputerGenerated = false;
+                prediction.choice = this.getRandomMatchScore(isComputerGenerated); // use VosePredictor
+                if (!!prediction.hasJoker) {
+                  prediction.jokerAutoPicked = false;
+                }
+                return prediction;
+              }),
+              toArray(),
+            )
+        }),
+        mergeMap(newPicks => {
           return iif(
-            () => withJoker,
-            this.findOrCreateJoker$(userId, roundId, matches),
-            of(undefined)
-          ).pipe(map(() => matches))
+            () => Boolean(newPicks.length),
+            this.updateMany$(newPicks),
+            of(undefined))
         }),
-        mergeMap(matches => {
+        mergeMap(() => {
           return this.findAll$({
             user: userId,
-            match: { $in: matches.map(n => n.id) },
+            match: { $in: roundMatches.map(m => m.id) },
+            'choice.isComputerGenerated': false
           })
-            .pipe(
-              map(predictions => ({ matches, predictions }))
-            )
+        })
+      )
+  }
+
+  findJoker$(userId: string, roundMatches: Match[]): Observable<Prediction> {
+    return super.findOne$({
+      user: userId,
+      match: { $in: roundMatches.map(m => m.id) },
+      hasJoker: true
+    })
+  }
+
+  findOrCreateJoker$(userId: string, roundMatches: Match[]): Observable<Prediction | undefined> {
+    const matchIds = roundMatches.map(m => m.id)
+    return this.findAll$({
+      user: userId,
+      match: { $in: matchIds },
+      hasJoker: true
+    })
+      .pipe(
+        mergeMap(jokerPredictions => {
+          const jokers = [];
+          if (jokerPredictions.length === 0) {
+            const selectableMatchIds = roundMatches
+              .filter(m => m.status === MatchStatus.SCHEDULED)
+              .map(m => m.id);
+            if (selectableMatchIds.length) {
+              const jokerMatchId = selectableMatchIds[Math.floor(Math.random() * selectableMatchIds.length)]!;
+              const jokerMatch = roundMatches.find(m => m.id === jokerMatchId) as Match;
+
+              const { season, slug: jokerMatchSlug } = jokerMatch;
+              const joker: Prediction = {
+                user: userId,
+                season,
+                match: jokerMatchId,
+                matchSlug: jokerMatchSlug,
+                hasJoker: true,
+                jokerAutoPicked: true,
+                choice: this.getRandomMatchScore(),
+              };
+              jokers.push(joker);
+            }
+          } else if (jokerPredictions.length > 1) { // Precautionary
+            // todo: poor - using reverse for latest joker; better - use last modified
+            const [, ...otherJokers] = jokerPredictions.reverse();
+            otherJokers.forEach(j => {
+              j.hasJoker = false;
+              j.jokerAutoPicked = false;
+              jokers.push(j);
+            });
+          }
+
+          if (jokers.length) {
+            return this.upsertMany$(jokers);
+          } else {
+            return of(head(jokerPredictions));
+          }
         }),
-        mergeMap(({ matches, predictions }) => {
-          const areAllMatchesFinished = matches.every(m => m.status === MatchStatus.FINISHED);
-          if (areAllMatchesFinished) {
-            return of(predictions);
-          }
-
-          const scheduledMatches: Match[] = matches.filter(m => m.status === MatchStatus.SCHEDULED);
-          if (scheduledMatches.length === predictions.length) {
-            return of(predictions);
-          }
-
-          const predictionMatchIds: string[] = predictions.map(p => p.match.toString());
-          const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!));
-          const newPredictions = newPredictionMatches.map(match => {
-            const { id: matchId, slug: matchSlug, season } = match;
-            const prediction = {
+        mergeMap(result => {
+          if (result.constructor.name === 'BulkWriteResult') {
+            return super.findOne$({
               user: userId,
-              season,
-              match: matchId,
-              matchSlug,
-              choice: this.getRandomMatchScore(),
-            } as Prediction;
-            return prediction
-          });
-          return this.insertMany$(newPredictions)
-            .pipe(
-              mergeMap(() => {
-                return this.findAll$({
-                  user: userId,
-                  match: { $in: matches.map(n => n.id) },
-                })
-              })
-            )
-        })
-      )
-  }
-
-  findOrCreatePicks$(userId: string, roundId: string, withJoker = true): Observable<Prediction[]> {
-    return this.matchRepo.findAll$({ gameRound: roundId })
-      .pipe(
-        mergeMap(matches => {
-          return this.findOrCreatePredictions$(userId, roundId, withJoker, matches)
-            .pipe(
-              mergeMap(predictions => {
-                return from(predictions)
-                  .pipe(
-                    filter(prediction => {
-                      return Boolean(prediction.choice.isComputerGenerated);
-                    }),
-                    map(prediction => {
-                      const isComputerGenerated = false;
-                      prediction.choice = this.getRandomMatchScore(isComputerGenerated); // use VosePredictor
-                      if (!!prediction.hasJoker) {
-                        prediction.jokerAutoPicked = false;
-                      }
-                      return prediction;
-                    }),
-                    toArray(),
-                  )
-              }),
-              mergeMap(newPicks => {
-                return iif(
-                  () => Boolean(newPicks.length),
-                  this.updateMany$(newPicks),
-                  of(undefined))
-              }),
-              mergeMap(() => {
-                return this.findAll$({
-                  user: userId,
-                  match: { $in: matches.map(m => m.id) },
-                  'choice.isComputerGenerated': false
-                })
-              })
-            )
-        }),
-      )
-  }
-
-  findJoker$(userId: string, roundId: string, roundMatches: Match[] = []): Observable<Prediction> {
-    return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
-      .pipe(
-        mergeMap(matches => {
-          const matchIds = matches.map(m => m.id)
-          return super.findOne$({
-            user: userId,
-            match: { $in: matchIds },
-            hasJoker: true
-          })
-        })
-      )
-  }
-
-  findOrCreateJoker$(
-    userId: string, roundId: string, roundMatches: Match[] = []
-  ): Observable<Prediction> { // can return Observable<undefined>
-    return (roundMatches.length ? of(roundMatches) : this.matchRepo.findAll$({ gameRound: roundId }))
-      .pipe(
-        mergeMap(matches => {
-          const matchIds = matches.map(m => m.id)
-          return this.findAll$({
-            user: userId,
-            match: { $in: matchIds },
-            hasJoker: true
-          })
-            .pipe(
-              mergeMap(jokerPredictions => {
-                const jokers = [];
-                if (jokerPredictions.length === 0) {
-                  const selectableMatchIds = matches
-                    .filter(m => m.status === MatchStatus.SCHEDULED)
-                    .map(m => m.id);
-                  if (selectableMatchIds.length) {
-                    const jokerMatchId = selectableMatchIds[Math.floor(Math.random() * selectableMatchIds.length)]!;
-                    const jokerMatch = matches.find(m => m.id === jokerMatchId) as Match;
-
-                    const { season, slug: jokerMatchSlug } = jokerMatch;
-                    const randomMatchScore = this.getRandomMatchScore();
-                    const joker: Prediction = {
-                      user: userId,
-                      season,
-                      match: jokerMatchId,
-                      matchSlug: jokerMatchSlug,
-                      hasJoker: true,
-                      jokerAutoPicked: true,
-                      choice: randomMatchScore,
-                    };
-                    jokers.push(joker);
-                  }
-                } else if (jokerPredictions.length > 1) { // Precautionary - this should never happen
-                  // todo: poor - using reverse for latest joker; better - use last modified
-                  const [, ...otherJokers] = jokerPredictions.reverse();
-                  otherJokers.forEach(j => {
-                    j.hasJoker = false;
-                    j.jokerAutoPicked = false;
-                    jokers.push(j);
-                  });
-                }
-
-                if (jokers.length) {
-                  return this.upsertMany$(jokers);
-                } else {
-                  return of(head(jokerPredictions));
-                }
-              }),
-              mergeMap(result => {
-                if (result.constructor.name === 'BulkWriteResult') {
-                  return super.findOne$({
-                    user: userId,
-                    match: { $in: matchIds },
-                    hasJoker: true
-                  })
-                }
-                return of(result as Prediction)
-              })
-            )
+              match: { $in: matchIds },
+              hasJoker: true
+            })
+          }
+          return of(result as Prediction)
         })
       )
   }
@@ -344,10 +300,6 @@ export class PredictionRepositoryImpl
     userId: string,
     match: Match
   ): Observable<Prediction> {
-    if (!match) {
-      return throwError(() => new Error('Match does not exist'))
-    }
-
     const { id: matchId, season, slug: matchSlug, status: matchStatus } = match;
     return this.findOne$(userId, matchId!)
       .pipe(
@@ -356,16 +308,14 @@ export class PredictionRepositoryImpl
             return of(prediction);
           }
 
-          const pred = {
+          const pred: Prediction = {
             user: userId,
             season,
-            match: matchId,
+            match: matchId!,
             matchSlug,
-          } as Prediction;
+            choice: this.getRandomMatchScore()
+          };
 
-          if (matchStatus === MatchStatus.SCHEDULED) {
-            pred.choice = this.getRandomMatchScore();
-          }
           return this.save$(pred);
         })
       )

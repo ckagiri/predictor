@@ -6,7 +6,6 @@ import { PredictionRepository, PredictionRepositoryImpl } from "../../db/reposit
 import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositories/userScore.repo";
 import { Match, MatchStatus } from "../../db/models/match.model";
 import { uniq } from 'lodash';
-import { MatchRepositoryImpl } from "../../db/repositories/match.repo";
 
 export interface LeaderboardProcessor {
   updateScores(seasonId: string, matches: Match[]): Promise<number>;
@@ -19,8 +18,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     leaderboardRepo?: LeaderboardRepository,
     userScoreRepo?: UserScoreRepository,
   ) {
-    const predictionRepoImpl = predictionRepo ??
-      PredictionRepositoryImpl.getInstance(MatchRepositoryImpl.getInstance());
+    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance();
     const leaderboardRepoImpl = leaderboardRepo ?? LeaderboardRepositoryImpl.getInstance();
     const userScoreRepoImpl = userScoreRepo ?? UserScoreRepositoryImpl.getInstance();
 

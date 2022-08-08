@@ -1,8 +1,7 @@
-import { from, Observable, forkJoin, throwError, of } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { merge } from 'lodash';
 import TeamModel, { Team, TeamDocument } from '../models/team.model';
-import SeasonModel from '../models/season.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
@@ -14,6 +13,7 @@ export interface TeamRepository extends BaseFootballApiRepository<Team> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<Team>;
   findEachByNameAndUpsert$(teams: any[]): Observable<Team[]>;
   findByName$(name: string): Observable<Team>;
+  findAllByIds$(ids?: string[]): Observable<Team[]>;
 }
 
 export class TeamRepositoryImpl
@@ -27,6 +27,10 @@ export class TeamRepositoryImpl
 
   constructor(converter: TeamConverter) {
     super(TeamModel, converter);
+  }
+
+  findAllByIds$(ids: string[] = []): Observable<Team[]> {
+    return this.findAll$({ _id: { $in: ids } })
   }
 
   public findByNameAndUpsert$(obj: any): Observable<Team> {

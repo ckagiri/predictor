@@ -10,7 +10,7 @@ import { SeasonRepository, SeasonRepositoryImpl } from '../../../db/repositories
 export class TeamsController {
   public static getInstance(
     teamRepo = TeamRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(teamRepo.footballApiProvider, teamRepo)
+    seasonRepo = SeasonRepositoryImpl.getInstance(teamRepo.footballApiProvider)
   ) {
     return new TeamsController(teamRepo, seasonRepo);
   }
@@ -20,8 +20,9 @@ export class TeamsController {
   public getTeams = async (req: Request, res: Response) => {
     try {
       const seasonId = req.query.seasonId as string;
+      const season = await lastValueFrom(this.seasonRepo.findById$(seasonId));
       const teams = seasonId
-        ? await lastValueFrom(this.seasonRepo.getTeamsForSeason$(seasonId))
+        ? await lastValueFrom(this.teamRepo.findAllByIds$(season.teams))
         : await lastValueFrom(this.teamRepo.findAll$());
       res.status(200).json(teams);
     } catch (error) {
