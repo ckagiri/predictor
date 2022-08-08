@@ -1,6 +1,6 @@
 import 'mocha';
 import { expect } from 'chai';
-import * as bcrypt from 'bcrypt-nodejs';
+import * as bcrypt from 'bcryptjs';
 
 import UserModel, { User } from '../../db/models/user.model';
 
@@ -15,68 +15,9 @@ describe('Users', () => {
         });
       });
 
-      it('should require an email', done => {
+      it('should require an username', done => {
         u.validate((err: any) => {
-          expect(err.errors.email).to.exist;
-          done();
-        });
-      });
-    });
-
-    describe('a minimal user', () => {
-      const user: User = {
-        username: 'Alpha',
-        email: 'test@example.com',
-        phone: '+254123456',
-      };
-
-      const u = new UserModel(user);
-
-      it('should have 0 errors', done => {
-        u.validate((err: any) => {
-          expect(err).to.eql(null);
-          done();
-        });
-      });
-
-      it('should not be admin', done => {
-        u.validate((err: any) => {
-          expect(err).to.eql(null);
-          expect(u).to.have.property('isAdmin', false);
-          done();
-        });
-      });
-
-      it('should have an id', done => {
-        expect(u).to.have.property('id');
-        expect(u.id).not.to.be.empty;
-        expect(u.id).to.be.a('string');
-        done();
-      });
-
-      it('should not be admin', done => {
-        u.validate((err: any) => {
-          expect(err).to.eql(null);
-          expect(u).to.have.property('isAdmin', false);
-          done();
-        });
-      });
-    });
-
-    describe('an admin user', () => {
-      const user: User = {
-        username: 'Alpha',
-        email: 'admin@example.com',
-        isAdmin: true,
-        phone: '+254123456',
-      };
-
-      const u = new UserModel(user);
-
-      it('should be admin', done => {
-        u.validate((err: any) => {
-          expect(err).to.eql(null);
-          expect(u).to.have.property('isAdmin', true);
+          expect(err.errors.username).to.exist;
           done();
         });
       });
@@ -87,8 +28,6 @@ describe('Users', () => {
 
       const user: User = {
         username: 'Alpha',
-        email: 'user@example.com',
-        phone: '+254123456',
       };
 
       it('should fail on comparePassword with empty pwd', done => {
@@ -99,7 +38,7 @@ describe('Users', () => {
           expect(u).to.have.property('local');
         });
 
-        u.comparePassword('test', (err: any, isMatch: any) => {
+        u.comparePassword!('test', (err: any, isMatch: any) => {
           expect(isMatch).to.be.undefined;
           expect(err).to.eql('Incorrect arguments');
           done();
@@ -107,7 +46,7 @@ describe('Users', () => {
       });
 
       it('should fail on incorrectly salted stored pwd', done => {
-        user.local = { password: 'test' };
+        user.password = 'test';
         const u = new UserModel(user);
 
         u.validate((err: any) => {
@@ -115,7 +54,7 @@ describe('Users', () => {
           expect(u).to.have.property('local');
         });
 
-        u.comparePassword('test', (err: any, isMatch: any) => {
+        u.comparePassword!('test', (err: any, isMatch: any) => {
           expect(isMatch).to.be.undefined;
           expect(err).to.eql('Not a valid BCrypt hash.');
           done();
@@ -123,16 +62,16 @@ describe('Users', () => {
       });
 
       it('should fail on comparePassword with wrong pwd', done => {
-        user.local = { password: bcrypt.hashSync('test', salt) };
+        user.password = bcrypt.hashSync('test', salt);
         const u = new UserModel(user);
 
         u.validate((err: any) => {
           expect(err).to.eql(null);
-          expect(u).to.have.property('local');
-          expect(u.local).to.have.property('password');
+          expect(u).to.have.property('password');
+          expect(u.password).to.have.property('password');
         });
 
-        u.comparePassword('test2', (err: any, isMatch: any) => {
+        u.comparePassword!('test2', (err: any, isMatch: any) => {
           expect(isMatch).to.be.false;
           expect(err).to.be.null;
           done();
@@ -140,16 +79,15 @@ describe('Users', () => {
       });
 
       it('should succeed on comparePassword with correct pwd', done => {
-        user.local = { password: bcrypt.hashSync('test', salt) };
+        user.password = bcrypt.hashSync('test', salt);
         const u = new UserModel(user);
 
         u.validate((err: any) => {
           expect(err).to.eql(null);
-          expect(u).to.have.property('local');
-          expect(u.local).to.have.property('password');
+          expect(u).to.have.property('password');
         });
 
-        u.comparePassword('test', (err: any, isMatch: any) => {
+        u.comparePassword!('test', (err: any, isMatch: any) => {
           expect(isMatch).to.be.true;
           expect(err).to.be.null;
           done();

@@ -1,5 +1,4 @@
 import { expect } from 'chai';
-import { mergeMap } from 'rxjs';
 import { BOARD_TYPE, STATUS } from '../../db/models/leaderboard.model';
 
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
@@ -42,9 +41,9 @@ describe('LeaderboardRepo', function () {
   })
 
   it('should create seasonBoard if it doesnt exist', done => {
-    leaderboardRepo.findSeasonLeaderboardOrCreate$(epl2020.id)
+    leaderboardRepo.findOrCreateSeasonLeaderboardAndUpdate$(epl2020.id, { status: STATUS.UPDATING_SCORES })
       .subscribe(lb => {
-        expect(lb.status).to.equal(STATUS.UPDATING);
+        expect(lb.status).to.equal(STATUS.UPDATING_SCORES);
         expect(lb.season.toString()).to.equal(epl2020.id);
         expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_SEASON);
         done();
@@ -52,29 +51,12 @@ describe('LeaderboardRepo', function () {
   });
 
   it('should create roundboard if it doesnt exist', done => {
-    leaderboardRepo.findRoundLeaderboardOrCreate$(epl2020.id, gw1.id)
+    leaderboardRepo.findOrCreateRoundLeaderboardAndUpdate$(epl2020.id, gw1.id, { status: STATUS.UPDATING_SCORES })
       .subscribe(lb => {
-        expect(lb.status).to.equal(STATUS.UPDATING);
+        expect(lb.status).to.equal(STATUS.UPDATING_SCORES);
         expect(lb.season.toString()).to.equal(epl2020.id);
         expect(lb.gameRound?.toString()).to.equal(gw1.id);
         expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_ROUND);
-        done();
-      });
-  });
-
-  it('should find by id and update status', done => {
-    leaderboardRepo.findSeasonLeaderboardOrCreate$(epl2020.id)
-      .pipe(
-        mergeMap(lb => {
-          return leaderboardRepo.findByIdAndUpdate$(lb.id!, {
-            status: STATUS.UPDATED,
-          });
-        }),
-      )
-      .subscribe(lb => {
-        expect(lb.season.toString()).to.equal(epl2020.id);
-        expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_SEASON)
-        expect(lb.status).to.equal(STATUS.UPDATED);
         done();
       });
   });

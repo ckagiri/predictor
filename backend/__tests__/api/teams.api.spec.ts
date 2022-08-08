@@ -10,7 +10,7 @@ import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 import startServer from '../../app/server';
-import { lastValueFrom } from 'rxjs';
+import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -63,7 +63,8 @@ describe('Teams API', function () {
 
   describe('Teams Controller', function () {
     const teamRepo = TeamRepositoryImpl.getInstance();
-    const teamsController = new TeamsController(teamRepo);
+    const seasonRepo = SeasonRepositoryImpl.getInstance();
+    const teamsController = new TeamsController(teamRepo, seasonRepo);
 
     it('getTeams returns all teams in the database', async () => {
       const { req, res } = setupReqRes();
@@ -76,21 +77,6 @@ describe('Teams API', function () {
       expect(teams.length).to.be.greaterThan(0);
       const actualTeams = await teamRepo.findAll$().toPromise();
       expect(teams).to.eql(actualTeams);
-    });
-
-    it('getTeams returns all teams in the database for provided season', async () => {
-      const { req, res } = setupReqRes();
-      const seasonId = gameData.seasons[0].id;
-      req.query.seasonId = seasonId;
-      await teamsController.getTeams(<any>req, <any>res);
-
-      expect(res.json).to.have.been.called;
-      const firstCall = res.json.args[0];
-      const firstArg = firstCall[0];
-      const teams = firstArg;
-      expect(teams.length).to.equal(2);
-      const seasonTeams = await lastValueFrom(teamRepo.getAllBySeason$(seasonId!));
-      expect(seasonTeams).to.have.length(2);
     });
   });
 

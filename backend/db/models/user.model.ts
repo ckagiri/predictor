@@ -7,7 +7,7 @@ export interface User extends Entity {
   username?: string;
   password?: string;
   isAdmin?: boolean;
-  comparePassword(candidatePassword: string, cb: any): void;
+  comparePassword?: (candidatePassword: string, cb: any) => void;
 }
 
 const userSchema = schema({

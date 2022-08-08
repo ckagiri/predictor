@@ -29,13 +29,14 @@ describe('Match Converter', () => {
     const teamRepoStub: any = {
       findByName$: sinon.stub(),
     };
+    const gameRoundRepoStub: any = {};
     teamRepoStub.findByName$
       .withArgs(sinon.match('Arsenal'))
       .returns(of(homeTeam));
     teamRepoStub.findByName$
       .withArgs(sinon.match('Chelsea'))
       .returns(of(awayTeam));
-    const converter = new AfdMatchConverter(seasonRepoStub, teamRepoStub);
+    const converter = new AfdMatchConverter(seasonRepoStub, teamRepoStub, gameRoundRepoStub);
     const match = {
       id: 233371,
       season: {

@@ -1,7 +1,7 @@
 import { expressjwt } from 'express-jwt'
 import { omit } from "lodash"
 import jwt from 'jsonwebtoken'
-import { User as IUser } from '../../../db/models/user.model';
+import { User } from '../../../db/models/user.model';
 
 // Todo set in an environment variable
 const secret = 'secret';
@@ -13,7 +13,7 @@ const requireTime = Date.now()
 const now = () =>
   process.env.NODE_ENV === 'production' ? Date.now() : requireTime
 
-function getUserToken({ id, username }: IUser): string {
+function getUserToken({ id, username }: User): string {
   const issuedAt = Math.floor(now() / 1000)
   return jwt.sign(
     {

@@ -14,7 +14,7 @@ function getLocalStrategy() {
       if (!user) {
         return done(undefined, false, { message: 'username not found' });
       }
-      user.comparePassword(password, (err: Error, isMatch: boolean) => {
+      user.comparePassword!(password, (err: Error, isMatch: boolean) => {
         if (err) { return done(err); }
         if (isMatch) {
           return done(undefined, user.toObject());
