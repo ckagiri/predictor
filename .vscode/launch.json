@@ -103,7 +103,7 @@
       "request": "launch",
       "name": "Scheduler",
       "program": "${workspaceFolder}/backend/scheduler.ts",
-      "preLaunchTask": "tsc: build - backend/tsconfig-debug.json",
+      "preLaunchTask": "tsc: build - backend/tsconfig.json",
       "envFile": "${workspaceFolder}/backend/.env.test",
       "cwd": "${workspaceFolder}",
       "env": {
@@ -113,26 +113,6 @@
         "${workspaceFolder}/backend/debug/scheduler.js"
       ],
       "sourceMaps": true
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Scheduler (ts-node)",
-      "runtimeArgs": [
-        "-r",
-        "ts-node/register",
-        "-r",
-        "tsconfig-paths/register",
-      ],
-      "cwd": "${workspaceFolder}/backend",
-      "args": [
-        "${workspaceFolder}/backend/scheduler.ts",
-      ],
-      "envFile": "${workspaceFolder}/backend/.env.test",
-      "env": {
-        "NODE_ENV": "test",
-        "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
-      },
     },
     {
       "name": "Current ts File",
