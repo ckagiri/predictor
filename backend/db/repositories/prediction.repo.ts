@@ -156,10 +156,6 @@ export class PredictionRepositoryImpl
         }
 
         const scheduledMatches: Match[] = roundMatches.filter(m => m.status === MatchStatus.SCHEDULED);
-        if (scheduledMatches.length === predictions.length) {
-          return of(predictions);
-        }
-
         const predictionMatchIds: string[] = predictions.map(p => p.match.toString());
         const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!));
         const newPredictions = newPredictionMatches.map(match => {
