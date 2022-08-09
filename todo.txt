@@ -179,3 +179,6 @@ onMatchRound ifCurrentRound position Changed
 findOrCreatePredictions timer
 updateScorenRankings timer
 >>>>
+
+run from package-lock
+add two users do preds, run

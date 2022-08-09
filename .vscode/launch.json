@@ -73,7 +73,6 @@
         "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
       },
       "cwd": "${workspaceFolder}/backend",
-      "protocol": "inspector",
       "skipFiles": [
         "<node_internals>/**"
       ],
@@ -101,11 +100,74 @@
     },
     {
       "type": "node",
+      "request": "launch",
+      "name": "Scheduler",
+      "program": "${workspaceFolder}/backend/scheduler.ts",
+      "preLaunchTask": "tsc: build - backend/tsconfig-debug.json",
+      "envFile": "${workspaceFolder}/backend/.env.test",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_ENV": "test"
+      },
+      "outFiles": [
+        "${workspaceFolder}/backend/debug/scheduler.js"
+      ],
+      "sourceMaps": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Scheduler (ts-node)",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register",
+      ],
+      "cwd": "${workspaceFolder}/backend",
+      "args": [
+        "${workspaceFolder}/backend/scheduler.ts",
+      ],
+      "envFile": "${workspaceFolder}/backend/.env.test",
+      "env": {
+        "NODE_ENV": "test",
+        "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
+      },
+    },
+    {
+      "name": "Current ts File",
+      "type": "node",
+      "request": "launch",
+      // "program": "${workspaceFolder}/backend/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register",
+        "${file}",
+        "--node-env=test"
+      ],
+      // "internalConsoleOptions": "openOnSessionStart",
+      "env": {
+        "NODE_ENV": "test",
+        "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
+      },
+      "cwd": "${workspaceFolder}/backend",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/backend/debug/**/*.js",
+        "!**/node_modules/**"
+      ],
+      "trace": true,
+    },
+    {
+      "type": "node",
       "request": "attach",
       "name": "Node: Nodemon",
       "processId": "${command:PickProcess}",
       "restart": true,
-      "protocol": "inspector"
     }
   ]
 }

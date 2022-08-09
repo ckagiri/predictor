@@ -4,6 +4,8 @@ type SchedulerOptions = {
   runImmediately?: boolean,
 };
 
+console.log("NODE_ENV", process.env.NODE_ENV)
+
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000; // 7 hours
 class MatchesScheduler {
   private job: Job = new schedule.Job('Matches Job', this.jobTask.bind(this));
@@ -21,8 +23,8 @@ class MatchesScheduler {
     })
   }
 
-  scheduleJob({ whenToExecute = DEFAULT_INTERVAL, runImmediately = false }: SchedulerOptions) {
-    if (this.jobScheduled) throw new Error('Job already sheduled.');
+  startJob({ whenToExecute = DEFAULT_INTERVAL, runImmediately = false }: SchedulerOptions) {
+    if (this.jobScheduled) throw new Error('Job already started');
     if (runImmediately) {
       console.log('runImmediately + scheduleJob in 2s');
       this.jobTask().then(result => {
@@ -79,7 +81,7 @@ class MatchesScheduler {
 
 // runImmediately task - which task
 const matchesScheduler = new MatchesScheduler();
-matchesScheduler.scheduleJob({ whenToExecute: 2000, runImmediately: true });
+matchesScheduler.startJob({ whenToExecute: 2000, runImmediately: true });
 // (async () => { await new Promise(resolve => setTimeout(resolve, 6000)); })();
 // ms.runJob()
 // MatchesScheduler Schedule { whenToExecute?: number, milliseconds, ri?: boolean }
