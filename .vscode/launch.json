@@ -138,29 +138,19 @@
       "name": "Current ts File",
       "type": "node",
       "request": "launch",
-      // "program": "${workspaceFolder}/backend/node_modules/mocha/bin/_mocha",
+      "args": ["${relativeFile}"],
       "runtimeArgs": [
         "-r",
         "ts-node/register",
-        "-r",
-        "tsconfig-paths/register",
-        "${file}",
-        "--node-env=test"
       ],
-      // "internalConsoleOptions": "openOnSessionStart",
+      "internalConsoleOptions": "openOnSessionStart",
       "env": {
         "NODE_ENV": "test",
-        "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
       },
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceRoot}",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "outFiles": [
-        "${workspaceFolder}/backend/debug/**/*.js",
-        "!**/node_modules/**"
-      ],
-      "trace": true,
     },
     {
       "type": "node",
