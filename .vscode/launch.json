@@ -102,15 +102,15 @@
       "type": "node",
       "request": "launch",
       "name": "Scheduler",
-      "program": "${workspaceFolder}/backend/scheduler.ts",
-      "preLaunchTask": "tsc: build - backend/tsconfig.json",
+      "program": "${workspaceFolder}/backend/app/schedulers/prediction.scheduler.ts",
+      "preLaunchTask": "tsc: build - backend/tsconfig-debug.json",
       "envFile": "${workspaceFolder}/backend/.env.test",
       "cwd": "${workspaceFolder}",
       "env": {
         "NODE_ENV": "test"
       },
       "outFiles": [
-        "${workspaceFolder}/backend/debug/scheduler.js"
+        "${workspaceFolder}/backend/debug/schedulers/prediction.scheduler.js"
       ],
       "sourceMaps": true
     },
@@ -124,6 +124,7 @@
         "ts-node/register",
       ],
       "internalConsoleOptions": "openOnSessionStart",
+      "envFile": "${workspaceFolder}/backend/.env.test",
       "env": {
         "NODE_ENV": "test",
       },

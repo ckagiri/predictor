@@ -1,5 +1,5 @@
 import { Observable, forkJoin, from, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { mergeMap, map } from 'rxjs/operators';
 import { get, merge, omit } from 'lodash';
 
 import MatchModel, {
@@ -21,7 +21,7 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
-  findAllFinishedForCurrentSeasons(filter: any): Observable<Match[]>
+  findAllFinishedForCurrentSeasons$(competitions: Competition[], filter: any): Observable<[string, Match[]]>
 }
 
 export class MatchRepositoryImpl
@@ -37,15 +37,23 @@ export class MatchRepositoryImpl
     super(MatchModel, converter);
   }
 
-  findAllFinishedForCurrentSeasons(competitions: Competition[], filter: any = {}): Observable<Match[]> {
+  findAllFinishedForCurrentSeasons$(competitions: Competition[], filter: any = {}): Observable<[string, Match[]]> {
+    type SeasonToMatches = [string, Match[]]
     return from(competitions)
       .pipe(
         mergeMap(competition => {
-          const { currentSeason } = competition;
+          const currentSeason = competition.currentSeason?.toString();
           if (currentSeason) {
             return this.findAll$({ ...filter, season: currentSeason, status: MatchStatus.FINISHED })
+              .pipe(
+                map(matches => {
+                  const result: SeasonToMatches = [currentSeason!, matches]
+                  return result;
+                })
+              )
           } else {
-            return of([]);
+            const result: SeasonToMatches = ['', []];
+            return of(result)
           }
         })
       )

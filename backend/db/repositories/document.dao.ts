@@ -92,6 +92,7 @@ export class DocumentDao<T extends Entity> {
 
   public distinct(field: string, conditions: any = {}): Promise<string[]> {
     return this.Model.find(conditions).distinct(field).exec()
+      .then((xs: any[]) => xs.map(x => x.toString()))
   }
 
   public findAll(

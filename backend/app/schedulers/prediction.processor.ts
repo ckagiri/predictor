@@ -1,5 +1,5 @@
 import { MatchStatus } from '../../db/models/match.model';
-import { count, from, lastValueFrom, map, mergeMap, of } from 'rxjs';
+import { count, filter, from, lastValueFrom, map, mergeMap } from 'rxjs';
 import { Match } from '../../db/models';
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import PredictionCalculator from './prediction.calculator';
@@ -10,12 +10,10 @@ export interface PredictionProcessor {
 
 export class PredictionProcessorImpl implements PredictionProcessor {
   public static getInstance(
-    predictionRepo?: PredictionRepository,
-    predictionCalculator?: PredictionCalculator,
+    predictionRepo = PredictionRepositoryImpl.getInstance(),
+    predictionCalculator = PredictionCalculator.getInstance(),
   ) {
-    const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance();
-    const predictionCalc = predictionCalculator ?? PredictionCalculator.getInstance();
-    return new PredictionProcessorImpl(predictionRepoImpl, predictionCalc);
+    return new PredictionProcessorImpl(predictionRepo, predictionCalculator);
   }
 
   constructor(
@@ -43,12 +41,13 @@ export class PredictionProcessorImpl implements PredictionProcessor {
             )
           ),
           mergeMap(({ match, userId }) => {
-            const matchId = match.id!.toString();
+            const matchId = match.id!;
             return this.predictionRepo.findOne$(userId, matchId)
               .pipe(
                 map(prediction => ({ match, prediction }))
               )
           }),
+          filter(({ prediction }) => prediction != null),
           mergeMap(({ match, prediction }) => {
             const { result } = match;
             const { choice } = prediction;

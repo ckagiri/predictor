@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
-import { Match, Prediction, PredictionDocument } from '../../db/models';
+import { Match, Prediction } from '../../db/models';
 import { ScorePoints, Score } from '../../common/score';
 import a from '../a';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
@@ -66,8 +66,10 @@ const eveVwhu = a.match
   .withGameRound(gw2)
   .setStatus(MatchStatus.POSTPONED)
 
-const user1 = a.user.setUsername('charles').setEmail('charles@email.com');
-const user2 = a.user.setUsername('kagiri').setEmail('kagiri@email.com');
+const epl2022Matches = [manuVmanc, livVtot, cheVars, eveVwhu]
+
+const user1 = a.user.setUsername('charles');
+const user2 = a.user.setUsername('kagiri');
 
 describe('Prediction repo', function () {
   before(async () => {
@@ -91,7 +93,7 @@ describe('Prediction repo', function () {
         epl2022
           .withTeams(manu, manc, che, ars, liv, tot, eve, whu)
           .withGameRounds(gw1, gw2)
-          .withMatches(manuVmanc, livVtot, cheVars, eveVwhu)
+          .withMatches(...epl2022Matches)
       )
       .build();
   })
@@ -102,7 +104,7 @@ describe('Prediction repo', function () {
       const { id: matchId, slug: matchSlug } = manuVmanc.match as Required<Match>;
 
       predictionRepo
-        .findOneOrCreate$(userId, matchId)
+        .findOneOrCreate$(userId, manuVmanc.match!)
         .subscribe(p => {
           expect(p.user.toString()).to.equal(userId);
           expect(p.match.toString()).to.equal(matchId);
@@ -115,21 +117,19 @@ describe('Prediction repo', function () {
     it('findOneOrCreate should return existing prediction', done => {
       let prediction: Prediction;
       const userId = user1.id;
-      const matchId = manuVmanc.id;
+      const match = manuVmanc.match!;
 
       predictionRepo
-        .findOneOrCreate$(userId, matchId)
+        .findOneOrCreate$(userId, match)
         .pipe(
           mergeMap(p => {
             prediction = p;
-            return predictionRepo.findOneOrCreate$(userId, matchId);
+            return predictionRepo.findOneOrCreate$(userId, match);
           })
         )
         .subscribe(p => {
           // do a deep object comparison for equality test
-          expect((p as PredictionDocument).toObject()).to.eql(
-            (prediction as PredictionDocument).toObject(),
-          );
+          expect(p).to.eql(prediction);
           done();
         });
     });
@@ -162,16 +162,13 @@ describe('Prediction repo', function () {
     it('should findById And update score-points', done => {
       let scorePoints: ScorePoints;
       const userId = user1.id;
-      const matchId = manuVmanc.id;
+      const match = manuVmanc.match!;
 
       predictionRepo
-        .findOneOrCreate$(userId, matchId)
+        .findOneOrCreate$(userId, match)
         .pipe(
           mergeMap(p => {
             scorePoints = { // actual score pred
-              points: 16,
-              resultPoints: 8,
-              scorePoints: 8,
               correctMatchOutcomePoints: 7,
               exactGoalDifferencePoints: 1,
               closeMatchScorePoints: 0,
@@ -181,8 +178,7 @@ describe('Prediction repo', function () {
             return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
           }),
         )
-        .subscribe(p => {
-          const pred = (p as PredictionDocument).toObject() as Prediction;
+        .subscribe(pred => {
           expect(pred.scorePoints).to.eql(scorePoints);
           done();
         });
@@ -267,7 +263,9 @@ describe('Prediction repo', function () {
     describe('findOrCreateJoker', () => {
       it('should find joker if it exists', done => {
         const userId = user1.id;
-        const roundId = gw1.id;
+        const roundMatches = epl2022Matches
+          .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
+
 
         const userId1matchId1Pred: Prediction = {
           user: userId,
@@ -282,7 +280,7 @@ describe('Prediction repo', function () {
         predictionRepo
           .insertMany$([userId1matchId1Pred])
           .pipe(
-            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundMatches))
           )
           .subscribe(p => {
             expect(p).to.have.property('hasJoker', true);
@@ -293,7 +291,8 @@ describe('Prediction repo', function () {
 
       it('should create joker if it doesnt exist', done => {
         const userId = user1.id;
-        const roundId = gw1.id;
+        const roundMatches = epl2022Matches
+          .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
 
         const userId1matchId1Pred: Prediction = {
           user: userId,
@@ -306,7 +305,7 @@ describe('Prediction repo', function () {
         predictionRepo
           .insertMany$([userId1matchId1Pred])
           .pipe(
-            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundMatches))
           )
           .subscribe(p => {
             expect(p).to.have.property('hasJoker', true);
@@ -317,7 +316,8 @@ describe('Prediction repo', function () {
 
       it('should pick one joker and unset others if multiple jokers exists', done => {
         const userId = user1.id;
-        const roundId = gw1.id;
+        const roundMatches = epl2022Matches
+          .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
 
         const userId1matchId1Pred: Prediction = {
           user: userId,
@@ -328,7 +328,6 @@ describe('Prediction repo', function () {
           hasJoker: true,
           jokerAutoPicked: true,
         };
-
         const userId1matchId2Pred: Prediction = {
           user: userId,
           season: epl2022.id,
@@ -342,7 +341,7 @@ describe('Prediction repo', function () {
         predictionRepo
           .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
           .pipe(
-            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundId))
+            mergeMap(() => predictionRepo.findOrCreateJoker$(userId, roundMatches))
           ).pipe(
             mergeMap(() => predictionRepo.findAll$({
               user: userId,
@@ -359,7 +358,8 @@ describe('Prediction repo', function () {
 
     it('should find Predictions', done => {
       const userId1 = user1.id;
-      const roundId1 = gw1.id;
+      const roundMatches = epl2022Matches
+        .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
 
       const userId1matchId1Pred: Prediction = {
         user: userId1,
@@ -370,7 +370,6 @@ describe('Prediction repo', function () {
         jokerAutoPicked: false,
         choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
       };
-
       const userId1matchId2Pred: Prediction = {
         user: userId1,
         season: epl2022.id,
@@ -380,7 +379,6 @@ describe('Prediction repo', function () {
         jokerAutoPicked: false,
         choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: false },
       };
-
       const userId1matchId3Pred: Prediction = {
         user: userId1,
         season: epl2022.id,
@@ -394,7 +392,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insertMany$([userId1matchId1Pred, userId1matchId2Pred, userId1matchId3Pred])
         .pipe(
-          mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+          mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundMatches))
         )
         .subscribe(preds => {
           expect(preds).to.have.length(3)
@@ -405,7 +403,8 @@ describe('Prediction repo', function () {
 
     it('should findOrCreatePredictions', done => {
       const userId1 = user1.id;
-      const roundId1 = gw1.id;
+      const roundMatches = epl2022Matches
+        .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
 
       const userId1matchId1Pred: Prediction = {
         user: userId1,
@@ -416,7 +415,6 @@ describe('Prediction repo', function () {
         jokerAutoPicked: true,
         choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
       };
-
       const userId1matchId2Pred: Prediction = {
         user: userId1,
         season: epl2022.id,
@@ -430,7 +428,7 @@ describe('Prediction repo', function () {
       predictionRepo
         .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
         .pipe(
-          mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundId1))
+          mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundMatches))
         )
         .subscribe(preds => {
           expect(preds).to.have.length(3)
@@ -452,7 +450,7 @@ describe('Prediction repo', function () {
       predictionRepo.insert$(userId1matchId1Pred)
         .pipe(
           mergeMap(() => {
-            return predictionRepo.unsetJoker$(user1.id, manuVmanc.id)
+            return predictionRepo.unsetJoker$(user1.id, manuVmanc.match!)
           })
         ).subscribe(pred => {
           expect(pred?.hasJoker).to.be.false
@@ -478,11 +476,14 @@ describe('Prediction repo', function () {
           matchSlug: cheVars.slug,
           choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
         };
+        const roundMatches = epl2022Matches
+          .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
+
 
         predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
           .pipe(
             mergeMap(() => {
-              return predictionRepo.pickJoker$(user1.id, cheVars.id)
+              return predictionRepo.pickJoker$(user1.id, cheVars.match!, roundMatches)
             })
           ).subscribe(predictions => {
             expect(predictions).to.have.lengthOf(2)
@@ -512,11 +513,14 @@ describe('Prediction repo', function () {
           matchSlug: cheVars.slug,
           choice: { goalsHomeTeam: 1, goalsAwayTeam: 0 },
         };
+        const roundMatches = epl2022Matches
+          .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
+
 
         predictionRepo.insertMany$([userId1matchId1Pred, userId1matchId2Pred])
           .pipe(
             mergeMap(() => {
-              return predictionRepo.pickJoker$(user1.id, manuVmanc.id)
+              return predictionRepo.pickJoker$(user1.id, manuVmanc.match!, roundMatches)
             })
           ).subscribe(predictions => {
             expect(predictions).to.have.lengthOf(1)
@@ -530,7 +534,6 @@ describe('Prediction repo', function () {
 
     it('should findOrCreatePicks ', done => {
       const userId1 = user1.id;
-      const roundId1 = gw1.id;
 
       const userId1matchId1Pred: Prediction = {
         user: userId1,
@@ -541,7 +544,6 @@ describe('Prediction repo', function () {
         jokerAutoPicked: true,
         choice: { goalsHomeTeam: 0, goalsAwayTeam: 0, isComputerGenerated: true },
       };
-
       const userId1matchId2Pred: Prediction = {
         user: userId1,
         season: epl2022.id,
@@ -551,11 +553,13 @@ describe('Prediction repo', function () {
         jokerAutoPicked: false,
         choice: { goalsHomeTeam: 1, goalsAwayTeam: 0, isComputerGenerated: true },
       };
+      const roundMatches = epl2022Matches
+        .filter(m => m.gameRound.id === gw1.id).map(m => m.match!)
 
       predictionRepo
         .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
         .pipe(
-          mergeMap(() => predictionRepo.findOrCreatePicks$(userId1, roundId1))
+          mergeMap(() => predictionRepo.findOrCreatePicks$(userId1, roundMatches))
         )
         .subscribe(preds => {
           expect(preds).to.have.length(2)
