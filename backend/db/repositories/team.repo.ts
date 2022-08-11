@@ -13,7 +13,6 @@ export interface TeamRepository extends BaseFootballApiRepository<Team> {
   findByNameAndUpsert$(name: any, obj?: any): Observable<Team>;
   findEachByNameAndUpsert$(teams: any[]): Observable<Team[]>;
   findByName$(name: string): Observable<Team>;
-  findAllByIds$(ids?: string[]): Observable<Team[]>;
 }
 
 export class TeamRepositoryImpl
@@ -27,10 +26,6 @@ export class TeamRepositoryImpl
 
   constructor(converter: TeamConverter) {
     super(TeamModel, converter);
-  }
-
-  findAllByIds$(ids: string[] = []): Observable<Team[]> {
-    return this.findAll$({ _id: { $in: ids } })
   }
 
   public findByNameAndUpsert$(obj: any): Observable<Team> {

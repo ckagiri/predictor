@@ -4,7 +4,7 @@ import { FootballApiClient } from '../apiClient';
 const BASE_URL = 'http://api.football-data.org/v2';
 
 class ApiFootballDataClient implements FootballApiClient {
-  constructor(private apiKey: string) {}
+  constructor(private apiKey: string) { }
 
   public getCompetitions(year: number) {
     const queryParams = year ? { year } : undefined;
@@ -31,23 +31,31 @@ class ApiFootballDataClient implements FootballApiClient {
     );
   }
 
-  public getMatches(competitionId: number | string, options?: any) {
+  getCompetitionMatches(competitionId: string | number) {
     const apiResource = `/competitions/${competitionId}/matches`;
 
-    return request(this._getOptions(this.apiKey, apiResource, options)).then(
+    return request(this._getOptions(this.apiKey, apiResource)).then(
       this._mergeResponse,
     );
   }
 
-  public getTodaysMatches() {
+  getMatches(matchIds?: string[] | undefined) {
+    const apiResource = `/matches`;
+
+    return request(this._getOptions(this.apiKey, apiResource, { ids: matchIds })).then(
+      this._mergeResponse,
+    );
+  }
+
+  getTodaysMatches(): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
-  public getTomorrowsMatches() {
+  getTomorrowsMatches(): Promise<any> {
     throw new Error('Method not implemented.');
   }
 
-  public getYesterdaysMatches() {
+  getYesterdaysMatches(): Promise<any> {
     throw new Error('Method not implemented.');
   }
 

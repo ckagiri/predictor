@@ -47,10 +47,13 @@ class PredictionScheduler implements Scheduler {
     if (this.taskRunning) return;
     this.taskRunning = true;
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const [seasonId, matches] = await lastValueFrom(
-      this.matchRepo.findAllFinishedForCurrentSeasons$(competitions, { allPredictionPointsCalculated: false })
+    const currentSeasons = competitions.map(c => c.currentSeason?.toString() || '');
+    const result = await lastValueFrom(
+      this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasons, { allPredictionPointsCalculated: false })
     );
-    const count = await this.predictionProcessor.calculatePredictionPoints(seasonId, matches)
+    for (const [seasonId, matches] of result) {
+      const count = await this.predictionProcessor.calculatePredictionPoints(seasonId, matches)
+    }
     this.taskRunning = false;
   }
 

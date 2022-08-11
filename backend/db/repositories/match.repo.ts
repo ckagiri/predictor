@@ -1,12 +1,11 @@
 import { Observable, forkJoin, from, of } from 'rxjs';
-import { mergeMap, map } from 'rxjs/operators';
-import { get, merge, omit } from 'lodash';
+import { filter, mergeMap, map, toArray } from 'rxjs/operators';
+import { get, isEmpty, isNil, merge, omit } from 'lodash';
 
 import MatchModel, {
   Match,
   MatchStatus,
 } from '../models/match.model';
-import { Competition } from '../models/competition.model';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,
@@ -16,12 +15,14 @@ import {
   MatchConverterImpl,
 } from '../converters/match.converter';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { Season } from '../../db/models/season.model';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
-  findAllFinishedForCurrentSeasons$(competitions: Competition[], filter: any): Observable<[string, Match[]]>
+  findAllFinishedForCurrentSeasons$(currentSeasons: string[], filter: any): Observable<[string, Match[]][]>
+  findAllForCurrentGameRounds$(currentRounds: Season[]): Observable<[string, Match[]][]>
 }
 
 export class MatchRepositoryImpl
@@ -37,17 +38,16 @@ export class MatchRepositoryImpl
     super(MatchModel, converter);
   }
 
-  findAllFinishedForCurrentSeasons$(competitions: Competition[], filter: any = {}): Observable<[string, Match[]]> {
+  findAllFinishedForCurrentSeasons$(currentSeasons: string[], filter: any = {}): Observable<[string, Match[]][]> {
     type SeasonToMatches = [string, Match[]]
-    return from(competitions)
+    return from(currentSeasons)
       .pipe(
-        mergeMap(competition => {
-          const currentSeason = competition.currentSeason?.toString();
-          if (currentSeason) {
-            return this.findAll$({ ...filter, season: currentSeason, status: MatchStatus.FINISHED })
+        mergeMap(season => {
+          if (season) {
+            return this.findAll$({ ...filter, season, status: MatchStatus.FINISHED })
               .pipe(
                 map(matches => {
-                  const result: SeasonToMatches = [currentSeason!, matches]
+                  const result: SeasonToMatches = [season, matches]
                   return result;
                 })
               )
@@ -55,9 +55,30 @@ export class MatchRepositoryImpl
             const result: SeasonToMatches = ['', []];
             return of(result)
           }
-        })
+        }),
+        toArray()
       )
   }
+
+  findAllForCurrentGameRounds$(currentSeasons: Season[]): Observable<[string, Match[]][]> {
+    type SeasonToMatches = [string, Match[]]
+    return from(currentSeasons)
+      .pipe(
+        mergeMap(season => {
+          const seasonId = season.id!;
+          const gameRound = season.currentGameRound;
+          return this.findAll$({ gameRound })
+            .pipe(
+              map(matches => {
+                const result: SeasonToMatches = [seasonId, matches];
+                return result;
+              })
+            )
+        }),
+        toArray()
+      )
+  }
+
 
   public findBySeasonAndTeamsAndUpsert$(obj: any) {
     return (this.converter as MatchConverter).from(obj).pipe(

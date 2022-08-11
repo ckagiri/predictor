@@ -204,6 +204,12 @@ export class DocumentDao<T extends Entity> {
     return this.Model.findById(id).lean({ transform }).exec() as Promise<T>;
   }
 
+  findAllByIds(ids: string[] = []): Promise<T[]> {
+    return this.Model.find({ _id: { $in: ids.map(id => new mongoose.Types.ObjectId(id)) } })
+      .lean({ transform })
+      .exec() as Promise<T[]>;
+  }
+
   public findByIdAndUpdate(
     id: string,
     update: any,

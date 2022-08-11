@@ -22,6 +22,7 @@ export interface BaseRepository<T extends Entity> {
   ): Observable<{ result: T[]; count: number }>;
   findOne$(conditions: any, projection?: any): Observable<T>;
   findById$(id: string): Observable<T>;
+  findAllByIds$(ids?: string[]): Observable<T[]>;
   remove$(id: string): Observable<void>;
   count$(conditions: any): Observable<number>;
 }
@@ -244,6 +245,20 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
         (error: any) => {
           observer.error(error);
         },
+      );
+    });
+  }
+
+  public findAllByIds$(ids: string[] = []): Observable<T[]> {
+    return new Observable((observer: Subscriber<T[]>) => {
+      this.documentDao.findAllByIds(ids).then(
+        (result: T[]) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: any) => {
+          observer.error(error);
+        }
       );
     });
   }

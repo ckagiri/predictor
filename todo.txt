@@ -182,3 +182,18 @@ updateScorenRankings timer
 
 run from package-lock
 add two users do preds, run
+
+>>>>
+matches.scheduler
+getMatches for leagueCodes
+ids -> currentSeasons - which gameRound?
+findAllFinishedForCurrentSeasons(currentSeasons)
+competition -> currentSeason -> matches
+findAllByIds -> currentSeasons
+currentSeasons -> currentGameRounds
+findAllForCurrentGameRounds(currentGameRounds)
+Append ids - which// doLater tomorrows matches
+matches for pL&others
+
+test getMatches;
+test getMatchesW/Ids
