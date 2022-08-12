@@ -57,9 +57,9 @@ class CurrentRoundMatchesScheduler implements Scheduler {
     if (this.taskRunning) return;
     this.taskRunning = true;
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasons = competitions.map(c => c.currentSeason?.toString() || '');
-    const seasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasons));
-    const result: [string, Match[]][] = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(seasons));
+    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
+    const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
+    const result: [string, Match[]][] = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
     for (const [_seasonId, dbMatches] of result) {
       const externalIds: string[] = dbMatches.map(dbMatch => {
         const externalId = get(dbMatch, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);

@@ -5,7 +5,12 @@
       "name": "English Premier League",
       "code": "EPL",
       "slug": "english-premier-league",
-      "aliases": []
+      "aliases": [],
+      "externalReference": {
+        "API_FOOTBALL_DATA": {
+          "id": 2021
+        }
+      }
     }
   },
   "teams": {
