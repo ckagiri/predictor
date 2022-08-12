@@ -52,7 +52,7 @@ class PredictionScheduler implements Scheduler {
       this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasons, { allPredictionPointsCalculated: false })
     );
     for (const [seasonId, matches] of result) {
-      const count = await this.predictionProcessor.calculatePredictionPoints(seasonId, matches)
+      await this.predictionProcessor.calculatePredictionPoints(seasonId, matches)
     }
     this.taskRunning = false;
   }

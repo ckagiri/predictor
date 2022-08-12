@@ -59,6 +59,7 @@ class YesterToMorrowScheduler implements Scheduler {
     const dbMatches = await lastValueFrom(this.matchRepo.findByExternalIds$(externalIds));
     apiMatches.forEach(async apiMatch => {
       const dbMatch = dbMatches.find(m => m[externalReferenceId] == apiMatch.id);
+      if (!dbMatch) return;
       if (matchChanged(apiMatch, dbMatch)) {
         const id = dbMatch?.id;
         const { result, status, odds } = apiMatch;
