@@ -36,8 +36,8 @@ class CurrentRoundMatchesScheduler implements Scheduler {
     private matchRepo: MatchRepository,
     private footballApiClient: FootballApiClient,
   ) {
-    this.job.on('success', result => {
-      this.jobSuccess(result);
+    this.job.on('success', () => {
+      this.jobSuccess();
     });
   }
 
@@ -45,8 +45,8 @@ class CurrentRoundMatchesScheduler implements Scheduler {
     if (this.jobScheduled) throw new Error('Job already scheduled');
     this.setInterval(interval);
     if (runImmediately) {
-      this.jobTask().then(result => {
-        this.jobSuccess(result);
+      this.jobTask().then(() => {
+        this.jobSuccess();
       });
     } else {
       return this.job.runOnDate(new Date(Date.now() + this.getInterval()));
@@ -70,7 +70,7 @@ class CurrentRoundMatchesScheduler implements Scheduler {
       apiMatches.forEach(async apiMatch => {
         const dbMatch = dbMatches.find(match => {
           const externalId = get(match, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-          return apiMatch.id == externalId;
+          return apiMatch.id === externalId;
         });
         if (!dbMatch) return;
         if (matchChanged(apiMatch, dbMatch)) {
@@ -88,18 +88,9 @@ class CurrentRoundMatchesScheduler implements Scheduler {
     this.jobScheduled = false;
   }
 
-  jobSuccess(_: any, reschedule: boolean = false) {
+  jobSuccess() {
     const nextUpdate = new Date(Date.now() + this.getInterval());
-    if (reschedule) {
-      this.job.reschedule(nextUpdate.getTime());
-    } else {
-      this.job.schedule(nextUpdate)
-    }
-  }
-
-  async runJob() {
-    const result = await this.jobTask();
-    this.jobSuccess(result, true);
+    this.job.schedule(nextUpdate)
   }
 
   private getInterval() {

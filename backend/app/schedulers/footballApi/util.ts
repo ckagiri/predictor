@@ -37,7 +37,7 @@ export const makeMatchUpdate = (apiMatch: any) => {
   return { result, status: matchStatus }
 }
 
-const getMatchStatus = (status: string) => {
+export const getMatchStatus = (status: string) => {
   const MATCH_STATUS: { [key: string]: MatchStatus } = {
     'SCHEDULED': MatchStatus.SCHEDULED,
     'TIMED': MatchStatus.SCHEDULED,

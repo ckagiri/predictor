@@ -48,15 +48,24 @@ class ApiFootballDataClient implements FootballApiClient {
   }
 
   getTodaysMatches(): Promise<any> {
-    throw new Error('Method not implemented.');
+    const apiResource = `/matches`;
+    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', date: 'TODAY' })).then(
+      this._mergeResponse,
+    );
   }
 
   getTomorrowsMatches(): Promise<any> {
-    throw new Error('Method not implemented.');
+    const apiResource = `/matches`;
+    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', date: 'TOMORROW' })).then(
+      this._mergeResponse,
+    );
   }
 
   getYesterdaysMatches(): Promise<any> {
-    throw new Error('Method not implemented.');
+    const apiResource = `/matches`;
+    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', date: 'YESTERDAY' })).then(
+      this._mergeResponse,
+    );
   }
 
   public _getOptions(apiKey: string, resource: string, queryParams?: any) {
