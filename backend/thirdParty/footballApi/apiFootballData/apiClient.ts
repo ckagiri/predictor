@@ -1,7 +1,7 @@
 import request from 'request-promise';
 import { FootballApiClient } from '../apiClient';
 
-const BASE_URL = 'http://api.football-data.org/v2';
+const BASE_URL = 'http://api.football-data.org/v4';
 
 class ApiFootballDataClient implements FootballApiClient {
   constructor(private apiKey: string) { }
@@ -42,7 +42,7 @@ class ApiFootballDataClient implements FootballApiClient {
   getMatches(matchIds?: string[] | undefined) {
     const apiResource = `/matches`;
 
-    return request(this._getOptions(this.apiKey, apiResource, { ids: matchIds })).then(
+    return request(this._getOptions(this.apiKey, apiResource, { ids: matchIds?.join(',') })).then(
       this._mergeResponse,
     );
   }

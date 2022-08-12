@@ -6,7 +6,7 @@ import { Prediction } from './prediction.model';
 
 export enum MatchStatus {
   SCHEDULED = 'SCHEDULED',
-  IN_PLAY = 'IN_PLAY',
+  LIVE = 'LIVE',
   CANCELED = 'CANCELED',
   POSTPONED = 'POSTPONED',
   FINISHED = 'FINISHED',
@@ -66,7 +66,7 @@ export const matchSchema = schema({
     required: true,
     enum: [
       'SCHEDULED',
-      'IN_PLAY',
+      'LIVE',
       'CANCELED',
       'POSTPONED',
       'FINISHED',

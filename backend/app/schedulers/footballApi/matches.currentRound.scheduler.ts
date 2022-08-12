@@ -10,7 +10,7 @@ import { FootballApiClient, FootballApiClientImpl } from "../../../thirdParty/fo
 import { Match } from "../../../db/models/match.model";
 import { FootballApiProvider } from '../../../common/footballApiProvider';
 import schedule, { Job } from "node-schedule";
-import { matchChanged } from "./util";
+import { makeMatchUpdate, matchChanged } from "./util";
 import { get } from 'lodash';
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000; // 7H
@@ -72,11 +72,11 @@ class CurrentRoundMatchesScheduler implements Scheduler {
           const externalId = get(match, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
           return apiMatch.id == externalId;
         });
+        if (!dbMatch) return;
         if (matchChanged(apiMatch, dbMatch)) {
-          const id = dbMatch?.id;
-          const { result, status, odds } = apiMatch;
-          const update: any = { result, status, odds };
-          await lastValueFrom(this.matchRepo.findByIdAndUpdate$(id!, update));
+          const matchId = dbMatch?.id!;
+          const update = makeMatchUpdate(apiMatch);
+          await lastValueFrom(this.matchRepo.findByIdAndUpdate$(matchId, update));
         }
       });
     }
