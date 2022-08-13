@@ -10,7 +10,7 @@ import { isEmpty } from "lodash";
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
 
 class LeaderboardScheduler implements Scheduler {
-  private job: Job = new schedule.Job('Predictions Job', this.jobTask.bind(this));
+  private job: Job = new schedule.Job('Leaderboard Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private interval: number = DEFAULT_INTERVAL;
@@ -27,6 +27,9 @@ class LeaderboardScheduler implements Scheduler {
     private competitionRepo: CompetitionRepository,
     private matchRepo: MatchRepository,
     private leaderboardProcessor: LeaderboardProcessor) {
+    this.job.on('success', result => {
+      this.jobSuccess(result);
+    });
   }
 
   startJob({ interval = DEFAULT_INTERVAL, runImmediately }: SchedulerOptions): void {
@@ -42,11 +45,14 @@ class LeaderboardScheduler implements Scheduler {
   }
 
   async jobTask() {
+    if (this.taskRunning) return;
+    this.taskRunning = true;
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
     const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
     const result = await lastValueFrom(
       this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, {
-        allPredictionPointsCalculated: true
+        allPredictionPointsCalculated: true,
+        allGlobalLeaderboardScoresProcessed: false
       })
     );
     for (const [seasonId, matches] of result) {
@@ -58,11 +64,14 @@ class LeaderboardScheduler implements Scheduler {
       });
       await lastValueFrom(this.matchRepo.updateMany$(matches));
     }
+    this.taskRunning = false;
   }
 
   cancelJob(): void {
-    throw new Error("Method not implemented.");
+    this.job.cancel();
+    this.jobScheduled = false;
   }
+
   jobSuccess(_: any, reschedule: boolean = false) {
     const nextUpdate = new Date(Date.now() + this.getInterval());
     if (reschedule) {

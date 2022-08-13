@@ -58,7 +58,7 @@ export class UserScoreRepositoryImpl
     const scorePoints = closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
     const points = resultPoints + scorePoints;
 
-    const score: UserScore = {
+    let score: UserScore = {
       leaderboard: leaderboardId,
       user: userId,
       correctMatchOutcomePoints,
@@ -97,7 +97,7 @@ export class UserScoreRepositoryImpl
           return this.insert$(score);
         } else {
           const matches = userScore.matches as string[];
-          const matchExists = matches.some(m => m === matchId);
+          const matchExists = matches.some(m => m.toString() === matchId);
           if (matchExists) {
             return of(userScore);
           }
@@ -122,25 +122,25 @@ export class UserScoreRepositoryImpl
           userScore.closeMatchScores! += closeMatchScorePoints;
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
 
+          return this.findByIdAndUpdate$(userScore.id!, {
+            $set: {
+              resultPoints: userScore.resultPoints,
+              scorePoints: userScore.scorePoints,
+              points: userScore.points,
+              correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
+              exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
+              closeMatchScorePoints: userScore.closeMatchScorePoints,
+              exactTeamScorePoints: userScore.exactTeamScorePoints,
+              exactMatchScorePoints: userScore.exactMatchScorePoints,
+              pointsExcludingJoker: userScore.pointsExcludingJoker,
+              correctMatchOutcomes: userScore.correctMatchOutcomes,
+              closeMatchScores: userScore.closeMatchScores,
+              exactMatchScores: userScore.exactMatchScores,
+            },
+            $inc: { matchesPredicted: 1 },
+            $push: { matches: matchId, predictions: predictionId },
+          });
         }
-        return this.findByIdAndUpdate$(userScore.id!, {
-          $set: {
-            resultPoints: userScore.resultPoints,
-            scorePoints: userScore.scorePoints,
-            points: userScore.points,
-            correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
-            exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
-            closeMatchScorePoints: userScore.closeMatchScorePoints,
-            exactTeamScorePoints: userScore.exactTeamScorePoints,
-            exactMatchScorePoints: userScore.exactMatchScorePoints,
-            pointsExcludingJoker: userScore.pointsExcludingJoker,
-            correctMatchOutcomes: userScore.correctMatchOutcomes,
-            closeMatchScores: userScore.closeMatchScores,
-            exactMatchScores: userScore.exactMatchScores,
-          },
-          $inc: { matchesPredicted: 1 },
-          $push: { matches: matchId, predictions: predictionId },
-        });
       })
     );
   }

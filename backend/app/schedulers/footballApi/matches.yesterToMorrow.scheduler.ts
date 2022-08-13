@@ -30,6 +30,14 @@ class YesterToMorrowScheduler implements Scheduler {
     private matchRepo: MatchRepository,
     private footballApiClient: FootballApiClient,
   ) {
+    this.job.on('success', () => {
+      this.jobSuccess();
+    });
+    this.job.on('scheduled', (scheduleDate: any) => {
+      // todo
+      // if diff(this.scheduleDate, now) < 120 && diff(scheduleDate, now) > 120
+      // publish if lastUpdate was 2 mins ago and nextUpdate is 2+ mins later
+    })
   }
 
   startJob({ interval = DEFAULT_INTERVAL, runImmediately = false }: SchedulerOptions): void {
@@ -84,7 +92,7 @@ class YesterToMorrowScheduler implements Scheduler {
 
   jobSuccess(result: any = [], reschedule: boolean = false) {
     const apiMatches = result as any[];
-    const nextInterval = calculateNextInterval(this.interval, apiMatches)
+    const nextInterval = calculateNextInterval(apiMatches)
     const nextUpdate = new Date(Date.now() + nextInterval);
 
     if (reschedule) {
@@ -108,12 +116,10 @@ class YesterToMorrowScheduler implements Scheduler {
   }
 }
 
-export function calculateNextInterval(defaultInterval: number, apiMatches: any[]): number {
-  if (isEmpty(apiMatches)) { return defaultInterval }
+export function calculateNextInterval(apiMatches: any[]): number {
   const now = moment();
   let nextUpdate = moment().add(12, 'hours');
-  const matchStart1 = moment(apiMatches[0].utcDate);
-  const finishedMatches = apiMatches.filter(f => getMatchStatus(f.status) === MatchStatus.FINISHED);
+  const finishedMatches = apiMatches.filter(m => getMatchStatus(m.status) === MatchStatus.FINISHED);
   let hasLiveMatch = false;
   for (const match of finishedMatches) {
     const matchStatus = getMatchStatus(match.status)

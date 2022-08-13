@@ -12,7 +12,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 const DEFAULT_INTERVAL = 12 * 60 * 60 * 1000; // 12H
 
 class SeasonNextRoundScheduler implements Scheduler {
-  private job: Job = new schedule.Job('CurrentRoundMatches Job', this.jobTask.bind(this));
+  private job: Job = new schedule.Job('SeasonNextRound Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private interval: number = DEFAULT_INTERVAL;
