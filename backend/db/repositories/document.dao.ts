@@ -3,9 +3,8 @@ import { omit } from 'lodash';
 
 import { Entity } from '../models/base.model';
 
-const transform = (doc: any) => {
+const transform = (doc: any, ret: any) => {
   doc.id = doc._id.toString();
-  delete doc._id;
   delete doc.__v;
   return doc;
 };
@@ -59,7 +58,7 @@ export class DocumentDao<T extends Entity> {
 
       return {
         updateOne: {
-          filter: { $or: [{ _id: new mongoose.Types.ObjectId(obj.id) }, { slug: obj.slug }] },
+          filter: { _id: obj.id },
           update: obj,
           upsert: true
         }
@@ -77,12 +76,13 @@ export class DocumentDao<T extends Entity> {
       }
       // Convert to plain object
       if (obj instanceof this.Model) {
-        obj = obj.toObject({ depopulate: true });
+        obj = obj.toObject({ depopulate: true, versionKey: false });
       }
 
       return {
         updateOne: {
-          filter: { $or: [{ _id: new mongoose.Types.ObjectId(obj.id) }, { slug: obj.slug }] },
+          filter: { _id: obj.id },
+          upsert: false,
           update: obj,
         }
       }
