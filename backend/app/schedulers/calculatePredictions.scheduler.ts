@@ -6,11 +6,12 @@ import { CompetitionRepository, CompetitionRepositoryImpl } from '../../db/repos
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { PredictionProcessor, PredictionProcessorImpl } from './prediction.processor';
 import { Scheduler, SchedulerOptions } from "./scheduler";
+import { isEmpty } from 'lodash';
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
 
-class PredictionScheduler implements Scheduler {
-  private job: Job = new schedule.Job('Predictions Job', this.jobTask.bind(this));
+class CalculatePredictionsScheduler implements Scheduler {
+  private job: Job = new schedule.Job('CalculatePredictions Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private interval: number = DEFAULT_INTERVAL;
@@ -19,7 +20,7 @@ class PredictionScheduler implements Scheduler {
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance(),
     predictionProcessor = PredictionProcessorImpl.getInstance()) {
-    return new PredictionScheduler(competitionRepo, matchRepo, predictionProcessor);
+    return new CalculatePredictionsScheduler(competitionRepo, matchRepo, predictionProcessor);
   }
 
   constructor(
@@ -47,12 +48,17 @@ class PredictionScheduler implements Scheduler {
     if (this.taskRunning) return;
     this.taskRunning = true;
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasons = competitions.map(c => c.currentSeason?.toString() || '');
+    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
     const result = await lastValueFrom(
-      this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasons, { allPredictionPointsCalculated: false })
+      this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, { allPredictionPointsCalculated: false })
     );
     for (const [seasonId, matches] of result) {
+      if (isEmpty(matches)) continue;
       await this.predictionProcessor.calculatePredictionPoints(seasonId, matches)
+      matches.forEach(match => {
+        match.allPredictionPointsCalculated = true;
+      });
+      await lastValueFrom(this.matchRepo.updateMany$(matches));
     }
     this.taskRunning = false;
   }
@@ -91,6 +97,6 @@ class PredictionScheduler implements Scheduler {
     useUnifiedTopology: true,
   } as ConnectOptions);
 
-  const scheduler = PredictionScheduler.getInstance();
+  const scheduler = CalculatePredictionsScheduler.getInstance();
   scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
 })();

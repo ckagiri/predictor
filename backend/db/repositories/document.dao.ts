@@ -59,7 +59,7 @@ export class DocumentDao<T extends Entity> {
 
       return {
         updateOne: {
-          filter: { _id: new mongoose.Types.ObjectId(obj.id) },
+          filter: { $or: [{ _id: new mongoose.Types.ObjectId(obj.id) }, { slug: obj.slug }] },
           update: obj,
           upsert: true
         }
@@ -82,7 +82,7 @@ export class DocumentDao<T extends Entity> {
 
       return {
         updateOne: {
-          filter: { matchSlug: obj.matchSlug },
+          filter: { $or: [{ _id: new mongoose.Types.ObjectId(obj.id) }, { slug: obj.slug }] },
           update: obj,
         }
       }

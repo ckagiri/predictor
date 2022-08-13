@@ -9,6 +9,7 @@ export interface BaseRepository<T extends Entity> {
   insert$(obj: Entity): Observable<T>;
   saveMany$(objs: Entity[]): Observable<T[]>;
   insertMany$(objs: Entity[]): Observable<T[]>;
+  updateMany$(objs: Entity[]): Observable<any>;
   upsertMany$(objs: Entity[]): Observable<any>;
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
