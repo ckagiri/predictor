@@ -4,7 +4,7 @@ export type SchedulerOptions = {
 };
 
 export interface Scheduler {
-  startJob({ interval, runImmediately }: SchedulerOptions): void
+  startJob(options?: SchedulerOptions): void
   jobTask(): Promise<any>;
   cancelJob(): void;
   jobSuccess(result?: any, reschedule?: boolean): void;

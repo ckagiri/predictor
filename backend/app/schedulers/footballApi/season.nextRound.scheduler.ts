@@ -7,26 +7,28 @@ import { Scheduler, SchedulerOptions } from "../scheduler";
 import { FootballApiProvider } from "../../../common/footballApiProvider";
 import { get } from "lodash";
 import { GameRoundRepository, GameRoundRepositoryImpl } from "../../../db/repositories/gameRound.repo";
-import mongoose, { ConnectOptions } from "mongoose";
+import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
 
 const DEFAULT_INTERVAL = 12 * 60 * 60 * 1000; // 12H
 
-class SeasonNextRoundScheduler implements Scheduler {
+export class SeasonNextRoundScheduler implements Scheduler {
   private job: Job = new schedule.Job('SeasonNextRound Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private interval: number = DEFAULT_INTERVAL;
 
   public static getInstance(
+    eventMediator = EventMediatorImpl.getInstance(),
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     gameRoundRepo = GameRoundRepositoryImpl.getInstance(),
     footballApiClient = FootballApiClientImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA),
   ) {
-    return new SeasonNextRoundScheduler(competitionRepo, seasonRepo, gameRoundRepo, footballApiClient);
+    return new SeasonNextRoundScheduler(eventMediator, competitionRepo, seasonRepo, gameRoundRepo, footballApiClient);
   }
 
   constructor(
+    private eventMediator: EventMediator,
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
     private gameRoundRepo: GameRoundRepository,
@@ -48,6 +50,7 @@ class SeasonNextRoundScheduler implements Scheduler {
     if (this.taskRunning) return;
     this.taskRunning = true;
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+    const updatedSeasons: any[] = ['abcd'];
     for (const competition of competitions) {
       const currentSeasonId = competition.currentSeason?.toString();
       if (!currentSeasonId) return;
@@ -70,8 +73,12 @@ class SeasonNextRoundScheduler implements Scheduler {
         const nextGameRound = await lastValueFrom(this.gameRoundRepo.findOne$({ position: apiCurrentMatchday }));
         if (!nextGameRound) return;
 
+        updatedSeasons.push(currentSeasonId);
         await lastValueFrom(this.seasonRepo.findByIdAndUpdate$(currentSeasonId, { currentGameRound: nextGameRound.id }));
       }
+    }
+    if (updatedSeasons.length) {
+      this.eventMediator.publish('currentSeasonCurrentRoundUpdated')
     }
   }
 
@@ -94,12 +101,12 @@ class SeasonNextRoundScheduler implements Scheduler {
   }
 }
 
-(async () => {
-  await mongoose.connect(process.env.MONGO_URI!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions);
+// (async () => {
+//   await mongoose.connect(process.env.MONGO_URI!, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   } as ConnectOptions);
 
-  const scheduler = SeasonNextRoundScheduler.getInstance();
-  scheduler.startJob({ interval: 10 * 1000, runImmediately: true });
-})();
+//   const scheduler = SeasonNextRoundScheduler.getInstance();
+//   scheduler.startJob({ interval: 10 * 1000, runImmediately: true });
+// })();

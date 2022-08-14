@@ -6,24 +6,28 @@ import { CompetitionRepository, CompetitionRepositoryImpl } from "../../db/repos
 import { SeasonRepository, SeasonRepositoryImpl } from "../../db/repositories/season.repo";
 import { MatchRepository, MatchRepositoryImpl } from "../../db/repositories/match.repo";
 import { PredictionRepository, PredictionRepositoryImpl } from "../../db/repositories/prediction.repo";
+import { EventMediator, EventMediatorImpl } from "../../common/eventMediator";
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
-class MakePredictionsScheduler implements Scheduler {
+
+export class MakePredictionsScheduler implements Scheduler {
   private job: Job = new schedule.Job('MakePredictions Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private interval: number = DEFAULT_INTERVAL;
 
   public static getInstance(
+    eventMediator = EventMediatorImpl.getInstance(),
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance(),
     predictionRepo = PredictionRepositoryImpl.getInstance(),
   ) {
-    return new MakePredictionsScheduler(competitionRepo, seasonRepo, matchRepo, predictionRepo);
+    return new MakePredictionsScheduler(eventMediator, competitionRepo, seasonRepo, matchRepo, predictionRepo);
   }
 
   constructor(
+    private eventMediator: EventMediator,
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
     private matchRepo: MatchRepository,
@@ -32,9 +36,13 @@ class MakePredictionsScheduler implements Scheduler {
     this.job.on('success', () => {
       this.jobSuccess();
     });
+    this.eventMediator.addListener(
+      'currentSeasonCurrentRoundUpdated', async () => { await this.runJob() }
+    );
   }
 
-  startJob({ interval = DEFAULT_INTERVAL, runImmediately }: SchedulerOptions): void {
+  startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+    const { interval, runImmediately } = options;
     if (this.jobScheduled) throw new Error('Job already scheduled');
     this.setInterval(interval);
     if (runImmediately) {
@@ -92,12 +100,12 @@ class MakePredictionsScheduler implements Scheduler {
   }
 }
 
-(async () => {
-  await mongoose.connect(process.env.MONGO_URI!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions);
+// (async () => {
+//   await mongoose.connect(process.env.MONGO_URI!, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   } as ConnectOptions);
 
-  const scheduler = MakePredictionsScheduler.getInstance();
-  scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
-})();
+//   const scheduler = MakePredictionsScheduler.getInstance();
+//   scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
+// })();
