@@ -9,7 +9,7 @@ class LeaderboardScheduler implements Scheduler {
   private job: Job = new schedule.Job('Leaderboard Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
-  private interval: number = DEFAULT_INTERVAL;
+  private interval: number | undefined = undefined;
 
   public static getInstance(
     leaderboardService = LeaderboardServiceImpl.getInstance()
@@ -21,7 +21,7 @@ class LeaderboardScheduler implements Scheduler {
     private leaderboardService: LeaderboardService
   ) {
     this.job.on('success', result => {
-      this.jobSuccess(result);
+      this.scheduleJob(result);
     });
   }
 
@@ -30,13 +30,13 @@ class LeaderboardScheduler implements Scheduler {
     if (this.jobScheduled) {
       throw new Error('Job already scheduled');
     }
-    this.setInterval(interval);
+    this.setInterval(interval as number);
     if (runImmediately) {
       this.jobTask().then(result => {
-        this.jobSuccess(result);
+        this.scheduleJob(result);
       });
     } else {
-      return this.job.runOnDate(new Date(Date.now() + this.getInterval()));
+      this.scheduleJob();
     }
   }
 
@@ -52,7 +52,7 @@ class LeaderboardScheduler implements Scheduler {
     this.jobScheduled = false;
   }
 
-  jobSuccess(_: any, reschedule: boolean = false) {
+  scheduleJob(_?: any, reschedule: boolean = false) {
     const nextUpdate = new Date(Date.now() + this.getInterval());
     if (reschedule) {
       this.job.reschedule(nextUpdate.getTime());
@@ -63,14 +63,14 @@ class LeaderboardScheduler implements Scheduler {
 
   async runJob() {
     const result = await this.jobTask();
-    this.jobSuccess(result, true);
+    this.scheduleJob(result, true);
   }
 
   private getInterval() {
-    return this.interval;
+    return this.interval ?? DEFAULT_INTERVAL;
   }
 
-  private setInterval(value: number = DEFAULT_INTERVAL) {
+  private setInterval(value: number) {
     this.interval = value;
   }
 }

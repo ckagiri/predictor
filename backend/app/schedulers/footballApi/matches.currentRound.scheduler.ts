@@ -1,4 +1,4 @@
-import { Scheduler } from "../scheduler";
+import { Scheduler, SchedulerOptions } from "../scheduler";
 import schedule, { Job } from "node-schedule";
 import { CurrentRoundMatchesService, CurrentRoundMatchesServiceImpl } from './matches.currentRound.service';
 import mongoose, { ConnectOptions } from "mongoose";
@@ -9,7 +9,7 @@ export class CurrentRoundMatchesScheduler implements Scheduler {
   private job: Job = new schedule.Job('CurrentRoundMatches Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
-  private interval: number = DEFAULT_INTERVAL;
+  private interval: number | undefined = undefined;
 
   public static getInstance(
     currentRoundMatchesService = CurrentRoundMatchesServiceImpl.getInstance()
@@ -21,22 +21,22 @@ export class CurrentRoundMatchesScheduler implements Scheduler {
     private currentRoundMatchesService: CurrentRoundMatchesService
   ) {
     this.job.on('success', () => {
-      this.jobSuccess();
+      this.scheduleJob();
     });
   }
 
-  startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+  startJob(options: SchedulerOptions = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
     const { interval, runImmediately } = options;
     if (this.jobScheduled) {
       throw new Error('Job already scheduled');
     }
-    this.setInterval(interval);
+    this.setInterval(interval as number);
     if (runImmediately) {
       this.jobTask().then(() => {
-        this.jobSuccess();
+        this.scheduleJob();
       });
     } else {
-      return this.job.runOnDate(new Date(Date.now() + this.getInterval()));
+      this.scheduleJob();
     }
   }
 
@@ -52,13 +52,12 @@ export class CurrentRoundMatchesScheduler implements Scheduler {
     this.jobScheduled = false;
   }
 
-  jobSuccess() {
-    const nextUpdate = new Date(Date.now() + this.getInterval());
-    this.job.schedule(nextUpdate)
+  scheduleJob() {
+    this.job.schedule(new Date(Date.now() + this.getInterval()))
   }
 
-  private getInterval() {
-    return this.interval;
+  private getInterval(): number {
+    return this.interval ?? DEFAULT_INTERVAL;
   }
 
   private setInterval(value: number) {

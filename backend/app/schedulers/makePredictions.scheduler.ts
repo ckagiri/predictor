@@ -8,7 +8,7 @@ export class MakePredictionsScheduler implements Scheduler {
   private job: Job = new schedule.Job('MakePredictions Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
-  private interval: number = DEFAULT_INTERVAL;
+  private interval: number | undefined = undefined;
 
   public static getInstance(
     eventMediator = EventMediatorImpl.getInstance(),
@@ -22,7 +22,7 @@ export class MakePredictionsScheduler implements Scheduler {
     private makePredictionsService: MakePredictionsService
   ) {
     this.job.on('success', () => {
-      this.jobSuccess();
+      this.scheduleJob();
     });
     this.eventMediator.addListener(
       'currentSeasonCurrentRoundUpdated', async () => { await this.runJob() }
@@ -34,13 +34,13 @@ export class MakePredictionsScheduler implements Scheduler {
     if (this.jobScheduled) {
       throw new Error('Job already scheduled');
     }
-    this.setInterval(interval);
+    this.setInterval(interval as number);
     if (runImmediately) {
       this.jobTask().then(() => {
-        this.jobSuccess();
+        this.scheduleJob();
       });
     } else {
-      return this.job.runOnDate(new Date(Date.now() + this.getInterval()));
+      this.scheduleJob();
     }
   }
 
@@ -56,7 +56,7 @@ export class MakePredictionsScheduler implements Scheduler {
     this.jobScheduled = false;
   }
 
-  jobSuccess(_result?: any, reschedule: boolean = false) {
+  scheduleJob(_result?: any, reschedule: boolean = false) {
     const nextUpdate = new Date(Date.now() + this.getInterval());
     if (reschedule) {
       this.job.reschedule(nextUpdate.getTime());
@@ -67,11 +67,11 @@ export class MakePredictionsScheduler implements Scheduler {
 
   async runJob() {
     await this.jobTask();
-    this.jobSuccess(undefined, true);
+    this.scheduleJob(undefined, true);
   }
 
   private getInterval() {
-    return this.interval;
+    return this.interval ?? DEFAULT_INTERVAL;
   }
 
   private setInterval(value: number) {

@@ -10,7 +10,7 @@ class CalculatePredictionsScheduler implements Scheduler {
   private job: Job = new schedule.Job('CalculatePredictions Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
-  private interval: number = DEFAULT_INTERVAL;
+  private interval: number | undefined = undefined;
 
   public static getInstance(
     calculatePredictionsService = CalculatePredictionsServiceImpl.getInstance()
@@ -20,19 +20,20 @@ class CalculatePredictionsScheduler implements Scheduler {
 
   constructor(private calculatePredictionsService: CalculatePredictionsService) {
     this.job.on('success', result => {
-      this.jobSuccess(result);
+      this.scheduleJob(result);
     });
   }
 
-  startJob({ interval = DEFAULT_INTERVAL, runImmediately }: SchedulerOptions) {
-    if (this.jobScheduled) throw new Error('Job already scheduled');
-    this.setInterval(interval);
+  startJob(options: SchedulerOptions = { interval: DEFAULT_INTERVAL, runImmediately: false }) {
+    const { interval, runImmediately } = options;
+    if (this.jobScheduled) { throw new Error('Job already scheduled'); }
+    this.setInterval(interval as number);
     if (runImmediately) {
       this.jobTask().then(result => {
-        this.jobSuccess(result);
+        this.scheduleJob(result);
       });
     } else {
-      return this.job.runOnDate(new Date(Date.now() + this.getInterval()));
+      this.scheduleJob();
     }
   }
 
@@ -48,7 +49,7 @@ class CalculatePredictionsScheduler implements Scheduler {
     this.jobScheduled = false;
   }
 
-  jobSuccess(_: any, reschedule: boolean = false) {
+  scheduleJob(_?: any, reschedule: boolean = false) {
     const nextUpdate = new Date(Date.now() + this.getInterval());
     if (reschedule) {
       this.job.reschedule(nextUpdate.getTime());
@@ -59,11 +60,11 @@ class CalculatePredictionsScheduler implements Scheduler {
 
   async runJob() {
     const result = await this.jobTask();
-    this.jobSuccess(result, true);
+    this.scheduleJob(result, true);
   }
 
-  private getInterval() {
-    return this.interval;
+  private getInterval(): number {
+    return this.interval ?? DEFAULT_INTERVAL;
   }
 
   private setInterval(value: number) {

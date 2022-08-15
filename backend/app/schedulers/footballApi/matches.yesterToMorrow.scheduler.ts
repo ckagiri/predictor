@@ -1,5 +1,5 @@
 
-import { Scheduler } from "../scheduler";
+import { Scheduler, SchedulerOptions } from "../scheduler";
 import schedule, { Job } from "node-schedule";
 import { getMatchStatus } from "./util";
 import { MatchStatus } from "../../../db/models/match.model";
@@ -13,7 +13,7 @@ class YesterToMorrowScheduler implements Scheduler {
   private job: Job = new schedule.Job('YesterToMorrowScheduler Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
-  private interval: number = DEFAULT_INTERVAL;
+  private interval: number | undefined = undefined;
 
   public static getInstance(
     yesterToMorrowService = YesterToMorrowServiceImpl.getInstance(),
@@ -25,7 +25,7 @@ class YesterToMorrowScheduler implements Scheduler {
     private yesterToMorrowService: YesterToMorrowService,
   ) {
     this.job.on('success', () => {
-      this.jobSuccess();
+      this.scheduleJob();
     });
     this.job.on('scheduled', (scheduleDate: any) => {
       // todo
@@ -34,18 +34,18 @@ class YesterToMorrowScheduler implements Scheduler {
     })
   }
 
-  startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+  startJob(options: SchedulerOptions = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
     const { interval, runImmediately } = options;
     if (this.jobScheduled) {
       throw new Error('Job already scheduled');
     }
-    this.setInterval(interval);
+    this.setInterval(interval as number);
     if (runImmediately) {
       this.jobTask().then(result => {
-        this.jobSuccess(result);
+        this.scheduleJob(result);
       });
     } else {
-      return this.job.runOnDate(new Date(Date.now() + this.getInterval()));
+      this.scheduleJob();
     }
   }
 
@@ -63,7 +63,7 @@ class YesterToMorrowScheduler implements Scheduler {
     this.jobScheduled = false;
   }
 
-  jobSuccess(result: any = [], reschedule: boolean = false) {
+  scheduleJob(result: any = [], reschedule: boolean = false) {
     const apiMatches = result as any[];
     const nextInterval = calculateNextInterval(apiMatches)
     const nextUpdate = new Date(Date.now() + nextInterval);
@@ -77,11 +77,11 @@ class YesterToMorrowScheduler implements Scheduler {
 
   async runJob() {
     const result = await this.jobTask();
-    this.jobSuccess(result, true);
+    this.scheduleJob(result, true);
   }
 
-  private getInterval() {
-    return this.interval;
+  private getInterval(): number {
+    return this.interval ?? DEFAULT_INTERVAL;
   }
 
   private setInterval(value: number) {
