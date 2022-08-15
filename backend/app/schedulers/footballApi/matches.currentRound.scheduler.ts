@@ -58,25 +58,24 @@ export class CurrentRoundMatchesScheduler implements Scheduler {
       this.setScheduleType(SCHEDULE_TYPE.CRON)
       this.job.schedule(interval);
     } else if (isNumber(interval)) {
-      this.setScheduleType(SCHEDULE_TYPE.LOOP)
-      this.setInterval(interval);
-      this.job.schedule(new Date(Date.now() + this.getInterval()));
-    } else {
-      this.job.schedule(new Date(Date.now() + this.getInterval()));
+      this.setIntervalMs(interval);
+      this.job.schedule(new Date(Date.now() + this.getIntervalMs()));
+    } else if (this.scheduleType === SCHEDULE_TYPE.LOOP) {
+      this.job.schedule(new Date(Date.now() + this.getIntervalMs()));
     }
   }
 
   jobSuccess() {
     if (this.getScheduleType() === SCHEDULE_TYPE.LOOP) {
-      this.job.schedule(new Date(Date.now() + this.getInterval()))
+      this.job.schedule(new Date(Date.now() + this.getIntervalMs()))
     }
   }
 
-  private getInterval(): number {
+  private getIntervalMs(): number {
     return this.interval as number ?? DEFAULT_INTERVAL;
   }
 
-  private setInterval(value: number) {
+  private setIntervalMs(value: number) {
     this.interval = value;
   }
 
