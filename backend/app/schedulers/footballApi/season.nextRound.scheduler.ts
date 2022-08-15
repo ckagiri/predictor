@@ -1,13 +1,7 @@
-import { CompetitionRepository, CompetitionRepositoryImpl } from "../../../db/repositories/competition.repo";
-import { SeasonRepository, SeasonRepositoryImpl } from "../../../db/repositories/season.repo";
 import schedule, { Job } from "node-schedule";
-import { lastValueFrom } from "rxjs";
-import { FootballApiClient, FootballApiClientImpl } from "../../../thirdParty/footballApi/apiClient";
-import { Scheduler, SchedulerOptions } from "../scheduler";
-import { FootballApiProvider } from "../../../common/footballApiProvider";
-import { get } from "lodash";
-import { GameRoundRepository, GameRoundRepositoryImpl } from "../../../db/repositories/gameRound.repo";
+import { Scheduler } from "../scheduler";
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
+import { SeasonNextRoundService, SeasonNextRoundServiceImpl } from "./season.nextRound.service";
 
 const DEFAULT_INTERVAL = 12 * 60 * 60 * 1000; // 12H
 
@@ -19,24 +13,21 @@ export class SeasonNextRoundScheduler implements Scheduler {
 
   public static getInstance(
     eventMediator = EventMediatorImpl.getInstance(),
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    gameRoundRepo = GameRoundRepositoryImpl.getInstance(),
-    footballApiClient = FootballApiClientImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA),
+    seasonNextRoundService = SeasonNextRoundServiceImpl.getInstance()
   ) {
-    return new SeasonNextRoundScheduler(eventMediator, competitionRepo, seasonRepo, gameRoundRepo, footballApiClient);
+    return new SeasonNextRoundScheduler(eventMediator, seasonNextRoundService);
   }
 
   constructor(
     private eventMediator: EventMediator,
-    private competitionRepo: CompetitionRepository,
-    private seasonRepo: SeasonRepository,
-    private gameRoundRepo: GameRoundRepository,
-    private footballApiClient: FootballApiClient
+    private seasonNextRoundService: SeasonNextRoundService,
   ) { }
 
-  startJob({ interval = DEFAULT_INTERVAL, runImmediately }: SchedulerOptions): void {
-    if (this.jobScheduled) throw new Error('Job already scheduled');
+  startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+    const { interval, runImmediately } = options;
+    if (this.jobScheduled) {
+      throw new Error('Job already scheduled');
+    }
     this.setInterval(interval);
     if (runImmediately) {
       this.jobTask().then(() => {
@@ -49,37 +40,11 @@ export class SeasonNextRoundScheduler implements Scheduler {
   async jobTask() {
     if (this.taskRunning) return;
     this.taskRunning = true;
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const updatedSeasons: any[] = ['abcd'];
-    for (const competition of competitions) {
-      const currentSeasonId = competition.currentSeason?.toString();
-      if (!currentSeasonId) return;
-
-      const currentSeason = await lastValueFrom(this.seasonRepo.findById$(currentSeasonId));
-      const currentRoundId = currentSeason.currentGameRound?.toString();
-      if (!currentRoundId) return;
-
-      const currentRound = await lastValueFrom(this.gameRoundRepo.findById$(currentRoundId));
-      const dbCurrentRoundPosition = currentRound.position;
-
-      const externalId = get(competition, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-      if (!externalId) return;
-
-      const apiCompetitionResponse = await this.footballApiClient.getCompetition(externalId)
-      const { data: apiCompetition } = apiCompetitionResponse;
-      const apiCurrentMatchday = get(apiCompetition, ['currentSeason', 'currentMatchday']);
-
-      if (apiCurrentMatchday !== dbCurrentRoundPosition) {
-        const nextGameRound = await lastValueFrom(this.gameRoundRepo.findOne$({ position: apiCurrentMatchday }));
-        if (!nextGameRound) return;
-
-        updatedSeasons.push(currentSeasonId);
-        await lastValueFrom(this.seasonRepo.findByIdAndUpdate$(currentSeasonId, { currentGameRound: nextGameRound.id }));
-      }
-    }
+    const updatedSeasons = await this.seasonNextRoundService.updateSeasons();
     if (updatedSeasons.length) {
       this.eventMediator.publish('currentSeasonCurrentRoundUpdated')
     }
+    this.taskRunning = false;
   }
 
   cancelJob(): void {

@@ -1,12 +1,8 @@
 import schedule, { Job } from 'node-schedule'
-import { lastValueFrom } from 'rxjs';
 import mongoose, { ConnectOptions } from 'mongoose';
 
-import { CompetitionRepository, CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
-import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
-import { PredictionProcessor, PredictionProcessorImpl } from './prediction.processor';
 import { Scheduler, SchedulerOptions } from "./scheduler";
-import { isEmpty } from 'lodash';
+import { CalculatePredictionsService, CalculatePredictionsServiceImpl } from './calculatePredictions.service';
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
 
@@ -17,16 +13,12 @@ class CalculatePredictionsScheduler implements Scheduler {
   private interval: number = DEFAULT_INTERVAL;
 
   public static getInstance(
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    predictionProcessor = PredictionProcessorImpl.getInstance()) {
-    return new CalculatePredictionsScheduler(competitionRepo, matchRepo, predictionProcessor);
+    calculatePredictionsService = CalculatePredictionsServiceImpl.getInstance()
+  ) {
+    return new CalculatePredictionsScheduler(calculatePredictionsService);
   }
 
-  constructor(
-    private competitionRepo: CompetitionRepository,
-    private matchRepo: MatchRepository,
-    private predictionProcessor: PredictionProcessor) {
+  constructor(private calculatePredictionsService: CalculatePredictionsService) {
     this.job.on('success', result => {
       this.jobSuccess(result);
     });
@@ -47,19 +39,7 @@ class CalculatePredictionsScheduler implements Scheduler {
   async jobTask() {
     if (this.taskRunning) return;
     this.taskRunning = true;
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
-    const result = await lastValueFrom(
-      this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, { allPredictionPointsCalculated: false })
-    );
-    for (const [seasonId, matches] of result) {
-      if (isEmpty(matches)) continue;
-      await this.predictionProcessor.calculatePredictionPoints(seasonId, matches)
-      matches.forEach(match => {
-        match.allPredictionPointsCalculated = true;
-      });
-      await lastValueFrom(this.matchRepo.updateMany$(matches));
-    }
+    await this.calculatePredictionsService.updatePredictionPoints();
     this.taskRunning = false;
   }
 

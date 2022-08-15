@@ -1,11 +1,7 @@
-import { CompetitionRepository, CompetitionRepositoryImpl } from "../../db/repositories/competition.repo";
-import { MatchRepository, MatchRepositoryImpl } from "../../db/repositories/match.repo";
 import mongoose, { ConnectOptions } from "mongoose";
 import schedule, { Job } from "node-schedule";
-import { lastValueFrom } from "rxjs";
-import { LeaderboardProcessor, LeaderboardProcessorImpl } from "./leaderboard.processor";
 import { Scheduler, SchedulerOptions } from "./scheduler";
-import { isEmpty } from "lodash";
+import { LeaderboardService, LeaderboardServiceImpl } from "./leaderboard.service";
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
 
@@ -16,24 +12,24 @@ class LeaderboardScheduler implements Scheduler {
   private interval: number = DEFAULT_INTERVAL;
 
   public static getInstance(
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    leaderboardProcessor = LeaderboardProcessorImpl.getInstance()
+    leaderboardService = LeaderboardServiceImpl.getInstance()
   ) {
-    return new LeaderboardScheduler(competitionRepo, matchRepo, leaderboardProcessor)
+    return new LeaderboardScheduler(leaderboardService)
   }
 
   constructor(
-    private competitionRepo: CompetitionRepository,
-    private matchRepo: MatchRepository,
-    private leaderboardProcessor: LeaderboardProcessor) {
+    private leaderboardService: LeaderboardService
+  ) {
     this.job.on('success', result => {
       this.jobSuccess(result);
     });
   }
 
-  startJob({ interval = DEFAULT_INTERVAL, runImmediately }: SchedulerOptions): void {
-    if (this.jobScheduled) throw new Error('Job already scheduled');
+  startJob(options: SchedulerOptions = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+    const { interval, runImmediately } = options;
+    if (this.jobScheduled) {
+      throw new Error('Job already scheduled');
+    }
     this.setInterval(interval);
     if (runImmediately) {
       this.jobTask().then(result => {
@@ -47,23 +43,7 @@ class LeaderboardScheduler implements Scheduler {
   async jobTask() {
     if (this.taskRunning) return;
     this.taskRunning = true;
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
-    const result = await lastValueFrom(
-      this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, {
-        allPredictionPointsCalculated: true,
-        allGlobalLeaderboardScoresProcessed: false
-      })
-    );
-    for (const [seasonId, matches] of result) {
-      if (isEmpty(matches)) continue;
-      await this.leaderboardProcessor.updateScores(seasonId, matches)
-      await this.leaderboardProcessor.updateRankings(seasonId, matches)
-      matches.forEach(match => {
-        match.allGlobalLeaderboardScoresProcessed = true;
-      });
-      await lastValueFrom(this.matchRepo.updateMany$(matches));
-    }
+    await this.leaderboardService.updateLeaderboardsForFinishedMatches();
     this.taskRunning = false;
   }
 
@@ -90,7 +70,7 @@ class LeaderboardScheduler implements Scheduler {
     return this.interval;
   }
 
-  private setInterval(value: number) {
+  private setInterval(value: number = DEFAULT_INTERVAL) {
     this.interval = value;
   }
 }
@@ -102,5 +82,7 @@ class LeaderboardScheduler implements Scheduler {
   } as ConnectOptions);
 
   const scheduler = LeaderboardScheduler.getInstance();
-  scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
+  scheduler.startJob({
+    interval: 5 * 1000, runImmediately: true
+  });
 })();

@@ -1,48 +1,35 @@
-import mongoose, { ConnectOptions } from 'mongoose';
-
-import { CompetitionRepository, CompetitionRepositoryImpl } from "../../../db/repositories/competition.repo";
-import { SeasonRepository, SeasonRepositoryImpl } from "../../../db/repositories/season.repo";
-
-import { lastValueFrom } from "rxjs";
-import { Scheduler, SchedulerOptions } from "../scheduler";
-import { MatchRepository, MatchRepositoryImpl } from "../../../db/repositories/match.repo";
-import { FootballApiClient, FootballApiClientImpl } from "../../../thirdParty/footballApi/apiClient";
-import { Match } from "../../../db/models/match.model";
-import { FootballApiProvider } from '../../../common/footballApiProvider';
+import { Scheduler } from "../scheduler";
 import schedule, { Job } from "node-schedule";
-import { makeMatchUpdate, matchChanged } from "./util";
-import { get } from 'lodash';
+import { CurrentRoundMatchesService, CurrentRoundMatchesServiceImpl } from './matches.currentRound.service';
+import mongoose, { ConnectOptions } from "mongoose";
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000; // 7H
 
-class CurrentRoundMatchesScheduler implements Scheduler {
+export class CurrentRoundMatchesScheduler implements Scheduler {
   private job: Job = new schedule.Job('CurrentRoundMatches Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private interval: number = DEFAULT_INTERVAL;
 
   public static getInstance(
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    footballApiClient = FootballApiClientImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA)
+    currentRoundMatchesService = CurrentRoundMatchesServiceImpl.getInstance()
   ) {
-    return new CurrentRoundMatchesScheduler(competitionRepo, seasonRepo, matchRepo, footballApiClient);
+    return new CurrentRoundMatchesScheduler(currentRoundMatchesService);
   }
 
   constructor(
-    private competitionRepo: CompetitionRepository,
-    private seasonRepo: SeasonRepository,
-    private matchRepo: MatchRepository,
-    private footballApiClient: FootballApiClient,
+    private currentRoundMatchesService: CurrentRoundMatchesService
   ) {
     this.job.on('success', () => {
       this.jobSuccess();
     });
   }
 
-  startJob({ interval = DEFAULT_INTERVAL, runImmediately = false }: SchedulerOptions): void {
-    if (this.jobScheduled) throw new Error('Job already scheduled');
+  startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+    const { interval, runImmediately } = options;
+    if (this.jobScheduled) {
+      throw new Error('Job already scheduled');
+    }
     this.setInterval(interval);
     if (runImmediately) {
       this.jobTask().then(() => {
@@ -56,30 +43,7 @@ class CurrentRoundMatchesScheduler implements Scheduler {
   async jobTask() {
     if (this.taskRunning) return;
     this.taskRunning = true;
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
-    const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
-    const result: [string, Match[]][] = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
-    for (const [_seasonId, dbMatches] of result) {
-      const externalIds: string[] = dbMatches.map(dbMatch => {
-        const externalId = get(dbMatch, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-        return externalId;
-      }).filter(Boolean);
-      const apiMatchesResponse = await this.footballApiClient.getMatches(externalIds);
-      const apiMatches: any[] = apiMatchesResponse.data.matches;
-      apiMatches.forEach(async apiMatch => {
-        const dbMatch = dbMatches.find(match => {
-          const externalId = get(match, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-          return apiMatch.id === externalId;
-        });
-        if (!dbMatch) return;
-        if (matchChanged(apiMatch, dbMatch)) {
-          const matchId = dbMatch?.id!;
-          const update = makeMatchUpdate(apiMatch);
-          await lastValueFrom(this.matchRepo.findByIdAndUpdate$(matchId, update));
-        }
-      });
-    }
+    await this.currentRoundMatchesService.updateMatches()
     this.taskRunning = false;
   }
 
@@ -109,5 +73,5 @@ class CurrentRoundMatchesScheduler implements Scheduler {
   } as ConnectOptions);
 
   const scheduler = CurrentRoundMatchesScheduler.getInstance();
-  scheduler.startJob({ interval: 10 * 1000, runImmediately: true });
+  scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
 })();

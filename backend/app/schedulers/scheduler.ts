@@ -1,4 +1,5 @@
 export type SchedulerOptions = {
+  cron?: string,
   interval?: number,
   runImmediately?: boolean,
 };

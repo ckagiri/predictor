@@ -1,15 +1,9 @@
-import mongoose, { ConnectOptions } from "mongoose";
 import schedule, { Job } from "node-schedule";
-import { Scheduler, SchedulerOptions } from "./scheduler";
-import { lastValueFrom } from "rxjs";
-import { CompetitionRepository, CompetitionRepositoryImpl } from "../../db/repositories/competition.repo";
-import { SeasonRepository, SeasonRepositoryImpl } from "../../db/repositories/season.repo";
-import { MatchRepository, MatchRepositoryImpl } from "../../db/repositories/match.repo";
-import { PredictionRepository, PredictionRepositoryImpl } from "../../db/repositories/prediction.repo";
+import { Scheduler } from "./scheduler";
 import { EventMediator, EventMediatorImpl } from "../../common/eventMediator";
+import { MakePredictionsService, MakePredictionsServiceImpl } from "./makePredictions.service";
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
-
 export class MakePredictionsScheduler implements Scheduler {
   private job: Job = new schedule.Job('MakePredictions Job', this.jobTask.bind(this));
   private jobScheduled: boolean = false;
@@ -18,20 +12,14 @@ export class MakePredictionsScheduler implements Scheduler {
 
   public static getInstance(
     eventMediator = EventMediatorImpl.getInstance(),
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    predictionRepo = PredictionRepositoryImpl.getInstance(),
+    makePredictionsService = MakePredictionsServiceImpl.getInstance(),
   ) {
-    return new MakePredictionsScheduler(eventMediator, competitionRepo, seasonRepo, matchRepo, predictionRepo);
+    return new MakePredictionsScheduler(eventMediator, makePredictionsService);
   }
 
   constructor(
     private eventMediator: EventMediator,
-    private competitionRepo: CompetitionRepository,
-    private seasonRepo: SeasonRepository,
-    private matchRepo: MatchRepository,
-    private predictionRepo: PredictionRepository
+    private makePredictionsService: MakePredictionsService
   ) {
     this.job.on('success', () => {
       this.jobSuccess();
@@ -43,7 +31,9 @@ export class MakePredictionsScheduler implements Scheduler {
 
   startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
     const { interval, runImmediately } = options;
-    if (this.jobScheduled) throw new Error('Job already scheduled');
+    if (this.jobScheduled) {
+      throw new Error('Job already scheduled');
+    }
     this.setInterval(interval);
     if (runImmediately) {
       this.jobTask().then(() => {
@@ -57,18 +47,7 @@ export class MakePredictionsScheduler implements Scheduler {
   async jobTask() {
     if (this.taskRunning) return;
     this.taskRunning = true;
-
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
-    const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
-    const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
-
-    for (const [seasonId, currentRoundMatches] of result) {
-      const users = await lastValueFrom(this.predictionRepo.distinct$('user', { season: seasonId }));
-      for (const userId of users) {
-        await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, currentRoundMatches))
-      }
-    }
+    await this.makePredictionsService.createCurrentRoundPredictionsIfNotExists();
     this.taskRunning = false;
   }
 

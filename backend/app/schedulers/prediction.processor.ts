@@ -5,7 +5,7 @@ import { PredictionRepository, PredictionRepositoryImpl } from '../../db/reposit
 import PredictionCalculator from './prediction.calculator';
 
 export interface PredictionProcessor {
-  calculatePredictionPoints(seasonId: string, matches: Match[]): Promise<number>;
+  calculateAndUpdatePredictionPoints(seasonId: string, matches: Match[]): Promise<number>;
 }
 
 export class PredictionProcessorImpl implements PredictionProcessor {
@@ -21,7 +21,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) { }
 
-  public calculatePredictionPoints(seasonId: string, matchesArray: Match[]): Promise<number> {
+  public calculateAndUpdatePredictionPoints(seasonId: string, matchesArray: Match[]): Promise<number> {
     const matches = matchesArray.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
     return lastValueFrom(

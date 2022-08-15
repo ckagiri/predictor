@@ -1,15 +1,11 @@
 
-import { lastValueFrom } from "rxjs";
-import { Scheduler, SchedulerOptions } from "../scheduler";
-import { MatchRepository, MatchRepositoryImpl } from "../../../db/repositories/match.repo";
-import { FootballApiClient, FootballApiClientImpl } from "../../../thirdParty/footballApi/apiClient";
-import { FootballApiProvider } from '../../../common/footballApiProvider';
+import { Scheduler } from "../scheduler";
 import schedule, { Job } from "node-schedule";
-import { getMatchStatus, makeMatchUpdate, matchChanged } from "./util";
-import { get, isEmpty } from "lodash";
+import { getMatchStatus } from "./util";
 import { MatchStatus } from "../../../db/models/match.model";
 import moment from "moment";
 import mongoose, { ConnectOptions } from "mongoose";
+import { YesterToMorrowService, YesterToMorrowServiceImpl } from "./matches.yesterToMorrow.service";
 
 const DEFAULT_INTERVAL = 7 * 60 * 60 * 1000;
 
@@ -20,15 +16,13 @@ class YesterToMorrowScheduler implements Scheduler {
   private interval: number = DEFAULT_INTERVAL;
 
   public static getInstance(
-    matchRepo = MatchRepositoryImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA),
-    footballApiClient = FootballApiClientImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA),
+    yesterToMorrowService = YesterToMorrowServiceImpl.getInstance(),
   ) {
-    return new YesterToMorrowScheduler(matchRepo, footballApiClient)
+    return new YesterToMorrowScheduler(yesterToMorrowService);
   }
 
   constructor(
-    private matchRepo: MatchRepository,
-    private footballApiClient: FootballApiClient,
+    private yesterToMorrowService: YesterToMorrowService,
   ) {
     this.job.on('success', () => {
       this.jobSuccess();
@@ -40,8 +34,11 @@ class YesterToMorrowScheduler implements Scheduler {
     })
   }
 
-  startJob({ interval = DEFAULT_INTERVAL, runImmediately = false }: SchedulerOptions): void {
-    if (this.jobScheduled) throw new Error('Job already scheduled');
+  startJob(options = { interval: DEFAULT_INTERVAL, runImmediately: false }): void {
+    const { interval, runImmediately } = options;
+    if (this.jobScheduled) {
+      throw new Error('Job already scheduled');
+    }
     this.setInterval(interval);
     if (runImmediately) {
       this.jobTask().then(result => {
@@ -55,32 +52,8 @@ class YesterToMorrowScheduler implements Scheduler {
   async jobTask() {
     if (this.taskRunning) return;
     this.taskRunning = true;
-    let apiMatches: any[] = [];
-    if (this.interval > DEFAULT_INTERVAL) {
-      const tommorowApiMatchesResponse = await this.footballApiClient.getTomorrowsMatches();
-      const yesterdayApiMatchesResponse = await this.footballApiClient.getYesterdaysMatches();
-
-      apiMatches = [].concat(
-        ...([tommorowApiMatchesResponse.data.matches, yesterdayApiMatchesResponse.data.matches] as any[]),
-      );
-    }
-    const todayApiMatchesResponse = await this.footballApiClient.getTodaysMatches();
-    apiMatches = apiMatches.concat(todayApiMatchesResponse.data.matches);
-
-    const externalIds: string[] = apiMatches.map(m => m.id)
-    const dbMatches = await lastValueFrom(this.matchRepo.findByExternalIds$(externalIds));
-    apiMatches.forEach(async apiMatch => {
-      const dbMatch = dbMatches.find(match => {
-        const externalId = get(match, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-        return apiMatch.id === externalId;
-      });
-      if (!dbMatch) return;
-      if (matchChanged(apiMatch, dbMatch)) {
-        const matchId = dbMatch?.id!;
-        const update = makeMatchUpdate(apiMatch);
-        await lastValueFrom(this.matchRepo.findByIdAndUpdate$(matchId, update));
-      }
-    });
+    const includeYesterdayAndTomorrowMatches = this.getInterval() > DEFAULT_INTERVAL;
+    const apiMatches = await this.yesterToMorrowService.updateMatches(includeYesterdayAndTomorrowMatches);
     this.taskRunning = false;
     return apiMatches;
   }
