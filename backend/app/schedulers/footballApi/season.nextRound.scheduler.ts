@@ -1,16 +1,11 @@
 import schedule, { Job } from "node-schedule";
-import { Scheduler, SchedulerOptions } from "../scheduler";
+import { Scheduler, SchedulerOptions, SCHEDULE_TYPE } from "../scheduler";
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
 import { SeasonNextRoundService, SeasonNextRoundServiceImpl } from "./season.nextRound.service";
 import mongoose, { ConnectOptions } from "mongoose";
-import { isString } from "lodash";
+import { isNumber, isString } from "lodash";
 
 const DEFAULT_INTERVAL = 12 * 60 * 60 * 1000; // 12H
-
-const SCHEDULE_TYPE = {
-  LOOP: 'loop',
-  CRON: 'cron',
-}
 
 export class SeasonNextRoundScheduler implements Scheduler {
   private job: Job = new schedule.Job('SeasonNextRound Job', this.jobTask.bind(this));
@@ -31,7 +26,7 @@ export class SeasonNextRoundScheduler implements Scheduler {
     private seasonNextRoundService: SeasonNextRoundService,
   ) {
     this.job.on('success', () => {
-      this.jobSuccess();
+      this.scheduleJob();
     });
   }
 
@@ -41,9 +36,11 @@ export class SeasonNextRoundScheduler implements Scheduler {
       throw new Error('Job already scheduled');
     }
     if (runImmediately) {
-      this.jobTask().then(() => this.scheduleJob(interval));
+      this.jobTask().then(() => {
+        this.scheduleJob(interval);
+      });
     } else {
-      this.scheduleJob(interval)
+      this.scheduleJob(interval);
     }
   }
 
@@ -51,9 +48,11 @@ export class SeasonNextRoundScheduler implements Scheduler {
     if (isString(interval)) {
       this.setScheduleType(SCHEDULE_TYPE.CRON)
       this.job.schedule(interval);
-    } else {
+    } else if (isNumber(interval)) {
       this.setScheduleType(SCHEDULE_TYPE.LOOP)
-      this.setInterval(interval as number);
+      this.setInterval(interval);
+      this.job.schedule(new Date(Date.now() + this.getInterval()));
+    } else {
       this.job.schedule(new Date(Date.now() + this.getInterval()));
     }
   }
@@ -62,7 +61,7 @@ export class SeasonNextRoundScheduler implements Scheduler {
     if (this.taskRunning) return;
     this.taskRunning = true;
     await new Promise(resolve => setTimeout(resolve, 10));
-    const updatedSeasons = [];// await this.seasonNextRoundService.updateSeasons();
+    const updatedSeasons = await this.seasonNextRoundService.updateSeasons();
     if (updatedSeasons.length) {
       this.eventMediator.publish('currentSeasonCurrentRoundUpdated')
     }
@@ -104,5 +103,5 @@ export class SeasonNextRoundScheduler implements Scheduler {
   } as ConnectOptions);
 
   const scheduler = SeasonNextRoundScheduler.getInstance();
-  scheduler.startJob({ interval: '5 * * * * *', runImmediately: true });
+  scheduler.startJob({ interval: '0,15,30,45 * * * * *' });
 })();

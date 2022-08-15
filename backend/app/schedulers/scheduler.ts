@@ -3,6 +3,11 @@ export type SchedulerOptions = {
   runImmediately?: boolean,
 };
 
+export const SCHEDULE_TYPE = {
+  LOOP: 'loop',
+  CRON: 'cron',
+}
+
 export interface Scheduler {
   startJob(options?: SchedulerOptions): void
   jobTask(): Promise<any>;
