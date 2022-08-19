@@ -30,7 +30,7 @@ export class SeasonNextRoundServiceImpl {
 
   async updateSeasons(): Promise<any[]> {
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const updatedSeasons: any[] = ['abcd'];
+    const updatedSeasons: any[] = [];
     for await (const competition of competitions) {
       const currentSeasonId = competition.currentSeason?.toString();
       if (!currentSeasonId) continue;

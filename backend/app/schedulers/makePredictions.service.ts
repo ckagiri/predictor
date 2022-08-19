@@ -2,8 +2,8 @@ import { lastValueFrom } from 'rxjs';
 
 import { CompetitionRepository, CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
-import { SeasonRepository, SeasonRepositoryImpl } from 'db/repositories/season.repo';
-import { PredictionRepository, PredictionRepositoryImpl } from 'db/repositories/prediction.repo';
+import { SeasonRepository, SeasonRepositoryImpl } from '../../db/repositories/season.repo';
+import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 
 export interface MakePredictionsService {
   createCurrentRoundPredictionsIfNotExists(): Promise<void>;
