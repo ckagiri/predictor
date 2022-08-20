@@ -26,35 +26,35 @@ export abstract class BaseScheduler implements Scheduler {
       throw new Error('Job already scheduled');
     }
     if (runImmediately) {
-      this.jobTask().then(() => {
-        this.initJob(interval);
+      this.jobTask().then(result => {
+        this.initJob(interval, result);
       });
     } else {
       this.initJob(interval);
     }
   }
 
-  initJob(interval?: string | number) {
+  initJob(interval?: string | number, result?: any) {
     if (isString(interval)) {
       this.scheduleType = SCHEDULE_TYPE.CRON;
       this.job.schedule(interval);
     } else if (isNumber(interval)) {
       this.setIntervalMs(interval);
-      this.job.schedule(new Date(Date.now() + this.getIntervalMs()));
+      this.scheduleJob(result)
     } else {
       this.setIntervalMs(this.getDefaultIntervalMs())
-      this.job.schedule(new Date(Date.now() + this.getIntervalMs()));
+      this.scheduleJob(result)
     }
   }
 
-  scheduleJob(result: any = [], reschedule: boolean = false) {
+  scheduleJob(result: any, reschedule: boolean = false) {
     const nextInterval = this.calculateNextInterval(result)
     const nextUpdate = new Date(Date.now() + nextInterval);
 
     if (reschedule) {
-      this.job?.reschedule(nextUpdate.getTime());
+      this.job.reschedule(nextUpdate.getTime());
     } else {
-      this.job?.schedule(nextUpdate)
+      this.job.schedule(nextUpdate)
     }
   }
 
