@@ -26,7 +26,7 @@ function getUserToken({ id, username }: User): string {
   )
 }
 
-const authMiddleware = expressjwt({ algorithms: ['HS256'], secret })
+const authMiddleware = ({ ...overrides } = {}) => expressjwt({ algorithms: ['HS256'], secret, ...overrides })
 
 function userToJSON(user: any) {
   return omit(user, ['createdAt', 'updatedAt', 'isAdmin', 'exp', 'iat', 'hash', 'salt'])
