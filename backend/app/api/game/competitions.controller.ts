@@ -145,6 +145,8 @@ export class GameCompetitionsController {
         delete m.homeTeam;
         delete m.awayTeam;
       })
+      const node2 = (req as any).node2;
+      node2.send({ msg: 'REFRESH_STORIES', name: 'dj pury' });
       res.status(200).json({
         roundId: round.id,
         matches

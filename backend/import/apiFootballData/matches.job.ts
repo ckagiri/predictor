@@ -29,7 +29,7 @@ export class MatchesJob implements Job {
     // tslint:disable-next-line: no-console
     console.log('** starting ApiFootballData Matches job');
     return lastValueFrom(
-      from(this._apiClient.getMatches(this._competitionId))
+      from(this._apiClient.getCompetitionMatches(this._competitionId))
         .pipe(
           mergeMap((response: any) => {
             let matches: any[] = response.data.matches || [];
