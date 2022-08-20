@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { isMongoId } from '../../utils';
 import {
   TeamRepositoryImpl,
   TeamRepository,
-} from '../../../db/repositories/team.repo';
-import { isMongoId } from '../utils';
-import { SeasonRepository, SeasonRepositoryImpl } from '../../../db/repositories/season.repo';
+} from '../../../../db/repositories/team.repo';
+import { SeasonRepository, SeasonRepositoryImpl } from '../../../../db/repositories/season.repo';
 
 export class TeamsController {
   public static getInstance(

@@ -4,7 +4,7 @@ import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
 import { setupReqRes } from './testUtils';
-import { SeasonsController } from '../../app/api/seasons/seasons.controller';
+import { SeasonsController } from '../../app/api/admin/seasons/seasons.controller';
 import { Season } from '../../db/models';
 import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';

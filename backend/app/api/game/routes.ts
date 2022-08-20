@@ -13,4 +13,4 @@ router.post('/:competition/:season/:round/auto-pick', authMiddleware(), competit
 router.post('/:competition/:season/:round/:match/pick-joker', authMiddleware(), competitionsController.pickGameRoundJoker);
 router.post('/:competition/:season/:round/:match/pick-score', authMiddleware(), competitionsController.pickPredictionScore);
 
-export const gameCompetitionsRouter = router;
+export default router;

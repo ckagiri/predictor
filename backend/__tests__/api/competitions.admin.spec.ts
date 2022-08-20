@@ -4,7 +4,7 @@ import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
 import { setupReqRes } from './testUtils';
-import { CompetitionsController } from '../../app/api/competitions/competitions.controller';
+import { CompetitionsController } from '../../app/api/admin/competitions/competitions.controller';
 import { Competition } from '../../db/models';
 import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';

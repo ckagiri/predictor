@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { isMongoId } from '../../utils';
 import {
   CompetitionRepositoryImpl,
   CompetitionRepository,
-} from '../../../db/repositories/competition.repo';
-import { isMongoId } from '../utils';
+} from '../../../../db/repositories/competition.repo';
 
 export class CompetitionsController {
   public static getInstance(

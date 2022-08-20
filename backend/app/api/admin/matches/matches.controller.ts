@@ -1,19 +1,19 @@
 import { Request, Response } from 'express';
+import { lastValueFrom } from 'rxjs';
+import { isMongoId } from '../../utils';
 import {
   SeasonRepositoryImpl,
   SeasonRepository,
-} from '../../../db/repositories/season.repo';
+} from '../../../../db/repositories/season.repo';
 import {
   MatchRepositoryImpl,
   MatchRepository,
-} from '../../../db/repositories/match.repo';
+} from '../../../../db/repositories/match.repo';
 import {
   GameRoundRepositoryImpl,
   GameRoundRepository,
-} from '../../../db/repositories/gameRound.repo';
-import { isMongoId } from '../utils';
-import { GameRound } from '../../../db/models/gameRound.model';
-import { lastValueFrom } from 'rxjs';
+} from '../../../../db/repositories/gameRound.repo';
+import { GameRound } from '../../../../db/models/gameRound.model';
 
 export class MatchesController {
   public static getInstance(

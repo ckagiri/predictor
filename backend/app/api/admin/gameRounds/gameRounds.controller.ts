@@ -1,15 +1,14 @@
 import { Request, Response } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { isMongoId } from '../../utils';
 import {
   SeasonRepository,
   SeasonRepositoryImpl,
-} from '../../../db/repositories/season.repo';
+} from '../../../../db/repositories/season.repo';
 import {
   GameRoundRepositoryImpl,
   GameRoundRepository,
-} from '../../../db/repositories/gameRound.repo';
-import { isMongoId } from '../utils';
-import { Season } from '../../../db/models/season.model';
+} from '../../../../db/repositories/gameRound.repo';
 
 export class GameRoundsController {
   public static getInstance(

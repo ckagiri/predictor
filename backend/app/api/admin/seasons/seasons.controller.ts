@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { lastValueFrom } from 'rxjs';
+import { isMongoId } from '../../utils';
 import {
   SeasonRepositoryImpl,
   SeasonRepository,
-} from '../../../db/repositories/season.repo';
-import { isMongoId } from '../utils';
+} from '../../../../db/repositories/season.repo';
 
 export class SeasonsController {
   public static getInstance(
