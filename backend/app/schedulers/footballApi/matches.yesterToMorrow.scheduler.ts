@@ -19,7 +19,7 @@ export class YesterToMorrowScheduler extends BaseScheduler {
     private yesterToMorrowService: YesterToMorrowService,
   ) {
     super('YesterToMorrowScheduler Job');
-    this.job.on('scheduled', () => {
+    this.job.on('scheduled', (scheduleDate: any) => {
       // todo
       // if diff(this.scheduleDate, now) < 120 && diff(scheduleDate, now) > 120
       // publish if lastUpdate was 2 mins ago and nextUpdate is 2+ mins later
