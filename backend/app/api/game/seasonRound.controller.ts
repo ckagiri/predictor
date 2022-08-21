@@ -69,7 +69,7 @@ class SeasonRoundController {
       }
 
       const matches = roundMatches.map(m => omit(m, [
-        'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
+        '_id', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
       ]))
       matches.forEach(m => {
         m.homeTeamId = m.homeTeam.id;
@@ -125,7 +125,7 @@ class SeasonRoundController {
         gameRound: round.id
       }))
       const _picks = await lastValueFrom(this.predictionRepo.findOrCreatePicks$(userId, roundMatches))
-      const picks = _picks.map(p => omit(p, ['createdAt', 'updatedAt']));
+      const picks = _picks.map(p => omit(p, ['_id', 'createdAt', 'updatedAt']));
 
       res.status(200).json(picks);
     } catch (error) {
