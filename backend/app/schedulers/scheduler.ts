@@ -9,7 +9,7 @@ export const SCHEDULE_TYPE = {
 }
 
 export interface Scheduler {
-  startJob(options?: SchedulerOptions): void
+  startJob(options?: SchedulerOptions): Promise<void>
   jobTask(): Promise<any>;
   cancelJob(): void;
   scheduleJob(result?: any, reschedule?: boolean): void;

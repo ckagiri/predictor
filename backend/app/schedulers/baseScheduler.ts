@@ -20,15 +20,14 @@ export abstract class BaseScheduler implements Scheduler {
     });
   }
 
-  startJob(options: SchedulerOptions = { runImmediately: false }): void {
+  async startJob(options: SchedulerOptions = { runImmediately: false }) {
     const { interval, runImmediately } = options;
     if (this.jobScheduled) {
       throw new Error('Job already scheduled');
     }
     if (runImmediately) {
-      this.jobTask().then(result => {
-        this.initJob(interval, result);
-      });
+      const result = await this.jobTask();
+      this.initJob(interval, result);
     } else {
       this.initJob(interval);
     }

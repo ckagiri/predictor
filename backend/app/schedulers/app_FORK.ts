@@ -1,5 +1,7 @@
 import mongoose, { ConnectOptions } from 'mongoose';
+import { AppSchedule } from './appSchedule';
 
+const appSchedule = AppSchedule.getInstance();
 const mongoUri = process.env.MONGO_URI!;
 (async function () {
   await mongoose.connect(mongoUri, {
@@ -7,11 +9,13 @@ const mongoUri = process.env.MONGO_URI!;
     useUnifiedTopology: true,
   } as ConnectOptions);
   console.log("Connected to MongoDB server");
+  await appSchedule.start();
+  console.log('schedulers started')
 }());
 
 process.on('SIGINT', function () {
   console.log('MongoDB connection close on app termination');
-  mongoose.connection.close();
+  appSchedule.shutdown();
   process.exit(0);
 });
 
@@ -21,18 +25,17 @@ process.on('SIGUSR2', function () {
   process.kill(process.pid, 'SIGUSR2');
 });
 
-console.log({ msg: 'FORK_RUNNING' });
+console.log('FORK_RUNNING');
 
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', async function (err) {
   console.log({ msg: 'RESTART_FORK', Error: 'app_FORK.js uncaughtException error: ' + err.message + "\n" + err.stack });
-  // scheduler shutdown
+  await appSchedule.shutdown();
   process.disconnect();
-})
+});
+
+
 
 process.on('message', function (m: any) {
-  if (m.msg) {
-    console.log('msg', m)
-  } else {
-    console.log('Message from master:', m);
-  }
+  console.log('Message from master:', m);
+  appSchedule.publish(m.message);
 });

@@ -2,7 +2,7 @@ import mongoose, { ConnectOptions } from "mongoose";
 import { LeaderboardService, LeaderboardServiceImpl } from "./leaderboard.service";
 import { BaseScheduler } from "./baseScheduler";
 
-class LeaderboardScheduler extends BaseScheduler {
+export class LeaderboardScheduler extends BaseScheduler {
   public static getInstance(
     leaderboardService = LeaderboardServiceImpl.getInstance()
   ) {
@@ -17,6 +17,7 @@ class LeaderboardScheduler extends BaseScheduler {
 
   async task() {
     await this.leaderboardService.updateLeaderboardsForFinishedMatches();
+    console.log('LeaderboardScheduler task done')
   }
 }
 

@@ -20,18 +20,19 @@ export class SeasonNextRoundScheduler extends BaseScheduler {
 
   async task() {
     const updatedSeasons = await this.seasonNextRoundService.updateSeasons();
+    console.log('SeasonNextRoundScheduler task done')
     if (updatedSeasons.length) {
       this.eventMediator.publish('currentSeasonCurrentRoundUpdated')
     }
   }
 }
 
-(async () => {
-  await mongoose.connect(process.env.MONGO_URI!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions);
+// (async () => {
+//   await mongoose.connect(process.env.MONGO_URI!, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   } as ConnectOptions);
 
-  const scheduler = SeasonNextRoundScheduler.getInstance();
-  scheduler.startJob({ interval: '0,15,30,45 * * * * *' });
-})();
+//   const scheduler = SeasonNextRoundScheduler.getInstance();
+//   scheduler.startJob({ interval: '0,15,30,45 * * * * *' });
+// })();

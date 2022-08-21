@@ -8,7 +8,7 @@ import { BaseScheduler } from "../baseScheduler";
 
 const DEFAULT_INTERVAL_MILLISECONDS = 12 * 60 * 60 * 1000; // 12H
 
-class YesterToMorrowScheduler extends BaseScheduler {
+export class YesterToMorrowScheduler extends BaseScheduler {
   public static getInstance(
     yesterToMorrowService = YesterToMorrowServiceImpl.getInstance(),
   ) {
@@ -29,10 +29,11 @@ class YesterToMorrowScheduler extends BaseScheduler {
   async task() {
     const includeYesterdayAndTomorrowMatches = this.getIntervalMs() > this.getDefaultIntervalMs();
     const apiMatches = await this.yesterToMorrowService.updateMatches(includeYesterdayAndTomorrowMatches);
+    console.log('YesterToMorrowScheduler task done')
     return apiMatches;
   }
 
-  calculateNextInterval(result: any): number {
+  calculateNextInterval(result: any = []): number {
     const apiMatches: any[] = result;
     const now = moment();
     let nextUpdate = moment().add(12, 'hours');
@@ -69,12 +70,12 @@ class YesterToMorrowScheduler extends BaseScheduler {
   }
 }
 
-(async () => {
-  await mongoose.connect(process.env.MONGO_URI!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions);
+// (async () => {
+//   await mongoose.connect(process.env.MONGO_URI!, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   } as ConnectOptions);
 
-  const scheduler = YesterToMorrowScheduler.getInstance();
-  scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
-})();
+//   const scheduler = YesterToMorrowScheduler.getInstance();
+//   scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
+// })();

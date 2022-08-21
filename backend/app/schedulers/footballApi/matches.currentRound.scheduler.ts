@@ -2,6 +2,8 @@ import { CurrentRoundMatchesService, CurrentRoundMatchesServiceImpl } from './ma
 import mongoose, { ConnectOptions } from "mongoose";
 import { BaseScheduler } from "../BaseScheduler";
 
+const DEFAULT_INTERVAL_MILLISECONDS = 12 * 60 * 60 * 1000; // 12H
+
 export class CurrentRoundMatchesScheduler extends BaseScheduler {
   public static getInstance(
     currentRoundMatchesService = CurrentRoundMatchesServiceImpl.getInstance()
@@ -17,6 +19,11 @@ export class CurrentRoundMatchesScheduler extends BaseScheduler {
 
   async task() {
     await this.currentRoundMatchesService.updateMatches();
+    console.log('CurrentRoundMatchesScheduler task done')
+  }
+
+  protected getDefaultIntervalMs(): number {
+    return DEFAULT_INTERVAL_MILLISECONDS;
   }
 }
 

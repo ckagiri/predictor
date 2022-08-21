@@ -4,7 +4,8 @@ import { CalculatePredictionsService, CalculatePredictionsServiceImpl } from './
 import { BaseScheduler } from './baseScheduler';
 
 const DEFAULT_INTERVAL_MILLISECONDS = 8 * 60 * 60 * 1000; // 8H
-class CalculatePredictionsScheduler extends BaseScheduler {
+
+export class CalculatePredictionsScheduler extends BaseScheduler {
   public static getInstance(
     calculatePredictionsService = CalculatePredictionsServiceImpl.getInstance()
   ) {
@@ -17,6 +18,7 @@ class CalculatePredictionsScheduler extends BaseScheduler {
 
   async task() {
     await this.calculatePredictionsService.updatePredictionPoints();
+    console.log('CalculatePredictionsScheduler task done')
   }
 
   protected getDefaultIntervalMs(): number {
