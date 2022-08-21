@@ -24,22 +24,30 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   const mongoUri = process.env.MONGO_URI;
   const app = express();
   app.use(bodyParser.json());
-  // Fire up the child process that will run in a separate machine core
-  // and do some background processing. This way, this master process can
-  // be freed up to keep processing to a minimum on its servicing threads.
+
   const pathBase = path.resolve(__dirname, '../..');
   const base = (...paths: string[]) => path.resolve(pathBase, ...paths);
   const fromBase = (...paths: string[]) => (...subPaths: string[]) => base(...paths, ...subPaths);
   const fromBuildDir = fromBase('build')
   const fromBackendDir = fromBase('backend')
-  console.log('fromBuildDir', fromBuildDir('app', 'app_FORK.js'))
-  //const node2 = cp.fork(fromBuildDir('app', 'app_FORK.js'), []);
-  const node2 = cp.fork(fromBackendDir('app', 'app_FORK.ts'), [], { execArgv: ['-r', 'ts-node/register'] })
-  node2.send({ msg: 'REFRESH_STORIES', name: 'dj wagz' });
+
+  // Fire up the child process that will run in a separate machine core
+  // and do some background processing. This way, this master process can
+  // be freed up to keep processing to a minimum on its servicing threads.
+  let node2: cp.ChildProcess;
+  if (process.env.NODE_ENV !== 'test') {
+    // @ts-ignore // check if code is running under ts-node
+    if (process[Symbol.for("ts-node.register.instance")]) {
+      node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], { execArgv: ['-r', 'ts-node/register'] })
+    } else {
+      node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
+    }
+  }
   app.use(function (req: any, _res, next) {
     req.node2 = node2;
     next();
   });
+
   app.use(passport.initialize())
   passport.use(getLocalStrategy())
   app.use('/api', router);
