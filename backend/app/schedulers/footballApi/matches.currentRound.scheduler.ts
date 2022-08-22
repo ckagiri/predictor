@@ -19,7 +19,6 @@ export class CurrentRoundMatchesScheduler extends BaseScheduler {
 
   async task() {
     await this.currentRoundMatchesService.updateMatches();
-    console.log('CurrentRoundMatchesScheduler task done')
   }
 
   protected getDefaultIntervalMs(): number {

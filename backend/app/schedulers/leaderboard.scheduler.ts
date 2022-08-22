@@ -17,7 +17,6 @@ export class LeaderboardScheduler extends BaseScheduler {
 
   async task() {
     await this.leaderboardService.updateLeaderboardsForFinishedMatches();
-    console.log('LeaderboardScheduler task done')
   }
 }
 

@@ -23,7 +23,6 @@ export class MakePredictionsScheduler extends BaseScheduler {
 
   async task() {
     await this.makePredictionsService.createCurrentRoundPredictionsIfNotExists();
-    console.log('MakePredictionsScheduler task done')
   }
 }
 

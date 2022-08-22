@@ -20,7 +20,6 @@ export class SeasonNextRoundScheduler extends BaseScheduler {
 
   async task() {
     const updatedSeasons = await this.seasonNextRoundService.updateSeasons();
-    console.log('SeasonNextRoundScheduler task done')
     if (updatedSeasons.length) {
       this.eventMediator.publish('currentSeasonCurrentRoundUpdated')
     }

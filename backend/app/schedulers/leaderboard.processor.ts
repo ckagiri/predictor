@@ -1,6 +1,6 @@
 import { concatMap, count, forkJoin, from, lastValueFrom, map, mergeMap, Observable } from "rxjs";
 
-import { Leaderboard, STATUS as BOARD_STATUS } from "../../db/models/leaderboard.model";
+import { Leaderboard, STATUS as BOARD_STATUS, BOARD_TYPE } from "../../db/models/leaderboard.model";
 import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
 import { PredictionRepository, PredictionRepositoryImpl } from "../../db/repositories/prediction.repo";
 import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositories/userScore.repo";
@@ -49,27 +49,34 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
             });
             return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
               .pipe(
-                mergeMap(leaderboards => from(matches)
+                mergeMap(leaderboards => from(leaderboards)),
+                map(leaderboard => {
+                  const leaderboardId = leaderboard.id!;
+                  if (leaderboard.boardType === BOARD_TYPE.GLOBAL_ROUND) {
+                    const roundMatches = matches.filter(
+                      m => m.gameRound.toString() === leaderboard.gameRound?.toString()
+                    );
+                    return { leaderboardId, matches: roundMatches }
+                  }
+                  return { leaderboardId, matches }
+                }),
+                mergeMap(({ leaderboardId, matches }) => from(matches)
                   .pipe(
-                    map(match => ({ matchId: match.id!, leaderboards }))
+                    map(match => ({ leaderboardId, matchId: match.id! }))
                   )
                 ),
-                mergeMap(({ matchId, leaderboards }) => from(leaderboards)
+                mergeMap(({ leaderboardId, matchId }) => from(userIds)
                   .pipe(
-                    map(leaderboard => ({ matchId, leaderboardId: leaderboard.id! }))
-                  )),
-                mergeMap(({ matchId, leaderboardId }) => from(userIds)
-                  .pipe(
-                    map(userId => ({ matchId, leaderboardId, userId }))
+                    map(userId => ({ leaderboardId, matchId, userId }))
                   )
                 ),
-                mergeMap(({ matchId, leaderboardId, userId }) => {
+                mergeMap(({ leaderboardId, matchId, userId }) => {
                   return this.predictionRepo.findOne$(userId, matchId)
                     .pipe(
-                      map(prediction => ({ userId, leaderboardId, matchId, prediction }))
+                      map(prediction => ({ leaderboardId, matchId, userId, prediction }))
                     )
                 }),
-                concatMap(({ matchId, leaderboardId, userId, prediction }) => {
+                concatMap(({ leaderboardId, matchId, userId, prediction }) => {
                   const { scorePoints: points, hasJoker } = prediction;
                   return this.userScoreRepo.findScoreAndUpsert$(
                     { leaderboardId, userId },

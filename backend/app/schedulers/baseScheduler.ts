@@ -61,6 +61,7 @@ export abstract class BaseScheduler implements Scheduler {
     if (this.taskRunning) return;
     this.taskRunning = true;
     const result = await this.task();
+    console.log(`${this.job.name} task done`);
     this.taskRunning = false;
     return result;
   }

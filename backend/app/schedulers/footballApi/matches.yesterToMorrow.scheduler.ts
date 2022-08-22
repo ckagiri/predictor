@@ -29,7 +29,6 @@ export class YesterToMorrowScheduler extends BaseScheduler {
   async task() {
     const includeYesterdayAndTomorrowMatches = this.getIntervalMs() > this.getDefaultIntervalMs();
     const apiMatches = await this.yesterToMorrowService.updateMatches(includeYesterdayAndTomorrowMatches);
-    console.log('YesterToMorrowScheduler task done')
     return apiMatches;
   }
 
@@ -62,7 +61,7 @@ export class YesterToMorrowScheduler extends BaseScheduler {
       nextUpdate = moment().add(90, 'seconds');
     }
 
-    return nextUpdate.diff(moment())
+    return Math.min(this.getDefaultIntervalMs(), nextUpdate.diff(moment()))
   }
 
   protected getDefaultIntervalMs(): number {

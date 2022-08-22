@@ -18,7 +18,6 @@ export class CalculatePredictionsScheduler extends BaseScheduler {
 
   async task() {
     await this.calculatePredictionsService.updatePredictionPoints();
-    console.log('CalculatePredictionsScheduler task done')
   }
 
   protected getDefaultIntervalMs(): number {
