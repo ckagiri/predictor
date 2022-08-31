@@ -3,24 +3,7 @@
   "version": "1.0.0",
   "description": "Predictor",
   "main": "index.js",
-  "scripts": {
-    "install": "npm run install:backend",
-    "install:backend": "cd backend && npm install",
-    "prebuild": "npm run build:clean",
-    "build:clean": "rimraf dist && rimraf backend/build",
-    "build": "npm run build:backend",
-    "build:backend": "cd backend && npm run build",
-    "start": "cd backend && npm run start",
-    "build:start": "npm run build && npm run start",
-    "format": "prettier --write \"**/*.{js,ts}\"",
-    "typecheck": "cd backend && npm run typecheck",
-    "serve": "serve -s dist",
-    "test": "cd backend && npm run test",
-    "lint:be": "cd backend && npm run lint",
-    "lintfix:be": "cd backend && npm run lint:fix",
-    "dropseed:test": "cd backend && npm run drop:test && npm run seed:test",
-    "dropseedimport:test": "cd backend && npm run drop:test && npm run seed:test && npm run import:test"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ckagiri/predictor.git"
