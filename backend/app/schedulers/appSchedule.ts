@@ -2,14 +2,14 @@ import schedule from 'node-schedule';
 
 import { CalculatePredictionsScheduler } from "./calculatePredictions.scheduler";
 import { CurrentRoundMatchesScheduler } from "./footballApi/matches.currentRound.scheduler"
-import { YesterToMorrowScheduler } from "./footballApi/matches.yesterToMorrow.scheduler";
+import { TodayAndMorrowScheduler } from "./footballApi/matches.todayAndMorrow.scheduler";
 import { SeasonNextRoundScheduler } from "./footballApi/season.nextRound.scheduler";
 import { LeaderboardScheduler } from "./leaderboard.scheduler";
 import { MakePredictionsScheduler } from "./makePredictions.scheduler";
 
 export class AppSchedule {
   private readonly currentRoundMatchesScheduler: CurrentRoundMatchesScheduler;
-  private readonly yesterToMorrowScheduler: YesterToMorrowScheduler;
+  private readonly todayAndMorrowScheduler: TodayAndMorrowScheduler;
   private readonly seasonNextRoundScheduler: SeasonNextRoundScheduler;
   private readonly calculatePredictionsScheduler: CalculatePredictionsScheduler;
   private readonly leaderboardScheduler: LeaderboardScheduler;
@@ -21,7 +21,7 @@ export class AppSchedule {
 
   constructor() {
     this.currentRoundMatchesScheduler = CurrentRoundMatchesScheduler.getInstance();
-    this.yesterToMorrowScheduler = YesterToMorrowScheduler.getInstance();
+    this.todayAndMorrowScheduler = TodayAndMorrowScheduler.getInstance();
     this.seasonNextRoundScheduler = SeasonNextRoundScheduler.getInstance();
     this.calculatePredictionsScheduler = CalculatePredictionsScheduler.getInstance();
     this.leaderboardScheduler = LeaderboardScheduler.getInstance();
@@ -30,7 +30,7 @@ export class AppSchedule {
 
   async start() {
     await this.currentRoundMatchesScheduler.startJob({ runImmediately: true });
-    await this.yesterToMorrowScheduler.startJob();
+    await this.todayAndMorrowScheduler.startJob();
     await this.makePredictionsScheduler.startJob({ runImmediately: true });
     await this.calculatePredictionsScheduler.startJob({ runImmediately: true });
     await this.leaderboardScheduler.startJob({ runImmediately: true });

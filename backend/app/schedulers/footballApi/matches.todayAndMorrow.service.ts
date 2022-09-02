@@ -6,16 +6,16 @@ import { FootballApiClient, FootballApiClientImpl } from "../../../thirdParty/fo
 import { FootballApiProvider } from '../../../common/footballApiProvider';
 import { makeMatchUpdate, matchChanged } from "./util";
 
-export interface YesterToMorrowService {
+export interface TodayAndMorrowService {
   updateMatches(includeYesterdayAndTomorrowMatches: boolean): Promise<any[]>
 }
 
-export class YesterToMorrowServiceImpl implements YesterToMorrowService {
+export class TodayAndMorrowServiceImpl implements TodayAndMorrowService {
   public static getInstance(
     matchRepo = MatchRepositoryImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA),
     footballApiClient = FootballApiClientImpl.getInstance(FootballApiProvider.API_FOOTBALL_DATA)
   ) {
-    return new YesterToMorrowServiceImpl(matchRepo, footballApiClient);
+    return new TodayAndMorrowServiceImpl(matchRepo, footballApiClient);
   }
 
   constructor(
@@ -23,18 +23,14 @@ export class YesterToMorrowServiceImpl implements YesterToMorrowService {
     private footballApiClient: FootballApiClient,
   ) { }
 
-  async updateMatches(includeYesterdayAndTomorrowMatches: boolean): Promise<any[]> {
+  async updateMatches(includeTomorrowsMatches: boolean): Promise<any[]> {
     let apiMatches: any[] = [];
-    if (includeYesterdayAndTomorrowMatches) {
+    if (includeTomorrowsMatches) {
       const tommorowApiMatchesResponse = await this.footballApiClient.getTomorrowsMatches();
-      const yesterdayApiMatchesResponse = await this.footballApiClient.getYesterdaysMatches();
-
-      apiMatches = [].concat(
-        ...([tommorowApiMatchesResponse.data.matches, yesterdayApiMatchesResponse.data.matches] as any[]),
-      );
+      apiMatches = tommorowApiMatchesResponse.data.matches as any[]
     }
     const todayApiMatchesResponse = await this.footballApiClient.getTodaysMatches();
-    apiMatches = apiMatches.concat(todayApiMatchesResponse.data.matches);
+    apiMatches = apiMatches.concat(todayApiMatchesResponse.data.matches as any[]);
 
     const externalIds: string[] = apiMatches.map(m => m.id)
     const dbMatches = await lastValueFrom(this.matchRepo.findByExternalIds$(externalIds));

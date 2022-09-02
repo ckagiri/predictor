@@ -5,15 +5,15 @@ import { BaseScheduler } from "../baseScheduler";
 
 export class SeasonNextRoundScheduler extends BaseScheduler {
   public static getInstance(
+    seasonNextRoundService = SeasonNextRoundServiceImpl.getInstance(),
     eventMediator = EventMediatorImpl.getInstance(),
-    seasonNextRoundService = SeasonNextRoundServiceImpl.getInstance()
   ) {
-    return new SeasonNextRoundScheduler(eventMediator, seasonNextRoundService);
+    return new SeasonNextRoundScheduler(seasonNextRoundService, eventMediator);
   }
 
   constructor(
-    private eventMediator: EventMediator,
     private seasonNextRoundService: SeasonNextRoundService,
+    private eventMediator: EventMediator,
   ) {
     super('SeasonNextRound Job');
   }
