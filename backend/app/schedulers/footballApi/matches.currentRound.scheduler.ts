@@ -1,6 +1,6 @@
 import { CurrentRoundMatchesService, CurrentRoundMatchesServiceImpl } from './matches.currentRound.service';
 import mongoose, { ConnectOptions } from "mongoose";
-import { BaseScheduler } from "../BaseScheduler";
+import { BaseScheduler } from "../baseScheduler";
 
 const DEFAULT_INTERVAL_MILLISECONDS = 12 * 60 * 60 * 1000; // 12H
 

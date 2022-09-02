@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  nodejs:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: ligi-nodejs-2
+    container_name: ligi-nodejs-2
+    env_file: .env
+    environment:
+      - MONGO_HOSTNAME=db
+    ports:
+      - '7080:8080'
+    volumes:
+      - ./backend/build:/home/node/src
+      - node_modules:/home/node/src/node_modules
+    command: ./wait-for.sh db:27017 --  /home/node/src/node_modules/.bin/nodemon app/index.js
+  db:
+    image: mongo:4.2-bionic
+    container_name: db
+    env_file: .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+    volumes:
+      - dbdata:/data/db
+volumes:
+  dbdata:
+  node_modules:

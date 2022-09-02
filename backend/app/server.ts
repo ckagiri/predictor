@@ -11,17 +11,24 @@ import errorMiddleware from './api/auth/error.middleware';
 import router from './api/routes';
 
 async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
-  if (!process.env.NODE_ENV || !process.env.MONGO_URI) {
+  console.log('PORT', process.env.PORT)
+  if (!process.env.NODE_ENV) {
     console.error(
-      'NODE_ENV or MONGO_URI ENV variables missing.',
+      'NODE_ENV ENV variable missing.',
       'Verify that you have set them directly or in a .env file.',
     );
     process.exit(1);
   } else {
-    console.log('Using ENV variables');
+    console.log('Using NODE_ENV', process.env.NODE_ENV);
   }
 
-  const mongoUri = process.env.MONGO_URI;
+  const {
+    MONGO_USERNAME,
+    MONGO_PASSWORD,
+    MONGO_HOSTNAME,
+    MONGO_PORT,
+    MONGO_DB
+  } = process.env;
   const app = express();
   app.use(bodyParser.json());
 
@@ -34,25 +41,28 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   // Fire up the child process that will run in a separate machine core
   // and do some background processing. This way, this master process can
   // be freed up to keep processing to a minimum on its servicing threads.
-  let node2: cp.ChildProcess;
-  if (process.env.NODE_ENV !== 'test') {
-    // @ts-ignore // check if code is running under ts-node
-    if (process[Symbol.for("ts-node.register.instance")]) {
-      node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], { execArgv: ['-r', 'ts-node/register'] })
-    } else {
-      node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
-    }
-  }
-  app.use(function (req: any, _res, next) {
-    req.node2 = node2;
-    next();
-  });
+  // let node2: cp.ChildProcess;
+  // if (process.env.NODE_ENV !== 'test') {
+  //   // @ts-ignore // check if code is running under ts-node
+  //   if (process[Symbol.for("ts-node.register.instance")]) {
+  //     node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], { execArgv: ['-r', 'ts-node/register'] })
+  //   } else {
+  //     node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
+  //   }
+  // }
+  // app.use(function (req: any, _res, next) {
+  //   req.node2 = node2;
+  //   next();
+  // });
 
   app.use(passport.initialize())
   passport.use(getLocalStrategy())
   app.use('/api', router);
   app.use(errorMiddleware)
 
+  const mongoUri = `mongodb://${MONGO_USERNAME}:${encodeURIComponent(MONGO_PASSWORD!)}@${MONGO_HOSTNAME!}:${MONGO_PORT!}/${MONGO_DB!}?authSource=admin`;
+  console.log('mongoUri', mongoUri)
+  console.log('ENV', JSON.stringify(process.env))
   if (process.env.NODE_ENV !== 'test') {
     await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
@@ -72,8 +82,9 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   }
 
   return new Promise(resolve => {
-    const server = app.listen(port, () => {
-      console.log(`listening on http://localhost:${port}`);
+    const port1 = 8080
+    const server = app.listen(port1, () => {
+      console.log(`listening on http://localhost:${port1}`);
       const originalClose = server.close.bind(server);
       // @ts-ignore
       server.close = () => {
