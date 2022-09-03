@@ -11,7 +11,6 @@ import errorMiddleware from './api/auth/error.middleware';
 import router from './api/routes';
 
 async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
-  console.log('PORT', process.env.PORT)
   if (!process.env.NODE_ENV) {
     console.error(
       'NODE_ENV ENV variable missing.',
@@ -23,6 +22,7 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   }
 
   const {
+    MONGO_URI: mongoUri,
     MONGO_USERNAME,
     MONGO_PASSWORD,
     MONGO_HOSTNAME,
@@ -60,11 +60,11 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   app.use('/api', router);
   app.use(errorMiddleware)
 
-  const mongoUri = `mongodb://${MONGO_USERNAME}:${encodeURIComponent(MONGO_PASSWORD!)}@${MONGO_HOSTNAME!}:${MONGO_PORT!}/${MONGO_DB!}?authSource=admin`;
+  // const mongoUri = `mongodb://${MONGO_USERNAME}:${encodeURIComponent(MONGO_PASSWORD!)}@${MONGO_HOSTNAME!}:${MONGO_PORT!}/${MONGO_DB!}?authSource=admin`;
   console.log('mongoUri', mongoUri)
   console.log('ENV', JSON.stringify(process.env))
   if (process.env.NODE_ENV !== 'test') {
-    await mongoose.connect(mongoUri, {
+    await mongoose.connect(mongoUri!, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     } as ConnectOptions);
@@ -82,9 +82,8 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   }
 
   return new Promise(resolve => {
-    const port1 = 8080
-    const server = app.listen(port1, () => {
-      console.log(`listening on http://localhost:${port1}`);
+    const server = app.listen(port, () => {
+      console.log(`listening on http://localhost:${port}`);
       const originalClose = server.close.bind(server);
       // @ts-ignore
       server.close = () => {

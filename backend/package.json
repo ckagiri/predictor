@@ -2,8 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm run compile",
+    "build": "npm run compile && npm run copyfiles",
     "compile": "tsc --project tsconfig.json",
+    "copyfiles": "copyfiles wait-for.sh build",
     "start": "NODE_ENV=development node -r dotenv/config build/app/index.js",
     "serve": "NODE_ENV=development node -r dotenv-flow/config build/app/index.js",
     "start:dev": "NODE_ENV=development node -r dotenv-flow/config build/app/index.js",
@@ -62,6 +63,7 @@
     "axios": "^0.26.1",
     "chai": "^4.3.6",
     "chai-http": "^4.2.1",
+    "copyfiles": "^2.4.1",
     "dotenv-flow": "^3.2.0",
     "eslint": "^8.13.0",
     "mais-mongoose-seeder": "^1.0.7",
