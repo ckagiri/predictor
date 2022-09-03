@@ -58,7 +58,13 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   app.use(passport.initialize())
   passport.use(getLocalStrategy())
   app.use('/api', router);
-  app.use(errorMiddleware)
+  app.use(errorMiddleware);
+
+  const www = process.env.WWW || './public';
+  app.use(express.static(www));
+  app.get('*', (req, res) => {
+    res.sendFile(`index.html`, { root: www });
+  });
 
   // const mongoUri = `mongodb://${MONGO_USERNAME}:${encodeURIComponent(MONGO_PASSWORD!)}@${MONGO_HOSTNAME!}:${MONGO_PORT!}/${MONGO_DB!}?authSource=admin`;
   console.log('mongoUri', mongoUri)
