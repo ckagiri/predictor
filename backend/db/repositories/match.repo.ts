@@ -43,18 +43,13 @@ export class MatchRepositoryImpl
     return from(currentSeasons)
       .pipe(
         mergeMap(season => {
-          if (season) {
-            return this.findAll$({ ...filter, season, status: MatchStatus.FINISHED })
-              .pipe(
-                map(matches => {
-                  const result: SeasonToMatches = [season, matches]
-                  return result;
-                })
-              )
-          } else {
-            const result: SeasonToMatches = ['', []];
-            return of(result)
-          }
+          return this.findAll$({ ...filter, season, status: MatchStatus.FINISHED })
+            .pipe(
+              map(matches => {
+                const result: SeasonToMatches = [season, matches]
+                return result;
+              })
+            )
         }),
         toArray()
       )

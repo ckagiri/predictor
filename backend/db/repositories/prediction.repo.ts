@@ -257,8 +257,12 @@ export class PredictionRepositoryImpl
               jokers.push(joker);
             }
           } else if (jokerPredictions.length > 1) { // Precautionary
-            // todo: poor - using reverse for latest joker; better - use last modified
-            const [, ...otherJokers] = jokerPredictions.reverse();
+            const getTime = (date?: string | number | Date): number => date != null ? new Date(date).getTime() : 0;
+            const [, ...otherJokers] = jokerPredictions.sort((a, b) => {
+              const aMatch = roundMatches.find(m => m.id === a.match.toString())
+              const bMatch = roundMatches.find(m => m.id === b.match.toString())
+              return getTime(aMatch?.utcDate) - getTime(bMatch?.utcDate);
+            })
             otherJokers.forEach(j => {
               j.hasJoker = false;
               j.jokerAutoPicked = false;

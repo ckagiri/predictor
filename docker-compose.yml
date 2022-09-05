@@ -1,28 +1,28 @@
 version: '3'
 
 services:
-  server:
+  ligiserver:
     build:
       context: .
       dockerfile: Dockerfile
-    image: nodejs
-    container_name: server
+    image: liginodejs
+    container_name: ligiserver
     env_file: .env
     environment:
-      - MONGO_HOSTNAME=db
+      - MONGO_HOSTNAME=ligidb
     ports:
       - '7080:8080'
     volumes:
       - ./backend/build:/home/node/src
       - ./frontend/build:/home/node/src/public
       - node_modules:/home/node/src/node_modules
-    command: ./wait-for.sh db:27017 --  node app/index.js
-  db:
+    command: ./wait-for.sh ligidb:27017 --  node app/index.js
+  ligidb:
     image: mongo:4.2-bionic
-    container_name: db
+    container_name: ligidb
     env_file: .env
     volumes:
-      - dbdata:/data/db
+      - ligidbdata:/data/db
 volumes:
-  dbdata:
+  ligidbdata:
   node_modules:
