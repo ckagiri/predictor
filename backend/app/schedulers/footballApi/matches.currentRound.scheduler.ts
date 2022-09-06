@@ -2,8 +2,6 @@ import { CurrentRoundMatchesService, CurrentRoundMatchesServiceImpl } from './ma
 import mongoose, { ConnectOptions } from "mongoose";
 import { BaseScheduler } from "../baseScheduler";
 
-const DEFAULT_INTERVAL_MILLISECONDS = 12 * 60 * 60 * 1000; // 12H
-
 export class CurrentRoundMatchesScheduler extends BaseScheduler {
   public static getInstance(
     currentRoundMatchesService = CurrentRoundMatchesServiceImpl.getInstance()
@@ -20,18 +18,14 @@ export class CurrentRoundMatchesScheduler extends BaseScheduler {
   async task() {
     await this.currentRoundMatchesService.updateMatches();
   }
-
-  protected getDefaultIntervalMs(): number {
-    return DEFAULT_INTERVAL_MILLISECONDS;
-  }
 }
 
-(async () => {
-  await mongoose.connect(process.env.MONGO_URI!, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  } as ConnectOptions);
+// (async () => {
+//   await mongoose.connect(process.env.MONGO_URI!, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//   } as ConnectOptions);
 
-  const scheduler = CurrentRoundMatchesScheduler.getInstance();
-  scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
-})();
+//   const scheduler = CurrentRoundMatchesScheduler.getInstance();
+//   scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
+// })();

@@ -29,12 +29,12 @@ export class AppSchedule {
   }
 
   async start() {
-    await this.currentRoundMatchesScheduler.startJob({ runImmediately: true });
+    await this.currentRoundMatchesScheduler.startJob({ interval: '0 0 6 * * *', runImmediately: true });
     await this.todayAndMorrowScheduler.startJob();
     await this.makePredictionsScheduler.startJob({ runImmediately: true });
     await this.calculatePredictionsScheduler.startJob({ runImmediately: true });
     await this.leaderboardScheduler.startJob({ runImmediately: true });
-    await this.seasonNextRoundScheduler.startJob();
+    await this.seasonNextRoundScheduler.startJob({ interval: '0 0 9 * * *' });
   }
 
   publish(message: string) {

@@ -3,9 +3,9 @@ import bodyParser from 'body-parser';
 import mongoose, { ConnectOptions } from 'mongoose';
 import passport from 'passport'
 import { Server } from 'http';
-import path from 'path';
 import cp from 'child_process';
 
+import { fromBase } from './util';
 import { getLocalStrategy } from './api/auth/passport';
 import errorMiddleware from './api/auth/error.middleware';
 import router from './api/routes';
@@ -32,28 +32,25 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   const app = express();
   app.use(bodyParser.json());
 
-  const pathBase = path.resolve(__dirname, '../..');
-  const base = (...paths: string[]) => path.resolve(pathBase, ...paths);
-  const fromBase = (...paths: string[]) => (...subPaths: string[]) => base(...paths, ...subPaths);
-  const fromBuildDir = fromBase('build')
-  const fromBackendDir = fromBase('backend')
-
   // Fire up the child process that will run in a separate machine core
   // and do some background processing. This way, this master process can
   // be freed up to keep processing to a minimum on its servicing threads.
-  // let node2: cp.ChildProcess;
-  // if (process.env.NODE_ENV !== 'test') {
-  //   // @ts-ignore // check if code is running under ts-node
-  //   if (process[Symbol.for("ts-node.register.instance")]) {
-  //     node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], { execArgv: ['-r', 'ts-node/register'] })
-  //   } else {
-  //     node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
-  //   }
-  // }
-  // app.use(function (req: any, _res, next) {
-  //   req.node2 = node2;
-  //   next();
-  // });
+  let node2: cp.ChildProcess;
+  if (process.env.NODE_ENV !== 'test') {
+    const fromBuildDir = fromBase('build')
+    const fromBackendDir = fromBase('backend')
+    console.log('Directories', fromBuildDir('app', 'schedulers', 'app_FORK.js'), fromBackendDir('app', 'schedulers', 'app_FORK.ts'))
+    // @ts-ignore // check if code is running under ts-node
+    if (process[Symbol.for("ts-node.register.instance")]) {
+      // node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], { execArgv: ['-r', 'ts-node/register'] })
+    } else {
+      // node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
+    }
+  }
+  app.use(function (req: any, _res, next) {
+    req.node2 = node2;
+    next();
+  });
 
   app.use(passport.initialize())
   passport.use(getLocalStrategy())
