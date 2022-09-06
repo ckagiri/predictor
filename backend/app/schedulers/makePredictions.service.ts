@@ -7,7 +7,7 @@ import { PredictionRepository, PredictionRepositoryImpl } from '../../db/reposit
 import { compact } from 'lodash';
 
 export interface MakePredictionsService {
-  createCurrentRoundPredictionsIfNotExists(): Promise<void>;
+  createIfNotExistsCurrentRoundPredictions(): Promise<void>;
 };
 
 export class MakePredictionsServiceImpl implements MakePredictionsService {
@@ -27,7 +27,7 @@ export class MakePredictionsServiceImpl implements MakePredictionsService {
     private predictionRepo: PredictionRepository) {
   }
 
-  async createCurrentRoundPredictionsIfNotExists() {
+  async createIfNotExistsCurrentRoundPredictions() {
     const competitions = await lastValueFrom(this.competitionRepo.findAll$());
     const currentSeasonIds = compact(competitions.map(c => c.currentSeason?.toString()));
     const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));

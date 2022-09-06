@@ -5,7 +5,7 @@ import PredictionModel, { Prediction } from '../models/prediction.model';
 import { Match, MatchStatus } from '../models/match.model';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
-import { head, uniq } from 'lodash';
+import { head, isEmpty, uniq } from 'lodash';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
@@ -13,7 +13,6 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
   findOrCreatePicks$(userId: string, roundMatches: Match[], withJoker?: boolean): Observable<Prediction[]>;
   pickScore$(userId: string, match: Match, roundMatches: Match[], choice: Score): Observable<Prediction>;
   pickJoker$(userId: string, match: Match, roundMatches: Match[]): Observable<Prediction[]>;
-  unsetJoker$(userId: string, match: Match): Observable<Prediction | undefined>;
 }
 
 export class PredictionRepositoryImpl
@@ -64,10 +63,10 @@ export class PredictionRepositoryImpl
     if (areAllMatchesFinished) {
       return throwError(() => new Error('All matches finished for the round'))
     }
-    return this.findJoker$(userId, roundMatches)
+    return this.findJokers$(userId, roundMatches)
       .pipe(
-        mergeMap(currentJoker => {
-          if (!currentJoker) {
+        mergeMap(currentJokers => {
+          if (isEmpty(currentJokers) || currentJokers.length > 1) {
             return this.findOrCreatePredictions$(userId, roundMatches)
               .pipe(
                 map(predictions => {
@@ -76,7 +75,7 @@ export class PredictionRepositoryImpl
                 })
               )
           }
-          return of(currentJoker)
+          return of(head(currentJokers))
         }),
         mergeMap(currentJoker => {
           if (!currentJoker) {
@@ -126,19 +125,6 @@ export class PredictionRepositoryImpl
       )
   }
 
-  unsetJoker$(userId: string, match: Match): Observable<Prediction | undefined> {
-    return super.findOne$({ user: userId, match: match.id, hasJoker: true })
-      .pipe(
-        mergeMap(pred => {
-          if (pred) {
-            pred.hasJoker = false;
-            return this.save$(pred)
-          }
-          return of(undefined)
-        })
-      )
-  }
-
   findOrCreatePredictions$(userId: string, roundMatches: Match[], withJoker = true): Observable<Prediction[]> {
     return iif(
       () => withJoker, this.findOrCreateJoker$(userId, roundMatches), of(undefined)
@@ -158,6 +144,9 @@ export class PredictionRepositoryImpl
         const scheduledMatches: Match[] = roundMatches.filter(m => m.status === MatchStatus.SCHEDULED);
         const predictionMatchIds: string[] = predictions.map(p => p.match.toString());
         const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!));
+        if (isEmpty(newPredictionMatches)) {
+          return of(predictions);
+        }
         const newPredictions = newPredictionMatches.map(match => {
           const { id: matchId, slug: matchSlug, season } = match;
           const prediction: Prediction = {
@@ -218,8 +207,8 @@ export class PredictionRepositoryImpl
       )
   }
 
-  findJoker$(userId: string, roundMatches: Match[]): Observable<Prediction> {
-    return super.findOne$({
+  findJokers$(userId: string, roundMatches: Match[]): Observable<Prediction[]> {
+    return super.findAll$({
       user: userId,
       match: { $in: roundMatches.map(m => m.id) },
       hasJoker: true
@@ -258,10 +247,8 @@ export class PredictionRepositoryImpl
             }
           } else if (jokerPredictions.length > 1) { // Precautionary
             const getTime = (date?: string | number | Date): number => date != null ? new Date(date).getTime() : 0;
-            const [, ...otherJokers] = jokerPredictions.sort((a, b) => {
-              const aMatch = roundMatches.find(m => m.id === a.match.toString())
-              const bMatch = roundMatches.find(m => m.id === b.match.toString())
-              return getTime(aMatch?.utcDate) - getTime(bMatch?.utcDate);
+            const [, ...otherJokers] = jokerPredictions.sort((a: Prediction, b) => {
+              return getTime(a.createdAt) - getTime(b.createdAt);
             })
             otherJokers.forEach(j => {
               j.hasJoker = false;
