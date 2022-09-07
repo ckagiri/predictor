@@ -4,7 +4,7 @@ import { CompetitionRepository, CompetitionRepositoryImpl } from '../../db/repos
 import { MatchRepository, MatchRepositoryImpl } from '../../db/repositories/match.repo';
 import { SeasonRepository, SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
-import { compact } from 'lodash';
+import { compact, isEmpty } from 'lodash';
 
 export interface MakePredictionsService {
   createIfNotExistsCurrentRoundPredictions(): Promise<void>;
@@ -34,7 +34,11 @@ export class MakePredictionsServiceImpl implements MakePredictionsService {
     const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
 
     for await (const [seasonId, currentRoundMatches] of result) {
-      const users = await lastValueFrom(this.predictionRepo.distinct$('user', { season: seasonId }));
+      let users: string[] = [];
+      users = await lastValueFrom(this.predictionRepo.distinct$('user', { season: seasonId }));
+      if (isEmpty(users)) {
+        users = ['62f2c38bc485ceeaac9e2bbf', '62f2c564c485ceeaac9e2bc3'];
+      }
       for await (const userId of users) {
         await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, currentRoundMatches))
       }

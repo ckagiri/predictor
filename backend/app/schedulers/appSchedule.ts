@@ -34,7 +34,7 @@ export class AppSchedule {
     await this.makePredictionsScheduler.startJob({ runImmediately: true });
     await this.calculatePredictionsScheduler.startJob({ runImmediately: true });
     await this.leaderboardScheduler.startJob({ runImmediately: true });
-    await this.seasonNextRoundScheduler.startJob({ interval: '0 0 9 * * *' });
+    await this.seasonNextRoundScheduler.startJob({ runImmediately: true, interval: '0 0 9 * * *' });
   }
 
   publish(message: string) {

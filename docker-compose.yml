@@ -21,6 +21,8 @@ services:
     image: mongo:4.2-bionic
     container_name: ligidb
     env_file: .env
+    ports:
+      - '27070:27017'
     volumes:
       - ligidbdata:/data/db
 volumes:
