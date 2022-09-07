@@ -204,5 +204,4 @@ mongodump --db=test123-test --archive --gzip | cat > /tmp/backup.gz
 docker cp /tmp/backup.gz ligidb:/tmp
 mongorestore --nsFrom="test123-test.*" --nsTo="ligipredictor.*" --gzip --archive=/tmp/backup.gz
 mongorestore --uri mongodb+srv://<user>:<password>@cluster0.w2btl.mongodb.net --archive=db.dump
-mongorestore --uri mongodb+srv://ckagiri:Passh3rd@cluster0.ksdd0hn.mongodb.net --nsFrom="test123-test.*" --nsTo="ligipredictor.*" --gzip --archive=/tmp/backup.gz
 ls -p .. | grep '/$'
