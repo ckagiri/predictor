@@ -2,8 +2,6 @@ import { EventMediator, EventMediatorImpl } from "../../common/eventMediator";
 import { PredictionsService, PredictionsServiceImpl } from "./Predictions.service";
 import { BaseScheduler } from "./baseScheduler";
 
-const DEFAULT_INTERVAL_MILLISECONDS = 3 * 60 * 60 * 1000; // 3H
-
 export class MakePredictionsScheduler extends BaseScheduler {
   public static getInstance(
     eventMediator = EventMediatorImpl.getInstance(),
@@ -24,9 +22,5 @@ export class MakePredictionsScheduler extends BaseScheduler {
 
   async task() {
     await this.predictionsService.createIfNotExistsCurrentRoundPredictions();
-  }
-
-  protected getDefaultIntervalMs(): number {
-    return DEFAULT_INTERVAL_MILLISECONDS;
   }
 }

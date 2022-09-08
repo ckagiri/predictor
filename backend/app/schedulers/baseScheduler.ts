@@ -2,7 +2,7 @@ import { isNumber, isString } from 'lodash';
 import schedule, { Job } from 'node-schedule';
 import { Scheduler, SchedulerOptions, SCHEDULE_TYPE } from './scheduler';
 
-const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
+const DEFAULT_INTERVAL_MILLISECONDS = 3 * 60 * 60 * 1000; // 3H
 
 export abstract class BaseScheduler implements Scheduler {
   protected readonly job: Job;
