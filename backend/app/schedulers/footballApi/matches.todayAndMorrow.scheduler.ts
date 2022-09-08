@@ -2,7 +2,6 @@
 import { getMatchStatus } from "./util";
 import { MatchStatus } from "../../../db/models/match.model";
 import moment from "moment";
-import mongoose, { ConnectOptions } from "mongoose";
 import { TodayAndMorrowService, TodayAndMorrowServiceImpl } from "./matches.todayAndMorrow.service";
 import { BaseScheduler } from "../baseScheduler";
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
@@ -29,13 +28,14 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       const durationFromlastScheduleInSecs = moment.duration(moment(this.scheduleDate).diff(now)).asSeconds();
       const durationToNextScheduleInSecs = moment.duration(moment(scheduleDate).diff(now)).asSeconds();
       if (durationFromlastScheduleInSecs < 120 && durationToNextScheduleInSecs > 120) {
-        this.eventMediator.publish('matchesThroughExternalApiUpdated');
+        this.eventMediator.publish('footballApiMatchUpdatesCompleted');
       }
       this.scheduleDate = scheduleDate;
     })
   }
 
   async task() {
+    // todo: getLive matches if intervalMs within 3 minutes
     const includeTomorrowsMatches = this.getIntervalMs() > this.getDefaultIntervalMs();
     const apiMatches = await this.yesterToMorrowService.updateMatches(includeTomorrowsMatches);
     return apiMatches;
@@ -85,13 +85,3 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     this._scheduleDate = value;
   }
 }
-
-// (async () => {
-//   await mongoose.connect(process.env.MONGO_URI!, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   } as ConnectOptions);
-
-//   const scheduler = TodayAndMorrowScheduler.getInstance();
-//   scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
-// })();

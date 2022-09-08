@@ -1,6 +1,5 @@
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
 import { SeasonNextRoundService, SeasonNextRoundServiceImpl } from "./season.nextRound.service";
-import mongoose, { ConnectOptions } from "mongoose";
 import { BaseScheduler } from "../baseScheduler";
 
 export class SeasonNextRoundScheduler extends BaseScheduler {
@@ -26,12 +25,3 @@ export class SeasonNextRoundScheduler extends BaseScheduler {
   }
 }
 
-// (async () => {
-//   await mongoose.connect(process.env.MONGO_URI!, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   } as ConnectOptions);
-
-//   const scheduler = SeasonNextRoundScheduler.getInstance();
-//   scheduler.startJob({ interval: '0,15,30,45 * * * * *' });
-// })();

@@ -1,19 +1,20 @@
-import mongoose, { ConnectOptions } from "mongoose";
 import { EventMediator, EventMediatorImpl } from "../../common/eventMediator";
-import { MakePredictionsService, MakePredictionsServiceImpl } from "./makePredictions.service";
+import { PredictionsService, PredictionsServiceImpl } from "./Predictions.service";
 import { BaseScheduler } from "./baseScheduler";
+
+const DEFAULT_INTERVAL_MILLISECONDS = 3 * 60 * 60 * 1000; // 3H
 
 export class MakePredictionsScheduler extends BaseScheduler {
   public static getInstance(
     eventMediator = EventMediatorImpl.getInstance(),
-    makePredictionsService = MakePredictionsServiceImpl.getInstance(),
+    predictionsService = PredictionsServiceImpl.getInstance(),
   ) {
-    return new MakePredictionsScheduler(eventMediator, makePredictionsService);
+    return new MakePredictionsScheduler(eventMediator, predictionsService);
   }
 
   constructor(
     private eventMediator: EventMediator,
-    private makePredictionsService: MakePredictionsService
+    private predictionsService: PredictionsService
   ) {
     super('MakePredictions Job');
     this.eventMediator.addListener(
@@ -22,16 +23,10 @@ export class MakePredictionsScheduler extends BaseScheduler {
   }
 
   async task() {
-    await this.makePredictionsService.createIfNotExistsCurrentRoundPredictions();
+    await this.predictionsService.createIfNotExistsCurrentRoundPredictions();
+  }
+
+  protected getDefaultIntervalMs(): number {
+    return DEFAULT_INTERVAL_MILLISECONDS;
   }
 }
-
-// (async () => {
-//   await mongoose.connect(process.env.MONGO_URI!, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//   } as ConnectOptions);
-
-//   const scheduler = MakePredictionsScheduler.getInstance();
-//   scheduler.startJob({ interval: 5 * 1000, runImmediately: true });
-// })();

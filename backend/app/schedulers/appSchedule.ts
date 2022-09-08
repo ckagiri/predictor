@@ -1,18 +1,16 @@
 import schedule from 'node-schedule';
 
-import { CalculatePredictionsScheduler } from "./calculatePredictions.scheduler";
-import { CurrentRoundMatchesScheduler } from "./footballApi/matches.currentRound.scheduler"
+import { CurrentRoundMatchesService, CurrentRoundMatchesServiceImpl } from './footballApi/matches.currentRound.service';
 import { TodayAndMorrowScheduler } from "./footballApi/matches.todayAndMorrow.scheduler";
 import { SeasonNextRoundScheduler } from "./footballApi/season.nextRound.scheduler";
-import { LeaderboardScheduler } from "./leaderboard.scheduler";
+import { PredictionPointsScheduler } from './predictionPoints.scheduler';
 import { MakePredictionsScheduler } from "./makePredictions.scheduler";
 
 export class AppSchedule {
-  private readonly currentRoundMatchesScheduler: CurrentRoundMatchesScheduler;
+  private readonly currentRoundMatchesService: CurrentRoundMatchesService;
   private readonly todayAndMorrowScheduler: TodayAndMorrowScheduler;
   private readonly seasonNextRoundScheduler: SeasonNextRoundScheduler;
-  private readonly calculatePredictionsScheduler: CalculatePredictionsScheduler;
-  private readonly leaderboardScheduler: LeaderboardScheduler;
+  private readonly predictionPointsScheduler: PredictionPointsScheduler;
   private readonly makePredictionsScheduler: MakePredictionsScheduler;
 
   static getInstance() {
@@ -20,21 +18,19 @@ export class AppSchedule {
   }
 
   constructor() {
-    this.currentRoundMatchesScheduler = CurrentRoundMatchesScheduler.getInstance();
+    this.currentRoundMatchesService = CurrentRoundMatchesServiceImpl.getInstance();
     this.todayAndMorrowScheduler = TodayAndMorrowScheduler.getInstance();
     this.seasonNextRoundScheduler = SeasonNextRoundScheduler.getInstance();
-    this.calculatePredictionsScheduler = CalculatePredictionsScheduler.getInstance();
-    this.leaderboardScheduler = LeaderboardScheduler.getInstance();
+    this.predictionPointsScheduler = PredictionPointsScheduler.getInstance();
     this.makePredictionsScheduler = MakePredictionsScheduler.getInstance();
   }
 
   async start() {
-    await this.currentRoundMatchesScheduler.startJob({ interval: '0 0 6 * * *', runImmediately: true });
-    await this.todayAndMorrowScheduler.startJob();
-    await this.makePredictionsScheduler.startJob({ runImmediately: true });
-    await this.calculatePredictionsScheduler.startJob({ runImmediately: true });
-    await this.leaderboardScheduler.startJob({ runImmediately: true });
-    await this.seasonNextRoundScheduler.startJob({ runImmediately: true, interval: '0 0 9 * * *' });
+    await this.currentRoundMatchesService.updateMatches();
+    await this.predictionPointsScheduler.startJob({ runImmediately: true }); // every 6H
+    await this.seasonNextRoundScheduler.startJob({ interval: '0 0 6/4 * * *' }); // every 4 H starting 06:00 AM
+    await this.makePredictionsScheduler.startJob(); // every 3H
+    await this.todayAndMorrowScheduler.startJob(); // dynamic btwn 90s and 12H
   }
 
   publish(message: string) {

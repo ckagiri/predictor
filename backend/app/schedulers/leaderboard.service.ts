@@ -6,7 +6,7 @@ import { MatchRepository, MatchRepositoryImpl } from "../../db/repositories/matc
 import { LeaderboardProcessor, LeaderboardProcessorImpl } from "./leaderboard.processor";
 
 export interface LeaderboardService {
-  updateLeaderboardsForFinishedMatches(): Promise<void>;
+  updateGlobalLeaderboards(): Promise<void>;
 }
 
 export class LeaderboardServiceImpl {
@@ -24,7 +24,7 @@ export class LeaderboardServiceImpl {
     private leaderboardProcessor: LeaderboardProcessor) {
   }
 
-  async updateLeaderboardsForFinishedMatches() {
+  async updateGlobalLeaderboards() {
     try {
       const competitions = await lastValueFrom(this.competitionRepo.findAll$());
       const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
