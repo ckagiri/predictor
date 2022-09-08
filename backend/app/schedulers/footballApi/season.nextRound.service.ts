@@ -29,33 +29,37 @@ export class SeasonNextRoundServiceImpl {
   ) { }
 
   async updateSeasons(): Promise<any[]> {
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
     const updatedSeasons: any[] = [];
-    for await (const competition of competitions) {
-      const currentSeasonId = competition.currentSeason?.toString();
-      if (!currentSeasonId) continue;
+    try {
+      const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+      for await (const competition of competitions) {
+        const currentSeasonId = competition.currentSeason?.toString();
+        if (!currentSeasonId) continue;
 
-      const currentSeason = await lastValueFrom(this.seasonRepo.findById$(currentSeasonId));
-      const currentRoundId = currentSeason.currentGameRound?.toString();
-      if (!currentRoundId) continue;
+        const currentSeason = await lastValueFrom(this.seasonRepo.findById$(currentSeasonId));
+        const currentRoundId = currentSeason.currentGameRound?.toString();
+        if (!currentRoundId) continue;
 
-      const currentRound = await lastValueFrom(this.gameRoundRepo.findById$(currentRoundId));
-      const dbCurrentRoundPosition = currentRound.position;
+        const currentRound = await lastValueFrom(this.gameRoundRepo.findById$(currentRoundId));
+        const dbCurrentRoundPosition = currentRound.position;
 
-      const externalId = get(competition, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-      if (!externalId) continue;
+        const externalId = get(competition, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
+        if (!externalId) continue;
 
-      const apiCompetitionResponse = await this.footballApiClient.getCompetition(externalId)
-      const { data: apiCompetition } = apiCompetitionResponse;
-      const apiCurrentMatchday = get(apiCompetition, ['currentSeason', 'currentMatchday']);
+        const apiCompetitionResponse = await this.footballApiClient.getCompetition(externalId)
+        const { data: apiCompetition } = apiCompetitionResponse;
+        const apiCurrentMatchday = get(apiCompetition, ['currentSeason', 'currentMatchday']);
 
-      if (apiCurrentMatchday !== dbCurrentRoundPosition) {
-        const nextGameRound = await lastValueFrom(this.gameRoundRepo.findOne$({ position: apiCurrentMatchday }));
-        if (!nextGameRound) continue;
+        if (apiCurrentMatchday !== dbCurrentRoundPosition) {
+          const nextGameRound = await lastValueFrom(this.gameRoundRepo.findOne$({ position: apiCurrentMatchday }));
+          if (!nextGameRound) continue;
 
-        updatedSeasons.push(currentSeasonId);
-        await lastValueFrom(this.seasonRepo.findByIdAndUpdate$(currentSeasonId, { currentGameRound: nextGameRound.id }));
+          updatedSeasons.push(currentSeasonId);
+          await lastValueFrom(this.seasonRepo.findByIdAndUpdate$(currentSeasonId, { currentGameRound: nextGameRound.id }));
+        }
       }
+    } catch (err: any) {
+      console.log(err.message);
     }
     return updatedSeasons;
   }

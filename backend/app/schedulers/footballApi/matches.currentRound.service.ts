@@ -30,29 +30,33 @@ export class CurrentRoundMatchesServiceImpl {
   ) { }
 
   async updateMatches(): Promise<void> {
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
-    const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
-    const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
-    for await (const [_seasonId, dbMatches] of result) {
-      const externalIds: string[] = dbMatches.map(dbMatch => {
-        const externalId = get(dbMatch, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-        return externalId;
-      }).filter(Boolean);
-      const apiMatchesResponse = await this.footballApiClient.getMatches(externalIds);
-      const apiMatches: any[] = apiMatchesResponse.data.matches;
-      for await (const apiMatch of apiMatches) {
-        const dbMatch = dbMatches.find(match => {
-          const externalId = get(match, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
-          return apiMatch.id === externalId;
-        });
-        if (!dbMatch) continue;
-        if (matchChanged(apiMatch, dbMatch)) {
-          const matchId = dbMatch?.id!;
-          const update = makeMatchUpdate(apiMatch);
-          await lastValueFrom(this.matchRepo.findByIdAndUpdate$(matchId, update));
+    try {
+      const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+      const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
+      const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
+      const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
+      for await (const [_seasonId, dbMatches] of result) {
+        const externalIds: string[] = dbMatches.map(dbMatch => {
+          const externalId = get(dbMatch, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
+          return externalId;
+        }).filter(Boolean);
+        const apiMatchesResponse = await this.footballApiClient.getMatches(externalIds);
+        const apiMatches: any[] = apiMatchesResponse.data.matches;
+        for await (const apiMatch of apiMatches) {
+          const dbMatch = dbMatches.find(match => {
+            const externalId = get(match, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
+            return apiMatch.id === externalId;
+          });
+          if (!dbMatch) continue;
+          if (matchChanged(apiMatch, dbMatch)) {
+            const matchId = dbMatch?.id!;
+            const update = makeMatchUpdate(apiMatch);
+            await lastValueFrom(this.matchRepo.findByIdAndUpdate$(matchId, update));
+          }
         }
       }
+    } catch (err: any) {
+      console.log(err.message);
     }
   }
 }

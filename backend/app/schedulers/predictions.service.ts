@@ -8,7 +8,7 @@ import { PredictionRepository, PredictionRepositoryImpl } from '../../db/reposit
 import { PredictionProcessor, PredictionProcessorImpl } from './prediction.processor';
 
 export interface PredictionsService {
-  calculatePredictionPoints(): Promise<number>;
+  calculatePredictionPoints(): Promise<void>;
   createIfNotExistsCurrentRoundPredictions(): Promise<void>;
 }
 
@@ -33,39 +33,44 @@ export class PredictionsServiceImpl {
   }
 
   async createIfNotExistsCurrentRoundPredictions() {
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = compact(competitions.map(c => c.currentSeason?.toString()));
-    const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
-    const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
+    try {
+      const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+      const currentSeasonIds = compact(competitions.map(c => c.currentSeason?.toString()));
+      const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
+      const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
 
-    for await (const [seasonId, currentRoundMatches] of result) {
-      let users: string[] = [];
-      users = await lastValueFrom(this.predictionRepo.distinct$('user', { season: seasonId }));
-      if (isEmpty(users)) {
-        users = ['62f2c38bc485ceeaac9e2bbf', '62f2c564c485ceeaac9e2bc3'];
+      for await (const [seasonId, currentRoundMatches] of result) {
+        let users: string[] = [];
+        users = await lastValueFrom(this.predictionRepo.distinct$('user', { season: seasonId }));
+        if (isEmpty(users)) {
+          users = ['62f2c38bc485ceeaac9e2bbf', '62f2c564c485ceeaac9e2bc3'];
+        }
+        for await (const userId of users) {
+          await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, currentRoundMatches))
+        }
       }
-      for await (const userId of users) {
-        await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, currentRoundMatches))
-      }
+    } catch (err: any) {
+      console.log(err.message);
     }
   }
 
   async calculatePredictionPoints() {
-    const competitions = await lastValueFrom(this.competitionRepo.findAll$());
-    const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
-    const result = await lastValueFrom(
-      this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, { allPredictionPointsCalculated: false })
-    );
-    let predictionsUpdated = 0;
-    for await (const [seasonId, matches] of result) {
-      if (isEmpty(matches)) continue;
-      const updates = await this.predictionProcessor.calculateAndUpdatePredictionPoints(seasonId, matches)
-      predictionsUpdated += updates;
-      matches.forEach(match => {
-        match.allPredictionPointsCalculated = true;
-      });
-      await lastValueFrom(this.matchRepo.updateMany$(matches));
+    try {
+      const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+      const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
+      const result = await lastValueFrom(
+        this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, { allPredictionPointsCalculated: false })
+      );
+      for await (const [seasonId, matches] of result) {
+        if (isEmpty(matches)) continue;
+        await this.predictionProcessor.calculateAndUpdatePredictionPoints(seasonId, matches)
+        matches.forEach(match => {
+          match.allPredictionPointsCalculated = true;
+        });
+        await lastValueFrom(this.matchRepo.updateMany$(matches));
+      }
+    } catch (err: any) {
+      console.log(err.message);
     }
-    return predictionsUpdated;
   }
 }
