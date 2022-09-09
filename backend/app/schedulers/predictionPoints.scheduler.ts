@@ -1,11 +1,11 @@
-import { PredictionsService, PredictionsServiceImpl } from './predictions.service';
+import { PredictionService, PredictionServiceImpl } from './prediction.service';
 import { BaseScheduler } from './baseScheduler';
 import { EventMediator, EventMediatorImpl } from '../../common/eventMediator';
 import { LeaderboardService, LeaderboardServiceImpl } from './leaderboard.service';
 
 export class PredictionPointsScheduler extends BaseScheduler {
   public static getInstance(
-    predictionsService = PredictionsServiceImpl.getInstance(),
+    predictionsService = PredictionServiceImpl.getInstance(),
     leaderboardService = LeaderboardServiceImpl.getInstance(),
     eventMediator = EventMediatorImpl.getInstance(),
   ) {
@@ -13,7 +13,7 @@ export class PredictionPointsScheduler extends BaseScheduler {
   }
 
   constructor(
-    private predictionsService: PredictionsService,
+    private predictionService: PredictionService,
     private leaderboardService: LeaderboardService,
     private eventMediator: EventMediator
   ) {
@@ -24,7 +24,7 @@ export class PredictionPointsScheduler extends BaseScheduler {
   }
 
   async task() {
-    await this.predictionsService.calculatePredictionPoints();
+    await this.predictionService.calculatePredictionPoints();
     await this.leaderboardService.updateGlobalLeaderboards();
   }
 }

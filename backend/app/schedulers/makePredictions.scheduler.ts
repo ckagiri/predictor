@@ -1,18 +1,18 @@
 import { EventMediator, EventMediatorImpl } from "../../common/eventMediator";
-import { PredictionsService, PredictionsServiceImpl } from "./Predictions.service";
+import { PredictionService, PredictionServiceImpl } from "./prediction.service";
 import { BaseScheduler } from "./baseScheduler";
 
 export class MakePredictionsScheduler extends BaseScheduler {
   public static getInstance(
     eventMediator = EventMediatorImpl.getInstance(),
-    predictionsService = PredictionsServiceImpl.getInstance(),
+    predictionsService = PredictionServiceImpl.getInstance(),
   ) {
     return new MakePredictionsScheduler(eventMediator, predictionsService);
   }
 
   constructor(
     private eventMediator: EventMediator,
-    private predictionsService: PredictionsService
+    private predictionsService: PredictionService
   ) {
     super('MakePredictions Job');
     this.eventMediator.addListener(

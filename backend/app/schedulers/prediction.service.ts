@@ -7,19 +7,19 @@ import { SeasonRepository, SeasonRepositoryImpl } from '../../db/repositories/se
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import { PredictionProcessor, PredictionProcessorImpl } from './prediction.processor';
 
-export interface PredictionsService {
+export interface PredictionService {
   calculatePredictionPoints(): Promise<void>;
   createIfNotExistsCurrentRoundPredictions(): Promise<void>;
 }
 
-export class PredictionsServiceImpl {
+export class PredictionServiceImpl {
   public static getInstance(
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance(),
     predictionRepo = PredictionRepositoryImpl.getInstance(),
     predictionProcessor = PredictionProcessorImpl.getInstance(predictionRepo)) {
-    return new PredictionsServiceImpl(
+    return new PredictionServiceImpl(
       competitionRepo, seasonRepo, matchRepo, predictionRepo, predictionProcessor
     );
   }
