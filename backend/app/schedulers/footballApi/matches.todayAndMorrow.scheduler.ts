@@ -25,8 +25,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     super('TodayAndMorrowScheduler Job');
     this.job.on('scheduled', (scheduleDate: any) => {
       const now = moment();
-      const durationFromlastScheduleInSecs = moment.duration(moment(this.scheduleDate).diff(now)).asSeconds();
-      const durationToNextScheduleInSecs = moment.duration(moment(scheduleDate).diff(now)).asSeconds();
+      const durationFromlastScheduleInSecs = moment.duration(Math.abs(moment(this.scheduleDate).diff(now))).asSeconds();
+      const durationToNextScheduleInSecs = moment.duration(Math.abs(moment(scheduleDate).diff(now))).asSeconds();
       if (durationFromlastScheduleInSecs < 120 && durationToNextScheduleInSecs > 120) {
         this.eventMediator.publish('footballApiMatchUpdatesCompleted');
       }
