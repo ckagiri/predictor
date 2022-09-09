@@ -9,7 +9,7 @@ import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator"
 const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
 
 export class TodayAndMorrowScheduler extends BaseScheduler {
-  private _scheduleDate: Date = new Date();
+  private _scheduleDate?: Date;
 
   public static getInstance(
     yesterToMorrowService = TodayAndMorrowServiceImpl.getInstance(),
@@ -24,6 +24,10 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
   ) {
     super('TodayAndMorrowScheduler Job');
     this.job.on('scheduled', (scheduleDate: any) => {
+      if (this.scheduleDate == undefined) {
+        this.scheduleDate = scheduleDate;
+        return;
+      }
       const now = moment();
       const durationFromlastScheduleInSecs = moment.duration(Math.abs(moment(this.scheduleDate).diff(now))).asSeconds();
       const durationToNextScheduleInSecs = moment.duration(Math.abs(moment(scheduleDate).diff(now))).asSeconds();
@@ -77,11 +81,11 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     return DEFAULT_INTERVAL_MILLISECONDS;
   }
 
-  private get scheduleDate(): Date {
+  private get scheduleDate(): Date | undefined {
     return this._scheduleDate;
   }
 
-  private set scheduleDate(value: Date) {
+  private set scheduleDate(value: Date | undefined) {
     this._scheduleDate = value;
   }
 }
