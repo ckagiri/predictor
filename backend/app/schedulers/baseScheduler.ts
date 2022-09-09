@@ -8,7 +8,7 @@ export abstract class BaseScheduler implements Scheduler {
   protected readonly job: Job;
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
-  private interval: string | number | undefined = undefined;
+  private intervalMs: number | undefined = undefined;
   private _scheduleType: string = SCHEDULE_TYPE.LOOP;
 
   constructor(name: string) {
@@ -92,11 +92,11 @@ export abstract class BaseScheduler implements Scheduler {
   }
 
   protected getIntervalMs(): number {
-    return this.interval as number;
+    return this.intervalMs as number;
   }
 
   private setIntervalMs(value: number) {
-    this.interval = value;
+    this.intervalMs = value;
   }
 
   private set scheduleType(value: string) {
