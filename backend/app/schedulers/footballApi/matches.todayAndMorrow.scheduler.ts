@@ -49,10 +49,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     const apiMatches: any[] = result;
     const now = moment();
     let nextUpdate = moment().add(12, 'hours');
-    const finishedMatches = apiMatches.filter(m => getMatchStatus(m.status) === MatchStatus.FINISHED);
     let hasLiveMatch = false;
 
-    for (const match of finishedMatches) {
+    for (const match of apiMatches) {
       const matchStatus = getMatchStatus(match.status)
       if (matchStatus === MatchStatus.LIVE) {
         hasLiveMatch = true;
@@ -64,9 +63,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         if (diff <= 5) {
           hasLiveMatch = true;
           break;
-        }
-        if (matchStart.isAfter(now) && matchStart.isBefore(nextUpdate)) {
-          nextUpdate = matchStart;
+        } else if (matchStart.isBefore(nextUpdate)) {
+          nextUpdate = matchStart.subtract(3, 'minutes');
         }
       }
     }
