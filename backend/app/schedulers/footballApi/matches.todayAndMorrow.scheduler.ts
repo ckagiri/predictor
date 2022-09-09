@@ -6,7 +6,7 @@ import { TodayAndMorrowService, TodayAndMorrowServiceImpl } from "./matches.toda
 import { BaseScheduler } from "../baseScheduler";
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
 
-const DEFAULT_INTERVAL_MILLISECONDS = 12 * 60 * 60 * 1000; // 12H
+const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
 
 export class TodayAndMorrowScheduler extends BaseScheduler {
   private _scheduleDate: Date = new Date();
