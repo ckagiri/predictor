@@ -1,25 +1,28 @@
+import moment from "moment";
+import { isEmpty } from "lodash";
 
 import { getMatchStatus } from "./util";
 import { MatchStatus } from "../../../db/models/match.model";
-import moment from "moment";
-import { TodayAndMorrowService, TodayAndMorrowServiceImpl } from "./matches.todayAndMorrow.service";
+import { TodayAndMorrowService, TodayAndMorrowServiceImpl, PERIOD } from "./matches.todayAndMorrow.service";
 import { BaseScheduler } from "../baseScheduler";
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
 
 const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
 
 export class TodayAndMorrowScheduler extends BaseScheduler {
-  private _scheduleDate?: Date;
+  private scheduleDate?: Date;
+  private nextPoll?: moment.Moment; // ideally what is supposed to be the next poll
+  private hasLiveMatch = false;
 
   public static getInstance(
-    yesterToMorrowService = TodayAndMorrowServiceImpl.getInstance(),
+    todayAndMorrowService = TodayAndMorrowServiceImpl.getInstance(),
     eventMediator = EventMediatorImpl.getInstance(),
   ) {
-    return new TodayAndMorrowScheduler(yesterToMorrowService, eventMediator);
+    return new TodayAndMorrowScheduler(todayAndMorrowService, eventMediator);
   }
 
   constructor(
-    private yesterToMorrowService: TodayAndMorrowService,
+    private todayAndMorrowService: TodayAndMorrowService,
     private eventMediator: EventMediator,
   ) {
     super('TodayAndMorrowScheduler Job');
@@ -39,51 +42,59 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
   }
 
   async task() {
-    // todo: getLive matches if intervalMs within 3 minutes
-    const includeTomorrowsMatches = this.getIntervalMs() > this.getDefaultIntervalMs();
-    const apiMatches = await this.yesterToMorrowService.updateMatches(includeTomorrowsMatches);
+    let period = PERIOD.TODAY;
+    const now = moment();
+    if (!this.nextPoll) {
+      period = PERIOD.TODAY_AND_MORROW
+    } else if (this.nextPoll.diff(now, 'hours') === 12) {
+      period = PERIOD.TODAY_AND_MORROW
+    } else if (this.nextPoll.diff(now, 'minutes') <= 5) {
+      period = PERIOD.LIVE
+    }
+
+    const apiMatches = await this.todayAndMorrowService.syncMatches(period);
     return apiMatches;
   }
 
   calculateNextInterval(result: any = []): number {
     const apiMatches: any[] = result;
     const now = moment();
-    let nextUpdate = moment().add(12, 'hours');
-    let hasLiveMatch = false;
 
+    // precautionary if syncLive returned an empty set
+    if (isEmpty(apiMatches) && this.hasLiveMatch) {
+      this.nextPoll = now.add(10, 'minutes');
+      return this.nextPoll.diff(now);
+    }
+
+    this.hasLiveMatch = false;
+    let nextPoll = now.add(12, 'hours');
     for (const match of apiMatches) {
       const matchStatus = getMatchStatus(match.status)
       if (matchStatus === MatchStatus.LIVE) {
-        hasLiveMatch = true;
+        this.hasLiveMatch = true;
         break;
       }
       if (matchStatus === MatchStatus.SCHEDULED) {
         const matchStart = moment(match.utcDate);
         const diff = matchStart.diff(now, 'minutes');
         if (diff <= 5) {
-          hasLiveMatch = true;
+          this.hasLiveMatch = true;
           break;
-        } else if (matchStart.isBefore(nextUpdate)) {
-          nextUpdate = matchStart.subtract(3, 'minutes');
+        } else if (matchStart.isBefore(nextPoll)) {
+          nextPoll = matchStart;
         }
       }
     }
-    if (hasLiveMatch) {
-      nextUpdate = moment().add(90, 'seconds');
+    if (this.hasLiveMatch) {
+      this.nextPoll = moment().add(90, 'seconds');
+    } else {
+      this.nextPoll = nextPoll;
     }
 
-    return Math.min(this.getDefaultIntervalMs(), nextUpdate.diff(moment()))
+    return Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()))
   }
 
   protected getDefaultIntervalMs(): number {
     return DEFAULT_INTERVAL_MILLISECONDS;
-  }
-
-  private get scheduleDate(): Date | undefined {
-    return this._scheduleDate;
-  }
-
-  private set scheduleDate(value: Date | undefined) {
-    this._scheduleDate = value;
   }
 }

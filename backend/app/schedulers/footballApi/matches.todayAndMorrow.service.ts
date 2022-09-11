@@ -1,13 +1,19 @@
 import { lastValueFrom } from "rxjs";
-import { get } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 import { MatchRepository, MatchRepositoryImpl } from "../../../db/repositories/match.repo";
 import { FootballApiClient, FootballApiClientImpl } from "../../../thirdParty/footballApi/apiClient";
 import { FootballApiProvider } from '../../../common/footballApiProvider';
 import { makeMatchUpdate, matchChanged } from "./util";
 
+export const enum PERIOD {
+  LIVE = 'LIVE',
+  TODAY = 'TODAY',
+  TODAY_AND_MORROW = 'TODAY_AND_MORROW'
+}
+
 export interface TodayAndMorrowService {
-  updateMatches(includeYesterdayAndTomorrowMatches: boolean): Promise<any[]>
+  syncMatches(period: PERIOD): Promise<any[]>
 }
 
 export class TodayAndMorrowServiceImpl implements TodayAndMorrowService {
@@ -23,15 +29,25 @@ export class TodayAndMorrowServiceImpl implements TodayAndMorrowService {
     private footballApiClient: FootballApiClient,
   ) { }
 
-  async updateMatches(includeTomorrowsMatches: boolean): Promise<any[]> {
+  async syncMatches(period: PERIOD): Promise<any[]> {
     let apiMatches: any[] = [];
     try {
-      if (includeTomorrowsMatches) {
-        const tommorowApiMatchesResponse = await this.footballApiClient.getTomorrowsMatches();
-        apiMatches = tommorowApiMatchesResponse.data.matches as any[]
+      if (period === PERIOD.LIVE) {
+        console.log('fetching live matches...')
+        const liveApiMatchesResponse = await this.footballApiClient.getLiveMatches();
+        apiMatches = liveApiMatchesResponse.data.matches as any[];
+      } else if (period === PERIOD.TODAY) {
+        console.log("fetching today's matches...")
+        const todayApiMatchesResponse = await this.footballApiClient.getTodaysMatches();
+        apiMatches = todayApiMatchesResponse.data.matches as any[];
+      } else if (period === PERIOD.TODAY_AND_MORROW) {
+        console.log("fetching today's and tomorrow's matches...")
+        const todaysAndMorrowsApiMatchesResponse = await this.footballApiClient.getTodaysAndMorrowsMatches();
+        apiMatches = todaysAndMorrowsApiMatchesResponse.data.matches as any[]
       }
-      const todayApiMatchesResponse = await this.footballApiClient.getTodaysMatches();
-      apiMatches = apiMatches.concat(todayApiMatchesResponse.data.matches as any[]);
+      if (isEmpty(apiMatches)) {
+        return []
+      }
 
       const externalIds: string[] = apiMatches.map(m => m.id)
       const dbMatches = await lastValueFrom(this.matchRepo.findByExternalIds$(externalIds));

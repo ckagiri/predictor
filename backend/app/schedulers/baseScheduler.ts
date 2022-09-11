@@ -9,7 +9,7 @@ export abstract class BaseScheduler implements Scheduler {
   private jobScheduled: boolean = false;
   private taskRunning: boolean = false;
   private intervalMs: number | undefined = undefined;
-  private _scheduleType: string = SCHEDULE_TYPE.LOOP;
+  private scheduleType: string = SCHEDULE_TYPE.LOOP;
 
   constructor(name: string) {
     this.job = new schedule.Job(name, this.jobTask.bind(this));
@@ -97,13 +97,5 @@ export abstract class BaseScheduler implements Scheduler {
 
   private setIntervalMs(value: number) {
     this.intervalMs = value;
-  }
-
-  private set scheduleType(value: string) {
-    this._scheduleType = value;
-  }
-
-  private get scheduleType() {
-    return this._scheduleType;
   }
 }

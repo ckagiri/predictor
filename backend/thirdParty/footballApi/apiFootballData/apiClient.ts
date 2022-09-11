@@ -1,3 +1,4 @@
+import moment from 'moment';
 import request from 'request-promise';
 import { FootballApiClient } from '../apiClient';
 
@@ -47,6 +48,13 @@ class ApiFootballDataClient implements FootballApiClient {
     );
   }
 
+  getLiveMatches(): Promise<any> {
+    const apiResource = `/matches`;
+    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', status: 'LIVE' })).then(
+      this._mergeResponse,
+    );
+  }
+
   getTodaysMatches(): Promise<any> {
     const apiResource = `/matches`;
     return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', date: 'TODAY' })).then(
@@ -54,16 +62,11 @@ class ApiFootballDataClient implements FootballApiClient {
     );
   }
 
-  getTomorrowsMatches(): Promise<any> {
+  getTodaysAndMorrowsMatches(): Promise<any> {
     const apiResource = `/matches`;
-    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', date: 'TOMORROW' })).then(
-      this._mergeResponse,
-    );
-  }
-
-  getYesterdaysMatches(): Promise<any> {
-    const apiResource = `/matches`;
-    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', date: 'YESTERDAY' })).then(
+    const dateFrom = moment().format('YYYY-MM-DD');
+    const dateTo = moment().add(2, 'days').format('YYYY-MM-DD');
+    return request(this._getOptions(this.apiKey, apiResource, { competitions: 'PL', dateFrom, dateTo })).then(
       this._mergeResponse,
     );
   }
@@ -103,5 +106,3 @@ export default {
 module.exports = {
   getInstance,
 };
-
-// Todod : update with X-RequestCounter-Reset X-Requests-Available-Minute

@@ -8,8 +8,8 @@ export interface FootballApiClient {
   getCompetitionMatches(competitionId?: number | string, options?: any): Promise<any>;
   getMatches(matchIds?: string[]): Promise<any>;
   getTodaysMatches(): Promise<any>;
-  getTomorrowsMatches(): Promise<any>;
-  getYesterdaysMatches(): Promise<any>;
+  getTodaysAndMorrowsMatches(): Promise<any>;
+  getLiveMatches(): Promise<any>;
 }
 
 export class FootballApiClientImpl {
