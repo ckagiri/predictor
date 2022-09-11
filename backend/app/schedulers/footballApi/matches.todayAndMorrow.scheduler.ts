@@ -43,12 +43,10 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   async task() {
     let period = PERIOD.TODAY;
-    const now = moment();
-    if (!this.nextPoll) {
+
+    if (!this.nextPoll || this.nextPoll.diff(moment(), 'hours') === 12) {
       period = PERIOD.TODAY_AND_MORROW
-    } else if (this.nextPoll.diff(now, 'hours') === 12) {
-      period = PERIOD.TODAY_AND_MORROW
-    } else if (this.nextPoll.diff(now, 'minutes') <= 5) {
+    } else if (this.hasLiveMatch) {
       period = PERIOD.LIVE
     }
 
@@ -60,12 +58,6 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     const apiMatches: any[] = result;
     const now = moment();
 
-    // precautionary if syncLive returned an empty set
-    if (isEmpty(apiMatches) && this.hasLiveMatch) {
-      this.nextPoll = now.add(10, 'minutes');
-      return this.nextPoll.diff(now);
-    }
-
     this.hasLiveMatch = false;
     let nextPoll = now.add(12, 'hours');
     for (const match of apiMatches) {
@@ -76,11 +68,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       }
       if (matchStatus === MatchStatus.SCHEDULED) {
         const matchStart = moment(match.utcDate);
-        const diff = matchStart.diff(now, 'minutes');
-        if (diff <= 5) {
-          this.hasLiveMatch = true;
-          break;
-        } else if (matchStart.isBefore(nextPoll)) {
+        if (matchStart.isBefore(nextPoll)) {
           nextPoll = matchStart;
         }
       }
@@ -88,7 +76,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     if (this.hasLiveMatch) {
       this.nextPoll = moment().add(90, 'seconds');
     } else {
-      this.nextPoll = nextPoll;
+      // precautionary handle nextPoll being behind
+      const diff = nextPoll.diff(now, 'minutes');
+      this.nextPoll = diff < 0 ? moment().add(3, 'minutes') : nextPoll;
     }
 
     return Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()))
