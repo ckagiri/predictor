@@ -54,8 +54,8 @@ export class SeasonNextRoundServiceImpl {
           const nextGameRound = await lastValueFrom(this.gameRoundRepo.findOne$({ position: apiCurrentMatchday }));
           if (!nextGameRound) continue;
 
-          updatedSeasons.push(currentSeasonId);
           await lastValueFrom(this.seasonRepo.findByIdAndUpdate$(currentSeasonId, { currentGameRound: nextGameRound.id }));
+          updatedSeasons.push(currentSeasonId);
         }
       }
     } catch (err: any) {
