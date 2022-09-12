@@ -1,4 +1,4 @@
-import { concatMap, count, forkJoin, from, lastValueFrom, map, mergeMap, Observable } from "rxjs";
+import { concatMap, count, forkJoin, from, lastValueFrom, map, mergeMap, Observable, of } from "rxjs";
 
 import { Leaderboard, STATUS as BOARD_STATUS, BOARD_TYPE } from "../../db/models/leaderboard.model";
 import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
@@ -129,6 +129,9 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                   const previousPosition = userScore.positionNew || 0;
                   const positionOld = previousPosition;
                   const positionNew = index + 1;
+                  if (positionNew === positionOld) {
+                    return of(userScore);
+                  }
                   return this.userScoreRepo.findByIdAndUpdate$(userScore.id!, {
                     positionNew,
                     positionOld,
@@ -138,11 +141,11 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
           }),
           count(),
         ).pipe(
-          mergeMap(userScoresUpdated => {
+          mergeMap(userScoreCount => {
             return this.leaderboardRepo.findAndUpdateAllFor$({ seasonId, gameRoundIds }, {
               status: BOARD_STATUS.RANKINGS_UPDATED
             })
-              .pipe(map(() => userScoresUpdated))
+              .pipe(map(() => userScoreCount))
           })
         )
     )
