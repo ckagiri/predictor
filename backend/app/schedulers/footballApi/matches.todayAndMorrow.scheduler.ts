@@ -1,5 +1,4 @@
 import moment from "moment";
-import { isEmpty } from "lodash";
 
 import { getMatchStatus } from "./util";
 import { MatchStatus } from "../../../db/models/match.model";
@@ -32,8 +31,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         return;
       }
       const now = moment();
-      const durationFromlastScheduleInSecs = moment.duration(Math.abs(moment(this.scheduleDate).diff(now))).asSeconds();
-      const durationToNextScheduleInSecs = moment.duration(Math.abs(moment(scheduleDate).diff(now))).asSeconds();
+      const durationFromlastScheduleInSecs = moment.duration(now.diff(moment(this.scheduleDate))).asSeconds();
+      const durationToNextScheduleInSecs = moment.duration(moment(scheduleDate).diff(now)).asSeconds();
       if (durationFromlastScheduleInSecs < 120 && durationToNextScheduleInSecs > 120) {
         this.eventMediator.publish('footballApiMatchUpdatesCompleted');
       }
@@ -78,7 +77,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     } else {
       // precautionary handle nextPoll being behind
       const diff = nextPoll.diff(now, 'minutes');
-      this.nextPoll = diff < 0 ? moment().add(3, 'minutes') : nextPoll;
+      this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
 
     return Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()))
