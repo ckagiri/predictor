@@ -12,9 +12,9 @@ import errorMiddleware from './api/auth/error.middleware';
 import router from './api/routes';
 
 async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
-  if (!process.env.NODE_ENV) {
+  if (!process.env.NODE_ENV || !port) {
     console.error(
-      'NODE_ENV ENV variable missing.',
+      'NODE_ENV ENV variable or port missing.',
       'Verify that you have set them directly or in a .env file.',
     );
     process.exit(1);
@@ -23,12 +23,12 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   }
 
   const {
-    MONGO_URI: mongoUri,
     MONGO_USERNAME,
     MONGO_PASSWORD,
     MONGO_HOSTNAME,
     MONGO_PORT,
-    MONGO_DB
+    MONGO_DB,
+    LOCAL_MONGO
   } = process.env;
   const app = express();
   app.use(bodyParser.json());
@@ -60,31 +60,47 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   app.use('/api', router);
   app.use(errorMiddleware);
 
-  const www = process.env.WWW || './public';
-  app.use(express.static(www));
-  app.get('*', (req, res) => {
-    res.sendFile(`index.html`, { root: www });
-  });
+  if (process.env.NODE_ENV === 'development') {
+    const www = process.env.WWW || './public';
+    app.use(express.static(www));
+    app.get('*', (_req, res) => {
+      res.sendFile(`index.html`, { root: www });
+    });
+  }
 
-  // const mongoUri = `mongodb://${MONGO_USERNAME}:${encodeURIComponent(MONGO_PASSWORD!)}@${MONGO_HOSTNAME!}:${MONGO_PORT!}/${MONGO_DB!}?authSource=admin`;
-  console.log('mongoUri', mongoUri)
-  console.log('ENV', JSON.stringify(process.env))
-  if (process.env.NODE_ENV !== 'test') {
-    await mongoose.connect(mongoUri!, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectOptions);
-    const db = mongoose.connection;
+  const mongoOnAtlasUri = `mongodb+srv://${MONGO_USERNAME}:${encodeURIComponent(MONGO_PASSWORD!)}@${MONGO_HOSTNAME}/${MONGO_DB}?retryWrites=true&w=majority`;
+  const mongoUri = `mongodb://${LOCAL_MONGO}:${MONGO_PORT}/${MONGO_DB}`;
+  let dbUri = '';
 
-    db.on('error', (err: Error) => {
+  console.log(`process.env.DATA_OPTION=${process.env.DATA_OPTION}`);
+  if (process.env.DATA_OPTION === 'local_mongo') {
+    dbUri = mongoUri;
+  } else if (process.env.DATA_OPTION === 'cloud_mongo') {
+    dbUri = mongoOnAtlasUri;
+  } else {
+    console.error('DATA_OPTION ENV variable missing',);
+    process.exit(1);
+  }
+
+  await connectWithRetry();
+
+  async function connectWithRetry() {
+    try {
+      await mongoose.connect(
+        dbUri,
+        {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        } as ConnectOptions);
+      console.info(`Connected to MongoDB: ${dbUri}`);
+    } catch (err: any) {
       console.error(`ERROR CONNECTING TO MONGO: ${err}`);
-      console.error(`Please make sure that ${mongoUri} is running.`);
-    });
+      console.error(`Please make sure that ${dbUri} is running.`);
 
-    db.once('open', () => {
-      console.info(`Connected to MongoDB: ${mongoUri}`);
-    });
-    console.info(`Connected to MongoDB: ${mongoUri}`);
+      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+      await delay(5000);
+      await connectWithRetry()
+    }
   }
 
   return new Promise(resolve => {
