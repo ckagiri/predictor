@@ -60,7 +60,7 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   app.use('/api', router);
   app.use(errorMiddleware);
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'prod') {
     const www = process.env.WWW || './public';
     app.use(express.static(www));
     app.get('*', (_req, res) => {
