@@ -44,6 +44,7 @@ export abstract class BaseScheduler implements Scheduler {
       this.setIntervalMs(this.getDefaultIntervalMs())
       this.scheduleJob(result)
     }
+    this.jobScheduled = true;
   }
 
   scheduleJob(result: any, reschedule: boolean = false) {

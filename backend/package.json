@@ -5,7 +5,7 @@
     "build": "npm run compile && npm run copyfiles",
     "compile": "tsc --project tsconfig.json",
     "copyfiles": "copyfiles wait-for.sh build",
-    "start": "NODE_ENV=development node -r dotenv/config build/app/index.js",
+    "start": "NODE_ENV=prod node -r dotenv/config build/app/index.js",
     "serve": "NODE_ENV=development node -r dotenv-flow/config build/app/index.js",
     "start:dev": "NODE_ENV=development node -r dotenv-flow/config build/app/index.js",
     "build:start:dev": "npm run build && npm run start:dev",

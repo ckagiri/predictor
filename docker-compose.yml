@@ -9,7 +9,7 @@ services:
     container_name: ligiserver
     env_file: .env
     ports:
-      - '7777:8080'
+      - '7777:7777'
     volumes:
       - node_modules:/home/node/src/node_modules
     command: ./wait-for.sh ligidb:27017 --  node app/index.js

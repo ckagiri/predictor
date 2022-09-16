@@ -46,9 +46,9 @@
       "args": [
         "${workspaceFolder}/backend/app/index.ts",
       ],
-      "envFile": "${workspaceFolder}/backend/.env.development",
+      "envFile": "${workspaceFolder}/backend/.env.prod",
       "env": {
-        "NODE_ENV": "development",
+        "NODE_ENV": "prod",
         "TS_NODE_PROJECT": "${workspaceFolder}/backend/tsconfig.json"
       },
     },

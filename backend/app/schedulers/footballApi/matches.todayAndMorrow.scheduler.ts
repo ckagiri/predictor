@@ -55,10 +55,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   calculateNextInterval(result: any = []): number {
     const apiMatches: any[] = result;
-    const now = moment();
-
     this.hasLiveMatch = false;
-    let nextPoll = now.add(12, 'hours');
+
+    let nextPoll = moment().add(12, 'hours');
     for (const match of apiMatches) {
       const matchStatus = getMatchStatus(match.status)
       if (matchStatus === MatchStatus.LIVE) {
@@ -72,11 +71,12 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         }
       }
     }
+
     if (this.hasLiveMatch) {
       this.nextPoll = moment().add(90, 'seconds');
     } else {
       // precautionary handle nextPoll being behind
-      const diff = nextPoll.diff(now, 'minutes');
+      const diff = nextPoll.diff(moment(), 'minutes');
       this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
 
