@@ -57,33 +57,30 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   calculateNextInterval(result: any = []): number {
     const apiMatches: any[] = result;
+    this.hasLiveMatch = false;
 
-    let hasLiveMatch = false;
     let nextPoll = moment().add(12, 'hours');
     for (const match of apiMatches) {
       const matchStatus = getMatchStatus(match.status)
       if (matchStatus === MatchStatus.LIVE) {
-        hasLiveMatch = true;
+        this.hasLiveMatch = true;
         break;
       }
       if (matchStatus === MatchStatus.SCHEDULED) {
         const matchStart = moment(match.utcDate);
         if (matchStart.isBefore(nextPoll)) {
-          nextPoll = matchStart;
+          nextPoll = matchStart.add(1, 'minutes');
         }
       }
     }
 
-    if (hasLiveMatch && !this.hasLiveMatch) {
-      this.nextPoll = nextPoll.add(1, 'minutes');
-    } else if (hasLiveMatch) {
+    if (this.hasLiveMatch) {
       this.nextPoll = moment().add(90, 'seconds');
     } else {
       // precautionary handle nextPoll being behind
       const diff = nextPoll.diff(moment(), 'minutes');
       this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
-    this.hasLiveMatch = hasLiveMatch;
 
     const nextIntervalInMs = Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()));
     const nextIntervalInUTC = new Date(Date.now() + nextIntervalInMs).toUTCString();
