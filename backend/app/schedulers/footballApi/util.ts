@@ -5,7 +5,8 @@ export const matchChanged = (apiMatch: any, dbMatch: Match) => {
     return false;
   }
 
-  if (apiMatch.status !== dbMatch.status) {
+  const apiMatchStatus = getMatchStatus(apiMatch.status);
+  if (dbMatch.status !== apiMatchStatus) {
     return true;
   }
 
