@@ -57,8 +57,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   calculateNextInterval(result: any = []): number {
     const apiMatches: any[] = result;
-    let hasLiveMatch = false;
 
+    let hasLiveMatch = false;
     let nextPoll = moment().add(12, 'hours');
     for (const match of apiMatches) {
       const matchStatus = getMatchStatus(match.status)
