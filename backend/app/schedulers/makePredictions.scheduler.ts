@@ -16,7 +16,10 @@ export class MakePredictionsScheduler extends BaseScheduler {
   ) {
     super('MakePredictionsJob');
     this.eventMediator.addListener(
-      'currentSeasonCurrentRoundUpdated', async () => { await this.runJob() }
+      'currentSeasonCurrentRoundUpdated', async () => {
+        console.log(`${this.job.name} handle currentSeasonCurrentRoundUpdated`);
+        await this.runJob()
+      }
     );
   }
 

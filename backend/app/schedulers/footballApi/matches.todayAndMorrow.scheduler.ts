@@ -33,7 +33,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       const now = moment();
       const durationFromlastScheduleInSecs = moment.duration(now.diff(moment(this.scheduleDate))).asSeconds();
       const durationToNextScheduleInSecs = moment.duration(moment(scheduleDate).diff(now)).asSeconds();
-      if (durationFromlastScheduleInSecs < 120 && durationToNextScheduleInSecs > 120) {
+      if (durationFromlastScheduleInSecs < 120 && durationToNextScheduleInSecs > 300) {
+        console.log(`${this.job.name} publish footballApiMatchUpdatesCompleted`);
         this.eventMediator.publish('footballApiMatchUpdatesCompleted');
       }
       this.scheduleDate = scheduleDate;
@@ -56,13 +57,13 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   calculateNextInterval(result: any = []): number {
     const apiMatches: any[] = result;
-    this.hasLiveMatch = false;
 
+    let hasLiveMatch = false;
     let nextPoll = moment().add(12, 'hours');
     for (const match of apiMatches) {
       const matchStatus = getMatchStatus(match.status)
       if (matchStatus === MatchStatus.LIVE) {
-        this.hasLiveMatch = true;
+        hasLiveMatch = true;
         break;
       }
       if (matchStatus === MatchStatus.SCHEDULED) {
@@ -73,13 +74,16 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       }
     }
 
-    if (this.hasLiveMatch) {
+    if (hasLiveMatch && !this.hasLiveMatch) {
+      this.nextPoll = nextPoll.add(1, 'minutes');
+    } else if (hasLiveMatch) {
       this.nextPoll = moment().add(90, 'seconds');
     } else {
       // precautionary handle nextPoll being behind
       const diff = nextPoll.diff(moment(), 'minutes');
       this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
+    this.hasLiveMatch = hasLiveMatch;
 
     const nextIntervalInMs = Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()));
     const nextIntervalInUTC = new Date(Date.now() + nextIntervalInMs).toUTCString();
