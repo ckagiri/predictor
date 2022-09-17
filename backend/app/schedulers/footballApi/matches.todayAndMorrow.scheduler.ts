@@ -24,7 +24,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     private todayAndMorrowService: TodayAndMorrowService,
     private eventMediator: EventMediator,
   ) {
-    super('TodayAndMorrowScheduler Job');
+    super('TodayAndMorrowSchedulerJob');
     this.job.on('scheduled', (scheduleDate: any) => {
       if (this.scheduleDate == undefined) {
         this.scheduleDate = scheduleDate;
@@ -43,7 +43,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
   async task() {
     let period = PERIOD.TODAY;
 
-    if (!this.nextPoll || this.nextPoll.diff(moment(), 'hours') === 12) {
+    const nextPollInHours = Math.round(moment.duration(this.nextPoll?.diff(moment())).asHours())
+    if (!this.nextPoll || nextPollInHours === 12) {
       period = PERIOD.TODAY_AND_MORROW
     } else if (this.hasLiveMatch) {
       period = PERIOD.LIVE
@@ -80,7 +81,10 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
 
-    return Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()))
+    const nextIntervalInMs = Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()));
+    const nextIntervalInUTC = new Date(Date.now() + nextIntervalInMs).toUTCString();
+    console.log(`${this.job.name} scheduled ${nextIntervalInUTC}`);
+    return nextIntervalInMs;
   }
 
   protected getDefaultIntervalMs(): number {

@@ -14,7 +14,7 @@ export class MakePredictionsScheduler extends BaseScheduler {
     private eventMediator: EventMediator,
     private predictionsService: PredictionService
   ) {
-    super('MakePredictions Job');
+    super('MakePredictionsJob');
     this.eventMediator.addListener(
       'currentSeasonCurrentRoundUpdated', async () => { await this.runJob() }
     );

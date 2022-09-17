@@ -14,7 +14,7 @@ export class SeasonNextRoundScheduler extends BaseScheduler {
     private seasonNextRoundService: SeasonNextRoundService,
     private eventMediator: EventMediator,
   ) {
-    super('SeasonNextRound Job');
+    super('SeasonNextRoundJob');
   }
 
   async task() {

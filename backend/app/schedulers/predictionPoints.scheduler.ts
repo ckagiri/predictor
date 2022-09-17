@@ -17,7 +17,7 @@ export class PredictionPointsScheduler extends BaseScheduler {
     private leaderboardService: LeaderboardService,
     private eventMediator: EventMediator
   ) {
-    super('PredictionPoints Job');
+    super('PredictionPointsJob');
     this.eventMediator.addListener(
       'footballApiMatchUpdatesCompleted', async () => { await this.runJob() }
     );
