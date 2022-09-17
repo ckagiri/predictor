@@ -205,3 +205,5 @@ docker cp /tmp/backup.gz ligidb:/tmp
 mongorestore --nsFrom="test123-test.*" --nsTo="ligipredictor.*" --gzip --archive=/tmp/backup.gz
 mongorestore --uri mongodb+srv://<user>:<password>@cluster0.w2btl.mongodb.net --archive=db.dump
 ls -p .. | grep '/$'
+
+Use 'docker scan' to run Snyk tests against images to find vulnerabilities and learn how to fix them

@@ -63,8 +63,9 @@ export abstract class BaseScheduler implements Scheduler {
     this.taskRunning = true;
     let result;
     try {
+      console.log(`${new Date().toUTCString()} ${this.job.name} task started`);
       result = await this.task();
-      console.log(`${this.job.name} task done`);
+      console.log(`${new Date().toUTCString()} ${this.job.name} task done`);
     } catch (err: any) {
       console.log(err.message);
     }
