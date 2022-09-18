@@ -41,9 +41,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   async task() {
     let period = PERIOD.TODAY;
-    const nextPollInHours = Math.round(moment.duration(this.nextPoll?.diff(moment())).asHours())
-    console.log('nextPollInHours ', nextPollInHours || 0);
-    if (!this.nextPoll || nextPollInHours === 12) {
+    const nextPollInHours = this.nextPoll == undefined ? undefined :
+      Math.round(moment.duration(this.nextPoll.diff(moment())).asHours())
+    if (nextPollInHours == undefined || nextPollInHours === 12) {
       period = PERIOD.TODAY_AND_MORROW
     } else if (this.hasLiveMatch) {
       period = PERIOD.LIVE
@@ -84,10 +84,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
 
-    const nextPollInUTC = this.nextPoll?.toDate().toUTCString()
     const nextIntervalInMs = Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()));
     const nextIntervalInUTC = new Date(Date.now() + nextIntervalInMs).toUTCString();
-    console.log(`${this.job.name} nextpoll ${nextPollInUTC}`)
     console.log(`${this.job.name} scheduled ${nextIntervalInUTC}`);
 
     return nextIntervalInMs;
