@@ -30,10 +30,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         this.scheduleDate = scheduleDate;
         return;
       }
-      const now = moment();
-      const durationFromlastScheduleInSecs = moment.duration(now.diff(moment(this.scheduleDate))).asSeconds();
-      const durationToNextScheduleInSecs = moment.duration(moment(scheduleDate).diff(now)).asSeconds();
-      if (durationFromlastScheduleInSecs < 120 && durationToNextScheduleInSecs > 300) {
+      const scheduleDateDiffInSeconds = Math.abs(moment.duration(moment(scheduleDate).diff(this.scheduleDate)).asSeconds())
+      if (scheduleDateDiffInSeconds > 300) {
         console.log(`${this.job.name} publish footballApiMatchUpdatesCompleted`);
         this.eventMediator.publish('footballApiMatchUpdatesCompleted');
       }
@@ -43,8 +41,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   async task() {
     let period = PERIOD.TODAY;
-
     const nextPollInHours = Math.round(moment.duration(this.nextPoll?.diff(moment())).asHours())
+    console.log('nextPollInHours ', nextPollInHours || 0);
     if (!this.nextPoll || nextPollInHours === 12) {
       period = PERIOD.TODAY_AND_MORROW
     } else if (this.hasLiveMatch) {
@@ -86,9 +84,12 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       this.nextPoll = diff <= 0 ? moment().add(3, 'minutes') : nextPoll;
     }
 
+    const nextPollInUTC = this.nextPoll?.toDate().toUTCString()
     const nextIntervalInMs = Math.min(this.getDefaultIntervalMs(), this.nextPoll.diff(moment()));
     const nextIntervalInUTC = new Date(Date.now() + nextIntervalInMs).toUTCString();
+    console.log(`${this.job.name} nextpoll ${nextPollInUTC}`)
     console.log(`${this.job.name} scheduled ${nextIntervalInUTC}`);
+
     return nextIntervalInMs;
   }
 
