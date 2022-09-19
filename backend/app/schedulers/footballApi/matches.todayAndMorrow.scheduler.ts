@@ -43,7 +43,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     let period = PERIOD.TODAY;
     const nextPollInHours = this.nextPoll == undefined ? undefined :
       Math.round(moment.duration(this.nextPoll.diff(moment())).asHours())
-    if (nextPollInHours == undefined || nextPollInHours === 12) {
+    if (nextPollInHours == undefined || nextPollInHours === 6) {
       period = PERIOD.TODAY_AND_MORROW
     } else if (this.hasLiveMatch) {
       period = PERIOD.LIVE

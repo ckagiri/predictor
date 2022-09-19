@@ -1,4 +1,4 @@
-import { concatMap, count, forkJoin, from, lastValueFrom, map, mergeMap, Observable, of } from "rxjs";
+import { concatMap, count, forkJoin, from, last, lastValueFrom, map, mergeMap, Observable, of } from "rxjs";
 
 import { Leaderboard, STATUS as BOARD_STATUS, BOARD_TYPE } from "../../db/models/leaderboard.model";
 import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
@@ -8,8 +8,8 @@ import { Match, MatchStatus } from "../../db/models/match.model";
 import { uniq } from 'lodash';
 
 export interface LeaderboardProcessor {
-  updateScores(seasonId: string, matches: Match[]): Promise<number>;
-  updateRankings(seasonId: string, matches: Match[]): Promise<number>;
+  updateScores(seasonId: string, matches: Match[]): Promise<string>;
+  updateRankings(seasonId: string, matches: Match[]): Promise<string>;
 }
 
 export class LeaderboardProcessorImpl implements LeaderboardProcessor {
@@ -32,7 +32,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     private userScoreRepo: UserScoreRepository,
   ) { }
 
-  updateScores(seasonId: string, matchesArray: Match[]): Promise<number> {
+  updateScores(seasonId: string, matchesArray: Match[]): Promise<string> {
     const matches = matchesArray.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
     const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
@@ -88,10 +88,10 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                     }
                   )
                 }),
-                count()
+                last()
               )
           }),
-          mergeMap(userScoreCount => {
+          mergeMap(() => {
             const seasonLeaderboard$ = this.leaderboardRepo.findSeasonLeaderboardAndUpdate$(
               seasonId, { status: BOARD_STATUS.SCORES_UPDATED });
             const roundLeaderboard$Array: Observable<Leaderboard>[] = gameRoundIds.map(gameRoundId => {
@@ -99,15 +99,13 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 seasonId, gameRoundId, { status: BOARD_STATUS.SCORES_UPDATED })
             });
             return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
-              .pipe(
-                map(() => userScoreCount)
-              )
-          })
+          }),
+          map(() => 'Success')
         )
     )
   }
 
-  updateRankings(seasonId: string, matchesArray: Match[]): any {
+  updateRankings(seasonId: string, matchesArray: Match[]): Promise<string> {
     const matches = matchesArray.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
     const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
@@ -139,14 +137,14 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 })
               )
           }),
-          count(),
+          last(),
         ).pipe(
-          mergeMap(userScoreCount => {
+          mergeMap(() => {
             return this.leaderboardRepo.findAndUpdateAllFor$({ seasonId, gameRoundIds }, {
               status: BOARD_STATUS.RANKINGS_UPDATED
             })
-              .pipe(map(() => userScoreCount))
-          })
+          }),
+          map(() => 'Success')
         )
     )
   }
