@@ -138,7 +138,6 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
               )
           }),
           last(),
-        ).pipe(
           mergeMap(() => {
             return this.leaderboardRepo.findAndUpdateAllFor$({ seasonId, gameRoundIds }, {
               status: BOARD_STATUS.RANKINGS_UPDATED

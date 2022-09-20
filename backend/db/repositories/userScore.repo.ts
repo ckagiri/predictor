@@ -83,6 +83,7 @@ export class UserScoreRepositoryImpl
           score.pointsExcludingJoker = points;
 
           if (hasJoker) {
+            // Todo: refactor duplication
             score.correctMatchOutcomePoints *= 2;
             score.exactGoalDifferencePoints *= 2;
             score.exactMatchScorePoints *= 2;
@@ -102,6 +103,7 @@ export class UserScoreRepositoryImpl
             return of(userScore);
           }
 
+          // Todo: refactor duplication
           userScore.correctMatchOutcomePoints += hasJoker ?
             correctMatchOutcomePoints * 2 : correctMatchOutcomePoints;
           userScore.exactGoalDifferencePoints += hasJoker ?

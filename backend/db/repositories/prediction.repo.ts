@@ -248,7 +248,7 @@ export class PredictionRepositoryImpl
           } else if (jokerPredictions.length > 1) { // Precautionary
             const getTime = (date?: string | number | Date): number => date != null ? new Date(date).getTime() : 0;
             const [, ...otherJokers] = jokerPredictions.sort((a: Prediction, b) => {
-              return getTime(a.createdAt) - getTime(b.createdAt);
+              return getTime(b.createdAt) - getTime(a.createdAt);
             })
             otherJokers.forEach(j => {
               j.hasJoker = false;
