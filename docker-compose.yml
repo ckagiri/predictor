@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     image: liginodejs
     container_name: ligiappserver
-    restart: unless-stopped
     env_file: .env
     ports:
       - '7777:7777'
@@ -23,7 +22,6 @@ services:
   ligiwebserver:
     image: nginx:mainline-alpine
     container_name: ligiwebserver
-    restart: unless-stopped
     ports:
       - '80:80'
       - '8080:80'
