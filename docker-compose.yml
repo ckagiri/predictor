@@ -47,7 +47,7 @@ services:
       - ligiclient
       - ligiwebserver
 
-    command: certonly --webroot --webroot-path=/var/www/html --email charleskagiri@gmail.com --agree-tos --no-eff-email --staging -d ligipredictor.com  -d www.ligipredictor.com
+    command: certonly --webroot --webroot-path=/var/www/html --email charleskagiri@gmail.com --agree-tos --no-eff-email --force-renewal -d ligipredictor.com  -d www.ligipredictor.com
 
 volumes:
   node_modules:
