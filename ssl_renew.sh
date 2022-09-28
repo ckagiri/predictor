@@ -1,6 +1,6 @@
 #!/bin/bash
 
-COMPOSE="/usr/local/bin/docker-compose --ansi never"
+COMPOSE="/usr/bin/compose --ansi never"
 DOCKER="/usr/bin/docker"
 
 cd /home/ckagiri/predictor/
