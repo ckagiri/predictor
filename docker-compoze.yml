@@ -14,6 +14,12 @@ services:
     volumes:
       - node_modules:/home/node/src/node_modules
 
+  ligiclient:
+    build:
+      context: ./frontend
+    volumes:
+      - staticbuild:/app/build
+
   ligiwebserver:
     image: nginx:mainline-alpine
     container_name: ligiwebserver

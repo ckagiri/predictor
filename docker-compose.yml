@@ -17,20 +17,22 @@ services:
     build:
       context: ./frontend
     volumes:
-      - staticbuild:/app/build
+      - web-root:/app/build
 
   ligiwebserver:
-    build:
-      context: ./nginx
-    image: liginginx
+    image: nginx:mainline-alpine
     container_name: ligiwebserver
     restart: unless-stopped
-    volumes:
-      - staticbuild:/app/public
     ports:
       - '80:80'
       - '8080:80'
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+    depends_on:
+      - ligiclient
+      - ligiappserver
 
 volumes:
   node_modules:
-  staticbuild:
+  web-root:

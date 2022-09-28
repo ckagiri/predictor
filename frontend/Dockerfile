@@ -3,11 +3,13 @@ FROM node:16-alpine AS builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --silent
 
 FROM node:16-alpine
 WORKDIR /app
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY . .
+ARG REACT_APP_API
+ENV REACT_APP_API $REACT_APP_API
 RUN npm run build
