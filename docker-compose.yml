@@ -1,16 +1,36 @@
 version: '3'
 
 services:
-  ligiserver:
+  ligiappserver:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     image: liginodejs
-    container_name: ligiserver
+    container_name: ligiappserver
     env_file: .env
     ports:
       - '7777:7777'
     volumes:
       - node_modules:/home/node/src/node_modules
+
+  ligiclient:
+    build:
+      context: ./frontend
+    volumes:
+      - staticbuild:/app/build
+
+  ligiwebserver:
+    build:
+      context: ./nginx
+    image: liginginx
+    container_name: ligiwebserver
+    restart: unless-stopped
+    volumes:
+      - staticbuild:/app/public
+    ports:
+      - '80:80'
+      - '8080:80'
+
 volumes:
   node_modules:
+  staticbuild:

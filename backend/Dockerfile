@@ -11,5 +11,5 @@ USER node
 WORKDIR /home/node/src
 COPY --chown=node:node --from=node-server /usr/src/node_modules ./node_modules
 COPY --chown=node:node --from=node-server /usr/src/build .
-EXPOSE 8080
+EXPOSE 7777
 CMD [ "node", "app/index.js" ]
