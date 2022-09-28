@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     image: liginodejs
     container_name: ligiappserver
+    restart: unless-stopped
     env_file: .env
     ports:
       - '7777:7777'
@@ -26,13 +27,37 @@ services:
     ports:
       - '80:80'
       - '8080:80'
+      - '443:443'
     volumes:
       - web-root:/var/www/html
       - ./nginx-conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - dhparam:/etc/ssl/certs
     depends_on:
       - ligiclient
       - ligiappserver
 
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    depends_on:
+      - ligiwebserver
+
+    command: certonly --webroot --webroot-path=/var/www/html --email charleskagiri@gmail.com --agree-tos --no-eff-email --staging -d ligipredictor.com  -d www.ligipredictor.com
+
 volumes:
   node_modules:
   web-root:
+  certbot-etc:
+  certbot-var:
+  dhparam:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/ckagiri/ligipredictor/dhparam/
+      o: bind

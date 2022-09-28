@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  ligiappserver:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: liginodejs
+    container_name: ligiappserver
+    env_file: .env
+    ports:
+      - '7777:7777'
+    volumes:
+      - node_modules:/home/node/src/node_modules
+
+  ligiclient:
+    build:
+      context: ./frontend
+    volumes:
+      - web-root:/app/build
+
+  ligiwebserver:
+    image: nginx:mainline-alpine
+    container_name: ligiwebserver
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '8080:80'
+    volumes:
+      - web-root:/var/www/html
+      - ./nginx-conf:/etc/nginx/conf.d
+    depends_on:
+      - ligiclient
+      - ligiappserver
+
+volumes:
+  node_modules:
+  web-root:
