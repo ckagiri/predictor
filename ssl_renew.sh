@@ -1,8 +1,4 @@
 #!/bin/bash
-
-COMPOSE="/usr/bin/docker compose"
-DOCKER="/usr/bin/docker"
-
 cd /home/ckagiri/predictor/
-$COMPOSE run certbot renew && $COMPOSE kill -s SIGHUP ligiwebserver
-$DOCKER system prune -af
+$COMPOSE run certbot certonly --webroot --webroot-path=/var/www/html --email charleskagiri@gmail.com --agree-tos --no-eff-email --force-renewal -d ligipredictor.com  -d www.ligipredictor.com
+$COMPOSE restart
