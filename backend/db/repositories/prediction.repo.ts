@@ -136,17 +136,13 @@ export class PredictionRepositoryImpl
         })
       }),
       mergeMap(predictions => {
-        const areAllMatchesFinished = roundMatches.every(m => m.status === MatchStatus.FINISHED);
-        if (areAllMatchesFinished) {
-          return of(predictions);
-        }
-
         const scheduledMatches: Match[] = roundMatches.filter(m => m.status === MatchStatus.SCHEDULED);
         const predictionMatchIds: string[] = predictions.map(p => p.match.toString());
         const newPredictionMatches = scheduledMatches.filter(m => !predictionMatchIds.includes(m.id!));
         if (isEmpty(newPredictionMatches)) {
           return of(predictions);
         }
+
         const newPredictions = newPredictionMatches.map(match => {
           const { id: matchId, slug: matchSlug, season } = match;
           const prediction: Prediction = {
