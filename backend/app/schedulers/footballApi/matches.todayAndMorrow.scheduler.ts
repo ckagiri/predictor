@@ -30,7 +30,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         this.scheduleDate = scheduleDate;
         return;
       }
-      const scheduleDateDiffInSeconds = Math.abs(moment.duration(moment(scheduleDate).diff(this.scheduleDate)).asSeconds())
+      const scheduleDateDiffInSeconds = moment.duration(moment(scheduleDate).diff(this.scheduleDate)).asSeconds()
       if (scheduleDateDiffInSeconds > 300) {
         console.log(`${this.job.name} publish footballApiMatchUpdatesCompleted`);
         this.eventMediator.publish('footballApiMatchUpdatesCompleted');

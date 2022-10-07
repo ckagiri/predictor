@@ -8,6 +8,7 @@ import { MatchRepository, MatchRepositoryImpl } from '../../../db/repositories/m
 import { PredictionRepository, PredictionRepositoryImpl } from '../../../db/repositories/prediction.repo';
 import { SeasonRepository, SeasonRepositoryImpl } from '../../../db/repositories/season.repo';
 import { Prediction } from '../../../db/models';
+import { Score } from '../../../common/score';
 
 class SeasonRoundController {
   static getInstance(
@@ -129,6 +130,120 @@ class SeasonRoundController {
 
       res.status(200).json(picks);
     } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
+  public pickPredictionScores = async (req: JWTRequest, res: Response) => {
+    try {
+      const competitionSlug = req.params.competition;
+      const seasonSlug = req.params.season;
+      const roundSlug = req.params.round;
+      const userId = req.auth?.id;
+      const pickSlip: { [key: string]: string } = req.body;
+      if (!userId) {
+        throw new Error('user id is required')
+      }
+      if (!competitionSlug) {
+        throw new Error('competition slug is required');
+      }
+      if (!seasonSlug) {
+        throw new Error('season slug is required');
+      }
+      if (!roundSlug) {
+        throw new Error('round slug is required');
+      }
+
+      const season = await lastValueFrom(this.seasonRepo.findOne$({
+        'competition.slug': competitionSlug, slug: seasonSlug
+      }));
+      if (!season) {
+        throw new Error('season not found');
+      }
+
+      const round = await lastValueFrom(this.gameRoundRepo.findOne$({
+        season: season.id, slug: roundSlug
+      }));
+      if (!round) {
+        throw new Error('round not found');
+      }
+
+      const roundMatches = await lastValueFrom(this.matchRepo.findAll$({
+        season: season.id,
+        gameRound: round.id
+      }))
+
+      const picks = await Promise.all(
+        Object.entries(pickSlip).map(async ([matchSlug, scoreString]) => {
+          const match = roundMatches.find(m => m.slug === matchSlug);
+          if (match == undefined) return;
+          const score = scoreString.split('-');
+          const goalsHomeTeam = Number(score[0]);
+          const goalsAwayTeam = Number(score[1]);
+          const choice = { goalsHomeTeam, goalsAwayTeam } as Score;
+          const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, roundMatches, choice))
+          const pick = omit(_pick, ['_id', 'createdAt', 'updatedAt']);
+          return pick;
+        }).filter(value => value != undefined)) as Prediction[];
+      res.status(200).json(picks);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
+  public pickJoker = async (req: JWTRequest, res: Response) => {
+    try {
+      const competitionSlug = req.params.competition;
+      const seasonSlug = req.params.season;
+      const roundSlug = req.params.round;
+      const userId = req.auth?.id;
+      const matchSlug = req.body && req.body.slug;
+
+      if (!userId) {
+        throw new Error('user id is required')
+      }
+      if (!competitionSlug) {
+        throw new Error('competition slug is required');
+      }
+      if (!seasonSlug) {
+        throw new Error('season slug is required');
+      }
+      if (!roundSlug) {
+        throw new Error('round slug is required');
+      }
+      if (!matchSlug) {
+        throw new Error('match slug is required');
+      }
+
+      const season = await lastValueFrom(this.seasonRepo.findOne$({
+        'competition.slug': competitionSlug, slug: seasonSlug
+      }));
+      if (!season) {
+        throw new Error('season not found');
+      }
+
+      const round = await lastValueFrom(this.gameRoundRepo.findOne$({
+        season: season?.id, slug: roundSlug
+      }));
+      if (!round) {
+        throw new Error('round not found');
+      }
+
+      const roundMatches = await lastValueFrom(this.matchRepo.findAll$({
+        season: season.id,
+        gameRound: round.id
+      }))
+      const match = roundMatches.find(m => m.slug === matchSlug);
+      if (!match) {
+        throw Error('match not found')
+      }
+
+      const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match, roundMatches))
+      const jokerPredictions = _jokerPredictions.map(p => omit(p, ['createdAt', 'updatedAt']));
+
+      res.status(200).json(jokerPredictions)
+    } catch (error) {
+      console.log(error);
       res.status(500).send(error);
     }
   }
