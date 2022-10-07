@@ -79,6 +79,10 @@ export class UserScoreRepositoryImpl
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
           score.closeMatchScores = closeMatchScorePoints;
+          score.closeMatchScoresHigh =
+            (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
+          score.closeMatchScoresLow =
+            (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
           score.exactMatchScores = exactMatchScorePoints / 6;
           score.pointsExcludingJoker = points;
 
@@ -122,6 +126,10 @@ export class UserScoreRepositoryImpl
           userScore.pointsExcludingJoker! += points;
           userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
           userScore.closeMatchScores! += closeMatchScorePoints;
+          score.closeMatchScoresHigh! +=
+            (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
+          score.closeMatchScoresLow =
+            (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
 
           return this.findByIdAndUpdate$(userScore.id!, {
@@ -137,6 +145,8 @@ export class UserScoreRepositoryImpl
               pointsExcludingJoker: userScore.pointsExcludingJoker,
               correctMatchOutcomes: userScore.correctMatchOutcomes,
               closeMatchScores: userScore.closeMatchScores,
+              closeMatchScoresHigh: userScore.closeMatchScoresHigh,
+              closeMatchScoresLow: userScore.closeMatchScoresLow,
               exactMatchScores: userScore.exactMatchScores,
             },
             $inc: { matchesPredicted: 1 },
