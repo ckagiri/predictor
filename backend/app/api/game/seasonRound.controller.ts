@@ -73,7 +73,7 @@ class SeasonRoundController {
       const matches = roundMatches.map(m => omit(m, [
         '_id', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
       ])).sort((a, b) => {
-        return getTime(b.utcDate) - getTime(a.utcDate);
+        return getTime(a.utcDate) - getTime(b.utcDate);
       });
       matches.forEach(m => {
         m.homeTeamId = m.homeTeam.id;
