@@ -69,9 +69,12 @@ class SeasonRoundController {
         });
       }
 
+      const getTime = (date?: string | number | Date): number => date != null ? new Date(date).getTime() : 0;
       const matches = roundMatches.map(m => omit(m, [
         '_id', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
-      ]))
+      ])).sort((a, b) => {
+        return getTime(b.utcDate) - getTime(a.utcDate);
+      });
       matches.forEach(m => {
         m.homeTeamId = m.homeTeam.id;
         m.awayTeamId = m.awayTeam.id;
