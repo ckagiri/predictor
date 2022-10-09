@@ -128,7 +128,7 @@ export class UserScoreRepositoryImpl
           userScore.closeMatchScores! += closeMatchScorePoints;
           score.closeMatchScoresHigh! +=
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
-          score.closeMatchScoresLow =
+          score.closeMatchScoresLow! +=
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
 
