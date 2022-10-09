@@ -195,7 +195,6 @@ describe('UserScore Repo', function () {
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
-      closeMatchScores: 0,
       exactMatchScores: 0,
       resultPoints: 16,
       scorePoints: 0,
@@ -220,7 +219,6 @@ describe('UserScore Repo', function () {
         })
       ).subscribe(score => {
         expect(score.correctMatchOutcomes).to.equal(2);
-        expect(score.closeMatchScores).to.equal(0);
         expect(score.exactMatchScores).to.equal(1);
         expect(score.resultPoints).to.equal(24);
         expect(score.scorePoints).to.equal(8);
@@ -247,7 +245,6 @@ describe('UserScore Repo', function () {
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
-      closeMatchScores: 0,
       exactMatchScores: 0,
       resultPoints: 8,
       scorePoints: 0,
@@ -268,7 +265,6 @@ describe('UserScore Repo', function () {
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
-      closeMatchScores: 0,
       exactMatchScores: 0,
       resultPoints: 7,
       scorePoints: 0,

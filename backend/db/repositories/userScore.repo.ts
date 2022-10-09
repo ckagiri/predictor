@@ -78,12 +78,11 @@ export class UserScoreRepositoryImpl
           score.predictions = [predictionId];
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
-          score.closeMatchScores = closeMatchScorePoints;
+          score.exactMatchScores = exactMatchScorePoints / 6;
           score.closeMatchScoresHigh =
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
           score.closeMatchScoresLow =
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
-          score.exactMatchScores = exactMatchScorePoints / 6;
           score.pointsExcludingJoker = points;
 
           if (hasJoker) {
@@ -125,12 +124,11 @@ export class UserScoreRepositoryImpl
 
           userScore.pointsExcludingJoker! += points;
           userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
-          userScore.closeMatchScores! += closeMatchScorePoints;
+          userScore.exactMatchScores! += (exactMatchScorePoints / 6);
           score.closeMatchScoresHigh! +=
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
           score.closeMatchScoresLow! +=
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
-          userScore.exactMatchScores! += (exactMatchScorePoints / 6);
 
           return this.findByIdAndUpdate$(userScore.id!, {
             $set: {
@@ -144,10 +142,9 @@ export class UserScoreRepositoryImpl
               exactMatchScorePoints: userScore.exactMatchScorePoints,
               pointsExcludingJoker: userScore.pointsExcludingJoker,
               correctMatchOutcomes: userScore.correctMatchOutcomes,
-              closeMatchScores: userScore.closeMatchScores,
+              exactMatchScores: userScore.exactMatchScores,
               closeMatchScoresHigh: userScore.closeMatchScoresHigh,
               closeMatchScoresLow: userScore.closeMatchScoresLow,
-              exactMatchScores: userScore.exactMatchScores,
             },
             $inc: { matchesPredicted: 1 },
             $push: { matches: matchId, predictions: predictionId },
