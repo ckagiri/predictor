@@ -79,6 +79,7 @@ export class UserScoreRepositoryImpl
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
           score.exactMatchScores = exactMatchScorePoints / 6;
+          score.exactGoalDiffs = exactGoalDifferencePoints;
           score.closeMatchScoresHigh =
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
           score.closeMatchScoresLow =
@@ -125,6 +126,7 @@ export class UserScoreRepositoryImpl
           userScore.pointsExcludingJoker! += points;
           userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
+          userScore.exactGoalDiffs! += exactGoalDifferencePoints;
           score.closeMatchScoresHigh! +=
             (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
           score.closeMatchScoresLow! +=
@@ -143,6 +145,7 @@ export class UserScoreRepositoryImpl
               pointsExcludingJoker: userScore.pointsExcludingJoker,
               correctMatchOutcomes: userScore.correctMatchOutcomes,
               exactMatchScores: userScore.exactMatchScores,
+              exactGoalDiffs: userScore.exactGoalDiffs,
               closeMatchScoresHigh: userScore.closeMatchScoresHigh,
               closeMatchScoresLow: userScore.closeMatchScoresLow,
             },
