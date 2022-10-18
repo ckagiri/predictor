@@ -81,9 +81,9 @@ export class UserScoreRepositoryImpl
           score.exactMatchScores = exactMatchScorePoints / 6;
           score.exactGoalDiffs = exactGoalDifferencePoints;
           score.closeMatchScoresHigh =
-            (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
+            (correctMatchOutcomePoints === 7 && closeMatchScorePoints === 1) ? 1 : 0;
           score.closeMatchScoresLow =
-            (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
+            (correctMatchOutcomePoints === 0 && closeMatchScorePoints === 1) ? 1 : 0;
           score.pointsExcludingJoker = points;
 
           if (hasJoker) {
@@ -128,9 +128,9 @@ export class UserScoreRepositoryImpl
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
           userScore.exactGoalDiffs! += exactGoalDifferencePoints;
           score.closeMatchScoresHigh! +=
-            (closeMatchScorePoints === 1 && exactTeamScorePoints === 1) ? 1 : 0;
+            (correctMatchOutcomePoints === 7 && closeMatchScorePoints === 1) ? 1 : 0;
           score.closeMatchScoresLow! +=
-            (closeMatchScorePoints === 1 && exactTeamScorePoints === 0) ? 1 : 0;
+            (correctMatchOutcomePoints === 0 && closeMatchScorePoints === 1) ? 1 : 0;
 
           return this.findByIdAndUpdate$(userScore.id!, {
             $set: {
