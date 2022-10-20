@@ -35,7 +35,7 @@ export const makeMatchUpdate = (apiMatch: any) => {
     goalsAwayTeam: score.fullTime.away
   };
   const matchStatus = getMatchStatus(status);
-  return { result, status: matchStatus }
+  return { result, status: matchStatus, odds }
 }
 
 export const getMatchStatus = (status: string) => {
