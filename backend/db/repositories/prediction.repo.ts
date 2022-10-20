@@ -6,6 +6,7 @@ import { Match, MatchStatus } from '../models/match.model';
 import { Score } from '../../common/score';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo';
 import { head, isEmpty, uniq } from 'lodash';
+import { VosePredictor } from '../helpers/vose-predictor'
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findOne$(userId: string, matchId: string): Observable<Prediction>;
@@ -22,8 +23,11 @@ export class PredictionRepositoryImpl
     return new PredictionRepositoryImpl();
   }
 
+  readonly defaultVosePredictor: VosePredictor;
+
   constructor() {
     super(PredictionModel);
+    this.defaultVosePredictor = new VosePredictor();
   }
 
   pickScore$(userId: string, match: Match, roundMatches: Match[], choice: Score): Observable<Prediction> {
@@ -89,7 +93,7 @@ export class PredictionRepositoryImpl
             return throwError(() => new Error('Current joker match already played'))
           }
 
-          return this.findOneOrCreate$(userId, match)
+          return this.findOne$(userId, matchId)
             .pipe(
               mergeMap(newJoker => {
                 const jokers = [];
@@ -145,12 +149,13 @@ export class PredictionRepositoryImpl
 
         const newPredictions = newPredictionMatches.map(match => {
           const { id: matchId, slug: matchSlug, season } = match;
+          const score = this.defaultVosePredictor.predict()
           const prediction: Prediction = {
             user: userId,
             season,
             match: matchId!,
             matchSlug,
-            choice: this.getRandomMatchScore(),
+            choice: this.getPredictionScore(score),
           };
           return prediction
         });
@@ -177,8 +182,10 @@ export class PredictionRepositoryImpl
                 return Boolean(prediction.choice.isComputerGenerated);
               }),
               map(prediction => {
+                const predictionMatch = roundMatches.find(m => m.id === prediction.match.toString());
+                const randomScore = new VosePredictor(predictionMatch?.odds).predict()
                 const isComputerGenerated = false;
-                prediction.choice = this.getRandomMatchScore(isComputerGenerated); // use VosePredictor
+                prediction.choice = this.getPredictionScore(randomScore, isComputerGenerated);
                 if (!!prediction.hasJoker) {
                   prediction.jokerAutoPicked = false;
                 }
@@ -230,6 +237,7 @@ export class PredictionRepositoryImpl
               const jokerMatch = roundMatches.find(m => m.id === jokerMatchId) as Match;
 
               const { season, slug: jokerMatchSlug } = jokerMatch;
+              const randomScore = this.defaultVosePredictor.predict()
               const joker: Prediction = {
                 user: userId,
                 season,
@@ -237,7 +245,7 @@ export class PredictionRepositoryImpl
                 matchSlug: jokerMatchSlug,
                 hasJoker: true,
                 jokerAutoPicked: true,
-                choice: this.getRandomMatchScore(),
+                choice: this.getPredictionScore(randomScore),
               };
               jokers.push(joker);
             }
@@ -272,61 +280,11 @@ export class PredictionRepositoryImpl
       )
   }
 
-  public findOne$(userId: string, matchId: string) {
-    return super.findOne$({ user: userId, match: matchId });
-  }
-
-  public findOneOrCreate$(
-    userId: string,
-    match: Match
-  ): Observable<Prediction> {
-    const { id: matchId, season, slug: matchSlug, status: matchStatus } = match;
-    return this.findOne$(userId, matchId!)
-      .pipe(
-        mergeMap(prediction => {
-          if (prediction) {
-            return of(prediction);
-          }
-
-          const pred: Prediction = {
-            user: userId,
-            season,
-            match: matchId!,
-            matchSlug,
-            choice: this.getRandomMatchScore()
-          };
-
-          return this.save$(pred);
-        })
-      )
-  }
-
-  private getRandomMatchScore(isComputerGenerated = true) {
-    const scoreList = [
-      '0-0',
-      '0-0',
-      '1-1',
-      '1-1',
-      '2-2',
-      '2-2',
-      '1-0',
-      '2-0',
-      '2-1',
-      '3-0',
-      '3-1',
-      '3-2',
-      '0-1',
-      '0-2',
-      '1-2',
-      '0-3',
-      '1-3',
-      '2-3',
-    ];
-    const score = scoreList[Math.floor(Math.random() * scoreList.length)].split(
-      '-',
-    );
-    const goalsHomeTeam = Number(score[0]);
-    const goalsAwayTeam = Number(score[1]);
+  // score format: "homeScore-awayScore"
+  private getPredictionScore(score: string, isComputerGenerated = true): Score {
+    const teamScores = score.split('-')
+    const goalsHomeTeam = Number(teamScores[0]);
+    const goalsAwayTeam = Number(teamScores[1]);
     return {
       goalsHomeTeam,
       goalsAwayTeam,

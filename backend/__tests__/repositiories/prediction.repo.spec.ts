@@ -2,7 +2,6 @@ import { expect } from 'chai';
 
 import { PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import { Match, Prediction } from '../../db/models';
-import { ScorePoints, Score } from '../../common/score';
 import a from '../a';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import memoryDb from '../memoryDb';
@@ -99,41 +98,6 @@ describe('Prediction repo', function () {
   })
 
   describe('finders', () => {
-    it('findOneOrCreate should create prediction if it doesnt exist', done => {
-      const userId = user1.id;
-      const { id: matchId, slug: matchSlug } = manuVmanc.match as Required<Match>;
-
-      predictionRepo
-        .findOneOrCreate$(userId, manuVmanc.match!)
-        .subscribe(p => {
-          expect(p.user.toString()).to.equal(userId);
-          expect(p.match.toString()).to.equal(matchId);
-          expect(p.matchSlug).to.equal(matchSlug);
-          expect(p).to.have.property('hasJoker', false);
-          done();
-        });
-    });
-
-    it('findOneOrCreate should return existing prediction', done => {
-      let prediction: Prediction;
-      const userId = user1.id;
-      const match = manuVmanc.match!;
-
-      predictionRepo
-        .findOneOrCreate$(userId, match)
-        .pipe(
-          mergeMap(p => {
-            prediction = p;
-            return predictionRepo.findOneOrCreate$(userId, match);
-          })
-        )
-        .subscribe(p => {
-          // do a deep object comparison for equality test
-          expect(p).to.eql(prediction);
-          done();
-        });
-    });
-
     it('findOne should find prediction by user and match', done => {
       const userId = user1.id;
       const matchId = manuVmanc.id;
@@ -155,31 +119,6 @@ describe('Prediction repo', function () {
         )
         .subscribe(p => {
           expect(p.id).to.equal(prediction.id);
-          done();
-        });
-    });
-
-    it('should findById And update score-points', done => {
-      let scorePoints: ScorePoints;
-      const userId = user1.id;
-      const match = manuVmanc.match!;
-
-      predictionRepo
-        .findOneOrCreate$(userId, match)
-        .pipe(
-          mergeMap(p => {
-            scorePoints = { // actual score pred
-              correctMatchOutcomePoints: 7,
-              exactGoalDifferencePoints: 1,
-              closeMatchScorePoints: 0,
-              exactTeamScorePoints: 2,
-              exactMatchScorePoints: 6,
-            };
-            return predictionRepo.findByIdAndUpdate$(p.id!, { scorePoints });
-          }),
-        )
-        .subscribe(pred => {
-          expect(pred.scorePoints).to.eql(scorePoints);
           done();
         });
     });
@@ -436,27 +375,6 @@ describe('Prediction repo', function () {
           done();
         });
     })
-
-    it('should unset joker', done => {
-      const userId1matchId1Pred: Prediction = {
-        user: user1.id,
-        season: epl2022.id,
-        match: manuVmanc.id,
-        matchSlug: manuVmanc.slug,
-        hasJoker: true,
-        jokerAutoPicked: true,
-        choice: { goalsHomeTeam: 0, goalsAwayTeam: 0 },
-      };
-      predictionRepo.insert$(userId1matchId1Pred)
-        .pipe(
-          mergeMap(() => {
-            return predictionRepo.unsetJoker$(user1.id, manuVmanc.match!)
-          })
-        ).subscribe(pred => {
-          expect(pred?.hasJoker).to.be.false
-          done();
-        })
-    });
 
     describe('pick joker', () => {
       it('should pick a different joker if joker exists', done => {
