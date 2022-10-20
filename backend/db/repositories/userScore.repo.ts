@@ -127,9 +127,9 @@ export class UserScoreRepositoryImpl
           userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
           userScore.exactMatchScores! += (exactMatchScorePoints / 6);
           userScore.exactGoalDiffs! += exactGoalDifferencePoints;
-          score.closeMatchScoresHigh! +=
+          userScore.closeMatchScoresHigh! +=
             (correctMatchOutcomePoints === 7 && closeMatchScorePoints === 1) ? 1 : 0;
-          score.closeMatchScoresLow! +=
+          userScore.closeMatchScoresLow! +=
             (correctMatchOutcomePoints === 0 && closeMatchScorePoints === 1) ? 1 : 0;
 
           return this.findByIdAndUpdate$(userScore.id!, {
