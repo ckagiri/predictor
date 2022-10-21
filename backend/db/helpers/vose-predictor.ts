@@ -29,17 +29,17 @@ export class VosePredictor {
     const outcome = outcomes[v.next()]
     let score = '0-0';
     if (outcome === 'HOME') {
-      score = this.getHomeScore()
+      score = this.getHomePredictionScore()
     } else if (outcome === 'AWAY') {
-      score = this.getAwayScore()
+      score = this.getAwayPredictionScore()
     } else if (outcome === 'DRAW') {
-      score = this.getDrawScore();
+      score = this.getDrawPredictionScore();
     }
     return score;
   }
 
   // weigths from https://fcstats.com/statistics,premier-league-england,1,5,3374.php
-  private getHomeScore() {
+  private getHomePredictionScore() {
     const scoreToWeight = {
       '1-0': 37,
       '2-0': 28,
@@ -54,7 +54,7 @@ export class VosePredictor {
     return this.getScore(scoreToWeight);
   }
 
-  private getAwayScore() {
+  private getAwayPredictionScore() {
     const scoreToWeight = {
       '0-1': 28,
       '0-2': 18,
@@ -69,7 +69,7 @@ export class VosePredictor {
     return this.getScore(scoreToWeight)
   }
 
-  private getDrawScore() {
+  private getDrawPredictionScore() {
     const scoreToWeight = {
       '0-0': 22,
       '1-1': 42,

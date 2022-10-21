@@ -280,7 +280,11 @@ export class PredictionRepositoryImpl
       )
   }
 
-  // score format: "homeScore-awayScore"
+  public findOne$(userId: string, matchId: string) {
+    return super.findOne$({ user: userId, match: matchId });
+  }
+
+  // score is formatted as "homeScore-awayScore"
   private getPredictionScore(score: string, isComputerGenerated = true): Score {
     const teamScores = score.split('-')
     const goalsHomeTeam = Number(teamScores[0]);
