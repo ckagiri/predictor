@@ -351,7 +351,7 @@ class MatchBuilder implements Builder<Match> {
   }
 
   setDate(value: any) {
-    this.built.date = value;
+    this.built.utcDate = value;
     return this;
   }
 

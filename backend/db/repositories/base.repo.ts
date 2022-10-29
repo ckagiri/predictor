@@ -14,6 +14,7 @@ export interface BaseRepository<T extends Entity> {
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
   findOneAndUpsert$(conditions: any, update: any, options?: any): Observable<T>;
+  findOneOrCreate$(conditions: any, mergeContents: any): Observable<T>;
   distinct$(field: string, conditions?: any): Observable<string[]>
   findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
   find$(
@@ -168,6 +169,14 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
         },
       );
     });
+  }
+
+  public findOneOrCreate$(
+    conditions: any,
+    mergeContents: any = {},
+  ): Observable<T> {
+    const options: any = { upsert: true, new: true, setDefaultsOnInsert: true }
+    return this.findOneAndUpsert$(conditions, mergeContents, options);
   }
 
   public distinct$(field: string, conditions?: any): Observable<string[]> {

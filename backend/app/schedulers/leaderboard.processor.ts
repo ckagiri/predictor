@@ -1,11 +1,12 @@
-import { concatMap, count, forkJoin, from, last, lastValueFrom, map, mergeMap, Observable, of } from "rxjs";
+import { concatMap, forkJoin, from, last, lastValueFrom, map, mergeMap, Observable, of } from "rxjs";
 
-import { Leaderboard, STATUS as BOARD_STATUS, BOARD_TYPE } from "../../db/models/leaderboard.model";
+import { Leaderboard, BOARD_TYPE } from "../../db/models/leaderboard.model";
 import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
 import { PredictionRepository, PredictionRepositoryImpl } from "../../db/repositories/prediction.repo";
 import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositories/userScore.repo";
 import { Match, MatchStatus } from "../../db/models/match.model";
 import { uniq } from 'lodash';
+import { match } from "node:assert";
 
 export interface LeaderboardProcessor {
   updateScores(seasonId: string, matches: Match[]): Promise<string>;
@@ -17,7 +18,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     predictionRepo?: PredictionRepository,
     leaderboardRepo?: LeaderboardRepository,
     userScoreRepo?: UserScoreRepository,
-  ) {
+  ): LeaderboardProcessor {
     const predictionRepoImpl = predictionRepo ?? PredictionRepositoryImpl.getInstance();
     const leaderboardRepoImpl = leaderboardRepo ?? LeaderboardRepositoryImpl.getInstance();
     const userScoreRepoImpl = userScoreRepo ?? UserScoreRepositoryImpl.getInstance();
@@ -41,11 +42,9 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
       this.predictionRepo.distinct$('user', { season: seasonId })
         .pipe(
           mergeMap(userIds => {
-            const seasonLeaderboard$ = this.leaderboardRepo.findOrCreateSeasonLeaderboardAndUpdate$(
-              seasonId, { status: BOARD_STATUS.UPDATING_SCORES });
+            const seasonLeaderboard$ = this.leaderboardRepo.findOrCreateSeasonLeaderboard$(seasonId);
             const roundLeaderboard$Array: Observable<Leaderboard>[] = gameRoundIds.map(gameRoundId => {
-              return this.leaderboardRepo.findOrCreateRoundLeaderboardAndUpdate$(
-                seasonId, gameRoundId, { status: BOARD_STATUS.UPDATING_SCORES })
+              return this.leaderboardRepo.findOrCreateRoundLeaderboard$(seasonId, gameRoundId)
             });
             return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
               .pipe(
@@ -62,45 +61,40 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 }),
                 mergeMap(({ leaderboardId, matches }) => from(matches)
                   .pipe(
-                    map(match => ({ leaderboardId, matchId: match.id! }))
+                    map(match => ({ leaderboardId, matchId: match.id! })),
+                    mergeMap(({ leaderboardId, matchId }) => from(userIds)
+                      .pipe(
+                        map(userId => ({ leaderboardId, matchId, userId }))
+                      )),
+                    mergeMap(({ leaderboardId, matchId, userId }) => {
+                      return this.predictionRepo.findOne$(userId, matchId)
+                        .pipe(
+                          map(prediction => ({ leaderboardId, matchId, userId, prediction }))
+                        )
+                    }),
+                    concatMap(({ leaderboardId, matchId, userId, prediction }) => {
+                      const { scorePoints: points, hasJoker } = prediction;
+                      return this.userScoreRepo.findScoreAndUpsert$(
+                        { leaderboardId, userId },
+                        points!,
+                        {
+                          matchId: matchId,
+                          predictionId: prediction.id!,
+                          hasJoker: hasJoker!
+                        }
+                      )
+                    }),
+                    last(),
+                    mergeMap(() => {
+                      const matchIds = matches.map(m => m.id!);
+                      return this.leaderboardRepo.findByIdAndUpdateMatches$(leaderboardId, matchIds)
+                    }),
                   )
                 ),
-                mergeMap(({ leaderboardId, matchId }) => from(userIds)
-                  .pipe(
-                    map(userId => ({ leaderboardId, matchId, userId }))
-                  )
-                ),
-                mergeMap(({ leaderboardId, matchId, userId }) => {
-                  return this.predictionRepo.findOne$(userId, matchId)
-                    .pipe(
-                      map(prediction => ({ leaderboardId, matchId, userId, prediction }))
-                    )
-                }),
-                concatMap(({ leaderboardId, matchId, userId, prediction }) => {
-                  const { scorePoints: points, hasJoker } = prediction;
-                  return this.userScoreRepo.findScoreAndUpsert$(
-                    { leaderboardId, userId },
-                    points!,
-                    {
-                      matchId: matchId,
-                      predictionId: prediction.id!,
-                      hasJoker: hasJoker!
-                    }
-                  )
-                }),
-                last()
+                last(),
+                map(() => 'Success')
               )
           }),
-          mergeMap(() => {
-            const seasonLeaderboard$ = this.leaderboardRepo.findSeasonLeaderboardAndUpdate$(
-              seasonId, { status: BOARD_STATUS.SCORES_UPDATED });
-            const roundLeaderboard$Array: Observable<Leaderboard>[] = gameRoundIds.map(gameRoundId => {
-              return this.leaderboardRepo.findRoundLeaderboardAndUpdate$(
-                seasonId, gameRoundId, { status: BOARD_STATUS.SCORES_UPDATED })
-            });
-            return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
-          }),
-          map(() => 'Success')
         )
     )
   }
@@ -115,9 +109,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
         .pipe(
           mergeMap(leaderboards => from(leaderboards)),
           mergeMap(leaderboard => {
-            return this.leaderboardRepo.findByIdAndUpdate$(leaderboard.id!, {
-              status: BOARD_STATUS.UPDATING_RANKINGS
-            })
+            return this.leaderboardRepo.findById$(leaderboard.id!)
           }),
           mergeMap(leaderboard => {
             return this.userScoreRepo.findByLeaderboardIdOrderByPoints$(leaderboard.id!)
@@ -138,11 +130,6 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
               )
           }),
           last(),
-          mergeMap(() => {
-            return this.leaderboardRepo.findAndUpdateAllFor$({ seasonId, gameRoundIds }, {
-              status: BOARD_STATUS.RANKINGS_UPDATED
-            })
-          }),
           map(() => 'Success')
         )
     )

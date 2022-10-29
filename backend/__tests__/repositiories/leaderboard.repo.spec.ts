@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { BOARD_TYPE, STATUS } from '../../db/models/leaderboard.model';
+import { BOARD_TYPE } from '../../db/models/leaderboard.model';
 
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
 import memoryDb from '../memoryDb';
@@ -41,9 +41,8 @@ describe('LeaderboardRepo', function () {
   })
 
   it('should create seasonBoard if it doesnt exist', done => {
-    leaderboardRepo.findOrCreateSeasonLeaderboardAndUpdate$(epl2020.id, { status: STATUS.UPDATING_SCORES })
+    leaderboardRepo.findOrCreateSeasonLeaderboard$(epl2020.id)
       .subscribe(lb => {
-        expect(lb.status).to.equal(STATUS.UPDATING_SCORES);
         expect(lb.season.toString()).to.equal(epl2020.id);
         expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_SEASON);
         done();
@@ -51,9 +50,8 @@ describe('LeaderboardRepo', function () {
   });
 
   it('should create roundboard if it doesnt exist', done => {
-    leaderboardRepo.findOrCreateRoundLeaderboardAndUpdate$(epl2020.id, gw1.id, { status: STATUS.UPDATING_SCORES })
+    leaderboardRepo.findOrCreateRoundLeaderboard$(epl2020.id, gw1.id)
       .subscribe(lb => {
-        expect(lb.status).to.equal(STATUS.UPDATING_SCORES);
         expect(lb.season.toString()).to.equal(epl2020.id);
         expect(lb.gameRound?.toString()).to.equal(gw1.id);
         expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_ROUND);
