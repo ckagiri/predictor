@@ -6,7 +6,6 @@ import { PredictionRepository, PredictionRepositoryImpl } from "../../db/reposit
 import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositories/userScore.repo";
 import { Match, MatchStatus } from "../../db/models/match.model";
 import { uniq } from 'lodash';
-import { match } from "node:assert";
 
 export interface LeaderboardProcessor {
   updateScores(seasonId: string, matches: Match[]): Promise<string>;
@@ -23,8 +22,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     const leaderboardRepoImpl = leaderboardRepo ?? LeaderboardRepositoryImpl.getInstance();
     const userScoreRepoImpl = userScoreRepo ?? UserScoreRepositoryImpl.getInstance();
 
-    return new LeaderboardProcessorImpl(predictionRepoImpl, leaderboardRepoImpl, userScoreRepoImpl
-    );
+    return new LeaderboardProcessorImpl(predictionRepoImpl, leaderboardRepoImpl, userScoreRepoImpl);
   }
 
   constructor(
@@ -105,7 +103,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
 
     return lastValueFrom(
-      this.leaderboardRepo.findAllFor$({ seasonId, gameRoundIds })
+      this.leaderboardRepo.findAllGlobalFor$({ seasonId, gameRoundIds })
         .pipe(
           mergeMap(leaderboards => from(leaderboards)),
           mergeMap(leaderboard => {

@@ -13,7 +13,7 @@ export interface LeaderboardRepository extends BaseRepository<Leaderboard> {
   findOrCreateRoundLeaderboard$(seasonId: string, gameRoundId: string): Observable<Leaderboard>;
   findSeasonLeaderboard$(seasonId: string): Observable<Leaderboard>;
   findRoundLeaderboard$(seasonId: string, gameRoundId: string): Observable<Leaderboard>;
-  findAllFor$({ seasonId, gameRoundIds }: SeasonOrRoundsQuery): Observable<Leaderboard[]>;
+  findAllGlobalFor$({ seasonId, gameRoundIds }: SeasonOrRoundsQuery): Observable<Leaderboard[]>;
   findByIdAndUpdateMatches$(leaderboardId: string, matchIds: string[]): Observable<Leaderboard>;
 }
 
@@ -50,7 +50,7 @@ export class LeaderboardRepositoryImpl
     return this.findOne$({ season: seasonId, gameRound: gameRoundId, boardType: BOARD_TYPE.GLOBAL_ROUND })
   }
 
-  findAllFor$({ seasonId, gameRoundIds }: SeasonOrRoundsQuery): Observable<Leaderboard[]> {
+  findAllGlobalFor$({ seasonId, gameRoundIds }: SeasonOrRoundsQuery): Observable<Leaderboard[]> {
     return this.findAll$({
       $or: [
         { season: seasonId, boardType: BOARD_TYPE.GLOBAL_SEASON },
