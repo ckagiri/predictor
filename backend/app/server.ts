@@ -4,6 +4,7 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import passport from 'passport'
 import { Server } from 'http';
 import cp from 'child_process';
+import cors from 'cors'
 
 import isDocker from './isDocker';
 import { fromBase } from './util';
@@ -31,6 +32,7 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
     LOCAL_MONGO
   } = process.env;
   const app = express();
+  app.use(cors());
   app.use(bodyParser.json());
 
   // Fire up the child process that will run in a separate machine core
