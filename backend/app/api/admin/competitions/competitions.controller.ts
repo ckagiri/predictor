@@ -5,6 +5,7 @@ import {
   CompetitionRepositoryImpl,
   CompetitionRepository,
 } from '../../../../db/repositories/competition.repo';
+import { Competition } from '../../../../db/models';
 
 export class CompetitionsController {
   public static getInstance(
@@ -27,10 +28,13 @@ export class CompetitionsController {
   public getCompetition = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      if (!isMongoId(id)) {
-        throw new Error('wrong id format');
+      let competition: Competition;
+      if (isMongoId(id)) {
+        competition = await lastValueFrom(this.competitionRepo.findById$(id));
+      } else {
+        const slug = id;
+        competition = await lastValueFrom(this.competitionRepo.findOne$({ slug }));
       }
-      const competition = await lastValueFrom(this.competitionRepo.findById$(id));
       if (competition) {
         return res.status(200).json(competition);
       } else {

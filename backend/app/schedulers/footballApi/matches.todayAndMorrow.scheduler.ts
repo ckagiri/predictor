@@ -12,6 +12,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
   private scheduleDate?: Date;
   private nextPoll?: moment.Moment; // ideally what is supposed to be the next poll
   private hasLiveMatch = false;
+  private hasNewLiveMatch = false;
 
   public static getInstance(
     todayAndMorrowService = TodayAndMorrowServiceImpl.getInstance(),
@@ -31,7 +32,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         return;
       }
       const scheduleDateDiffInSeconds = moment.duration(moment(scheduleDate).diff(this.scheduleDate)).asSeconds()
-      if (scheduleDateDiffInSeconds > 300) {
+      if (scheduleDateDiffInSeconds >= 300) {
         console.log(`${this.job.name} publish footballApiMatchUpdatesCompleted`);
         this.eventMediator.publish('footballApiMatchUpdatesCompleted');
       }
@@ -45,7 +46,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       Math.round(moment.duration(this.nextPoll.diff(moment())).asHours())
     if (nextPollInHours == undefined || nextPollInHours === 6) {
       period = PERIOD.TODAY_AND_MORROW
-    } else if (this.hasLiveMatch) {
+    } else if (this.hasLiveMatch && !this.hasNewLiveMatch) {
       period = PERIOD.LIVE
     }
 
@@ -57,15 +58,19 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     const apiMatches: any[] = result;
 
     let hasLiveMatch = false;
+    let hasNewLiveMatch = false;
     let nextPoll = moment().add(12, 'hours');
     for (const match of apiMatches) {
-      const matchStatus = getMatchStatus(match.status)
+      const matchStatus = getMatchStatus(match.status);
+      const matchStart = moment(match.utcDate);
+
       if (matchStatus === MatchStatus.LIVE) {
         hasLiveMatch = true;
-        break;
-      }
-      if (matchStatus === MatchStatus.SCHEDULED) {
-        const matchStart = moment(match.utcDate);
+        if (Math.abs(matchStart.diff(moment(), 'seconds')) <= 90) {
+          hasNewLiveMatch = true;
+          break;
+        }
+      } else if (matchStatus === MatchStatus.SCHEDULED) {
         if (matchStart.isBefore(nextPoll)) {
           nextPoll = matchStart.add(1, 'minutes');
         }
@@ -75,8 +80,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     if (this.hasLiveMatch && !hasLiveMatch) {
       this.hasLiveMatch = false;
       this.nextPoll = moment().add(3, 'minutes');
-    } else if (hasLiveMatch) {
+    } else if (hasLiveMatch) { 
       this.hasLiveMatch = true;
+      this.hasNewLiveMatch = hasNewLiveMatch;
       this.nextPoll = moment().add(90, 'seconds');
     } else {
       // precautionary handle nextPoll being behind
