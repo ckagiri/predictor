@@ -9,7 +9,7 @@ services:
     container_name: ligiserver
     env_file: .env
     ports:
-      - '7777:8080'
+      - '7777:7777'
     volumes:
       - ./backend/build:/home/node/src
       - ./frontend/build:/home/node/src/public
