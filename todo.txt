@@ -175,7 +175,7 @@ id toString remove
 update matches process status in schedulers
 test calculatePoints
 test processLeaderboards
-onMatchRound ifCurrentRound position Changed
+onMatchday ifCurrentRound position Changed
 findOrCreatePredictions timer
 updateScorenRankings timer
 >>>>

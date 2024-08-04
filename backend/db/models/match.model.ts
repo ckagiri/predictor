@@ -24,7 +24,7 @@ export interface Match extends Entity {
   season: string;
   slug: string;
   utcDate?: string;
-  matchRound?: number;
+  matchday?: number;
   gameRound: string;
   status?: MatchStatus;
   homeTeam?: TeamPartial;
@@ -46,7 +46,7 @@ const { ObjectId, Mixed } = Schema.Types;
 export const matchSchema = schema({
   season: { type: ObjectId, ref: 'Season', index: true, required: true },
   slug: { type: String, required: true, trim: true },
-  matchRound: { type: Number },
+  matchday: { type: Number },
   gameRound: { type: ObjectId, ref: 'GameRound', index: true, required: true },
   utcDate: { type: Date, required: true },
   homeTeam: {

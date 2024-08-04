@@ -218,8 +218,8 @@ class SeasonBuilder implements Builder<Season> {
     return this;
   }
 
-  setCurrentMatchRound(value: number) {
-    this.built.currentMatchRound = value;
+  setCurrentMatchday(value: number) {
+    this.built.currentMatchday = value;
     return this;
   }
 
