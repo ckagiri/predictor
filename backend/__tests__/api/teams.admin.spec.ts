@@ -28,7 +28,7 @@ const epl2020 = a.season
   .setName('2019-2020')
   .setSlug('2019-20')
   .setYear(2020)
-  .setCurrentMatchRound(20)
+  .setCurrentMatchday(20)
   .setSeasonStart('2019-08-09T00:00:00+0200')
   .setSeasonEnd('2020-05-17T16:00:00+0200');
 

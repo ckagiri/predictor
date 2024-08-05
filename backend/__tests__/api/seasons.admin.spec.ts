@@ -27,7 +27,7 @@ const epl2020 = a.season
   .setName('2019-2020')
   .setSlug('2019-20')
   .setYear(2020)
-  .setCurrentMatchRound(20)
+  .setCurrentMatchday(20)
   .setSeasonStart('2019-08-09T00:00:00+0200')
   .setSeasonEnd('2020-05-17T16:00:00+0200');
 
@@ -36,7 +36,7 @@ const epl2019 = a.season
   .setName('2018-2019')
   .setSlug('2018-19')
   .setYear(2019)
-  .setCurrentMatchRound(38)
+  .setCurrentMatchday(38)
   .setSeasonStart('2018-08-09T00:00:00+0200')
   .setSeasonEnd('2019-05-17T16:00:00+0200');
 
@@ -48,7 +48,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Seasons API', function () {
+describe.only('Seasons API', function () {
   let gameData: GameData;
 
   before(async () => {

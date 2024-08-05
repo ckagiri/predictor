@@ -300,7 +300,7 @@
         "->teams.west_ham",
         "->teams.wolves"
       ],
-      "currentMatchRound": 1,
+      "currentMatchday": 1,
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,

@@ -56,7 +56,7 @@ describe('Season Converter', () => {
     it('should convert correctly', done => {
       const conversion = converter.from(season);
       conversion.subscribe(s => {
-        expect(s.currentMatchRound).to.equal(
+        expect(s.currentMatchday).to.equal(
           season.currentSeason.currentMatchday,
         );
         expect(s.externalReference).to.deep.equal({

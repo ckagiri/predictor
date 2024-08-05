@@ -87,7 +87,7 @@ class CompetitionBuilder implements Builder<Competition> {
 }
 
 class TeamBuilder implements Builder<Team> {
-  private built = {} as Team;
+  private built = { name: '' } as Team;
   public team?: Team;
 
   get id() {
@@ -109,7 +109,7 @@ class TeamBuilder implements Builder<Team> {
   }
 
   async build(): Promise<Team> {
-    this.team = await db.Team.create(this.built);
+    this.team = await db.Team.create(this.built).then(t => t.toObject());
     return this.team;
   }
 }
@@ -169,7 +169,7 @@ class GameRoundBuilder implements Builder<GameRound> {
   async build(): Promise<GameRound> {
     this.built.season = this.season?.id;
 
-    this.gameRound = await db.GameRound.create(this.built);
+    this.gameRound = await db.GameRound.create(this.built)
     return this.gameRound;
   }
 }
@@ -421,7 +421,7 @@ class MatchBuilder implements Builder<Match> {
 
     this.built.slug = `${this.built.homeTeam?.slug}-${this.built.awayTeam?.slug}`;
     this.built.gameRound = this.gameRound.id!;
-    this.match = await db.Match.create(this.built);
+    this.match = await db.Match.create(this.built).then(m => m.toObject());
 
     await Promise.all(
       this.predictionBuilders.map(async builder => {
@@ -514,7 +514,7 @@ class PredictionBuilder implements Builder<Prediction> {
     this.built.season = season;
     this.built.user = userId;
 
-    this.prediction = await db.Prediction.create(this.built);
+    this.prediction = await db.Prediction.create(this.built).then(p => p.toObject());
     return this.prediction;
   }
 }
