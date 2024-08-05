@@ -157,7 +157,7 @@ describe('apifootballDataClient', () => {
       const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
-      const { data } = await apiClient.getMatches(['2021']);
+      const { data, metadata } = await apiClient.getMatches(['2021']);
       expect(data).to.be.an('object');
       const { resultSet, matches } = data;
       expect(resultSet.count).to.be.a('number');
