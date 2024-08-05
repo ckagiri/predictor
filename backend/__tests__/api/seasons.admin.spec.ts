@@ -48,7 +48,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe.only('Seasons API', function () {
+describe('Seasons API', function () {
   let gameData: GameData;
 
   before(async () => {
@@ -79,7 +79,7 @@ describe.only('Seasons API', function () {
 
     it('getSeasons returns all seasons for competition id in the database', async () => {
       const { req, res } = setupReqRes();
-      req.query.competition = gameData.competitions[0].id;
+      req.query.competition = gameData.competitions[0].slug;
       await seasonsController.getSeasons(<any>req, <any>res);
 
       expect(res.json).to.have.been.called;

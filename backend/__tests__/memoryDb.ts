@@ -6,6 +6,7 @@ let mongoServer: MongoMemoryServer;
 const mongooseOpts = {
   useUnifiedTopology: true,
   useNewUrlParser: true,
+  dbName: 'ligipredictor'
 } as ConnectOptions;
 
 const connect = async () => {
