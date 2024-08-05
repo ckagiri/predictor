@@ -48,7 +48,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe.only('Seasons API', function () {
+describe('Seasons API', function () {
   let gameData: GameData;
 
   before(async () => {
