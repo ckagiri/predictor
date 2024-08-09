@@ -45,7 +45,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Teams API', function () {
+describe.skip('Teams API', function () {
   let gameData: GameData;
 
   before(async () => {

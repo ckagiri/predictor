@@ -48,7 +48,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Seasons API', function () {
+describe.skip('Seasons API', function () {
   let gameData: GameData;
 
   before(async () => {

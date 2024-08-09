@@ -5,13 +5,12 @@ import { mergeMap } from 'rxjs/operators';
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 import memoryDb from '../memoryDb';
-import a from '../a';
 
 const manUtd = {
   id: 'abc1',
-  name: 'Manchester United FC',
-  shortName: 'Man United',
-  code: 'mun',
+  name: 'Manchester United',
+  shortName: 'Man Utd',
+  tla: 'MUN',
   slug: 'man-united',
   crestUrl:
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
@@ -20,9 +19,9 @@ const manUtd = {
 
 const manCity = {
   id: 'abc2',
-  name: 'Manchester City FC',
+  name: 'Manchester City',
   shortName: 'Man City',
-  code: 'mci',
+  tla: 'MCI',
   slug: 'man-city',
   crestUrl:
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
@@ -32,7 +31,7 @@ const manCity = {
 const afdManUtd = {
   id: 66,
   name: 'Manchester United FC',
-  shortName: 'ManU',
+  shortName: 'Man Utd',
   squadMarketValue: null,
   crestUrl:
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
@@ -41,7 +40,7 @@ const afdManUtd = {
 const afdManCity = {
   id: 67,
   name: 'Manchester City FC',
-  shortName: 'ManCity',
+  shortName: 'Man City',
   squadMarketValue: null,
   crestUrl:
     'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_City_FC.svg',
@@ -161,7 +160,7 @@ describe('teamRepo', function () {
       .subscribe(
         team => {
           expect(team.name).to.equal(manUtd.name);
-          expect(team.shortName).to.not.equal(manUtd.shortName)
+          expect(team.shortName).to.equal(manUtd.shortName)
           expect(team.shortName).to.equal(afdManUtd.shortName)
           expect(team.externalReference).to.have.ownProperty(
             ApiProvider.API_FOOTBALL_DATA,
@@ -190,7 +189,7 @@ describe('teamRepo', function () {
       .subscribe(
         team => {
           expect(team.name).to.equal(teamManUtd.name);
-          expect(team.shortName).to.not.equal(manUtd.shortName)
+          expect(team.shortName).to.equal(manUtd.shortName)
           expect(team.shortName).to.equal(afdManUtd.shortName)
           expect(team.externalReference).to.have.ownProperty('SomeOtherApi');
           expect(team.externalReference).to.have.ownProperty(
@@ -202,7 +201,7 @@ describe('teamRepo', function () {
   });
 
   it('should findEachByNameAndUpert', done => {
-    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
+    const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.API_FOOTBALL_DATA);
 
     teamRepo
       .insertMany$([manUtd, manCity])
@@ -214,11 +213,11 @@ describe('teamRepo', function () {
       .subscribe(
         teams => {
           expect(teams[0].name).to.equal(manUtd.name);
-          expect(teams[0].shortName).to.not.equal(manUtd.shortName)
+          expect(teams[0].shortName).to.equal(manUtd.shortName)
           expect(teams[0].shortName).to.equal(afdManUtd.shortName)
 
           expect(teams[1].name).to.equal(manCity.name);
-          expect(teams[1].shortName).to.not.equal(manCity.shortName)
+          expect(teams[1].shortName).to.equal(manCity.shortName)
           expect(teams[1].shortName).to.equal(afdManCity.shortName)
           done();
         }

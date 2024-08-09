@@ -21,7 +21,7 @@ describe('Match', () => {
 
       it('should require a date', done => {
         m.validate((err: any) => {
-          expect(err.errors.date).to.exist;
+          expect(err.errors.utcDate).to.exist;
           done();
         });
       });
@@ -58,7 +58,7 @@ describe('Match', () => {
     describe('a match', () => {
       const match = {
         season: '4edd40c86762e0fb12000001',
-        date: '2018-05-13T14:00:00Z',
+        utcDate: '2018-05-13T14:00:00Z',
         status: MatchStatus.SCHEDULED,
         matchRound: 38,
         gameRound: '4edd40c86762e0fb12000001',

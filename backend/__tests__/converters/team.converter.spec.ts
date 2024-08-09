@@ -14,7 +14,7 @@ describe('Team Converter', () => {
       slug: 'man_united',
       crestUrl:
         'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-      aliases: ['ManU', 'ManUtd'],
+      aliases: ['Man Utd'],
     };
     it('should convert correctly', done => {
       const conversion = converter.from(team);
@@ -32,7 +32,7 @@ describe('Team Converter', () => {
     const team = {
       id: 66,
       name: 'Manchester United FC',
-      shortName: 'ManU',
+      shortName: 'Man United',
       squadMarketValue: null,
       crestUrl:
         'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
@@ -40,7 +40,7 @@ describe('Team Converter', () => {
     it('should convert correctly', done => {
       const conversion = converter.from(team);
       conversion.subscribe(t => {
-        expect(t.name).to.equal(team.name);
+        expect(t.name).to.equal(team.shortName);
         expect(t.crestUrl).to.equal(team.crestUrl);
         expect(t.externalReference).to.deep.equal({
           API_FOOTBALL_DATA: { id: 66 },

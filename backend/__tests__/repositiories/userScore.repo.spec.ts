@@ -175,8 +175,8 @@ describe('UserScore Repo', function () {
         expect(score.scorePoints).to.equal(0);
         expect(score.points).to.equal(16);
         expect(score.pointsExcludingJoker).to.equal(8);
-        expect(score.matches).to.contain(manuVmancId);
-        expect(score.predictions).to.contain(user1manuVmancPredId);
+        expect(score.matches?.map(m => m.toString())).to.contain(manuVmancId);
+        expect(score.predictions?.map(p => p.toString())).to.contain(user1manuVmancPredId);
         done();
       });
   });
@@ -196,6 +196,9 @@ describe('UserScore Repo', function () {
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
       exactMatchScores: 0,
+      exactGoalDiffs: 1,
+      closeMatchScoresHigh: 0,
+      closeMatchScoresLow: 0,
       resultPoints: 16,
       scorePoints: 0,
       points: 16,
@@ -224,9 +227,9 @@ describe('UserScore Repo', function () {
         expect(score.scorePoints).to.equal(8);
         expect(score.points).to.equal(32);
         expect(score.pointsExcludingJoker).to.equal(24);
-        expect(score.matches).to.contain(manuVmancId, cheVarsId);
+        expect(score.matches?.map(m => m.toString())).to.contain(manuVmancId, cheVarsId);
         expect(score.matchesPredicted).to.equal(2)
-        expect(score.predictions).to.contain(user1manuVmancPredId, user1cheVarsPredId);
+        expect(score.predictions?.map(p => p.toString())).to.contain(user1manuVmancPredId, user1cheVarsPredId);
         done();
       });
   });
@@ -246,6 +249,9 @@ describe('UserScore Repo', function () {
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
       exactMatchScores: 0,
+      exactGoalDiffs: 1,
+      closeMatchScoresHigh: 0,
+      closeMatchScoresLow: 0,
       resultPoints: 8,
       scorePoints: 0,
       points: 8,
@@ -266,6 +272,9 @@ describe('UserScore Repo', function () {
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
       exactMatchScores: 0,
+      exactGoalDiffs: 0,
+      closeMatchScoresHigh: 0,
+      closeMatchScoresLow: 0,
       resultPoints: 7,
       scorePoints: 0,
       points: 7,

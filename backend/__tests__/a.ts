@@ -98,8 +98,22 @@ class TeamBuilder implements Builder<Team> {
     return this.team?.slug!;
   }
 
+  get tla() {
+    return this.team?.tla!;
+  }
+
   setName(value: string) {
     this.built.name = value;
+    return this;
+  }
+
+  setShortName(value: string) {
+    this.built.shortName = value;
+    return this;
+  }
+
+  setTla(value: string) {
+    this.built.tla = value;
     return this;
   }
 
@@ -414,10 +428,10 @@ class MatchBuilder implements Builder<Match> {
   async build(): Promise<Match> {
     this.built.season = this.season.id!;
     const { name: homeTeamName, id: homeTeamId, slug: homeTeamSlug, crestUrl: homeTeamCrestUrl } = this.homeTeam;
-    this.built.homeTeam = { id: homeTeamId!, name: homeTeamName, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
+    this.built.homeTeam = { id: homeTeamId!, name: homeTeamName!, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
 
     const { name: awayTeamName, id: awayTeamId, slug: awayTeamSlug, crestUrl: awayTeamCrestUrl } = this.awayTeam;
-    this.built.awayTeam = { id: awayTeamId!, name: awayTeamName, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
+    this.built.awayTeam = { id: awayTeamId!, name: awayTeamName!, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
 
     this.built.slug = `${this.built.homeTeam?.slug}-${this.built.awayTeam?.slug}`;
     this.built.gameRound = this.gameRound.id!;
