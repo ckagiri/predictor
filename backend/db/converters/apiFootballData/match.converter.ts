@@ -45,7 +45,6 @@ export class AfdMatchConverter implements MatchConverter {
       (season: Season, homeTeam: Team, awayTeam: Team, gameRound: GameRound) => {
         return {
           season: season.id!,
-          date: data.utcDate,
           matchday: data.matchday,
           gameRound: gameRound.id!,
           status: data.status,
