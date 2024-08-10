@@ -25,14 +25,14 @@ const epl2022 = a.season
     [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
   })
 
-const manu = a.team.setName('Manchester United').setSlug('man-utd');
-const manc = a.team.setName('Manchester City').setSlug('man-city');
-const che = a.team.setName('Chelsea').setSlug('chelsea');
-const ars = a.team.setName('Arsenal').setSlug('arsenal');
-const liv = a.team.setName('Liverpool').setSlug('liverpool');
-const tot = a.team.setName('Tottenham').setSlug('tottenham');
-const eve = a.team.setName('Everton').setSlug('everton');
-const whu = a.team.setName('West Ham').setSlug('west-ham')
+const manu = a.team.setName('Manchester United').setTla('MNU').setSlug('man-utd');
+const manc = a.team.setName('Manchester City').setTla('MNC').setSlug('man-city');
+const che = a.team.setName('Chelsea').setTla('CHE').setSlug('chelsea');
+const ars = a.team.setName('Arsenal').setTla('ARS').setSlug('arsenal');
+const liv = a.team.setName('Liverpool').setTla('LIV').setTla('MNU').setSlug('liverpool');
+const tot = a.team.setName('Tottenham').setTla('TOT').setSlug('tottenham');
+const eve = a.team.setName('Everton').setTla('EVE').setSlug('everton');
+const whu = a.team.setName('West Ham').setTla('WHU').setSlug('west-ham')
 
 const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
 const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
@@ -142,7 +142,7 @@ describe('Prediction repo', function () {
         .insert$(userId1matchId1Pred)
         .pipe(
           mergeMap(() => {
-            return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
+            return predictionRepo.findOneAndUpdate$({ user: userId, match: matchId }, { choice: newChoice });
           }),
         )
         .subscribe(pred => {
@@ -155,15 +155,23 @@ describe('Prediction repo', function () {
         });
     });
 
-    it('should throw if it cant find by user and match to update', done => {
+    it('should be null if it cant find by user and match to update', done => {
       const userId = user1.id;
       const matchId = manuVmanc.id;
       const choice = { goalsHomeTeam: 2, goalsAwayTeam: 1 }
 
-      predictionRepo.findOneAndUpdate$(userId, matchId, choice)
-        .subscribe(pred => { console.log(pred); done(); }, err => {
-          expect(err).match(/does not exist/i);
-          done();
+      predictionRepo.findOneAndUpdate$({ user: userId, match: matchId }, { choice })
+        .subscribe({
+          next: pred => {
+            expect(pred).to.be.null;
+          },
+          error: (err) => {
+            // rethrow error - this in not expected
+            throw err;
+          },
+          complete: () => {
+            done();
+          }
         });
     });
 
@@ -186,7 +194,7 @@ describe('Prediction repo', function () {
         .insert$(userId1matchId1Pred)
         .pipe(
           mergeMap(() => {
-            return predictionRepo.findOneAndUpdate$(userId, matchId, newChoice);
+            return predictionRepo.findOneAndUpdate$({ user: userId, match: matchId }, { choice: newChoice })
           }),
         )
         .subscribe(pred => {
@@ -370,7 +378,7 @@ describe('Prediction repo', function () {
           mergeMap(() => predictionRepo.findOrCreatePredictions$(userId1, roundMatches))
         )
         .subscribe(preds => {
-          expect(preds).to.have.length(3)
+          expect(preds).to.have.length(2)
           expect(preds.filter(p => p.hasJoker)).to.have.length(1);
           done();
         });

@@ -16,7 +16,7 @@ export class AfdTeamConverter implements TeamConverter {
 
   public from(data: any): Observable<Team> {
     return of({
-      name: data.name,
+      name: data.shortName,
       crestUrl: data.crestUrl,
       externalReference: {
         [this.footballApiProvider]: {

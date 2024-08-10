@@ -56,7 +56,7 @@ export class SeasonNextRoundServiceImpl {
 
           await lastValueFrom(this.seasonRepo.findByIdAndUpdate$(currentSeasonId, {
             currentGameRound: nextGameRound.id,
-            currentMatchRound: apiCurrentMatchday,
+            currentMatchday: apiCurrentMatchday,
           }));
           updatedSeasons.push(currentSeasonId);
         }

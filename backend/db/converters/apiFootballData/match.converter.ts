@@ -39,14 +39,13 @@ export class AfdMatchConverter implements MatchConverter {
   public from(data: any): Observable<Match> {
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
-      this.teamRepo.findByName$(data.homeTeam.name),
-      this.teamRepo.findByName$(data.awayTeam.name),
+      this.teamRepo.findByName$(data.homeTeam.shortName),
+      this.teamRepo.findByName$(data.awayTeam.shortName),
       this.gameRoundRepo.findOne$({ position: data.matchday }),
       (season: Season, homeTeam: Team, awayTeam: Team, gameRound: GameRound) => {
         return {
           season: season.id!,
-          date: data.utcDate,
-          matchRound: data.matchday,
+          matchday: data.matchday,
           gameRound: gameRound.id!,
           status: data.status,
           homeTeam: {

@@ -29,16 +29,16 @@ export class TeamRepositoryImpl
   }
 
   public findByNameAndUpsert$(obj: any): Observable<Team> {
-    const name = obj.name;
-    const query = {
-      $or: [{ name }, { shortName: name }, { aliases: name }],
-    };
-
     return (this.converter as TeamConverter).from(obj).pipe(
       mergeMap(data => {
+        const name = data.name;
+        const query = {
+          $or: [{ name }, { shortName: name }, { aliases: name }],
+        };
+        delete data.name;
         const { externalReference } = data;
         delete data.externalReference;
-        Object.keys(data).forEach(key => data[key] == null && delete data[key]);
+                Object.keys(data).forEach(key => data[key] == null && delete data[key]);
 
         return this.findOneAndUpsert$(query, data)
           .pipe(

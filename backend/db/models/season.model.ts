@@ -11,7 +11,7 @@ export interface Season extends Entity {
     id: string;
   };
   numberOfRounds?: number;
-  currentMatchRound?: number;
+  currentMatchday?: number;
   currentGameRound?: string;
   seasonStart?: any;
   seasonEnd?: any;
@@ -32,7 +32,7 @@ export const seasonSchema = schema({
   year: { type: Number, required: true },
   seasonStart: { type: Date, required: true },
   seasonEnd: { type: Date, required: true },
-  currentMatchRound: { type: Number },
+  currentMatchday: { type: Number },
   currentGameRound: { type: ObjectId, ref: 'GameRound' },
   numberOfRounds: { type: Number },
   numberOfTeams: { type: Number },

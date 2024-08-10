@@ -11,7 +11,7 @@ export interface User extends Entity {
 }
 
 const userSchema = schema({
-  username: { type: String, unique: true, lowercase: true },
+  username: { type: String, unique: true, lowercase: true, required: true },
   password: { type: String },
   isAdmin: { type: Boolean, default: false },
 }) as Schema<User>;
@@ -43,7 +43,7 @@ userSchema.methods.comparePassword = function comparePassword(
   candidatePassword: string,
   cb: (err: any, isMatch: any) => void,
 ) {
-  bcrypt.compare(candidatePassword, this.password, (err, isMatch) => {
+  bcrypt.compare(candidatePassword, this.password || '', (err, isMatch) => {
     cb(err, isMatch);
   });
 };

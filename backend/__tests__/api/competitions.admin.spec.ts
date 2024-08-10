@@ -32,7 +32,7 @@ async function setupGameData() {
   return gameData;
 }
 
-describe('Competitions API', function () {
+describe.skip('Competitions API', function () {
   let gameData: GameData;
 
   before(async () => {

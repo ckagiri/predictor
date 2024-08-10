@@ -157,11 +157,11 @@ describe('apifootballDataClient', () => {
       const apiClient = FootballApiClientImpl.getInstance(
         ApiProvider.API_FOOTBALL_DATA,
       );
-      const { data, metadata } = await apiClient.getMatches(2021);
+      const { data } = await apiClient.getMatches(['2021']);
       expect(data).to.be.an('object');
-      expect(metadata).to.be.an('object');
-      expect(data.count).to.be.a('number');
-      expect(data.matches).to.be.an('array');
+      const { resultSet, matches } = data;
+      expect(resultSet.count).to.be.a('number');
+      expect(matches).to.be.an('array');
     }).timeout(0);
 
     it('should get matches by competition', async () => {
@@ -178,7 +178,7 @@ describe('apifootballDataClient', () => {
 
       const ApiFootballDataClient = require('../../thirdParty/footballApi/apiFootballData/apiClient');
       const apiFootballDataClient: FootballApiClient = ApiFootballDataClient.getInstance();
-      const { data, metadata } = await apiFootballDataClient.getMatches(2021);
+      const { data, metadata } = await apiFootballDataClient.getMatches(['2021']);
 
       expect(data).to.be.an('object');
       expect(metadata).to.be.an('object');

@@ -9,6 +9,9 @@ describe('Match Converter', () => {
     const season = {
       id: '4edd40c86762e0fb12000001',
     };
+    const round = {
+      id: 'some-round-id',
+    }
     const seasonRepoStub: any = {
       findByExternalId$: () => {
         return of(season);
@@ -18,24 +21,31 @@ describe('Match Converter', () => {
       id: '4edd40c86762e0fb12000001',
       name: 'Arsenal',
       slug: 'arsenal',
+      tla: 'ARS',
       crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Arsenal_FC.svg',
     };
     const awayTeam = {
       id: '4edd40c86762e0fb12000002',
       name: 'Chelsea',
+      tla: 'CHE',
       slug: 'chelsea',
       crestUrl: 'http://upload.wikimedia.org/wikipedia/de/d/da/Chelsea.svg',
     };
     const teamRepoStub: any = {
       findByName$: sinon.stub(),
     };
-    const gameRoundRepoStub: any = {};
+    const gameRoundRepoStub: any = {
+      findOne$: sinon.stub(),
+    };
     teamRepoStub.findByName$
       .withArgs(sinon.match('Arsenal'))
       .returns(of(homeTeam));
     teamRepoStub.findByName$
       .withArgs(sinon.match('Chelsea'))
       .returns(of(awayTeam));
+    gameRoundRepoStub.findOne$
+      .withArgs(sinon.match({ position: 35 }))
+      .returns(of({ id: round.id }));
     const converter = new AfdMatchConverter(seasonRepoStub, teamRepoStub, gameRoundRepoStub);
     const match = {
       id: 233371,
@@ -53,11 +63,11 @@ describe('Match Converter', () => {
       },
       homeTeam: {
         id: 563,
-        name: 'Arsenal',
+        shortName: 'Arsenal',
       },
       awayTeam: {
         id: 338,
-        name: 'Chelsea',
+        shortName: 'Chelsea',
       },
     };
     it('should convert correctly', done => {
@@ -65,8 +75,8 @@ describe('Match Converter', () => {
       conversion.subscribe(m => {
         expect(m.homeTeam!.name).to.equal(homeTeam.name);
         expect(m.awayTeam!.name).to.equal(awayTeam.name);
-        expect(m.matchRound).to.equal(match.matchday);
-        expect(m.slug).to.equal(`${homeTeam.slug}-v-${awayTeam.slug}`);
+        expect(m.matchday).to.equal(match.matchday);
+        expect(m.slug).to.equal((`${homeTeam.tla}-${awayTeam.tla}`).toLowerCase());
         expect(m.externalReference).to.deep.equal({
           API_FOOTBALL_DATA: { id: 233371 },
         });

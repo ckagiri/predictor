@@ -17,7 +17,8 @@ export class SeasonsController {
 
   public getSeasons = async (req: Request, res: Response) => {
     try {
-      const competition = req.params.competition;
+      console.log('query', req.query);
+      const competition = req.params.competition || req.query.competition;
       if (!competition) {
         throw new Error('competition slug is required');
       }

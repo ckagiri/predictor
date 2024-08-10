@@ -88,13 +88,19 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
 
   async function connectWithRetry() {
     try {
-      await mongoose.connect(
-        dbUri,
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        } as ConnectOptions);
-      console.info(`Connected to MongoDB: ${dbUri}`);
+      if (mongoose.connection.readyState === 1) {
+        const { port, host, name } = mongoose.connection;
+        const mongoUri = `mongodb://${host}:${port}/${name}`;
+        console.info(`Connected to MongoDB: ${mongoUri}`);
+      } else {
+        await mongoose.connect(
+          dbUri,
+          {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+          } as ConnectOptions);
+        console.info(`Connected to MongoDB: ${dbUri}`);
+      }
     } catch (err: any) {
       console.error(`ERROR CONNECTING TO MONGO: ${err}`);
       console.error(`Please make sure that ${dbUri} is running.`);

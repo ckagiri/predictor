@@ -24,8 +24,17 @@ const epl2020 = a.season
   .setSeasonStart('2019-08-09T00:00:00+0200')
   .setSeasonEnd('2020-05-17T16:00:00+0200');
 
-const manutd = a.team.setName('Manchester United').setSlug('man-utd');
-const mancity = a.team.setName('Manchester City').setSlug('man-city');
+const manutd = a.team
+  .setName('Manchester United')
+  .setShortName('Man Utd')
+  .setTla('MNU')
+  .setSlug('man-utd');
+
+const mancity = a.team
+  .setName('Manchester City')
+  .setShortName('Man City')
+  .setTla('MCI')
+  .setSlug('man-city');
 
 const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
 const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
@@ -64,11 +73,11 @@ describe('MatchRepo', function () {
       },
       homeTeam: {
         id: 66,
-        name: 'Manchester United',
+        shortName: 'Man Utd',
       },
       awayTeam: {
         id: 65,
-        name: 'Manchester City',
+        shortName: 'Man City',
       },
       odds: {
         homeWin: 2.3,
@@ -89,7 +98,7 @@ describe('MatchRepo', function () {
       manuVsmanc = {
         id: undefined,
         season: epl2020.id,
-        date: '2019-09-10T11:30:00Z',
+        utcDate: '2019-09-10T11:30:00Z',
         status: MatchStatus.SCHEDULED,
         gameRound: gw1.id,
         homeTeamId: manutd.id,
@@ -120,7 +129,7 @@ describe('MatchRepo', function () {
         )
         .subscribe(match => {
           expect(match.season!.toString()).to.equal(epl2020.id);
-          expect(match.slug).to.equal(`${manutd.slug}-v-${mancity.slug}`);
+          expect(match.slug).to.equal((`${manutd.tla}-${mancity.tla}`).toLowerCase());
           done();
         });
     });
@@ -261,7 +270,7 @@ describe('MatchRepo', function () {
     it('should sort matches by date', done => {
       ligiMatchRepo
         .find$({
-          sort: ['date', 'ASC'],
+          sort: ['utcDate', 'ASC'],
         })
         .subscribe(({ result: matches }) => {
           expect(matches[0].homeTeam?.slug).to.equal('liverpool');
@@ -274,7 +283,7 @@ describe('MatchRepo', function () {
       ligiMatchRepo
         .find$({
           filter: { 'team.id': arsenal.id },
-          sort: ['date', 'ASC'],
+          sort: ['utcDate', 'ASC'],
         })
         .subscribe(({ result: matches, count }) => {
           expect(matches[0].homeTeam?.id.toString()).to.equal(liverpool.id);
@@ -291,7 +300,7 @@ describe('MatchRepo', function () {
     it('should paginate matches', done => {
       ligiMatchRepo
         .find$({
-          sort: ['date', 'ASC'],
+          sort: ['utcDate', 'ASC'],
           range: [0, 2],
         })
         .subscribe(({ result: matches, count }) => {

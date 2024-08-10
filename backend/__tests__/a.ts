@@ -87,7 +87,7 @@ class CompetitionBuilder implements Builder<Competition> {
 }
 
 class TeamBuilder implements Builder<Team> {
-  private built = {} as Team;
+  private built = { name: '' } as Team;
   public team?: Team;
 
   get id() {
@@ -98,8 +98,22 @@ class TeamBuilder implements Builder<Team> {
     return this.team?.slug!;
   }
 
+  get tla() {
+    return this.team?.tla!;
+  }
+
   setName(value: string) {
     this.built.name = value;
+    return this;
+  }
+
+  setShortName(value: string) {
+    this.built.shortName = value;
+    return this;
+  }
+
+  setTla(value: string) {
+    this.built.tla = value;
     return this;
   }
 
@@ -109,7 +123,7 @@ class TeamBuilder implements Builder<Team> {
   }
 
   async build(): Promise<Team> {
-    this.team = await db.Team.create(this.built);
+    this.team = await db.Team.create(this.built).then(t => t.toObject());
     return this.team;
   }
 }
@@ -169,7 +183,7 @@ class GameRoundBuilder implements Builder<GameRound> {
   async build(): Promise<GameRound> {
     this.built.season = this.season?.id;
 
-    this.gameRound = await db.GameRound.create(this.built);
+    this.gameRound = await db.GameRound.create(this.built)
     return this.gameRound;
   }
 }
@@ -218,8 +232,8 @@ class SeasonBuilder implements Builder<Season> {
     return this;
   }
 
-  setCurrentMatchRound(value: number) {
-    this.built.currentMatchRound = value;
+  setCurrentMatchday(value: number) {
+    this.built.currentMatchday = value;
     return this;
   }
 
@@ -414,14 +428,14 @@ class MatchBuilder implements Builder<Match> {
   async build(): Promise<Match> {
     this.built.season = this.season.id!;
     const { name: homeTeamName, id: homeTeamId, slug: homeTeamSlug, crestUrl: homeTeamCrestUrl } = this.homeTeam;
-    this.built.homeTeam = { id: homeTeamId!, name: homeTeamName, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
+    this.built.homeTeam = { id: homeTeamId!, name: homeTeamName!, slug: homeTeamSlug!, crestUrl: homeTeamCrestUrl! };
 
     const { name: awayTeamName, id: awayTeamId, slug: awayTeamSlug, crestUrl: awayTeamCrestUrl } = this.awayTeam;
-    this.built.awayTeam = { id: awayTeamId!, name: awayTeamName, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
+    this.built.awayTeam = { id: awayTeamId!, name: awayTeamName!, slug: awayTeamSlug!, crestUrl: awayTeamCrestUrl! };
 
     this.built.slug = `${this.built.homeTeam?.slug}-${this.built.awayTeam?.slug}`;
     this.built.gameRound = this.gameRound.id!;
-    this.match = await db.Match.create(this.built);
+    this.match = await db.Match.create(this.built).then(m => m.toObject());
 
     await Promise.all(
       this.predictionBuilders.map(async builder => {
@@ -514,7 +528,7 @@ class PredictionBuilder implements Builder<Prediction> {
     this.built.season = season;
     this.built.user = userId;
 
-    this.prediction = await db.Prediction.create(this.built);
+    this.prediction = await db.Prediction.create(this.built).then(p => p.toObject());
     return this.prediction;
   }
 }

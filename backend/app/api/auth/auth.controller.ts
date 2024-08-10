@@ -61,7 +61,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
 
 function authenticate(req: Request, res: Response, next: NextFunction) {
   return new Promise((resolve, reject) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
         reject(err)
       } else {

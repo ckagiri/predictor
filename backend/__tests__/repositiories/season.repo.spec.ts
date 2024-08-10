@@ -58,7 +58,7 @@ describe('seasonRepo', function () {
       year: 2022,
       seasonStart: '2020-08-11T00:00:00+0200',
       seasonEnd: '2021-05-13T16:00:00+0200',
-      currentMatchRound: 20,
+      currentMatchday: 20,
       competition,
       externalReference: {
         [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_21_REF },
@@ -72,7 +72,7 @@ describe('seasonRepo', function () {
       year: 2022,
       seasonStart: '2021-08-11T00:00:00+0200',
       seasonEnd: '2022-05-13T16:00:00+0200',
-      currentMatchRound: 20,
+      currentMatchday: 20,
       competition,
       externalReference: {
         [ApiProvider.API_FOOTBALL_DATA]: { id: EPL_22_REF },
@@ -95,7 +95,7 @@ describe('seasonRepo', function () {
       year: 2022,
       seasonStart: '2021-08-11T00:00:00+0200',
       seasonEnd: '2022-05-13T16:00:00+0200',
-      currentMatchRound: 20,
+      currentMatchday: 20,
       competitionId: epl.id,
     };
 
@@ -131,7 +131,7 @@ describe('seasonRepo', function () {
       });
   });
 
-  // findByExternalIds is used in seasonScheduler and by seasonUpdater to update the currentMatchRound.. the ids come from api client getCompetitions..
+  // findByExternalIds is used in seasonScheduler and by seasonUpdater to update the currentMatchday.. the ids come from api client getCompetitions..
   // interesting that these competitions behave as seasons
   it('should find by externalIds', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(
@@ -157,24 +157,24 @@ describe('seasonRepo', function () {
   });
 
   // need to see why we are so interested in current match round
-  it('should findByIdAndUpdate to update currentMatchRound', done => {
+  it('should findByIdAndUpdate to update currentMatchday', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
 
     seasonRepo
       .insert$(epl22)
       .pipe(
         mergeMap(s => {
-          const update = { currentMatchRound: 21 };
+          const update = { currentMatchday: 21 };
           return seasonRepo.findByIdAndUpdate$(s.id!, update);
         }),
       )
       .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
+        expect(s.currentMatchday).to.equal(21);
         done();
       });
   });
 
-  it('should findByExternalIdAndUpdate to update currentMatchRound', done => {
+  it('should findByExternalIdAndUpdate to update currentMatchday', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
@@ -189,12 +189,12 @@ describe('seasonRepo', function () {
         }),
       )
       .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
+        expect(s.currentMatchday).to.equal(21);
         done();
       });
   });
 
-  it('should findByExternalIdAndUpdate to update currentMatchRound using a patch', done => {
+  it('should findByExternalIdAndUpdate to update currentMatchday using a patch', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(
       ApiProvider.API_FOOTBALL_DATA,
     );
@@ -203,12 +203,12 @@ describe('seasonRepo', function () {
       .insert$(epl22)
       .pipe(
         mergeMap(() => {
-          const update = { currentMatchRound: 21 };
+          const update = { currentMatchday: 21 };
           return seasonRepo.findByExternalIdAndUpdate$(EPL_22_REF, update);
         }),
       )
       .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
+        expect(s.currentMatchday).to.equal(21);
         done();
       });
   });
@@ -235,7 +235,7 @@ describe('seasonRepo', function () {
         }),
       )
       .subscribe(s => {
-        expect(s.currentMatchRound).to.equal(21);
+        expect(s.currentMatchday).to.equal(21);
         expect(s.externalReference).to.deep.equal(epl22.externalReference);
         done();
       });

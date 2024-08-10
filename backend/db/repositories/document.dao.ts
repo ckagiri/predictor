@@ -103,8 +103,8 @@ export class DocumentDao<T extends Entity> {
   ): Promise<T[]> {
     return this.Model.find(conditions, projection, options)
       .lean({ transform })
-      .exec() as Promise<T[]>;
-  }
+      .then(res => Promise.resolve(res)) as Promise<T[]>;
+   }
 
   public find(query: any = {}, projection?: any, options?: any) {
     const { filter, range, sort } = query;
@@ -208,8 +208,7 @@ export class DocumentDao<T extends Entity> {
   findAllByIds(ids: string[] = []): Promise<T[]> {
     return this.Model.find({ _id: { $in: ids.map(id => new mongoose.Types.ObjectId(id)) } })
       .lean({ transform })
-      .exec() as Promise<T[]>;
-  }
+      .then(res => Promise.resolve(res)) as Promise<T[]>;  }
 
   public findByIdAndUpdate(
     id: string,

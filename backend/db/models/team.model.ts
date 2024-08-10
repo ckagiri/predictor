@@ -3,7 +3,7 @@ import { Schema, model } from 'mongoose';
 import { Entity, schema } from './base.model';
 
 export interface Team extends Entity {
-  name: string;
+  name?: string;
   slug?: string;
   shortName?: string;
   tla?: string;

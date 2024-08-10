@@ -10,7 +10,7 @@ import { MatchesJob } from '../../../import/apiFootballData/matches.job';
 
 import data from '../../fixtures/requests/apiFootballData.epl2018Matches.json';
 const clientStub: any = {
-  getMatches: () => {
+  getCompetitionMatches: () => {
     return Promise.resolve({
       data,
     });
@@ -31,8 +31,8 @@ const queueStub: any = sinon.stub();
 
 describe('ApiFootballData:Matches Job', () => {
   describe('start', () => {
-    it('should call client.getMatches', async () => {
-      const spy = sinon.spy(clientStub, 'getMatches');
+    it('should call client.getCompetitionMatches', async () => {
+      const spy = sinon.spy(clientStub, 'getCompetitionMatches');
 
       await job.start(queueStub);
 

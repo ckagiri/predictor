@@ -18,7 +18,7 @@ export class AfdSeasonConverter implements SeasonConverter {
     const { currentSeason } = data;
     const { id, currentMatchday, startDate, endDate } = currentSeason;
     return of({
-      currentMatchRound: currentMatchday,
+      currentMatchday: currentMatchday,
       seasonStart: startDate,
       seasonEnd: endDate,
       externalReference: {
