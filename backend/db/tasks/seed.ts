@@ -6,6 +6,7 @@ import('../models/competition.model');
 import('../models/season.model');
 import('../models/team.model');
 import('../models/gameRound.model');
+import('../models/user.model');
 
 function seed() {
   mongoose.connect(process.env.MONGO_URI!, { useNewUrlParser: true } as ConnectOptions);

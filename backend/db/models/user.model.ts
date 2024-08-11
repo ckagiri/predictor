@@ -6,14 +6,21 @@ import { Entity, schema } from './base.model';
 export interface User extends Entity {
   username?: string;
   password?: string;
-  isAdmin?: boolean;
+  role?: string;
   comparePassword?: (candidatePassword: string, cb: any) => void;
 }
+
+
+const roles = ['user', 'admin'];
 
 const userSchema = schema({
   username: { type: String, unique: true, lowercase: true, required: true },
   password: { type: String },
-  isAdmin: { type: Boolean, default: false },
+  role: {
+    type: String,
+    enum: roles,
+    default: 'user'
+  },
 }) as Schema<User>;
 
 userSchema.pre('save', function (next) {
@@ -21,7 +28,7 @@ userSchema.pre('save', function (next) {
   if (!user.isModified('password')) {
     return next();
   }
-  bcrypt.genSalt(10, (err, salt) => {
+  bcrypt.genSalt(process.env.NODE_ENV !== 'test' ? 10 : 1, (err, salt) => {
     if (err) {
       return next(err);
     }

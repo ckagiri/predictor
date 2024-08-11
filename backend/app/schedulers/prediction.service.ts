@@ -42,9 +42,6 @@ export class PredictionServiceImpl {
       for await (const [seasonId, currentRoundMatches] of result) {
         let users: string[] = [];
         users = await lastValueFrom(this.predictionRepo.distinct$('user', { season: seasonId }));
-        if (isEmpty(users)) {
-          users = ['62f2c38bc485ceeaac9e2bbf', '62f2c564c485ceeaac9e2bc3'];
-        }
         for await (const userId of users) {
           await lastValueFrom(this.predictionRepo.findOrCreatePredictions$(userId, currentRoundMatches))
         }
