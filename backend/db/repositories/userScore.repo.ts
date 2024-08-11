@@ -54,9 +54,8 @@ export class UserScoreRepositoryImpl
       exactMatchScorePoints,
     } = predictionPoints;
     const { matchId, predictionId, hasJoker } = rest;
-    const resultPoints = correctMatchOutcomePoints + exactGoalDifferencePoints;
-    const scorePoints = closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
-    const points = resultPoints + scorePoints;
+    const basePoints = correctMatchOutcomePoints + exactGoalDifferencePoints +
+      closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
 
     let score: UserScore = {
       leaderboard: leaderboardId,
@@ -66,37 +65,22 @@ export class UserScoreRepositoryImpl
       exactMatchScorePoints,
       closeMatchScorePoints,
       exactGoalDifferencePoints,
-      resultPoints,
-      scorePoints,
-      points,
+      basePoints,
+      points: basePoints,
     };
 
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
       mergeMap(userScore => {
         if (userScore == null) {
           score.matches = [matchId];
-          score.predictions = [predictionId];
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
-          score.exactMatchScores = exactMatchScorePoints / 6;
+          score.exactMatchScores = exactMatchScorePoints / 10;
           score.exactGoalDiffs = exactGoalDifferencePoints;
-          score.closeMatchScoresHigh =
-            (correctMatchOutcomePoints === 7 && closeMatchScorePoints === 1) ? 1 : 0;
-          score.closeMatchScoresLow =
-            (correctMatchOutcomePoints === 0 && closeMatchScorePoints === 1) ? 1 : 0;
-          score.pointsExcludingJoker = points;
+          score.closeMatchScores = Math.ceil(closeMatchScorePoints / 2);
 
           if (hasJoker) {
-            // Todo: refactor duplication
-            score.correctMatchOutcomePoints *= 2;
-            score.exactGoalDifferencePoints *= 2;
-            score.exactMatchScorePoints *= 2;
-            score.closeMatchScorePoints *= 2;
-            score.exactTeamScorePoints *= 2;
-
-            score.resultPoints *= 2;
-            score.scorePoints *= 2;
-            score.points *= 2;
+            score.points += basePoints;
           }
 
           return this.insert$(score);
@@ -107,37 +91,24 @@ export class UserScoreRepositoryImpl
             return of(userScore);
           }
 
-          // Todo: refactor duplication
-          userScore.correctMatchOutcomePoints += hasJoker ?
-            correctMatchOutcomePoints * 2 : correctMatchOutcomePoints;
-          userScore.exactGoalDifferencePoints += hasJoker ?
-            exactGoalDifferencePoints * 2 : exactGoalDifferencePoints;
-          userScore.closeMatchScorePoints += hasJoker ?
-            closeMatchScorePoints * 2 : closeMatchScorePoints;
-          userScore.exactTeamScorePoints += hasJoker ?
-            exactTeamScorePoints * 2 : exactTeamScorePoints;
-          userScore.exactMatchScorePoints += hasJoker ?
-            exactMatchScorePoints * 2 : exactMatchScorePoints;
+          userScore.correctMatchOutcomePoints += correctMatchOutcomePoints;
+          userScore.exactGoalDifferencePoints += exactGoalDifferencePoints;
+          userScore.closeMatchScorePoints += closeMatchScorePoints;
+          userScore.exactTeamScorePoints += exactTeamScorePoints;
+          userScore.exactMatchScorePoints += exactMatchScorePoints;
 
-          userScore.resultPoints += hasJoker ? resultPoints * 2 : resultPoints;
-          userScore.scorePoints += hasJoker ? scorePoints * 2 : scorePoints;
-          userScore.points += hasJoker ? points * 2 : points;
+          userScore.basePoints += basePoints;
+          userScore.points += hasJoker ? basePoints * 2 : basePoints;
 
-          userScore.pointsExcludingJoker! += points;
           userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
-          userScore.exactMatchScores! += (exactMatchScorePoints / 6);
+          userScore.exactMatchScores! += (exactMatchScorePoints / 10);
           userScore.exactGoalDiffs! += exactGoalDifferencePoints;
-          userScore.closeMatchScoresHigh! +=
-            (correctMatchOutcomePoints === 7 && closeMatchScorePoints === 1) ? 1 : 0;
-          userScore.closeMatchScoresLow! +=
-            (correctMatchOutcomePoints === 0 && closeMatchScorePoints === 1) ? 1 : 0;
+          userScore.closeMatchScores! += Math.ceil(closeMatchScorePoints / 2);
 
           return this.findByIdAndUpdate$(userScore.id!, {
             $set: {
-              resultPoints: userScore.resultPoints,
-              scorePoints: userScore.scorePoints,
+              basePoints: userScore.basePoints,
               points: userScore.points,
-              pointsExcludingJoker: userScore.pointsExcludingJoker,
               correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
               exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
               closeMatchScorePoints: userScore.closeMatchScorePoints,
@@ -146,8 +117,7 @@ export class UserScoreRepositoryImpl
               correctMatchOutcomes: userScore.correctMatchOutcomes,
               exactMatchScores: userScore.exactMatchScores,
               exactGoalDiffs: userScore.exactGoalDiffs,
-              closeMatchScoresHigh: userScore.closeMatchScoresHigh,
-              closeMatchScoresLow: userScore.closeMatchScoresLow,
+              closeMatchScores: userScore.closeMatchScores,
             },
             $inc: { matchesPredicted: 1 },
             $push: { matches: matchId, predictions: predictionId },
@@ -161,13 +131,10 @@ export class UserScoreRepositoryImpl
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
         points: -1,
-        resultPoints: -1,
-        scorePoints: -1,
         correctMatchOutcomePoints: -1,
+        exactMatchScorePoints: -1,
         exactGoalDifferencePoints: -1,
         closeMatchScorePoints: -1,
-        exactTeamScorePoints: -1,
-        exactMatchScorePoints: -1,
       },
     });
   }

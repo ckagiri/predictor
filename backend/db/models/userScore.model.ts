@@ -7,11 +7,9 @@ export interface UserScore extends Entity {
   leaderboard: string;
   user: string;
   matches?: string[];
-  predictions?: string[];
   matchesPredicted?: number;
   points: number;
-  resultPoints: number;
-  scorePoints: number;
+  basePoints: number;
   correctMatchOutcomePoints: number;
   exactGoalDifferencePoints: number;
   closeMatchScorePoints: number;
@@ -20,9 +18,7 @@ export interface UserScore extends Entity {
   correctMatchOutcomes?: number;
   exactMatchScores?: number;
   exactGoalDiffs?: number;
-  closeMatchScoresHigh?: number;
-  closeMatchScoresLow?: number;
-  pointsExcludingJoker?: number;
+  closeMatchScores?: number;
   pointsOld?: number;
   pointsNew?: number;
   positionOld?: number;
@@ -40,11 +36,9 @@ const userScoreSchema = schema({
     index: true,
   },
   matches: [{ type: ObjectId, ref: 'Match' }],
-  predictions: [{ type: ObjectId, ref: 'Prediction' }],
   matchesPredicted: { type: Number },
   points: { type: Number },
-  resultPoints: { type: Number },
-  scorePoints: { type: Number },
+  basePoints: { type: Number },
   correctMatchOutcomePoints: { type: Number },
   exactGoalDifferencePoints: { type: Number },
   closeMatchScorePoints: { type: Number },
@@ -53,9 +47,7 @@ const userScoreSchema = schema({
   correctMatchOutcomes: { type: Number },
   exactMatchScores: { type: Number },
   exactGoalDiffs: { type: Number },
-  closeMatchScoresHigh: { type: Number },
-  closeMatchScoresLow: { type: Number },
-  pointsExcludingJoker: { type: Number },
+  closeMatchScores: { type: Number },
   pointsOld: { type: Number },
   pointsNew: { type: Number },
   positionOld: { type: Number },

@@ -40,16 +40,16 @@ const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(
 const user1 = a.user.setUsername('charles');
 const user2 = a.user.setUsername('kagiri');
 
-const user1team1Vteam2Pred = a.prediction
+const team1Vteam2User1Pred = a.prediction
   .withUser(user1)
-  .setHomeScore(1)
+  .setHomeScore(2)
   .setAwayScore(0)
   .setJoker(true)
 
-const user2team1Vteam2Pred = a.prediction
+const team1Vteam2User2Pred = a.prediction
   .withUser(user2)
-  .setHomeScore(2)
-  .setAwayScore(1)
+  .setHomeScore(4)
+  .setAwayScore(0)
   .setJoker(true)
 
 const team1Vteam2 = a.match
@@ -57,17 +57,17 @@ const team1Vteam2 = a.match
   .withAwayTeam(team2)
   .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw1)
-  .withPredictions(user1team1Vteam2Pred, user2team1Vteam2Pred)
+  .withPredictions(team1Vteam2User1Pred, team1Vteam2User2Pred)
   .setStatus(MatchStatus.FINISHED)
   .setHomeScore(3)
-  .setAwayScore(0)
+  .setAwayScore(1)
 
-const user1team3Vteam4 = a.prediction
+const team3Vteam4User1 = a.prediction
   .withUser(user1)
-  .setHomeScore(1)
-  .setAwayScore(0)
+  .setHomeScore(2)
+  .setAwayScore(1)
 
-const user2team3Vteam4 = a.prediction
+const team3Vteam4User2 = a.prediction
   .withUser(user2)
   .setHomeScore(3)
   .setAwayScore(1)
@@ -77,19 +77,19 @@ const team3Vteam4 = a.match
   .withAwayTeam(team4)
   .setDate('2021-08-11T11:30:00Z')
   .withGameRound(gw1)
-  .withPredictions(user1team3Vteam4, user2team3Vteam4)
+  .withPredictions(team3Vteam4User1, team3Vteam4User2)
   .setStatus(MatchStatus.FINISHED)
   .setHomeScore(4)
   .setAwayScore(1)
 
-const user1team2Vteam4 = a.prediction
+const team2Vteam4User1 = a.prediction
   .withUser(user1)
   .setHomeScore(0)
-  .setAwayScore(2)
+  .setAwayScore(1)
 
-const user2team2Vteam4 = a.prediction
+const team2Vteam4User2 = a.prediction
   .withUser(user2)
-  .setHomeScore(1)
+  .setHomeScore(0)
   .setAwayScore(2)
 
 const team2Vteam4 = a.match
@@ -97,19 +97,19 @@ const team2Vteam4 = a.match
   .withAwayTeam(team4)
   .setDate('2021-08-18T11:30:00Z')
   .withGameRound(gw2)
-  .withPredictions(user1team2Vteam4, user2team2Vteam4)
+  .withPredictions(team2Vteam4User1, team2Vteam4User2)
   .setStatus(MatchStatus.FINISHED)
   .setHomeScore(0)
   .setAwayScore(1)
 
-const user1team1Vteam3 = a.prediction
+const team1Vteam3User1 = a.prediction
   .withUser(user1)
-  .setHomeScore(0)
-  .setAwayScore(2)
+  .setHomeScore(2)
+  .setAwayScore(1)
 
-const user2team1Vteam3 = a.prediction
+const team1Vteam3User2 = a.prediction
   .withUser(user2)
-  .setHomeScore(0)
+  .setHomeScore(1)
   .setAwayScore(1)
 
 const team1Vteam3 = a.match
@@ -117,7 +117,7 @@ const team1Vteam3 = a.match
   .withAwayTeam(team3)
   .setDate('2021-08-18T11:30:00Z')
   .withGameRound(gw2)
-  .withPredictions(user1team1Vteam3, user2team1Vteam3)
+  .withPredictions(team1Vteam3User1, team1Vteam3User2)
   .setStatus(MatchStatus.FINISHED)
   .setHomeScore(0)
   .setAwayScore(0)
@@ -149,13 +149,37 @@ describe('LeaderboardProcessor', function () {
       .build();
   })
 
-  it('should create seasonBoard if it doesnt exist', async () => {
+// +------------------+--------+-----------+--------+-----------+--------+
+// |                  | result | user-1    | u1 pts | user-2    | u2 pts |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | gameweek-1       |                    |        |           |        |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | team-1 vs team-2 | 3 - 1  | 2 - 0 (j) | 18     | 4 - 0 (j) | 16     |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | team-3 vs team-4 | 4 - 1  | 2 - 1     | 8      | 3 - 1     | 10     |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | pts              |                    | 26     |           | 26     |
+// +------------------+--------------------+--------+-----------+--------+
+// | gameweek-2       |                    |        |           |        |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | team-2 vs team-4 | 0 - 1  | 0 - 1     | 20     | 0 - 2     | 10     |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | team-1 vs team-3 | 0 - 0  | 2 - 1     | 0      | 1 - 1     | 10     |
+// +------------------+--------+-----------+--------+-----------+--------+
+// | pts              |                    | 20     |           | 20     |
+// +------------------+--------------------+--------+-----------+--------+
+it('should create seasonBoard if it doesnt exist', async () => {
     const matches = [team1Vteam2.match!, team3Vteam4.match!, team2Vteam4.match!, team1Vteam3.match!]
     await predictionProcessor.calculateAndUpdatePredictionPoints(epl2021.id, matches)
     const result = await leaderboardProcessor.updateScores(epl2021.id, matches)
 
     const boards = await lastValueFrom(leaderboardRepo.findAll$());
+    // console.log('boards', boards);
     const userScores = await lastValueFrom(userScoreRepo.findAll$())
+    // console.log('userScores', userScores);
+    await leaderboardProcessor.updateRankings(epl2021.id, matches);
+    const ordUserScores = await lastValueFrom(userScoreRepo.findAll$())
+    // console.log('ordUserScores', ordUserScores);
     console.log('Buyaah')
   })
 })

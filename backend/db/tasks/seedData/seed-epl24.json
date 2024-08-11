@@ -538,5 +538,20 @@
       "slug": "gameweek-38",
       "position": 38
     }
+  },
+  "users": {
+    "_model": "User",
+    "admin": {
+      "username": "admin",
+      "role": "admin",
+      "email": "charles@admin.com",
+      "password": "adm1n@123"
+    },
+    "user": {
+      "username": "user",
+      "role": "user",
+      "email": "charles@user.com",
+      "password": "us3r@123"
+    }
   }
 }

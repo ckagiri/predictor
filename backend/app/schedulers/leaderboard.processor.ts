@@ -7,6 +7,11 @@ import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositor
 import { Match, MatchStatus } from "../../db/models/match.model";
 import { uniq } from 'lodash';
 
+// Todo: filter out leaderboards with matchId already processed
+function isNonNull<T>(value: T): value is NonNullable<T> {
+  return value != null;
+}
+
 export interface LeaderboardProcessor {
   updateScores(seasonId: string, matches: Match[]): Promise<string>;
   updateRankings(seasonId: string, matches: Match[]): Promise<string>;
@@ -46,6 +51,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
             });
             return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
               .pipe(
+                // Todo: set to processing - in the end set to processed
                 mergeMap(leaderboards => from(leaderboards)),
                 map(leaderboard => {
                   const leaderboardId = leaderboard.id!;
@@ -105,6 +111,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     return lastValueFrom(
       this.leaderboardRepo.findAllGlobalFor$({ seasonId, gameRoundIds })
         .pipe(
+          // Todo: set to processing, end set to processed
           mergeMap(leaderboards => from(leaderboards)),
           mergeMap(leaderboard => {
             return this.leaderboardRepo.findById$(leaderboard.id!)
