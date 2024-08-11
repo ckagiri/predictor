@@ -50,7 +50,7 @@ export class SeasonNextRoundServiceImpl {
         const { data: apiCompetition } = apiCompetitionResponse;
         const apiCurrentMatchday = get(apiCompetition, ['currentSeason', 'currentMatchday']);
 
-        if (apiCurrentMatchday !== dbCurrentRoundPosition) {
+        if (parseInt(apiCurrentMatchday, 10) > (dbCurrentRoundPosition || 0)) {
           const nextGameRound = await lastValueFrom(this.gameRoundRepo.findOne$({ position: apiCurrentMatchday }));
           if (!nextGameRound) continue;
 

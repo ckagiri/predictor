@@ -35,7 +35,6 @@ export interface Match extends Entity {
   result?: Score;
   venue?: string;
   allPredictionPointsCalculated?: boolean;
-  allGlobalLeaderboardScoresProcessed?: boolean;
   externalReference?: any;
   prediction?: Prediction | undefined | null;
   [key: string]: any;
@@ -83,7 +82,6 @@ export const matchSchema = schema({
   },
   venue: { type: String, trim: true },
   allPredictionPointsCalculated: { type: Boolean, default: false },
-  allGlobalLeaderboardScoresProcessed: { type: Boolean, default: false },
   externalReference: { type: Mixed },
 });
 

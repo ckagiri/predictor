@@ -29,9 +29,6 @@ const predictionSchema = schema({
     isComputerGenerated: { type: Boolean, default: true },
   },
   scorePoints: {
-    points: { type: Number },
-    resultPoints: { type: Number },
-    scorePoints: { type: Number },
     correctMatchOutcomePoints: { type: Number },
     exactGoalDifferencePoints: { type: Number },
     closeMatchScorePoints: { type: Number },

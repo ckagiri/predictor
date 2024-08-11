@@ -125,32 +125,34 @@ describe('UserScore Repo', function () {
     user1cheVarsPredId = user1_cheVars_pred.id;
     user2manuVmancPredId = user2_manuVmanc_pred.id;
 
+    // manuVmanc 2-1
     // result 2-1 prediction 1-0
     user1manuVmancPredPoints = {
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 1,
-      closeMatchScorePoints: 0,
+      closeMatchScorePoints: 1,
+      exactTeamScorePoints: 0,
+      exactMatchScorePoints: 0,
+    };
+    // result 2-1 prediction 3-0
+    user2manuVmancPredPoints = {
+      correctMatchOutcomePoints: 7,
+      exactGoalDifferencePoints: 0,
+      closeMatchScorePoints: 1,
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
     };
 
-    // result 2-1 prediction 2-1
+    // cheVars 1-1
+    // result 1-1 prediction 1-1
     user1cheVarsPredPoints = {
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 1,
       closeMatchScorePoints: 0,
       exactTeamScorePoints: 2,
-      exactMatchScorePoints: 6,
+      exactMatchScorePoints: 10,
     };
 
-    // result 2-1 prediction 3-0
-    user2manuVmancPredPoints = {
-      correctMatchOutcomePoints: 7,
-      exactGoalDifferencePoints: 0,
-      closeMatchScorePoints: 0,
-      exactTeamScorePoints: 0,
-      exactMatchScorePoints: 0,
-    };
   })
 
   it('should create a userScore if it does not exist', done => {
@@ -169,14 +171,11 @@ describe('UserScore Repo', function () {
         })
       .subscribe(score => {
         expect(score.correctMatchOutcomes).to.equal(1);
-        expect(score.closeMatchScorePoints).to.equal(0);
+        expect(score.closeMatchScorePoints).to.equal(1);
         expect(score.exactMatchScores).to.equal(0);
-        expect(score.resultPoints).to.equal(16);
-        expect(score.scorePoints).to.equal(0);
-        expect(score.points).to.equal(16);
-        expect(score.pointsExcludingJoker).to.equal(8);
+        expect(score.points).to.equal(18);
+        expect(score.basePoints).to.equal(9);
         expect(score.matches?.map(m => m.toString())).to.contain(manuVmancId);
-        expect(score.predictions?.map(p => p.toString())).to.contain(user1manuVmancPredId);
         done();
       });
   });
@@ -187,22 +186,18 @@ describe('UserScore Repo', function () {
       leaderboard: leaderboardId,
       user: userId1,
       matches: [manuVmancId],
-      predictions: [user1manuVmancPredId],
       matchesPredicted: 1,
-      correctMatchOutcomePoints: 14,
-      exactGoalDifferencePoints: 2,
-      closeMatchScorePoints: 0,
+      correctMatchOutcomePoints: 7,
+      exactGoalDifferencePoints: 1,
+      closeMatchScorePoints: 1,
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
       exactMatchScores: 0,
       exactGoalDiffs: 1,
-      closeMatchScoresHigh: 0,
-      closeMatchScoresLow: 0,
-      resultPoints: 16,
-      scorePoints: 0,
-      points: 16,
-      pointsExcludingJoker: 8,
+      closeMatchScores: 1,
+      points: 18,
+      basePoints: 9,
     }
 
     userScoreRepo.insert$(user1manuVmancPredJokerScore)
@@ -223,13 +218,10 @@ describe('UserScore Repo', function () {
       ).subscribe(score => {
         expect(score.correctMatchOutcomes).to.equal(2);
         expect(score.exactMatchScores).to.equal(1);
-        expect(score.resultPoints).to.equal(24);
-        expect(score.scorePoints).to.equal(8);
-        expect(score.points).to.equal(32);
-        expect(score.pointsExcludingJoker).to.equal(24);
+        expect(score.points).to.equal(38);
+        expect(score.basePoints).to.equal(29);
         expect(score.matches?.map(m => m.toString())).to.contain(manuVmancId, cheVarsId);
         expect(score.matchesPredicted).to.equal(2)
-        expect(score.predictions?.map(p => p.toString())).to.contain(user1manuVmancPredId, user1cheVarsPredId);
         done();
       });
   });
@@ -240,22 +232,18 @@ describe('UserScore Repo', function () {
       leaderboard: leaderboardId,
       user: userId1,
       matches: [manuVmancId],
-      predictions: [user1manuVmancPredId],
       matchesPredicted: 1,
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 1,
-      closeMatchScorePoints: 0,
+      closeMatchScorePoints: 1,
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
       exactMatchScores: 0,
       exactGoalDiffs: 1,
-      closeMatchScoresHigh: 0,
-      closeMatchScoresLow: 0,
-      resultPoints: 8,
-      scorePoints: 0,
-      points: 8,
-      pointsExcludingJoker: 8,
+      closeMatchScores: 0,
+      points: 9,
+      basePoints: 9,
     }
 
     // result 2-1 prediction 3-0
@@ -263,22 +251,18 @@ describe('UserScore Repo', function () {
       leaderboard: leaderboardId,
       user: userId2,
       matches: [manuVmancId],
-      predictions: [user2manuVmancPredId],
       matchesPredicted: 1,
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 0,
-      closeMatchScorePoints: 0,
+      closeMatchScorePoints: 1,
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
       correctMatchOutcomes: 1,
       exactMatchScores: 0,
       exactGoalDiffs: 0,
-      closeMatchScoresHigh: 0,
-      closeMatchScoresLow: 0,
-      resultPoints: 7,
-      scorePoints: 0,
-      points: 7,
-      pointsExcludingJoker: 7,
+      closeMatchScores: 0,
+      points: 8,
+      basePoints: 8,
     }
 
     userScoreRepo
@@ -289,21 +273,20 @@ describe('UserScore Repo', function () {
         }),
       )
       .subscribe(standings => {
-        expect(standings[1].points).to.be.lte(standings[0].points);
+        expect(standings[1].points).to.be.lt(standings[0].points);
         done();
       });
   })
 
   it('should find by id and update positions', done => {
+    // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
       leaderboard: leaderboardId,
       user: userId1,
       matches: [manuVmancId],
-      predictions: [user1manuVmancPredId],
       ...user1manuVmancPredPoints,
-      resultPoints: 8,
-      scorePoints: 0,
-      points: 8,
+      points: 9,
+      basePoints: 9,
       positionNew: 1,
       positionOld: 2,
     }

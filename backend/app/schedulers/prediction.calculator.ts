@@ -13,15 +13,9 @@ export class PredictionCalculator {
       exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
     };
-    const choiceOutcome = outcome(
-      choice.goalsHomeTeam,
-      choice.goalsAwayTeam,
-    );
-    const resultOutcome = outcome(
-      result.goalsHomeTeam,
-      result.goalsAwayTeam,
-    );
 
+    const choiceOutcome = outcome(choice.goalsHomeTeam, choice.goalsAwayTeam);
+    const resultOutcome = outcome(result.goalsHomeTeam, result.goalsAwayTeam);
     const correctMatchOutcome = choiceOutcome === resultOutcome;
     const drawPrediction = choice.goalsHomeTeam === choice.goalsAwayTeam;
     const correctDrawOutcome = correctMatchOutcome && drawPrediction;

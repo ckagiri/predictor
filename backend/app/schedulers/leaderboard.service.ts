@@ -30,18 +30,13 @@ export class LeaderboardServiceImpl {
       const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
       const result = await lastValueFrom(
         this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, {
-          allPredictionPointsCalculated: true,
-          allGlobalLeaderboardScoresProcessed: false
+          allPredictionPointsCalculated: true
         })
       );
       for await (const [seasonId, matches] of result) {
         if (isEmpty(matches)) continue;
         await this.leaderboardProcessor.updateScores(seasonId, matches)
         await this.leaderboardProcessor.updateRankings(seasonId, matches)
-        matches.forEach(match => {
-          match.allGlobalLeaderboardScoresProcessed = true;
-        });
-        await lastValueFrom(this.matchRepo.updateMany$(matches));
       }
     } catch (err: any) {
       console.log(err.message);
