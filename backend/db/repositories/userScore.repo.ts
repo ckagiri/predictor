@@ -131,13 +131,10 @@ export class UserScoreRepositoryImpl
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
         points: -1,
-        resultPoints: -1,
-        scorePoints: -1,
         correctMatchOutcomePoints: -1,
+        exactMatchScorePoints: -1,
         exactGoalDifferencePoints: -1,
         closeMatchScorePoints: -1,
-        exactTeamScorePoints: -1,
-        exactMatchScorePoints: -1,
       },
     });
   }
