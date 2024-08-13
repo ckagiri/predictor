@@ -22,7 +22,7 @@ export class TeamsController {
       const seasonId = req.query.seasonId as string;
       const season = await lastValueFrom(this.seasonRepo.findById$(seasonId));
       const teams = seasonId
-        ? await lastValueFrom(this.teamRepo.findAllByIds$(season.teams))
+        ? await lastValueFrom(this.teamRepo.findAllByIds$(season.teams as string[]))
         : await lastValueFrom(this.teamRepo.findAll$());
       res.status(200).json(teams);
     } catch (error) {

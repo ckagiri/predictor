@@ -10,17 +10,17 @@ import {
   GameRoundRepository,
 } from '../../../../db/repositories/gameRound.repo';
 
-export class GameRoundsController {
+export class RoundsController {
   public static getInstance(
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     gameRoundRepo = GameRoundRepositoryImpl.getInstance()
   ) {
-    return new GameRoundsController(seasonRepo, gameRoundRepo);
+    return new RoundsController(seasonRepo, gameRoundRepo);
   }
 
   constructor(private seasonRepo: SeasonRepository, private gameRoundRepo: GameRoundRepository) { }
 
-  public getGameRounds = async (req: Request, res: Response) => {
+  public getRounds = async (req: Request, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
       const seasonSlug = req.params.season;
@@ -39,20 +39,38 @@ export class GameRoundsController {
         throw new Error('season not found');
       }
 
-      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }));
+      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }, '-createdAt'));
       res.status(200).json(gameRounds);
     } catch (error: any) {
       res.status(500).send(error.message);
     }
   };
 
-  public getGameRound = async (req: Request, res: Response) => {
+  public getRound = async (req: Request, res: Response) => {
     try {
-      const id = req.params.id;
-      if (!isMongoId(id)) {
-        throw new Error('wrond id format');
+      const competitionSlug = req.params.competition;
+      const seasonSlug = req.params.season;
+      const roundSlug = req.params.slug;
+
+      if (!competitionSlug) {
+        throw new Error('competition slug is required');
       }
-      const gameRound = await lastValueFrom(this.gameRoundRepo.findById$(id));
+      if (!seasonSlug) {
+        throw new Error('season slug is required');
+      }
+      if (!roundSlug) {
+        throw new Error('round slug is required');
+      }
+      const season = await lastValueFrom(this.seasonRepo.findOne$({
+        'competition.slug': competitionSlug, slug: seasonSlug
+      }));
+      if (!season) {
+        throw new Error('season not found');
+      }
+
+      const gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
+        season: season?.id, slug: roundSlug
+      }, '-createdAt'));
       if (gameRound) {
         return res.status(200).json(gameRound);
       } else {
@@ -64,6 +82,6 @@ export class GameRoundsController {
   };
 }
 
-const gameRoundsController = GameRoundsController.getInstance();
+const roundsController = RoundsController.getInstance();
 
-export default gameRoundsController;
+export default roundsController;

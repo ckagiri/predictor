@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { Entity, schema } from './base.model';
+import { Team } from './team.model';
 
 export interface Season extends Entity {
   name?: string;
@@ -16,7 +17,7 @@ export interface Season extends Entity {
   seasonStart?: any;
   seasonEnd?: any;
   externalReference?: any;
-  teams?: string[];
+  teams?: string[] | Team[];
 }
 
 const { ObjectId, Mixed } = Schema.Types;

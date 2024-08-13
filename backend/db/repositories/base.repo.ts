@@ -195,11 +195,11 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
 
   public findAll$(
     conditions?: any,
-    _projection?: any,
+    projection?: any,
     options?: any,
   ): Observable<T[]> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.findAll(conditions, '-__v', options).then(
+      this.documentDao.findAll(conditions, projection, options).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();
@@ -213,12 +213,12 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
 
   public find$(
     query?: any,
-    _projection?: any,
+    projection?: any,
     options?: any,
   ): Observable<{ result: T[]; count: number }> {
     return new Observable(
       (observer: Subscriber<{ result: T[]; count: number }>) => {
-        this.documentDao.find(query, '-__v', options).then(
+        this.documentDao.find(query, projection, options).then(
           ({ result, count }) => {
             observer.next({ result, count });
             observer.complete();
@@ -233,7 +233,7 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
 
   public findOne$(conditions: any, projection?: any): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOne(conditions).then(
+      this.documentDao.findOne(conditions, projection).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
