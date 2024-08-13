@@ -4,7 +4,7 @@ import sinonChai from 'sinon-chai';
 import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
 import { setupReqRes } from './testUtils';
-import { TeamsController } from '../../app/api/admin/teams/teams.controller';
+import { TeamsController } from '../../app/api/data/teams/teams.controller';
 import { Team } from '../../db/models';
 import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';

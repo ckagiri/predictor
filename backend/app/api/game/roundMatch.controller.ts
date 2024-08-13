@@ -60,23 +60,17 @@ export class RoundMatchController {
         throw new Error('round not found');
       }
 
-      const _match = await lastValueFrom(this.matchRepo.findOne$({
+      const match = await lastValueFrom(this.matchRepo.findOne$({
         season: season.id,
         slug: matchSlug
-      }))
+      }, '-createdAt'));
+
       const userId = req.auth?.id;
       if (userId) {
-        const _prediction = await lastValueFrom(this.predictionRepo.findOne$(userId, _match?.id!))
-        const prediction = omit(_prediction, ['_id', 'createdAt', 'updatedAt']) as Prediction;
-        _match.prediction = prediction || null;
+        const prediction = await lastValueFrom(this.predictionRepo.findOne$(userId, match.id!, '-createdAt'));
+        match.prediction = prediction || null;
       }
-      const match: any = omit(_match, [
-        '_id', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'createdAt', 'updatedAt'
-      ]);
-      match.homeTeamId = match.homeTeam.id;
-      match.awayTeamId = match.awayTeam.id;
-      delete match.homeTeam;
-      delete match.awayTeam;
+
       res.status(200).json(match);
     } catch (error) {
       res.status(500).send(error);
@@ -130,8 +124,7 @@ export class RoundMatchController {
         throw Error('match not found')
       }
 
-      const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, roundMatches, choice))
-      const pick = omit(_pick, ['_id', 'createdAt', 'updatedAt']);
+      const pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, roundMatches, choice))
 
       res.status(200).json(pick);
     } catch (error) {
@@ -185,9 +178,7 @@ export class RoundMatchController {
         throw Error('match not found')
       }
 
-      const _jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match, roundMatches))
-      const jokerPredictions = _jokerPredictions.map(p => omit(p, ['createdAt', 'updatedAt']));
-
+      const jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match, roundMatches))
       res.status(200).json(jokerPredictions)
     } catch (error) {
       res.status(500).send(error);

@@ -66,10 +66,12 @@ export class RoundLeaderboardController {
       const userId = req.auth?.id;
       let userScore: UserScore | undefined;
       if (userId) {
-        const _userScore = await lastValueFrom(this.userScoreRepo.findOne$({ leaderboard: leaderboard.id, user: userId }))
-        userScore = omit(_userScore, [
-          '_id', 'id', 'createdAt', 'updatedAt', 'user', 'leaderboard', 'matches', 'predictions'
-        ]) as UserScore;
+        userScore = await lastValueFrom(
+          this.userScoreRepo.findOne$(
+            { leaderboard: leaderboard.id, user: userId },
+            '-createdAt -user -leaderboard -matches',
+          )
+        );
       }
       res.status(200).json(userScore);
     } catch (error) {

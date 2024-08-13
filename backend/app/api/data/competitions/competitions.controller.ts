@@ -18,7 +18,7 @@ export class CompetitionsController {
 
   public getCompetitions = async (_req: Request, res: Response) => {
     try {
-      const competitions = await lastValueFrom(this.competitionRepo.findAll$());
+      const competitions = await lastValueFrom(this.competitionRepo.findAll$({}, '-createdAt'));
       res.status(200).json(competitions);
     } catch (error) {
       res.status(500).send(error);
@@ -29,12 +29,13 @@ export class CompetitionsController {
     try {
       const id = req.params.id;
       let competition: Competition;
+
       if (isMongoId(id)) {
         competition = await lastValueFrom(this.competitionRepo.findById$(id));
       } else {
-        const slug = id;
-        competition = await lastValueFrom(this.competitionRepo.findOne$({ slug }));
+        competition = await lastValueFrom(this.competitionRepo.findOne$({ slug: id }));
       }
+
       if (competition) {
         return res.status(200).json(competition);
       } else {

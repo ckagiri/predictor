@@ -9,7 +9,7 @@ import { head, isEmpty, uniq } from 'lodash';
 import { VosePredictor } from '../helpers/vose-predictor'
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
-  findOne$(userId: string, matchId: string): Observable<Prediction>;
+  findOne$(userId: string, matchId: string, projection?: any): Observable<Prediction>;
   findOrCreatePredictions$(userId: string, roundMatches: Match[], withJoker?: boolean): Observable<Prediction[]>
   findOrCreatePicks$(userId: string, roundMatches: Match[], withJoker?: boolean): Observable<Prediction[]>;
   pickScore$(userId: string, match: Match, roundMatches: Match[], choice: Score): Observable<Prediction>;
@@ -280,8 +280,8 @@ export class PredictionRepositoryImpl
       )
   }
 
-  public findOne$(userId: string, matchId: string) {
-    return super.findOne$({ user: userId, match: matchId });
+  public findOne$(userId: string, matchId: string, projection?: any): Observable<Prediction> {
+    return super.findOne$({ user: userId, match: matchId }, projection);
   }
 
   // score is formatted as "homeScore-awayScore"

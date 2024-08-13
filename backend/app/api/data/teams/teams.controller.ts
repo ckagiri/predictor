@@ -21,8 +21,9 @@ export class TeamsController {
     try {
       const seasonId = req.query.seasonId as string;
       const season = await lastValueFrom(this.seasonRepo.findById$(seasonId));
+
       const teams = seasonId
-        ? await lastValueFrom(this.teamRepo.findAllByIds$(season.teams))
+        ? await lastValueFrom(this.teamRepo.findAllByIds$(season.teams as string[]))
         : await lastValueFrom(this.teamRepo.findAll$());
       res.status(200).json(teams);
     } catch (error) {
@@ -36,6 +37,7 @@ export class TeamsController {
       if (!isMongoId(id)) {
         throw new Error('wrong id format');
       }
+
       const team = await lastValueFrom(this.teamRepo.findById$(id));
       if (team) {
         return res.status(200).json(team);

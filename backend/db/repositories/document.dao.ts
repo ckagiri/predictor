@@ -5,7 +5,7 @@ import { Entity } from '../models/base.model';
 
 const transform = (doc: any, ret: any) => {
   doc.id = doc._id.toString();
-  // delete doc._id; // TODO
+  delete doc._id; // TODO
   delete doc.__v;
   return doc;
 };
