@@ -179,7 +179,6 @@ export class RoundMatchController {
       }
 
       const jokerPredictions = await lastValueFrom(this.predictionRepo.pickJoker$(userId, match, roundMatches))
-
       res.status(200).json(jokerPredictions)
     } catch (error) {
       res.status(500).send(error);

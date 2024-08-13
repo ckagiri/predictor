@@ -56,6 +56,7 @@ export class MatchesController {
           season: season?.id, slug: roundSlug
         }));
       }
+
       type FindGameRoundQuery = { season: string, gameRound?: string };
       let query: FindGameRoundQuery = { season: season.id! };
       if (gameRound) {
@@ -87,12 +88,14 @@ export class MatchesController {
       if (!roundSlug) {
         throw new Error('round slug is required');
       }
+
       const season = await lastValueFrom(this.seasonRepo.findOne$({
         'competition.slug': competitionSlug, slug: seasonSlug
       }));
       if (!season) {
         throw new Error('season not found');
       }
+
       const gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
         season: season?.id, slug: roundSlug
       }));
@@ -103,6 +106,7 @@ export class MatchesController {
       const match = await lastValueFrom(this.matchRepo.findOne$({
         season: season?.id, slug: matchSlug
       }, '-createdAt -allPredictionPointsCalculated -externalReference'));
+
       if (match) {
         return res.status(200).json(match);
       } else {

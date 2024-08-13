@@ -49,7 +49,6 @@ export class SeasonsController {
       const season = await lastValueFrom(this.seasonRepo.findOne$({
         'competition.slug': competitionSlug, slug: seasonSlug
       }, '-createdAt -externalReference'));
-
       if (!season) {
         throw new Error('season not found');
       }

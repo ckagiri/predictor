@@ -29,11 +29,13 @@ export class CompetitionsController {
     try {
       const id = req.params.id;
       let competition: Competition;
+
       if (isMongoId(id)) {
         competition = await lastValueFrom(this.competitionRepo.findById$(id));
       } else {
         competition = await lastValueFrom(this.competitionRepo.findOne$({ slug: id }));
       }
+
       if (competition) {
         return res.status(200).json(competition);
       } else {

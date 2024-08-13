@@ -34,14 +34,12 @@ export class CompetitionSeasonsController {
       const season = await lastValueFrom(this.seasonRepo.findOne$({
         'competition.slug': competitionSlug, slug: seasonSlug
       }));
-
       if (!season) {
         throw new Error('season not found');
       }
 
       const teams = await lastValueFrom(this.teamRepo.findAllByIds$(season.teams as string[]));
       const rounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }));
-
       res.status(200).json({
         season,
         teams,

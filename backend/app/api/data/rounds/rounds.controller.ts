@@ -39,7 +39,9 @@ export class RoundsController {
         throw new Error('season not found');
       }
 
-      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$({ season: season.id }, '-createdAt'));
+      const gameRounds = await lastValueFrom(this.gameRoundRepo.findAll$(
+        { season: season.id }, '-createdAt'
+      ));
       res.status(200).json(gameRounds);
     } catch (error: any) {
       res.status(500).send(error.message);
@@ -61,6 +63,7 @@ export class RoundsController {
       if (!roundSlug) {
         throw new Error('round slug is required');
       }
+
       const season = await lastValueFrom(this.seasonRepo.findOne$({
         'competition.slug': competitionSlug, slug: seasonSlug
       }));
@@ -71,6 +74,7 @@ export class RoundsController {
       const gameRound = await lastValueFrom(this.gameRoundRepo.findOne$({
         season: season?.id, slug: roundSlug
       }, '-createdAt'));
+
       if (gameRound) {
         return res.status(200).json(gameRound);
       } else {
