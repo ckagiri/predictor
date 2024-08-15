@@ -11,7 +11,7 @@ import {
   TeamRepositoryImpl,
 } from '../../repositories/team.repo';
 
-import { Match } from '../../models/match.model';
+import { Match, getMatchStatus } from '../../models/match.model';
 import { Season } from '../../models/season.model';
 import { Team } from '../../models/team.model';
 import { GameRound } from '../../models/gameRound.model';
@@ -47,7 +47,7 @@ export class AfdMatchConverter implements MatchConverter {
           season: season.id!,
           matchday: data.matchday,
           gameRound: gameRound.id!,
-          status: data.status,
+          status: getMatchStatus(data.status.toUpperCase()),
           homeTeam: {
             id: homeTeam.id!,
             name: homeTeam.name,

@@ -12,6 +12,22 @@ export enum MatchStatus {
   FINISHED = 'FINISHED',
 }
 
+export const getMatchStatus = (status: string) => {
+  const MATCH_STATUS: { [key: string]: MatchStatus } = {
+    'SCHEDULED': MatchStatus.SCHEDULED,
+    'TIMED': MatchStatus.SCHEDULED,
+    'IN_PLAY': MatchStatus.LIVE,
+    'PAUSED': MatchStatus.LIVE,
+    'FINISHED': MatchStatus.FINISHED,
+    'AWARDED': MatchStatus.FINISHED,
+    'CANCELLED': MatchStatus.CANCELED,
+    'SUSPENDED': MatchStatus.CANCELED,
+    'POSTPONED': MatchStatus.POSTPONED
+  };
+
+  return MATCH_STATUS[status] || MatchStatus.SCHEDULED;
+}
+
 export interface TeamPartial {
   name: string;
   slug: string;
