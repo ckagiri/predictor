@@ -132,7 +132,7 @@ export class RoundMatchController {
     }
   }
 
-  public pickRoundJoker = async (req: JWTRequest, res: Response) => {
+  public pickJoker = async (req: JWTRequest, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
       const seasonSlug = req.params.season;

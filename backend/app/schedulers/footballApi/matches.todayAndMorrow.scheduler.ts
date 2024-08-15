@@ -1,7 +1,6 @@
 import moment from "moment";
 
-import { getMatchStatus } from "./util";
-import { MatchStatus } from "../../../db/models/match.model";
+import { MatchStatus, getMatchStatus } from "../../../db/models/match.model";
 import { TodayAndMorrowService, TodayAndMorrowServiceImpl, PERIOD } from "./matches.todayAndMorrow.service";
 import { BaseScheduler } from "../baseScheduler";
 import { EventMediator, EventMediatorImpl } from "../../../common/eventMediator";
@@ -80,7 +79,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     if (this.hasLiveMatch && !hasLiveMatch) {
       this.hasLiveMatch = false;
       this.nextPoll = moment().add(3, 'minutes');
-    } else if (hasLiveMatch) { 
+    } else if (hasLiveMatch) {
       this.hasLiveMatch = true;
       this.hasNewLiveMatch = hasNewLiveMatch;
       this.nextPoll = moment().add(90, 'seconds');

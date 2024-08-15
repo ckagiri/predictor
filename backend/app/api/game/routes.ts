@@ -27,6 +27,6 @@ router.get('/:competition/:season/:round/:match',
 router.post('/:competition/:season/:round/:match/pick-score',
   authMiddleware(), roundMatchController.pickPredictionScore);
 router.post('/:competition/:season/:round/:match/pick-joker',
-  authMiddleware(), roundMatchController.pickRoundJoker);
+  authMiddleware(), roundMatchController.pickJoker);
 
 export default router;
