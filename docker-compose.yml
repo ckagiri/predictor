@@ -46,7 +46,7 @@ services:
     depends_on:
       - ligiclient
       - ligiwebserver
-
+    command: certonly --webroot --webroot-path=/var/www/html --email charleswkagiri@gmail.com --agree-tos --no-eff-email --force-renewal -d ligipredictor.com -d www.ligipredictor.com
 volumes:
   node_modules:
   web-root:
