@@ -45,7 +45,7 @@ export class DocumentDao<T extends Entity> {
     const ops = objs.map((obj: any) => {
       //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
-        obj = new this.Model(obj);
+        obj = new this.Model({_id: new mongoose.Types.ObjectId(obj.id), obj });
       }
       // Convert to plain object
       if (obj instanceof this.Model) {
