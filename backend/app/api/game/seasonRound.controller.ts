@@ -71,18 +71,16 @@ class SeasonRoundController {
 
       const getTime = (date?: string | number | Date): number => date != null ? new Date(date).getTime() : 0;
       const matches = roundMatches.map(m => omit(m, [
-        '_id', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
+        '_id', 'odds', 'allPredictionPointsCalculated', 'allGlobalLeaderboardScoresProcessed', 'externalReference', 'createdAt', 'updatedAt'
       ])).sort((a, b) => {
         return getTime(a.utcDate) - getTime(b.utcDate);
       });
       matches.forEach(m => {
-        m.homeTeamId = m.homeTeam.id;
-        m.awayTeamId = m.awayTeam.id;
-        delete m.homeTeam;
-        delete m.awayTeam;
+        m.homeTeam = m.homeTeam.id;
+        m.awayTeam = m.awayTeam.id;
       })
       res.status(200).json({
-        roundId: round.id,
+        round: round.id,
         matches
       })
     } catch (error: any) {
@@ -176,18 +174,18 @@ class SeasonRoundController {
         gameRound: round.id
       }))
 
-      const picks = await Promise.all(
-        Object.entries(pickSlip).map(async ([matchSlug, scoreString]) => {
-          const match = roundMatches.find(m => m.slug === matchSlug);
-          if (match == undefined) return;
-          const score = scoreString.split('-');
-          const goalsHomeTeam = Number(score[0]);
-          const goalsAwayTeam = Number(score[1]);
-          const choice = { goalsHomeTeam, goalsAwayTeam } as Score;
-          const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, roundMatches, choice))
-          const pick = omit(_pick, ['_id', 'createdAt', 'updatedAt']);
-          return pick;
-        }).filter(value => value != undefined)) as Prediction[];
+      const picks= [] as Prediction[];
+      for await (const [matchSlug, scoreString] of Object.entries(pickSlip)) {
+        const match = roundMatches.find(m => m.slug === matchSlug);
+        if (match == undefined) continue;
+        const score = scoreString.split('-');
+        const goalsHomeTeam = Number(score[0]);
+        const goalsAwayTeam = Number(score[1]);
+        const choice = { goalsHomeTeam, goalsAwayTeam } as Score;
+        const _pick = await lastValueFrom(this.predictionRepo.pickScore$(userId, match, roundMatches, choice))
+        const pick = omit(_pick, ['_id', 'createdAt', 'updatedAt']);
+        picks.push(pick as Prediction);
+      }
       res.status(200).json(picks);
     } catch (error) {
       res.status(500).send(error);
