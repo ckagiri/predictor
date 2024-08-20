@@ -27,10 +27,10 @@ export class AppSchedule {
 
   async start() {
     await this.currentRoundMatchesService.updateMatches();
+    await this.todayAndMorrowScheduler.startJob({ runImmediately: true }); // loop after min/max 90s/6H
     await this.predictionPointsScheduler.startJob({ runImmediately: true, interval: '0 15 * * * *' }); // minute 15 every H
     await this.seasonNextRoundScheduler.startJob({ interval: '0 0 */2 * * *' }); // minute 0 every 2H
     await this.makePredictionsScheduler.startJob(); // loop after 3H
-    await this.todayAndMorrowScheduler.startJob({ runImmediately: true }); // loop after min/max 90s/6H
   }
 
   publish(message: string) {

@@ -10,6 +10,7 @@ import memoryDb from '../memoryDb';
 import a, { GameData } from '../a';
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 import startServer from '../../app/server';
+import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
 
 chai.use(sinonChai);
 chai.use(chaiHttp);
@@ -66,7 +67,8 @@ describe.skip('Seasons API', function () {
 
   describe('Seasons Controller', function () {
     const seasonRepo = SeasonRepositoryImpl.getInstance();
-    const seasonsController = new SeasonsController(seasonRepo);
+    const teamRepo = TeamRepositoryImpl.getInstance();
+    const seasonsController = new SeasonsController(seasonRepo, teamRepo);
 
     it('getSeasons will 500 if no competition id or setSlug  provided', async () => {
       const { req, res } = setupReqRes();
