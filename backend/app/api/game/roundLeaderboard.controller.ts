@@ -27,7 +27,7 @@ export class RoundLeaderboardController {
     private userScoreRepo: UserScoreRepository
   ) { }
 
-  getMyUserScore = async (req: JWTRequest, res: Response) => {
+  myScore = async (req: JWTRequest, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
       const seasonSlug = req.params.season;
@@ -75,6 +75,7 @@ export class RoundLeaderboardController {
       }
       res.status(200).json(userScore);
     } catch (error) {
+      console.log(error);
       res.status(500).send(error);
     }
   }
