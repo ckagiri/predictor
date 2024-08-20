@@ -15,7 +15,7 @@ router.get('/:competition/:season', competitionSeasonController.getSeason);
 router.get('/:competition/:season/:round',
   authMiddleware({ credentialsRequired: false }), seasonRoundController.getRound);
 router.get('/:competition/:season/:round/my-score',
-  authMiddleware(), roundLeaderboardController.getMyUserScore);
+  authMiddleware(), roundLeaderboardController.myScore);
 router.post('/:competition/:season/:round/auto-pick',
   authMiddleware(), seasonRoundController.autoPickPredictions);
 router.post('/:competition/:season/:round/pick-joker',
