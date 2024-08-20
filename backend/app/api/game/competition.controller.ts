@@ -16,8 +16,8 @@ export class GameCompetitionsController {
 
   getCompetition = async (req: Request, res: Response) => {
     try {
-      const slug = req.params.slug;
-      const competition = await lastValueFrom(this.competitionRepo.findOne$({ slug }, '-createdAt'));
+      const competitionSlug = req.params.competition;
+      const competition = await lastValueFrom(this.competitionRepo.findOne$({ slug: competitionSlug }, '-createdAt'));
       return res.status(200).json({
         competition,
       })
