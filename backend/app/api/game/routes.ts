@@ -4,7 +4,6 @@ import gameDataController from './gameData.controller';
 import competitionController from './competition.controller';
 import competitionSeasonController from './competitionSeason.controller';
 import roundMatchController from './roundMatch.controller';
-import roundLeaderboardController from './roundLeaderboard.controller';
 import seasonRoundController from './seasonRound.controller';
 
 const router = Router();
@@ -15,7 +14,7 @@ router.get('/:competition/:season', competitionSeasonController.getSeason);
 router.get('/:competition/:season/:round',
   authMiddleware({ credentialsRequired: false }), seasonRoundController.getRound);
 router.get('/:competition/:season/:round/my-score',
-  authMiddleware(), roundLeaderboardController.myScore);
+  authMiddleware(), seasonRoundController.myScore);
 router.post('/:competition/:season/:round/auto-pick',
   authMiddleware(), seasonRoundController.autoPickPredictions);
 router.post('/:competition/:season/:round/pick-joker',
