@@ -78,11 +78,11 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
     if (this.hasLiveMatch && !hasLiveMatch) {
       this.hasLiveMatch = false;
-      this.nextPoll = moment().add(3, 'minutes');
+      this.nextPoll = moment().add(1, 'minutes');
     } else if (hasLiveMatch) {
       this.hasLiveMatch = true;
       this.hasNewLiveMatch = hasNewLiveMatch;
-      this.nextPoll = moment().add(90, 'seconds');
+      this.nextPoll = moment().add(1, 'minutes');
     } else {
       // precautionary handle nextPoll being behind
       const diff = nextPoll.diff(moment(), 'minutes');
