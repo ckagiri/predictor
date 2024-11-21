@@ -13,8 +13,9 @@ before_deploy:
   - ssh-add travis_rsa
 
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: bash scripts/deploy.sh
-    on:
-      branch: deploy
+  # Allows us to keep the binary created in the script step
+  skip_cleanup: true
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: deploy
