@@ -22,6 +22,7 @@
     "drop:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/drop.js",
     "seed:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/seed.js",
     "import:test": "NODE_ENV=test node -r dotenv-flow/config build/import/start.js",
+    "epd": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/ensureProperData.js premier-league",
     "cdsi": "npm run compile && npm run drop:test && npm run seed:test && npm run import:test"
   },
   "author": "",

@@ -29,7 +29,7 @@ export class LeaderboardServiceImpl {
       const competitions = await lastValueFrom(this.competitionRepo.findAll$());
       const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
       const result = await lastValueFrom(
-        this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, {
+        this.matchRepo.findAllFinishedBySeason$(currentSeasonIds, {
           allPredictionPointsCalculated: true
         })
       );

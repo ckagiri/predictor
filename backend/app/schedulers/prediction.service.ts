@@ -37,7 +37,7 @@ export class PredictionServiceImpl {
       const competitions = await lastValueFrom(this.competitionRepo.findAll$());
       const currentSeasonIds = compact(competitions.map(c => c.currentSeason?.toString()));
       const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
-      const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
+      const result = await lastValueFrom(this.matchRepo.findAllFinishedByCurrentRound$(currentSeasons));
 
       for await (const [seasonId, currentRoundMatches] of result) {
         let users: string[] = [];
@@ -56,7 +56,7 @@ export class PredictionServiceImpl {
       const competitions = await lastValueFrom(this.competitionRepo.findAll$());
       const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
       const result = await lastValueFrom(
-        this.matchRepo.findAllFinishedForCurrentSeasons$(currentSeasonIds, { allPredictionPointsCalculated: false })
+        this.matchRepo.findAllFinishedBySeason$(currentSeasonIds, { allPredictionPointsCalculated: false })
       );
       for await (const [seasonId, matches] of result) {
         if (isEmpty(matches)) continue;
