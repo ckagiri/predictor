@@ -268,7 +268,7 @@ export class PredictionRepositoryImpl
           }
         }),
         mergeMap(result => {
-          if (result.constructor.name === 'BulkWriteResult') {
+          if (result?.constructor && result.constructor.name === 'BulkWriteResult') {
             return super.findOne$({
               user: userId,
               match: { $in: matchIds },
