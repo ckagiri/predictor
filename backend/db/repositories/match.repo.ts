@@ -21,7 +21,8 @@ export interface MatchRepository extends BaseFootballApiRepository<Match> {
   findBySeasonAndTeamsAndUpsert$(obj: any): Observable<Match>;
   findEachBySeasonAndTeamsAndUpsert$(objs: any[]): Observable<Match[]>;
   find$(query: any, projection?: any, options?: any): Observable<{ result: Match[]; count: number }>;
-  findAllFinishedBySeason$(seasons: string[], filter: any): Observable<[string, Match[]][]>
+  findAllFinishedBySeason$(seasons: string[], filter?: any): Observable<[string, Match[]][]>
+  findAllFinishedForSeason$(season: string, filter?: any): Observable<Match[]>
   findAllFinishedByCurrentRound$(seasons: Season[]): Observable<[string, Match[]][]>
 }
 
@@ -53,6 +54,10 @@ export class MatchRepositoryImpl
         }),
         toArray()
       )
+  }
+
+  findAllFinishedForSeason$(season: string, filter: any = {}): Observable<Match[]> {
+    return this.findAll$({ ...filter, season, status: MatchStatus.FINISHED })
   }
 
   findAllFinishedByCurrentRound$(seasons: Season[]): Observable<[string, Match[]][]> {

@@ -36,6 +36,7 @@ export class PredictionServiceImpl {
     try {
       const competitions = await lastValueFrom(this.competitionRepo.findAll$());
       const currentSeasonIds = compact(competitions.map(c => c.currentSeason?.toString()));
+      // Todo: filter season-end not in the past
       const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
       const result = await lastValueFrom(this.matchRepo.findAllFinishedByCurrentRound$(currentSeasons));
 
