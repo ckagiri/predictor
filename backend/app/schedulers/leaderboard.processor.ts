@@ -1,4 +1,4 @@
-import { concatMap, forkJoin, from, last, lastValueFrom, map, mergeMap, Observable, of } from "rxjs";
+import { concatMap, forkJoin, from, last, lastValueFrom, map, mergeMap, Observable, of, takeLast } from "rxjs";
 
 import { Leaderboard, BOARD_TYPE } from "../../db/models/leaderboard.model";
 import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
@@ -46,12 +46,11 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
         .pipe(
           mergeMap(userIds => {
             const seasonLeaderboard$ = this.leaderboardRepo.findOrCreateSeasonLeaderboard$(seasonId);
-            const roundLeaderboard$Array: Observable<Leaderboard>[] = gameRoundIds.map(gameRoundId => {
+            const roundLeaderboards$: Observable<Leaderboard>[] = gameRoundIds.map(gameRoundId => {
               return this.leaderboardRepo.findOrCreateRoundLeaderboard$(seasonId, gameRoundId)
             });
-            return forkJoin([seasonLeaderboard$, ...roundLeaderboard$Array])
+            return forkJoin([seasonLeaderboard$, ...roundLeaderboards$])
               .pipe(
-                // Todo: set to processing - in the end set to processed
                 mergeMap(leaderboards => from(leaderboards)),
                 map(leaderboard => {
                   const leaderboardId = leaderboard.id!;
@@ -88,15 +87,15 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                         }
                       )
                     }),
-                    last(),
+                    takeLast(1),
                     mergeMap(() => {
                       const matchIds = matches.map(m => m.id!);
                       return this.leaderboardRepo.findByIdAndUpdateMatches$(leaderboardId, matchIds)
                     }),
                   )
                 ),
-                last(),
-                map(() => 'Success')
+                takeLast(1),
+                map(() => 'Leaderboard scores updated'),
               )
           }),
         )
@@ -111,7 +110,6 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     return lastValueFrom(
       this.leaderboardRepo.findAllGlobalFor$({ seasonId, gameRoundIds })
         .pipe(
-          // Todo: set to processing, end set to processed
           mergeMap(leaderboards => from(leaderboards)),
           mergeMap(leaderboard => {
             return this.leaderboardRepo.findById$(leaderboard.id!)
@@ -134,8 +132,8 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 })
               )
           }),
-          last(),
-          map(() => 'Success')
+          takeLast(1),
+          map(() => 'Leaderboard rankings updated')
         )
     )
   }

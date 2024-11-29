@@ -34,10 +34,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
           ),
           mergeMap(({ match, userIds }) => from(userIds)
             .pipe(
-              map(userId => ({
-                match, userId
-              })
-              )
+              map(userId => ({ match, userId }))
             )
           ),
           mergeMap(({ match, userId }) => {
