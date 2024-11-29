@@ -34,7 +34,7 @@ export class CurrentRoundMatchesServiceImpl {
       const competitions = await lastValueFrom(this.competitionRepo.findAll$());
       const currentSeasonIds = competitions.map(c => c.currentSeason?.toString() || '');
       const currentSeasons = await lastValueFrom(this.seasonRepo.findAllByIds$(currentSeasonIds));
-      const result = await lastValueFrom(this.matchRepo.findAllForCurrentGameRounds$(currentSeasons));
+      const result = await lastValueFrom(this.matchRepo.findAllFinishedByCurrentRound$(currentSeasons));
       for await (const [_seasonId, dbMatches] of result) {
         const externalIds: string[] = dbMatches.map(dbMatch => {
           const externalId = get(dbMatch, ['externalReference', FootballApiProvider.API_FOOTBALL_DATA, 'id']);
