@@ -73,6 +73,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         } else if (matchStart.isBefore(moment(liveMatch.utcDate))) {
           liveMatch = match;
         }
+        if (liveMatch.id === this.liveMatchId) {
+          break;
+        }
       } else if (matchStatus === MatchStatus.SCHEDULED) {
         if (matchStart.isBefore(nextPoll)) {
           nextPoll = matchStart.add(1, 'minutes');
@@ -97,7 +100,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     const diff = nextPoll.diff(moment(), 'minutes');
     nextPoll = diff <= 0 ? moment().add(1, 'minutes') : nextPoll;
 
-    if (liveMatchId != null || this.liveMatchId != null) {
+    if (liveMatchId != null || this.liveMatchId != null || this.liveMatchHasFinished) {
       nextPoll = moment().add(1, 'minutes');
     }
     this.nextPoll = nextPoll;
