@@ -42,7 +42,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       period = PERIOD.TODAY_AND_MORROW
     } else if (this.liveMatchHasFinished) {
       period = PERIOD.TODAY;
-    } else if (this.liveMatchId != undefined) {
+    } else if (this.liveMatchId) {
       period = PERIOD.LIVE;
     }
 
@@ -102,7 +102,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     const diff = nextPoll.diff(moment(), 'minutes');
     nextPoll = diff <= 0 ? moment().add(1, 'minutes') : nextPoll;
 
-    if (liveMatchId || this.liveMatchId || this.liveMatchHasFinished) {
+    if (this.liveMatchId || this.liveMatchHasFinished) {
       nextPoll = moment().add(1, 'minutes');
     }
     this.nextPoll = nextPoll;
