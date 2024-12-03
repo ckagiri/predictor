@@ -1,4 +1,4 @@
-import { concatMap, forkJoin, from, last, lastValueFrom, map, mergeMap, Observable, of, takeLast } from "rxjs";
+import { concatMap, filter, forkJoin, from, lastValueFrom, map, mergeMap, Observable, of, takeLast, tap } from "rxjs";
 
 import { Leaderboard, BOARD_TYPE } from "../../db/models/leaderboard.model";
 import { LeaderboardRepository, LeaderboardRepositoryImpl } from "../../db/repositories/leaderboard.repo";
@@ -7,14 +7,13 @@ import { UserScoreRepository, UserScoreRepositoryImpl } from "../../db/repositor
 import { Match, MatchStatus } from "../../db/models/match.model";
 import { uniq } from 'lodash';
 
-// Todo: filter out leaderboards with matchId already processed
 function isNonNull<T>(value: T): value is NonNullable<T> {
   return value != null;
 }
 
 export interface LeaderboardProcessor {
-  updateScores(seasonId: string, matches: Match[]): Promise<string>;
-  updateRankings(seasonId: string, matches: Match[]): Promise<string>;
+  updateScores(seasonId: string, matches: Match[]): Promise<undefined>;
+  updateRankings(seasonId: string, matches: Match[]): Promise<undefined>;
 }
 
 export class LeaderboardProcessorImpl implements LeaderboardProcessor {
@@ -36,8 +35,8 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
     private userScoreRepo: UserScoreRepository,
   ) { }
 
-  updateScores(seasonId: string, matchesArray: Match[]): Promise<string> {
-    const matches = matchesArray.filter(
+  updateScores(seasonId: string, seasonMatches: Match[]): Promise<undefined> {
+    const matches = seasonMatches.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
     const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
 
@@ -72,7 +71,10 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                     mergeMap(({ leaderboardId, matchId, userId }) => {
                       return this.predictionRepo.findOne$(userId, matchId)
                         .pipe(
-                          map(prediction => ({ leaderboardId, matchId, userId, prediction }))
+                          map(prediction => ({ leaderboardId, matchId, userId, prediction })),
+                          filter(({ prediction }) => {
+                            return isNonNull(prediction) && isNonNull(prediction.scorePoints)
+                          })
                         )
                     }),
                     concatMap(({ leaderboardId, matchId, userId, prediction }) => {
@@ -88,22 +90,27 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                       )
                     }),
                     takeLast(1),
-                    mergeMap(() => {
-                      const matchIds = matches.map(m => m.id!);
-                      return this.leaderboardRepo.findByIdAndUpdateMatches$(leaderboardId, matchIds)
-                    }),
+                    map(() => ({ leaderboardId, matches })),
                   )
                 ),
-                takeLast(1),
-                map(() => 'Leaderboard scores updated'),
+                mergeMap(({ leaderboardId, matches }) => {
+                  const matchIds = matches.map(m => m.id!);
+                  return this.leaderboardRepo.findByIdAndUpdateMatches$(leaderboardId, matchIds)
+                    .pipe(
+                      tap(() => console.log(`Leaderboard ${leaderboardId} scores & matches updated`))
+                    )
+                }),
               )
           }),
+          takeLast(1),
+          mergeMap(() => of(undefined)),
+          tap(() => console.log('All scores updated for all leaderboards')),
         )
     )
   }
 
-  updateRankings(seasonId: string, matchesArray: Match[]): Promise<string> {
-    const matches = matchesArray.filter(
+  updateRankings(seasonId: string, seasonMatches: Match[]): Promise<undefined> {
+    const matches = seasonMatches.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
     const gameRoundIds = uniq(matches.map(m => m.gameRound.toString()));
 
@@ -129,11 +136,16 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                     positionNew,
                     positionOld,
                   })
+                }),
+                takeLast(1),
+                tap(() => {
+                  console.log(`All positions updated for ${leaderboard.boardType} ${leaderboard.id}`)
                 })
               )
           }),
           takeLast(1),
-          map(() => 'Leaderboard rankings updated')
+          mergeMap(() => of(undefined)),
+          tap(() => console.log('All positions updated for all leaderboards')),
         )
     )
   }
