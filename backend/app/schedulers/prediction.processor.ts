@@ -1,5 +1,5 @@
 import { MatchStatus } from '../../db/models/match.model';
-import { count, filter, from, lastValueFrom, map, mergeMap } from 'rxjs';
+import { count, filter, from, lastValueFrom, map, mergeMap, tap } from 'rxjs';
 import { Match } from '../../db/models';
 import { PredictionRepository, PredictionRepositoryImpl } from '../../db/repositories/prediction.repo';
 import PredictionCalculator from './prediction.calculator';
@@ -21,8 +21,8 @@ export class PredictionProcessorImpl implements PredictionProcessor {
     private predictionCalculator: PredictionCalculator,
   ) { }
 
-  public calculateAndUpdatePredictionPoints(seasonId: string, matchesArray: Match[]): Promise<number> {
-    const matches = matchesArray.filter(
+  public calculateAndUpdatePredictionPoints(seasonId: string, seasonMatches: Match[]): Promise<number> {
+    const matches = seasonMatches.filter(
       m => m.status === MatchStatus.FINISHED && m.season.toString() === seasonId);
     return lastValueFrom(
       this.predictionRepo.distinct$('user', { season: seasonId })
@@ -41,10 +41,10 @@ export class PredictionProcessorImpl implements PredictionProcessor {
             const matchId = match.id!;
             return this.predictionRepo.findOne$(userId, matchId)
               .pipe(
-                map(prediction => ({ match, prediction }))
+                map(prediction => ({ match, prediction })),
+                filter(({ prediction }) => prediction != null),
               )
           }),
-          filter(({ prediction }) => prediction != null),
           mergeMap(({ match, prediction }) => {
             const { result } = match;
             const { choice } = prediction;
@@ -52,7 +52,8 @@ export class PredictionProcessorImpl implements PredictionProcessor {
             const scorePoints = this.predictionCalculator.calculateScore(result!, choice);
             return this.predictionRepo.findByIdAndUpdate$(prediction.id!, { scorePoints })
           }),
-          count()
+          count(),
+          tap(count => console.log(`Updated ${count} predictions`)),
         )
     )
   }
