@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+
+ENV_FILE=./.env node app/index.js

@@ -1,0 +1,43 @@
+version: '3'
+services:
+  mongodb:
+    image: 'mongo:latest'
+    volumes:
+      - ./mongo_data:/data/db
+    ports:
+      - 27017:27017
+
+  api:
+    image: ligi-api-devprod
+    depends_on:
+      - mongodb
+    build:
+      dockerfile: ./config/server/dev/Dockerfile
+      context: .
+
+  client:
+    image: ligi-client-devprod
+    stdin_open: true
+    build:
+      dockerfile: ./config/client/devprod/Dockerfile
+      context: .
+
+  nginx:
+    image: ligi-nginx-devprod
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: ./config/nginx/Dockerfile
+      context: .
+    ports:
+      - '8100:8100'
+
+  # mongo-client:
+  #   image: ligi-mongo-client-devprod
+  #   build:
+  #     dockerfile: ./config/mongo-client/Dockerfile
+  #     context: .
+  #   depends_on:
+  #     - mongodb
