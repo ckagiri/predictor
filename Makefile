@@ -12,3 +12,10 @@ list:
 #
 # all
 #
+all-build: all-dev-build
+
+all-clean: all-dev-clean
+	docker system prune -f
+	docker rmi mongo
+	docker ps -all
+	docker images

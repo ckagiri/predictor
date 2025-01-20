@@ -12,6 +12,9 @@ import { getLocalStrategy } from './api/auth/passport';
 import errorMiddleware from './api/auth/error.middleware';
 import router from './api/routes';
 
+const { ENV_FILE } = process.env;
+require('dotenv').config({ path: ENV_FILE });
+
 async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   if (!process.env.NODE_ENV || !port) {
     console.error(

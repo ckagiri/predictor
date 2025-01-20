@@ -8,8 +8,15 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and evas to reload.
+          Edit <code>src/App.tsx</code> and evasa to reload.
         </p>
+        <div>
+          <pre>
+            {JSON.stringify(process.env, null, 2)}
+          </pre>
+
+          <p>API: {process.env.REACT_APP_API}</p>
+        </div>
         <a
           className="App-link"
           href="https://reactjs.org"
