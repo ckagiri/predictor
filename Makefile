@@ -2,6 +2,8 @@ MAKEFILE_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
 include $(MAKEFILE_DIR)/make/dev.mk
 
+include $(MAKEFILE_DIR)/make/dev-compose.mk
+
 APPLICATION := ligi
 
 list:
@@ -16,6 +18,5 @@ all-build: all-dev-build
 
 all-clean: all-dev-clean
 	docker system prune -f
-	docker rmi mongo
 	docker ps -all
 	docker images

@@ -1,0 +1,27 @@
+services:
+  api:
+    image: ligi-api-dev
+    build:
+      dockerfile: ./config/server/dev/Dockerfile
+      context: .
+
+  client:
+    image: ligi-client-dev
+    stdin_open: true
+    build:
+      dockerfile: ./config/client/dev/Dockerfile
+      context: .
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  nginx:
+    image: ligi-nginx-dev
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: ./config/nginx/Dockerfile
+      context: .
+    ports:
+      - '8100:8100'
