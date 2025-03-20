@@ -57,14 +57,6 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   app.use('/api', router);
   app.use(errorMiddleware);
 
-  if (process.env.NODE_ENV === 'prod') {
-    const www = process.env.WWW || './public';
-    app.use(express.static(www));
-    app.get('*', (_req, res) => {
-      res.sendFile(`index.html`, { root: www });
-    });
-  }
-
   const dbUri = process.env.MONGO_URI as string;
   if (!dbUri) {
     console.error('MONGO_URI ENV variable missing',);

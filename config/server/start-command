@@ -1,4 +1,5 @@
 #!/bin/sh
-#
 
-ENV_FILE=./.env node app/index.js
+ENV_FILE=$(pwd)/.env
+
+node app/index.js
