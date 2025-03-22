@@ -37,7 +37,6 @@ client-dev-run:
 		--name ligi-client-dev \
 		-it \
 		-p 8040:8040 \
-		-p 3110:3110 \
 		ligi-client-dev-image:latest
 
 #

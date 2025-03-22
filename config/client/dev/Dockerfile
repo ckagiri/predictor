@@ -15,10 +15,4 @@ COPY frontend ./
 COPY config/client/dev/client.env ./.env
 COPY config/client/dev/start-command ./start-command
 
-ARG PORT=8040
-ENV PORT=$PORT
-
-EXPOSE ${PORT}
-
-# run this command when the container starts
 CMD ["./start-command"]
