@@ -4,15 +4,25 @@ services:
     build:
       dockerfile: ./config/server/dev/Dockerfile
       context: .
+    volumes:
+      - node_modules:/home/node/src/node_modules
+    networks:
+      - app-network
 
   client:
     image: ligi-client-dev
+    depends_on:
+      - api
     stdin_open: true
     build:
       dockerfile: ./config/client/dev/Dockerfile
       context: .
-    environment:
-      - CHOKIDAR_USEPOLLING=true
+    ports:
+      - '8040:8040'
+    volumes:
+      - ./frontend/src:/app/src
+    networks:
+      - app-network
 
   nginx:
     image: ligi-nginx-dev
@@ -25,3 +35,12 @@ services:
       context: .
     ports:
       - '8100:8100'
+    networks:
+      - app-network
+
+volumes:
+  node_modules:
+
+networks:
+  app-network:
+    driver: bridge

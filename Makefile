@@ -14,9 +14,9 @@ list:
 #
 # all
 #
-all-build: all-dev-build
+all-build: all-dev-build compose-dev-build
 
-all-clean: all-dev-clean
+all-clean: all-dev-clean compose-dev-clean
 	docker system prune -f
 	docker ps -all
 	docker images

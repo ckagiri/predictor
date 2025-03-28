@@ -96,9 +96,9 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 mergeMap(({ leaderboardId, matches }) => {
                   const matchIds = matches.map(m => m.id!);
                   return this.leaderboardRepo.findByIdAndUpdateMatches$(leaderboardId, matchIds)
-                    .pipe(
-                      tap(() => console.log(`Leaderboard ${leaderboardId} scores & matches updated`))
-                    )
+                    // .pipe(
+                    //   tap(() => console.log(`Leaderboard ${leaderboardId} scores & matches updated`))
+                    // )
                 }),
               )
           }),
