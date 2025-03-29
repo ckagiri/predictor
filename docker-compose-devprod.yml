@@ -29,7 +29,6 @@ services:
     build:
       dockerfile: ./config/nginx/Dockerfile
       context: .
-    # command: ["nginx", "-g", "daemon off;"]
     ports:
       - '8100:8100'
     networks:
