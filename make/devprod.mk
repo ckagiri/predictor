@@ -1,9 +1,8 @@
 #
-# devprod
+# dev
 #
 
-all-devprod-build: client-devprod-build server-devprod-build \
-  nginx-devprod-build
+all-devprod-build: client-devprod-build server-devprod-build nginx-devprod-build
 
 all-devprod-clean: all-devprod-images-clean all-devprod-containers-clean
 
@@ -24,6 +23,7 @@ all-devprod-images-clean:
 client-devprod-build:
 	docker build -f ./config/client/devprod/Dockerfile \
 		-t ligi-client-devprod-image:latest \
+	  --build-arg REACT_APP_API_URL=devprod-api \
 		.
 
 client-devprod-sh:
@@ -38,7 +38,6 @@ client-devprod-run:
 		--name ligi-client-devprod \
 		-it \
 		-p 8040:8040 \
-		-p 3110:3110 \
 		ligi-client-devprod-image:latest
 
 #
@@ -46,7 +45,7 @@ client-devprod-run:
 #
 
 server-devprod-build:
-	docker build -f ./config/server/dev/Dockerfile \
+	docker build -f ./config/server/devprod/Dockerfile \
 	-t ligi-server-devprod-image:latest \
 	.
 
@@ -56,8 +55,11 @@ server-devprod-sh:
 		sh
 
 server-devprod-run:
-	docker run --rm --name ligi-server-devprod \
-		-it -p 3110:3110 \
+	docker run \
+		--rm \
+		--name ligi-server-devprod \
+		-it \
+		-p 3110:3110 \
 		ligi-server-devprod-image:latest
 
 #
@@ -66,12 +68,13 @@ server-devprod-run:
 
 nginx-devprod-build:
 	docker build -f ./config/nginx/Dockerfile \
-	-t ligi-nginx-devprod-image:latest \
-	.
+		-t ligi-nginx-devprod-image:latest \
+		.
 
 nginx-devprod-sh:
 	docker run --rm --name ligi-nginx-devprod \
-		-it ligi-nginx-devprod-image \
+		-it \
+		ligi-nginx-devprod-image \
 		sh
 
 nginx-devprod-run:
@@ -79,4 +82,5 @@ nginx-devprod-run:
 		--rm \
 		--name ligi-nginx-devprod \
 		-it \
+		-p 8100:8100 \
 		ligi-nginx-devprod-image:latest

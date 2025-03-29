@@ -1,8 +1,10 @@
 MAKEFILE_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
 include $(MAKEFILE_DIR)/make/dev.mk
+include $(MAKEFILE_DIR)/make/devprod.mk
 
 include $(MAKEFILE_DIR)/make/dev-compose.mk
+include $(MAKEFILE_DIR)/make/devprod-compose.mk
 
 APPLICATION := ligi
 

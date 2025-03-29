@@ -1,7 +1,0 @@
-#!/bin/sh
-
-ENV_FILE=$(pwd)/.env
-
-source $ENV_FILE
-
-npm start

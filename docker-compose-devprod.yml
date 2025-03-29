@@ -1,19 +1,13 @@
-version: '3'
 services:
-  mongodb:
-    image: 'mongo:latest'
-    volumes:
-      - ./mongo_data:/data/db
-    ports:
-      - 27017:27017
-
   api:
     image: ligi-api-devprod
-    depends_on:
-      - mongodb
     build:
-      dockerfile: ./config/server/dev/Dockerfile
+      dockerfile: ./config/server/devprod/Dockerfile
       context: .
+    volumes:
+      - node_modules:/home/node/src/node_modules
+    networks:
+      - app-network
 
   client:
     image: ligi-client-devprod
@@ -21,6 +15,10 @@ services:
     build:
       dockerfile: ./config/client/devprod/Dockerfile
       context: .
+    ports:
+      - '8040:8040'
+    networks:
+      - app-network
 
   nginx:
     image: ligi-nginx-devprod
@@ -31,13 +29,15 @@ services:
     build:
       dockerfile: ./config/nginx/Dockerfile
       context: .
+    # command: ["nginx", "-g", "daemon off;"]
     ports:
       - '8100:8100'
+    networks:
+      - app-network
 
-  # mongo-client:
-  #   image: ligi-mongo-client-devprod
-  #   build:
-  #     dockerfile: ./config/mongo-client/Dockerfile
-  #     context: .
-  #   depends_on:
-  #     - mongodb
+volumes:
+  node_modules:
+
+networks:
+  app-network:
+    driver: bridge

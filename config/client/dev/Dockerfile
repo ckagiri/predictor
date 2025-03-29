@@ -13,7 +13,6 @@ COPY --from=builder /app/node_modules ./node_modules
 
 COPY frontend ./
 COPY config/client/dev/client.env ./.env
-COPY config/client/dev/start-command ./start-command
 
 EXPOSE 8040
-CMD ["./start-command"]
+CMD [ "npm", "run", "start" ]
