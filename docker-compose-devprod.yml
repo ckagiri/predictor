@@ -2,8 +2,10 @@ services:
   api:
     image: ligi-api-devprod
     build:
-      dockerfile: ./config/server/devprod/Dockerfile
+      dockerfile: ./config/server/prod/Dockerfile
       context: .
+      args:
+        - APP_ENV=devprod
     volumes:
       - node_modules:/home/node/src/node_modules
     networks:
@@ -13,8 +15,10 @@ services:
     image: ligi-client-devprod
     stdin_open: true
     build:
-      dockerfile: ./config/client/devprod/Dockerfile
+      dockerfile: ./config/client/prod/Dockerfile
       context: .
+      args:
+        - APP_ENV=devprod
     ports:
       - '8040:8040'
     networks:
