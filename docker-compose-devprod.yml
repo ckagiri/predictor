@@ -4,8 +4,6 @@ services:
     build:
       dockerfile: ./config/server/prod/Dockerfile
       context: .
-      args:
-        - APP_ENV=devprod
     volumes:
       - node_modules:/home/node/src/node_modules
     networks:
@@ -17,8 +15,6 @@ services:
     build:
       dockerfile: ./config/client/prod/Dockerfile
       context: .
-      args:
-        - APP_ENV=devprod
     ports:
       - '8040:8040'
     networks:

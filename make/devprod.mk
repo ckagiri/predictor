@@ -23,7 +23,6 @@ all-devprod-images-clean:
 client-devprod-build:
 	docker build -f ./config/client/prod/Dockerfile \
 		-t ligi-client-devprod-image:latest \
-		--build-arg APP_ENV=devprod \
 		.
 
 client-devprod-sh:
