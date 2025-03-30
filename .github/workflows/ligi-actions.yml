@@ -4,33 +4,31 @@ on:
   push:
     branches:
       - deploy
-  workflow_dispatch:
-    manual: true
+env:
+  API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
+  MONGO_URI: ${{MONGO_URI}}
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Show port
-        run: |
-          echo "vp ${{vars.SERVER_PORT}}"
-          echo "sp ${{secrets.SERVER_PORT}}"
       - name: Create client prod env file
         run: |
           cat <<EOF > config/client/prod/client.env
-          NODE_ENV=production
-          PORT=8100
-          API_URL=http://localhost:8100
+          REACT_APP_API=$REACT_APP_API
           EOF
       - name: Create server prod env file
         run: |
           cat <<EOF > config/server/prod/server.env
+          API_FOOTBALL_DATA_KEY=$API_FOOTBALL_DATA_KEY
+          MONGO_URI=$MONGO_URI
           NODE_ENV=production
-          PORT=8100
+          PORT=3110
           EOF
-      - name: List files in the repository
+      - name: Show envs in the repository
         run: |
           cd config/client/prod
           cat client.env
-          ls -a
+          cd config/server/prod
+          cat server.env
