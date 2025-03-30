@@ -21,4 +21,4 @@ jobs:
           EOF
       - name: List files in the repository
         run: |
-          ls ${{ github.workspace }}
+          ls -a ${{ github.workspace }}
