@@ -28,8 +28,7 @@ services:
       dockerfile: ./config/nginx/Dockerfile
       context: .
     ports:
-      - '80:8100'
-      - '8080:8100'
+      - '8100:8100'
     networks:
       - app-network
 
