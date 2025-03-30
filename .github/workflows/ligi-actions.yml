@@ -12,13 +12,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Create env file
+      - name: Create client prod env file
         run: |
-          cat <<EOF > .env
+          cat <<EOF > config/client/prod/client.env
           NODE_ENV=production
           PORT=8100
           API_URL=http://localhost:8100
           EOF
+      - name: Create server prod env file
+        run: |
+          cat <<EOF > config/server/prod/server.env
+          NODE_ENV=production
+          PORT=8100
+          EOF
       - name: List files in the repository
         run: |
-          ls -a ${{ github.workspace }}
+          cat config/client/prod/client.env
+          cat config/server/prod/server.env
