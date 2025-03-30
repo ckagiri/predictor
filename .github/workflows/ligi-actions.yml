@@ -14,7 +14,8 @@ jobs:
         uses: actions/checkout@v4
       - name: List files in the repository
         run: |
-          ls -a ${{ github.workspace }}
+          cd config/client/prod
+          ls -a
       - name: Create client prod env file
         run: |
           cat <<EOF > config/client/prod/client.env
@@ -30,4 +31,4 @@ jobs:
           EOF
       - name: List files in the repository
         run: |
-          ls -a ${{ github.workspace }}
+          ls -a
