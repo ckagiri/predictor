@@ -1,2 +1,24 @@
-name: GitHub LigiPredictor Actions
-on: [push]
+---
+name: Continous Deployment
+on:
+  push:
+    branches:
+      - deploy
+  workflow_dispatch:
+    manual: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create env file
+        run: |
+          cat <<EOF > .env
+          NODE_ENV=production
+          PORT=8100
+          API_URL=http://localhost:8100
+          EOF
+      - name: List files in the repository
+        run: |
+          ls ${{ github.workspace }}
