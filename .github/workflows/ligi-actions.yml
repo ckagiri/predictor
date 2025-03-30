@@ -41,6 +41,6 @@ jobs:
           context: .
           file: ./config/server/prod/Dockerfile
           build-args: |
-            APP_ENV=production
+            APP_ENV=prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/ligi:api
