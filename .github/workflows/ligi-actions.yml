@@ -15,6 +15,7 @@ jobs:
       - name: Show port
         run: |
           echo ${{vars.PORT}}
+          echo ${{secrets.PORT}}
       - name: Create client prod env file
         run: |
           cat <<EOF > config/client/prod/client.env
