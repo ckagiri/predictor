@@ -5,6 +5,7 @@ include $(MAKEFILE_DIR)/make/devprod.mk
 
 include $(MAKEFILE_DIR)/make/dev-compose.mk
 include $(MAKEFILE_DIR)/make/devprod-compose.mk
+include $(MAKEFILE_DIR)/make/prod-compose.mk
 
 APPLICATION := ligi
 

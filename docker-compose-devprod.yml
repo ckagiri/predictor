@@ -15,8 +15,6 @@ services:
     build:
       dockerfile: ./config/client/prod/Dockerfile
       context: .
-    ports:
-      - '8040:8040'
     networks:
       - app-network
 
@@ -30,7 +28,8 @@ services:
       dockerfile: ./config/nginx/Dockerfile
       context: .
     ports:
-      - '8100:8100'
+      - '80:8100'
+      - '8080:8100'
     networks:
       - app-network
 

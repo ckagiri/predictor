@@ -46,7 +46,6 @@ client-devprod-run:
 server-devprod-build:
 	docker build -f ./config/server/prod/Dockerfile \
 	-t ligi-server-devprod-image:latest \
-	--build-arg APP_ENV=devprod \
 	.
 
 server-devprod-sh:

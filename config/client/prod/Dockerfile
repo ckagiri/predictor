@@ -14,7 +14,6 @@ RUN npm run build
 
 # handle nginx server
 FROM nginx
-EXPOSE 8040
 COPY config/client/prod/nginx/default.conf /etc/nginx/conf.d/default.conf
 
 COPY --from=builder /app/build /usr/share/nginx/html

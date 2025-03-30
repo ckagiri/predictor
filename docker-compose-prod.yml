@@ -1,0 +1,26 @@
+services:
+  api:
+    image: ${DOCKER_USERNAME}/ligi:api
+    networks:
+      - app-network
+
+  client:
+    image: ${DOCKER_USERNAME}/ligi:client
+    networks:
+      - app-network
+
+  nginx:
+    image: ${DOCKER_USERNAME}/ligi:nginx
+    depends_on:
+      - api
+      - client
+    restart: always
+    ports:
+      - '80:8100'
+      - '8080:8100'
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
