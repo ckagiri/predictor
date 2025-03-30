@@ -31,4 +31,5 @@ jobs:
           EOF
       - name: List files in the repository
         run: |
+          cd config/client/prod
           ls -a
