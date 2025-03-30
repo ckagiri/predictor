@@ -27,11 +27,13 @@ jobs:
           NODE_ENV=production
           PORT=3110
           EOF
-      - name: Show client env
-        run: |
-          cd config/client/prod
-          cat client.env
-      - name: Show client env
-        run: |
-          cd config/server/prod
-          cat server.env
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push ligi-api
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./config/server/prod/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/ligi:api
