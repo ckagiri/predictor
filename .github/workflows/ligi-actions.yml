@@ -27,5 +27,10 @@ jobs:
           EOF
       - name: List files in the repository
         run: |
+<<<<<<< HEAD
           cat config/client/prod/client.env
           cat config/server/prod/server.env
+=======
+          ls -a ${{ github.workspace }}
+          cat .env
+>>>>>>> 73f586268938f811475ef56bbd9d472067c4d684
