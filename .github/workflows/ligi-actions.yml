@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: List files in the repository
+        run: |
+          ls -a ${{ github.workspace }}
       - name: Create client prod env file
         run: |
           cat <<EOF > config/client/prod/client.env
@@ -27,5 +30,4 @@ jobs:
           EOF
       - name: List files in the repository
         run: |
-          cat config/client/prod/client.env
-          cat config/server/prod/server.env
+          ls -a ${{ github.workspace }}
