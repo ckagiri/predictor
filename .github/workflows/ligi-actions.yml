@@ -12,9 +12,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: List files in the repository
+      - name: Show port
         run: |
-          echo {{vars.PORT}}
+          echo ${{vars.PORT}}
       - name: Create client prod env file
         run: |
           cat <<EOF > config/client/prod/client.env
