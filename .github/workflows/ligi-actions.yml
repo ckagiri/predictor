@@ -32,4 +32,5 @@ jobs:
       - name: List files in the repository
         run: |
           cd config/client/prod
+          cat client.env
           ls -a
