@@ -6,7 +6,8 @@ on:
       - deploy
 env:
   API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
-  MONGO_URI: ${{MONGO_URI}}
+  MONGO_URI: ${{secrets.MONGO_URI}}
+  REACT_APP_API: ${{secrets.REACT_APP_API}}
 jobs:
   build:
     runs-on: ubuntu-latest
