@@ -7,8 +7,6 @@ RUN npm install
 FROM base AS dev
 ENV NODE_ENV=development
 RUN npm install
-
-FROM dev AS build
 COPY backend ./
 ENV PATH=/app/node_modules/.bin:$PATH
 RUN npm run build

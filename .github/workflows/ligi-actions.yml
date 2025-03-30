@@ -44,5 +44,3 @@ jobs:
             APP_ENV=prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/ligi:api
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/ligi:apibuildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/ligi:apibuildcache,mode=max
