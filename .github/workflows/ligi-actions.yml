@@ -1,0 +1,37 @@
+---
+name: Continous Deployment
+on:
+  push:
+    branches:
+      - deploy
+env:
+  API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
+  MONGO_URI: ${{secrets.MONGO_URI}}
+  REACT_APP_API: ${{secrets.REACT_APP_API}}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Create client prod env file
+        run: |
+          cat <<EOF > config/client/prod/client.env
+          REACT_APP_API=$REACT_APP_API
+          EOF
+      - name: Create server prod env file
+        run: |
+          cat <<EOF > config/server/prod/server.env
+          API_FOOTBALL_DATA_KEY=$API_FOOTBALL_DATA_KEY
+          MONGO_URI=$MONGO_URI
+          NODE_ENV=production
+          PORT=3110
+          EOF
+      - name: Show client env
+        run: |
+          cd config/client/prod
+          cat client.env
+      - name: Show client env
+        run: |
+          cd config/server/prod
+          cat server.env
