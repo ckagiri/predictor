@@ -10,6 +10,7 @@ RUN npm install
 
 FROM dev AS build
 COPY backend ./
+ENV PATH=/app/node_modules/.bin:$PATH
 RUN npm run build
 
 FROM base AS prod
