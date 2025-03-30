@@ -27,9 +27,11 @@ jobs:
           NODE_ENV=production
           PORT=3110
           EOF
-      - name: Show envs in the repository
+      - name: Show client env
         run: |
           cd config/client/prod
           cat client.env
+      - name: Show client env
+        run: |
           cd config/server/prod
           cat server.env
