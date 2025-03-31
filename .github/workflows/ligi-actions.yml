@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./config/server/devprod/Dockerfile
+          file: ./config/server/prod/Dockerfile
           build-args: |
             APP_ENV=prod
           push: true
@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./config/client/devprod/Dockerfile
+          file: ./config/client/prod/Dockerfile
           build-args: |
             APP_ENV=prod
           push: true
