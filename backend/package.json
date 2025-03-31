@@ -4,6 +4,7 @@
   "scripts": {
     "build": "npm run compile && npm run copyfiles",
     "compile": "tsc --project tsconfig.json",
+    "tsc": "./node_modules/typescript/bin/tsc",
     "copyfiles": "copyfiles wait-for.sh build",
     "start": "NODE_ENV=production node -r dotenv/config build/app/index.js",
     "serve": "NODE_ENV=development node -r dotenv-flow/config build/app/index.js",
