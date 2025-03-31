@@ -17,6 +17,9 @@ jobs:
           echo "Generating .env file"
           echo "DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}" >> .env
 
+      - name: Show all files in the repository
+        run: ls -a
+
       - name: Copy files to target server via scp
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -28,19 +31,19 @@ jobs:
           target: "~/.deploy/${{ github.event.repository.name }}/"
 
       # Deploy Docker image with your application using `docker compose up app` remotely
-      - name: remote docker-compose up via ssh
-        uses: appleboy/ssh-action@v0.1.10
-        env:
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
-          envs: DOCKER_PASSWORD,DOCKER_USERNAME
-          script: |
-            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-            cd ~/.deploy/${{ github.event.repository.name }}
-            docker compose -f ./docker-compose-prod.yml pull
-            docker compose -f ./docker-compose-prod.yml up -d
+      # - name: remote docker-compose up via ssh
+      #   uses: appleboy/ssh-action@v0.1.10
+      #   env:
+      #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      #   with:
+      #     host: ${{ secrets.DEPLOY_HOST }}
+      #     username: ${{ secrets.DEPLOY_USERNAME }}
+      #     key: ${{ secrets.DEPLOY_KEY }}
+      #     port: 22
+      #     envs: DOCKER_PASSWORD,DOCKER_USERNAME
+      #     script: |
+      #       echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      #       cd ~/.deploy/${{ github.event.repository.name }}
+      #       docker compose -f ./docker-compose-prod.yml pull
+      #       docker compose -f ./docker-compose-prod.yml up -d
