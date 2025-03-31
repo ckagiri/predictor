@@ -21,7 +21,7 @@ all-devprod-images-clean:
 #
 
 client-devprod-build:
-	docker build -f ./config/client/devprod/Dockerfile \
+	docker build -f ./config/client/prod/Dockerfile \
 		-t ligi-client-devprod-image:latest \
 		.
 
@@ -47,7 +47,7 @@ client-devprod-clean:
 #
 
 server-devprod-build:
-	docker build -f ./config/server/devprod/Dockerfile \
+	docker build -f ./config/server/prod/Dockerfile \
 	-t ligi-server-devprod-image:latest \
 	.
 
