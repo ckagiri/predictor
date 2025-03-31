@@ -47,3 +47,25 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/ligi:api
           cache-from: type=gha
           cache-to: type=gha, mode=max
+
+      - name: Build and push ligi-client
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./config/client/devprod/Dockerfile
+          build-args: |
+            APP_ENV=prod
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/ligi:client
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
+
+      - name: Build and push ligi-nginx
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./config/nginx/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/ligi:nginx
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
