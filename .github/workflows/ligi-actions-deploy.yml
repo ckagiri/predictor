@@ -1,0 +1,46 @@
+---
+name: Continous Deployment
+on:
+  push:
+    branches:
+      - deploy2
+env:
+  API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
+  MONGO_URI: ${{secrets.MONGO_URI}}
+  REACT_APP_API: ${{secrets.REACT_APP_API}}
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Create .env file
+        run: |
+          echo "Generating .env file"
+          echo "DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}" >> .env
+
+      - name: Copy files to target server via scp
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          port: 22
+          key: ${{ secrets.DEPLOY_KEY }}
+          source: "./docker-compose-prod.yml,./.env"
+          target: "~/.deploy/${{ github.event.repository.name }}/"
+
+      # Deploy Docker image with your application using `docker compose up app` remotely
+      - name: remote docker-compose up via ssh
+        uses: appleboy/ssh-action@v0.1.10
+        env:
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          envs: DOCKER_PASSWORD,DOCKER_USERNAME
+          script: |
+            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+            cd ~/.deploy/${{ github.event.repository.name }}
+            docker compose -f ./docker-compose-prod.yml -p pull
+            docker compose -f ./docker-compose-prod.yml -p up -d

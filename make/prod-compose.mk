@@ -2,8 +2,8 @@
 # compose prod
 #
 compose-prod-up:
-	docker compose -f ./docker-compose-prod.yml -p ligi-prod pull
-	docker compose -f ./docker-compose-prod.yml -p ligi-prod up
+	docker compose -f ./docker-compose-prod.yml -p pull
+	docker compose -f ./docker-compose-prod.yml -p up
 
 compose-prod-down:
 	docker compose -f ./docker-compose-prod.yml -p ligi-prod down
