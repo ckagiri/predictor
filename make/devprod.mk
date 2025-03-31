@@ -39,6 +39,9 @@ client-devprod-run:
 		-p 8040:8040 \
 		ligi-client-devprod-image:latest
 
+client-devprod-clean:
+	docker rmi -f ligi-client-devprod-image
+
 #
 # server
 #
@@ -60,6 +63,9 @@ server-devprod-run:
 		-it \
 		-p 3110:3110 \
 		ligi-server-devprod-image:latest
+
+server-devprod-clean:
+	docker rmi -f ligi-server-devprod-image
 
 #
 # nginx
