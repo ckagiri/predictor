@@ -14,9 +14,9 @@ services:
     ports:
       - '8100:8100'
     environment:
-      - VIRTUAL_HOST: ${HOST_DOMAIN}
-      - LETSENCRYPT_HOST: ${HOST_DOMAIN}
-      - LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      - VIRTUAL_HOST=${HOST_DOMAIN}
+      - LETSENCRYPT_HOST=${HOST_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     networks:
       - nginx
       - default
