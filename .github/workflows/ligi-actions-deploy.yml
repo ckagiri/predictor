@@ -3,7 +3,7 @@ name: Continous Deployment
 on:
   push:
     branches:
-      - deploy2
+      - deployx
 jobs:
   deploy_via_ssh:
     needs: push_to_registry
