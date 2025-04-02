@@ -81,7 +81,7 @@ jobs:
           echo "Generating .env file"
           echo "DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}" >> .env
           echo "HOST_DOMAIN=${{secrets.HOST_DOMAIN}}" >> .env
-          echo "HOST_PORT=${{secrets.HOST_PORT}}" >> .env
+          echo "HOME_PORT=${{secrets.HOME_PORT}}" >> .env
           echo "LETSENCRYPT_EMAIL=${{secrets.LETSENCRYPT_EMAIL}}" >> .env
 
       # Copy docker-compose and .env files to target server
