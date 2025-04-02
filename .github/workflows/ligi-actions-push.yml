@@ -3,7 +3,7 @@ name: Continous Deployment
 on:
   push:
     branches:
-      - deploy
+      - deploy2
 env:
   API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
   MONGO_URI: ${{secrets.MONGO_URI}}

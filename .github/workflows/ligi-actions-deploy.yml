@@ -3,7 +3,7 @@ name: Continous Deployment
 on:
   push:
     branches:
-      - deploy2
+      - deploy
 jobs:
   build:
     runs-on: ubuntu-22.04
