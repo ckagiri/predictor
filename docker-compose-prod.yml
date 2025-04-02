@@ -1,13 +1,9 @@
 services:
   api:
     image: ${DOCKER_USERNAME}/ligi:api
-    networks:
-      - app-network
 
   client:
     image: ${DOCKER_USERNAME}/ligi:client
-    networks:
-      - app-network
 
   nginx:
     image: ${DOCKER_USERNAME}/ligi:nginx
@@ -16,11 +12,19 @@ services:
       - client
     restart: always
     ports:
-      - '80:8100'
-      - '8080:8100'
+      - '8100:8100'
+    environment:
+      - VIRTUAL_HOST=${HOST_DOMAIN}
+      - VIRTUAL_PORT=${HOME_PORT}
+      - LETSENCRYPT_HOST=${HOST_DOMAIN}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
     networks:
-      - app-network
+      - nginx
+      - default
 
 networks:
-  app-network:
+  default:
+    name: app-network
     driver: bridge
+  nginx:
+    external: true

@@ -6,8 +6,6 @@ services:
       context: .
     volumes:
       - node_modules:/home/node/src/node_modules
-    networks:
-      - app-network
 
   client:
     image: ligi-client-devprod
@@ -15,8 +13,6 @@ services:
     build:
       dockerfile: ./config/client/prod/Dockerfile
       context: .
-    networks:
-      - app-network
 
   nginx:
     image: ligi-nginx-devprod
@@ -29,12 +25,11 @@ services:
       context: .
     ports:
       - '8100:8100'
-    networks:
-      - app-network
 
 volumes:
   node_modules:
 
 networks:
-  app-network:
+  default:
+    name: app-network
     driver: bridge
