@@ -3,9 +3,10 @@ name: Continous Deployment
 on:
   push:
     branches:
-      - deploy
+      - deploy2
 jobs:
-  build:
+  deploy_via_ssh:
+    needs: push_to_registry
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -16,6 +17,7 @@ jobs:
           echo "Generating .env file"
           echo "DOCKER_USERNAME=${{secrets.DOCKER_USERNAME}}" >> .env
           echo "HOST_DOMAIN=${{secrets.HOST_DOMAIN}}" >> .env
+          echo "HOST_PORT=${{secrets.HOST_PORT}}" >> .env
           echo "LETSENCRYPT_EMAIL=${{secrets.LETSENCRYPT_EMAIL}}" >> .env
 
       # Copy docker-compose and .env files to target server
@@ -45,5 +47,4 @@ jobs:
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
             cd ~/.deploy/${{ github.event.repository.name }}
             docker compose -f ./docker-compose-prod.yml pull
-            docker compose -f ./docker-compose-prod.yml down
-            # docker compose -f ./docker-compose-prod.yml up -d
+            docker compose -f ./docker-compose-prod.yml up -d

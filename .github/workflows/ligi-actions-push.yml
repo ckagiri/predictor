@@ -9,7 +9,7 @@ env:
   MONGO_URI: ${{secrets.MONGO_URI}}
   REACT_APP_API: ${{secrets.REACT_APP_API}}
 jobs:
-  build:
+  push_to_registry:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
