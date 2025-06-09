@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+echo "Building LigiPredictor Images"
+docker build -t $DOCKER_USERNAME/ligi:client \
+  --build-arg APP_ENV=prod \
+  -f ./config/client/prod/Dockerfile .
+
+docker build -t $DOCKER_USERNAME/ligi:api \
+  --build-arg APP_ENV=prod \
+  -f ./config/server/prod/Dockerfile .
+
+docker build -t $DOCKER_USERNAME/ligi:nginx \
+  -f ./config/nginx/Dockerfile .
+
+echo "Login to Dockerhub, provide your password below..."
+echo $DOCKER_PASSWORD | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+echo "Pushing LigiPredictor Images to Dockerhub..."
+docker push $DOCKER_USERNAME/ligi:client
+docker push $DOCKER_USERNAME/ligi:api
+docker push $DOCKER_USERNAME/ligi:nginx

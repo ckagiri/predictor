@@ -1,0 +1,35 @@
+services:
+  api:
+    image: ligi-api-devprod
+    build:
+      dockerfile: ./config/server/prod/Dockerfile
+      context: .
+    volumes:
+      - node_modules:/home/node/src/node_modules
+
+  client:
+    image: ligi-client-devprod
+    stdin_open: true
+    build:
+      dockerfile: ./config/client/prod/Dockerfile
+      context: .
+
+  nginx:
+    image: ligi-nginx-devprod
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      dockerfile: ./config/nginx/Dockerfile
+      context: .
+    ports:
+      - '8100:8100'
+
+volumes:
+  node_modules:
+
+networks:
+  default:
+    name: app-network
+    driver: bridge
