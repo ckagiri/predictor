@@ -1,15 +1,21 @@
-import { Request, Response } from "express";
-import { lastValueFrom } from "rxjs";
+import { Request, Response } from 'express';
+import { lastValueFrom } from 'rxjs';
+
 import {
-  SeasonRepositoryImpl,
   SeasonRepository,
-} from "../../../../db/repositories/season.repo";
+  SeasonRepositoryImpl,
+} from '../../../../db/repositories/season.repo.js';
 import {
   TeamRepository,
   TeamRepositoryImpl,
-} from "../../../../db/repositories/team.repo";
+} from '../../../../db/repositories/team.repo.js';
 
 export class SeasonsController {
+  constructor(
+    private seasonRepo: SeasonRepository,
+    private teamRepo: TeamRepository
+  ) {}
+
   static getInstance(
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     teamRepo = TeamRepositoryImpl.getInstance()
@@ -17,51 +23,28 @@ export class SeasonsController {
     return new SeasonsController(seasonRepo, teamRepo);
   }
 
-  constructor(
-    private seasonRepo: SeasonRepository,
-    private teamRepo: TeamRepository
-  ) {}
-
-  public getSeasons = async (req: Request, res: Response) => {
-    try {
-      const competition = req.params.competition;
-      if (!competition) {
-        throw new Error("competition slug is required");
-      }
-      const seasons = await lastValueFrom(
-        this.seasonRepo.findAll$(
-          { "competition.slug": competition },
-          "-createdAt -externalReference -teams"
-        )
-      );
-      return res.status(200).json(seasons);
-    } catch (error) {
-      return res.status(500).send(error);
-    }
-  };
-
   getSeason = async (req: Request, res: Response) => {
     try {
       const competitionSlug = req.params.competition;
       const seasonSlug = req.params.slug;
       if (!competitionSlug) {
-        throw new Error("competition slug is required");
+        throw new Error('competition slug is required');
       }
       if (!seasonSlug) {
-        throw new Error("season slug is required");
+        throw new Error('season slug is required');
       }
 
       const season = await lastValueFrom(
         this.seasonRepo.findOne$(
           {
-            "competition.slug": competitionSlug,
+            'competition.slug': competitionSlug,
             slug: seasonSlug,
           },
-          "-createdAt -externalReference"
+          '-createdAt -externalReference'
         )
       );
       if (!season) {
-        throw new Error("season not found");
+        throw new Error('season not found');
       }
 
       // TODO: use populate
@@ -73,6 +56,24 @@ export class SeasonsController {
       res.status(200).json(season);
     } catch (error) {
       res.status(500).send(error);
+    }
+  };
+
+  public getSeasons = async (req: Request, res: Response) => {
+    try {
+      const competition = req.params.competition;
+      if (!competition) {
+        throw new Error('competition slug is required');
+      }
+      const seasons = await lastValueFrom(
+        this.seasonRepo.findAll$(
+          { 'competition.slug': competition },
+          '-createdAt -externalReference -teams'
+        )
+      );
+      return res.status(200).json(seasons);
+    } catch (error) {
+      return res.status(500).send(error);
     }
   };
 }

@@ -5,13 +5,13 @@ import { CompetitionRepositoryImpl } from '../../db/repositories/competition.rep
 import memoryDb from '../memoryDb';
 
 const competition = {
+  code: 'epl',
   id: '1',
   name: 'English Premier League',
   slug: 'english_premier_league',
-  code: 'epl',
 };
 
-describe('CompetitionRepo', function() {
+describe('CompetitionRepo', function () {
   before(async () => {
     await memoryDb.connect();
   });
@@ -26,17 +26,15 @@ describe('CompetitionRepo', function() {
 
   it('should save new competition', done => {
     const competitionRepo = CompetitionRepositoryImpl.getInstance(
-      ApiProvider.LIGI,
+      ApiProvider.LIGI
     );
 
-    competitionRepo.save$(competition).subscribe(
-      (data: any) => {
-        const { name, slug, code } = data;
-        expect(name).to.equal(competition.name);
-        expect(slug).to.equal(competition.slug);
-        expect(code).to.equal(competition.code);
-        done();
-      }
-    );
+    competitionRepo.save$(competition).subscribe((data: any) => {
+      const { code, name, slug } = data;
+      expect(name).to.equal(competition.name);
+      expect(slug).to.equal(competition.slug);
+      expect(code).to.equal(competition.code);
+      done();
+    });
   });
 });

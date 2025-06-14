@@ -157,9 +157,7 @@
       "tla": "MUN",
       "slug": "manchester-united",
       "crestUrl": "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg",
-      "aliases": [
-        "Man United"
-      ]
+      "aliases": ["Man United"]
     },
     "newcastle": {
       "name": "Newcastle United",
@@ -183,9 +181,7 @@
       "tla": "NFO",
       "slug": "nottingham-forest",
       "crestUrl": "https://crests.football-data.org/351.png",
-      "aliases": [
-        "Nottingham"
-      ]
+      "aliases": ["Nottingham"]
     },
     "sheffield_utd": {
       "name": "Sheffield United",
@@ -257,9 +253,7 @@
       "tla": "WOL",
       "slug": "wolves",
       "crestUrl": "https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg",
-      "aliases": [
-        "Wolverhampton"
-      ]
+      "aliases": ["Wolverhampton"]
     }
   },
   "seasons": {

@@ -1,47 +1,44 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
+import { Score, ScorePoints } from '../../common/score';
 import { Entity, schema } from './base.model';
-import { ScorePoints, Score } from '../../common/score';
 
 export interface Prediction extends Entity {
+  [key: string]: any;
+  choice: Score;
+  hasJoker?: boolean;
   id?: string;
-  user: string;
-  season: string;
+  jokerAutoPicked?: boolean;
   match: string;
   matchSlug?: string;
-  choice: Score;
   scorePoints?: ScorePoints;
-  hasJoker?: boolean;
-  jokerAutoPicked?: boolean;
-  [key: string]: any;
+  season: string;
+  user: string;
 }
 
 const { ObjectId } = Schema.Types;
 
 const predictionSchema = schema({
-  user: { type: ObjectId, ref: 'User', required: true, index: true },
-  season: { type: ObjectId, ref: 'Season', required: true, index: true },
-  match: { type: ObjectId, ref: 'Match', required: true, index: true },
-  matchSlug: { type: String, trim: true },
   choice: {
-    goalsHomeTeam: { type: Number },
     goalsAwayTeam: { type: Number },
-    isComputerGenerated: { type: Boolean, default: true },
+    goalsHomeTeam: { type: Number },
+    isComputerGenerated: { default: true, type: Boolean },
   },
+  hasJoker: { default: false, type: Boolean },
+  jokerAutoPicked: { default: false, type: Boolean },
+  match: { index: true, ref: 'Match', required: true, type: ObjectId },
+  matchSlug: { trim: true, type: String },
   scorePoints: {
+    closeMatchScorePoints: { type: Number },
     correctMatchOutcomePoints: { type: Number },
     exactGoalDifferencePoints: { type: Number },
-    closeMatchScorePoints: { type: Number },
-    exactTeamScorePoints: { type: Number },
     exactMatchScorePoints: { type: Number },
+    exactTeamScorePoints: { type: Number },
   },
-  hasJoker: { type: Boolean, default: false },
-  jokerAutoPicked: { type: Boolean, default: false },
+  season: { index: true, ref: 'Season', required: true, type: ObjectId },
+  user: { index: true, ref: 'User', required: true, type: ObjectId },
 });
 
-const PredictionModel = model<Prediction>(
-  'Prediction',
-  predictionSchema,
-);
+const PredictionModel = model<Prediction>('Prediction', predictionSchema);
 
 export default PredictionModel;

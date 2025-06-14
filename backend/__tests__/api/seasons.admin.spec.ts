@@ -1,22 +1,22 @@
-import * as http from 'http';
-import * as chai from 'chai';
-import sinonChai from 'sinon-chai';
-import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
-import { setupReqRes } from './testUtils';
+import * as chai from 'chai';
+import * as http from 'http';
+import { lastValueFrom } from 'rxjs';
+import sinonChai from 'sinon-chai';
+
 import { SeasonsController } from '../../app/api/data/seasons/seasons.controller';
-import { Season } from '../../db/models';
-import memoryDb from '../memoryDb';
-import a, { GameData } from '../a';
-import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 import startServer from '../../app/server';
+import { Season } from '../../db/models';
+import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
+import a, { GameData } from '../a';
+import memoryDb from '../memoryDb';
+import { setupReqRes } from './testUtils';
 
 chai.use(sinonChai);
-chai.use(chaiHttp);
 const expect = chai.expect;
 
-let server: http.Server, seasonsAPI: AxiosInstance, baseURL: string;
+let baseURL: string, seasonsAPI: AxiosInstance, server: http.Server;
 
 const epl = a.competition
   .setName('English Premier League')
@@ -72,7 +72,7 @@ describe.skip('Seasons API', function () {
 
     it('getSeasons will 500 if no competition id or setSlug  provided', async () => {
       const { req, res } = setupReqRes();
-      await seasonsController.getSeasons(<any>req, <any>res);
+      await seasonsController.getSeasons(req as any, res as any);
 
       expect(res.json).not.to.have.been.called;
       expect(res.status).to.have.been.calledOnce;
@@ -82,28 +82,28 @@ describe.skip('Seasons API', function () {
     it('getSeasons returns all seasons for competition id in the database', async () => {
       const { req, res } = setupReqRes();
       req.query.competition = gameData.competitions[0].slug;
-      await seasonsController.getSeasons(<any>req, <any>res);
+      await seasonsController.getSeasons(req as any, res as any);
 
       expect(res.json).to.have.been.called;
       const firstCall = res.json.args[0];
       const firstArg = firstCall[0];
       const seasons = firstArg;
       expect(seasons.length).to.equal(2);
-      const actualSeasons = await seasonRepo.findAll$().toPromise();
+      const actualSeasons = await lastValueFrom(seasonRepo.findAll$());
       expect(seasons).to.eql(actualSeasons);
     });
 
     it('getSeasons returns all seasons for competition setSlug in the database', async () => {
       const { req, res } = setupReqRes();
       req.query.competition = gameData.competitions[0].slug;
-      await seasonsController.getSeasons(<any>req, <any>res);
+      await seasonsController.getSeasons(req as any, res as any);
 
       expect(res.json).to.have.been.called;
       const firstCall = res.json.args[0];
       const firstArg = firstCall[0];
       const seasons = firstArg;
       expect(seasons.length).to.equal(2);
-      const actualSeasons = await seasonRepo.findAll$().toPromise();
+      const actualSeasons = await lastValueFrom(seasonRepo.findAll$());
       expect(seasons).to.eql(actualSeasons);
     });
   });

@@ -1,20 +1,20 @@
 import 'mocha';
 import { expect } from 'chai';
 
-import { LigiTeamConverter } from '../../db/converters/ligi/team.converter';
 import { AfdTeamConverter } from '../../db/converters/apiFootballData/team.converter';
+import { LigiTeamConverter } from '../../db/converters/ligi/team.converter';
 
 describe('Team Converter', () => {
   describe('Ligi TeamConverterImpl', () => {
     const converter = new LigiTeamConverter();
     const team = {
-      name: 'Manchester United FC',
-      shortName: 'Man United',
+      aliases: ['Man Utd'],
       code: 'MUN',
-      slug: 'man_united',
       crestUrl:
         'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
-      aliases: ['Man Utd'],
+      name: 'Manchester United FC',
+      shortName: 'Man United',
+      slug: 'man_united',
     };
     it('should convert correctly', done => {
       const conversion = converter.from(team);
@@ -30,12 +30,12 @@ describe('Team Converter', () => {
   describe('Afd TeamConverterImpl', () => {
     const converter = new AfdTeamConverter();
     const team = {
+      crestUrl:
+        'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
       id: 66,
       name: 'Manchester United FC',
       shortName: 'Man United',
       squadMarketValue: null,
-      crestUrl:
-        'http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg',
     };
     it('should convert correctly', done => {
       const conversion = converter.from(team);

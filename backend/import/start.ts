@@ -1,5 +1,5 @@
-import { apiFootballDataImporter } from './apiFootballData/start';
-import * as db from '../db/index';
+import * as db from '../db/index.js';
+import { apiFootballDataImporter } from './apiFootballData/start.js';
 
 function start() {
   db.init(process.env.MONGO_URI!, (err: any) => {

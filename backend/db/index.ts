@@ -1,36 +1,52 @@
-import mongoose, { ConnectOptions } from "mongoose";
-import CompetitionModel from './models/competition.model';
-import TeamModel from './models/team.model';
-import PredictionModel from './models/prediction.model';
-import SeasonModel from './models/season.model';
-import LeaderboardModel from './models/leaderboard.model';
-import UserModel from './models/user.model';
-import UserScoreModel from './models/userScore.model';
-import MatchModel from './models/match.model';
-import GameRoundModel from './models/gameRound.model';
+import mongoose, { ConnectOptions } from 'mongoose';
+
+import CompetitionModel from './models/competition.model.js';
+import GameRoundModel from './models/gameRound.model.js';
+import LeaderboardModel from './models/leaderboard.model.js';
+import MatchModel from './models/match.model.js';
+import PredictionModel from './models/prediction.model.js';
+import SeasonModel from './models/season.model.js';
+import TeamModel from './models/team.model.js';
+import UserModel from './models/user.model.js';
+import UserScoreModel from './models/userScore.model.js';
 
 export const init = (
   mongoUri: string,
   cb?: any,
-  options: any = { drop: false },
+  options: any = { drop: false }
 ) => {
   cb =
-    cb ||
+    cb ??
     (() => {
       /**/
     });
-  mongoose.connect(mongoUri, { useNewUrlParser: true } as ConnectOptions, (error: any) => {
-    if (options.drop) {
-      mongoose.connection.db.dropDatabase((err: any) => {
-        cb(err);
-      });
-    } else {
+  mongoose
+    .connect(mongoUri, { useNewUrlParser: true } as ConnectOptions)
+    .then(async () => {
+      if (options.drop) {
+        if (mongoose.connection.db) {
+          try {
+            await mongoose.connection.db.dropDatabase();
+            cb();
+          } catch (err) {
+            cb(err);
+          }
+        } else {
+          cb(new Error('Database connection is not established.'));
+        }
+      } else {
+        cb();
+      }
+    })
+    .catch((error: unknown) => {
       cb(error);
-    }
-  });
+    });
 };
 
 export const drop = () => {
+  if (!mongoose.connection.db) {
+    return Promise.reject(new Error('Database connection is not established.'));
+  }
   return mongoose.connection.db.dropDatabase();
 };
 
@@ -39,16 +55,16 @@ export const close = () => {
 };
 
 export default {
-  init,
-  drop,
   close,
-  User: UserModel,
   Competition: CompetitionModel,
-  Season: SeasonModel,
+  drop,
   GameRound: GameRoundModel,
-  Team: TeamModel,
+  init,
+  Leaderboard: LeaderboardModel,
   Match: MatchModel,
   Prediction: PredictionModel,
-  Leaderboard: LeaderboardModel,
+  Season: SeasonModel,
+  Team: TeamModel,
+  User: UserModel,
   UserScore: UserScoreModel,
 };

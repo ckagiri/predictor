@@ -1,42 +1,40 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
+
 import { Entity, schema } from './base.model';
 
 export enum BOARD_TYPE {
-  GLOBAL_SEASON = 'GLOBAL_SEASON',
   GLOBAL_ROUND = 'GLOBAL_ROUND',
+  GLOBAL_SEASON = 'GLOBAL_SEASON',
 }
 export interface Leaderboard extends Entity {
-  id?: string;
-  season: string;
-  year?: number;
-  month?: number;
-  gameRound?: string;
   boardType?: BOARD_TYPE;
-  userCount?: number;
-  matches?: string[];
+  gameRound?: string;
+  id?: string;
   lastStatusUpdate?: Date;
+  matches?: string[];
+  month?: number;
+  season: string;
+  userCount?: number;
+  year?: number;
 }
 
 const { ObjectId } = Schema.Types;
 
 const leaderboardSchema = schema({
-  season: { type: ObjectId, ref: 'Season', index: true },
-  gameRound: { type: ObjectId, ref: 'GameRound', index: true },
-  year: { type: Number, index: true },
-  month: { type: Number, index: true },
   boardType: {
-    type: String,
-    required: true,
     enum: Object.values(BOARD_TYPE),
+    required: true,
+    type: String,
   },
-  userCount: { type: Number },
-  matches: [{ type: ObjectId, ref: 'Match' }],
+  gameRound: { index: true, ref: 'GameRound', type: ObjectId },
   lastStatusUpdate: { type: Schema.Types.Date },
+  matches: [{ ref: 'Match', type: ObjectId }],
+  month: { index: true, type: Number },
+  season: { index: true, ref: 'Season', type: ObjectId },
+  userCount: { type: Number },
+  year: { index: true, type: Number },
 });
 
-const LeaderboardModel = model<Leaderboard>(
-  'Leaderboard',
-  leaderboardSchema,
-);
+const LeaderboardModel = model<Leaderboard>('Leaderboard', leaderboardSchema);
 
 export default LeaderboardModel;

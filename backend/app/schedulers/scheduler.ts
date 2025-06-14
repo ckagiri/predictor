@@ -1,17 +1,17 @@
-export type SchedulerOptions = {
-  interval?: string | number,
-  runImmediately?: boolean,
-};
-
-export const SCHEDULE_TYPE = {
-  LOOP: 'loop',
-  CRON: 'cron',
+export interface SchedulerOptions {
+  interval?: number | string;
+  runImmediately?: boolean;
 }
 
-export interface Scheduler {
-  startJob(options?: SchedulerOptions): Promise<void>
-  jobTask(): Promise<any>;
-  cancelJob(): void;
-  scheduleJob(result?: any, reschedule?: boolean): void;
-  runJob?(): any
+export const SCHEDULE_TYPE = {
+  CRON: 'cron',
+  LOOP: 'loop',
 };
+
+export interface Scheduler {
+  cancelJob(): void;
+  jobTask(): Promise<any>;
+  runJob?(): any;
+  scheduleJob(result?: any, reschedule?: boolean): void;
+  startJob(options?: SchedulerOptions): Promise<void>;
+}

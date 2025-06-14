@@ -1,22 +1,43 @@
-import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { SeasonRepository } from '../../db/repositories/season.repo';
-import { TeamRepository } from '../../db/repositories/team.repo';
-import { MatchRepository } from '../../db/repositories/match.repo';
-import { CompetitionJob } from '../apiFootballData/competition.job';
+import { MatchRepository } from '../../db/repositories/match.repo.js';
+import { SeasonRepository } from '../../db/repositories/season.repo.js';
+import { TeamRepository } from '../../db/repositories/team.repo.js';
+import { FootballApiClient } from '../../thirdParty/footballApi/apiClient.js';
+import { CompetitionJob } from '../apiFootballData/competition.job.js';
 
 export default class Builder {
-  private _competitionId?: number | string;
+  get apiClient() {
+    return this._apiClient;
+  }
+  get competitionId() {
+    return this._competitionId;
+  }
+  get matchRepo() {
+    return this._matchRepo;
+  }
+  get seasonRepo() {
+    return this._seasonRepo;
+  }
+  get teamRepo() {
+    return this._teamRepo;
+  }
+
   private _apiClient?: FootballApiClient;
-  private _seasonRepo?: SeasonRepository;
-  private _teamRepo?: TeamRepository;
+
+  private _competitionId?: number | string;
+
   private _matchRepo?: MatchRepository;
+
+  private _seasonRepo?: SeasonRepository;
+
+  private _teamRepo?: TeamRepository;
 
   public build() {
     return new CompetitionJob(this);
   }
 
-  get apiClient() {
-    return this._apiClient;
+  public setCompetition(competitionId: number | string): this {
+    this._competitionId = competitionId;
+    return this;
   }
 
   public withApiClient(value: FootballApiClient) {
@@ -24,39 +45,18 @@ export default class Builder {
     return this;
   }
 
-  get seasonRepo() {
-    return this._seasonRepo;
-  }
-
-  public withSeasonRepo(value: SeasonRepository): Builder {
-    this._seasonRepo = value;
-    return this;
-  }
-
-  get teamRepo() {
-    return this._teamRepo;
-  }
-
-  public withTeamRepo(value: TeamRepository): Builder {
-    this._teamRepo = value;
-    return this;
-  }
-
-  get matchRepo() {
-    return this._matchRepo;
-  }
-
-  public withMatchRepo(value: MatchRepository): Builder {
+  public withMatchRepo(value: MatchRepository): this {
     this._matchRepo = value;
     return this;
   }
 
-  public setCompetition(competitionId: string | number): Builder {
-    this._competitionId = competitionId;
+  public withSeasonRepo(value: SeasonRepository): this {
+    this._seasonRepo = value;
     return this;
   }
 
-  get competitionId() {
-    return this._competitionId;
+  public withTeamRepo(value: TeamRepository): this {
+    this._teamRepo = value;
+    return this;
   }
 }

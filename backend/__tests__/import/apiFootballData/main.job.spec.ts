@@ -1,12 +1,12 @@
 import 'mocha';
-import sinon from 'sinon';
 import * as chai from 'chai';
+import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
 
-import { MainJob } from '../../../import/apiFootballData/main.job';
 import { CompetitionJob } from '../../../import/apiFootballData/competition.job';
+import { MainJob } from '../../../import/apiFootballData/main.job';
 import data from '../../fixtures/requests/apiFootballData.competitions2018.json';
 
 const queueStub: any = {
@@ -35,7 +35,7 @@ describe('ApiFootballData:Main Job', () => {
         clientStub,
         seasonRepoStub,
         teamRepoStub,
-        matchRepoStub,
+        matchRepoStub
       );
       await mainJob.start(queueStub);
 
@@ -50,7 +50,7 @@ describe('ApiFootballData:Main Job', () => {
         clientStub,
         seasonRepoStub,
         teamRepoStub,
-        matchRepoStub,
+        matchRepoStub
       );
       await mainJob.start(queueStub);
 
@@ -65,13 +65,13 @@ describe('ApiFootballData:Main Job', () => {
           clientStub,
           seasonRepoStub,
           teamRepoStub,
-          matchRepoStub,
+          matchRepoStub
         );
         await mainJob.start(queueStub);
 
         expect(spy).to.have.been.called;
         expect(spy).to.have.been.calledWith(
-          sinon.match.instanceOf(CompetitionJob),
+          sinon.match.instanceOf(CompetitionJob)
         );
       });
     });

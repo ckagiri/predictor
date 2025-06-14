@@ -1,50 +1,52 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
+
 import { Entity, schema } from './base.model';
 import { Team } from './team.model';
 
 export interface Season extends Entity {
-  name?: string;
-  year?: number;
-  slug?: string;
   competition?: {
+    id: string;
     name: string;
     slug: string;
-    id: string;
   };
-  numberOfRounds?: number;
-  currentMatchday?: number;
   currentGameRound?: string;
-  seasonStart?: any;
-  seasonEnd?: any;
+  currentMatchday?: number;
   externalReference?: any;
+  id: any;
+  name?: string;
+  numberOfRounds?: number;
+  seasonEnd?: any;
+  seasonStart?: any;
+  slug?: string;
   teams?: string[] | Team[];
+  year?: number;
 }
 
-const { ObjectId, Mixed } = Schema.Types;
+const { Mixed, ObjectId } = Schema.Types;
 
 export const seasonSchema = schema({
   competition: {
-    name: { type: String, required: true },
-    slug: { type: String, required: true },
-    id: { type: ObjectId, ref: 'Competition', index: true, required: true },
+    id: { index: true, ref: 'Competition', required: true, type: ObjectId },
+    name: { required: true, type: String },
+    slug: { required: true, type: String },
   },
-  name: { type: String, required: true },
-  slug: { type: String, required: true, trim: true },
-  year: { type: Number, required: true },
-  seasonStart: { type: Date, required: true },
-  seasonEnd: { type: Date, required: true },
+  currentGameRound: { ref: 'GameRound', type: ObjectId },
   currentMatchday: { type: Number },
-  currentGameRound: { type: ObjectId, ref: 'GameRound' },
+  externalReference: { type: Mixed },
+  name: { required: true, type: String },
+  numberOfGames: { type: Number },
   numberOfRounds: { type: Number },
   numberOfTeams: { type: Number },
-  numberOfGames: { type: Number },
+  seasonEnd: { required: true, type: Date },
+  seasonStart: { required: true, type: Date },
+  slug: { required: true, trim: true, type: String },
   teams: [
     {
-      type: ObjectId,
       ref: 'Team',
+      type: ObjectId,
     },
   ],
-  externalReference: { type: Mixed },
+  year: { required: true, type: Number },
 });
 
 const SeasonModel = model<Season>('Season', seasonSchema);

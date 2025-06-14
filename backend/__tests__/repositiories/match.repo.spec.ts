@@ -1,12 +1,13 @@
 import 'mocha';
 import { expect } from 'chai';
 import { mergeMap } from 'rxjs/operators';
+
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
-import memoryDb from '../memoryDb';
-import a, { GameData } from '../a';
 import { Match } from '../../db/models';
 import { MatchStatus } from '../../db/models/match.model';
+import { MatchRepositoryImpl } from '../../db/repositories/match.repo';
+import a, { GameData } from '../a';
+import memoryDb from '../memoryDb';
 
 const epl = a.competition
   .setName('English Premier League')
@@ -36,11 +37,17 @@ const mancity = a.team
   .setTla('MCI')
   .setSlug('man-city');
 
-const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
-const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
+const gw1 = a.gameRound
+  .setName('Gameweek 1')
+  .setSlug('gameweek-1')
+  .setPosition(1);
+const gw2 = a.gameRound
+  .setName('Gameweek 2')
+  .setSlug('gameweek-2')
+  .setPosition(2);
 
 const matchRepo = MatchRepositoryImpl.getInstance(
-  ApiProvider.API_FOOTBALL_DATA,
+  ApiProvider.API_FOOTBALL_DATA
 );
 
 const ligiMatchRepo = MatchRepositoryImpl.getInstance(ApiProvider.LIGI);
@@ -58,52 +65,52 @@ describe('MatchRepo', function () {
     let manuVsmanc: Partial<Match>;
 
     const afdManuVsManc = {
-      id: 233371,
-      season: {
-        id: 445,
-      },
-      utcDate: '2020-04-20T14:00:00Z',
-      status: 'FINISHED',
-      matchday: 1,
-      score: {
-        fullTime: {
-          homeTeam: 1,
-          awayTeam: 2,
-        },
+      awayTeam: {
+        id: 65,
+        shortName: 'Man City',
       },
       homeTeam: {
         id: 66,
         shortName: 'Man Utd',
       },
-      awayTeam: {
-        id: 65,
-        shortName: 'Man City',
-      },
+      id: 233371,
+      matchday: 1,
       odds: {
-        homeWin: 2.3,
-        draw: 3.25,
         awayWin: 3.4,
+        draw: 3.25,
+        homeWin: 2.3,
       },
+      score: {
+        fullTime: {
+          awayTeam: 2,
+          homeTeam: 1,
+        },
+      },
+      season: {
+        id: 445,
+      },
+      status: 'FINISHED',
+      utcDate: '2020-04-20T14:00:00Z',
     };
 
     beforeEach(async () => {
       await a.game
         .withTeams(manutd, mancity)
         .withCompetitions(epl)
-        .withSeasons(epl2020
-          .withTeams(manutd, mancity)
-          .withGameRounds(gw1, gw2)
-        ).build();
+        .withSeasons(
+          epl2020.withTeams(manutd, mancity).withGameRounds(gw1, gw2)
+        )
+        .build();
 
       manuVsmanc = {
-        id: undefined,
-        season: epl2020.id,
-        utcDate: '2019-09-10T11:30:00Z',
-        status: MatchStatus.SCHEDULED,
+        awayTeamId: mancity.id,
         gameRound: gw1.id,
         homeTeamId: manutd.id,
-        awayTeamId: mancity.id,
+        id: undefined,
         result: undefined,
+        season: epl2020.id,
+        status: MatchStatus.SCHEDULED,
+        utcDate: '2019-09-10T11:30:00Z',
       };
     });
 
@@ -113,7 +120,7 @@ describe('MatchRepo', function () {
 
     it('should save a match', done => {
       ligiMatchRepo.save$(manuVsmanc).subscribe(match => {
-        expect(match.season!.toString()).to.equal(epl2020.id);
+        expect(match.season.toString()).to.equal(epl2020.id);
         expect(match.slug).to.equal(`${manutd.slug}-v-${mancity.slug}`);
         done();
       });
@@ -123,17 +130,17 @@ describe('MatchRepo', function () {
       ligiMatchRepo
         .save$(manuVsmanc)
         .pipe(
-          mergeMap(_ =>
-            matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVsManc),
-          ),
+          mergeMap(_ => matchRepo.findBySeasonAndTeamsAndUpsert$(afdManuVsManc))
         )
         .subscribe(match => {
-          expect(match.season!.toString()).to.equal(epl2020.id);
-          expect(match.slug).to.equal((`${manutd.tla}-${mancity.tla}`).toLowerCase());
+          expect(match.season.toString()).to.equal(epl2020.id);
+          expect(match.slug).to.equal(
+            `${manutd.tla}-${mancity.tla}`.toLowerCase()
+          );
           done();
         });
     });
-  })
+  });
 
   describe('filter | sort | page', function () {
     let gameData: GameData;
@@ -148,36 +155,37 @@ describe('MatchRepo', function () {
       gameData = await a.game
         .withTeams(...teams)
         .withCompetitions(epl)
-        .withSeasons(epl2020
-          .withTeams(...teams)
-          .withGameRounds(gw1, gw2)
-          .withMatches(
-            a.match
-              .withHomeTeam(chelsea)
-              .withAwayTeam(manutd)
-              .setDate('2020-02-11T11:30:00Z')
-              .withGameRound(gw1),
-            a.match
-              .withHomeTeam(liverpool)
-              .withAwayTeam(arsenal)
-              .setDate('2020-02-10T11:30:00Z')
-              .withGameRound(gw1),
-            a.match
-              .withHomeTeam(everton)
-              .withAwayTeam(mancity)
-              .setDate('2020-02-15T11:30:00Z')
-              .withGameRound(gw2),
-            a.match
-              .withHomeTeam(chelsea)
-              .withAwayTeam(liverpool)
-              .setDate('2020-02-14T11:30:00Z')
-              .withGameRound(gw2),
-            a.match
-              .withHomeTeam(arsenal)
-              .withAwayTeam(manutd)
-              .setDate('2020-02-16T11:30:00Z')
-              .withGameRound(gw2),
-          ),
+        .withSeasons(
+          epl2020
+            .withTeams(...teams)
+            .withGameRounds(gw1, gw2)
+            .withMatches(
+              a.match
+                .withHomeTeam(chelsea)
+                .withAwayTeam(manutd)
+                .setDate('2020-02-11T11:30:00Z')
+                .withGameRound(gw1),
+              a.match
+                .withHomeTeam(liverpool)
+                .withAwayTeam(arsenal)
+                .setDate('2020-02-10T11:30:00Z')
+                .withGameRound(gw1),
+              a.match
+                .withHomeTeam(everton)
+                .withAwayTeam(mancity)
+                .setDate('2020-02-15T11:30:00Z')
+                .withGameRound(gw2),
+              a.match
+                .withHomeTeam(chelsea)
+                .withAwayTeam(liverpool)
+                .setDate('2020-02-14T11:30:00Z')
+                .withGameRound(gw2),
+              a.match
+                .withHomeTeam(arsenal)
+                .withAwayTeam(manutd)
+                .setDate('2020-02-16T11:30:00Z')
+                .withGameRound(gw2)
+            )
         )
         .build();
     });
@@ -192,7 +200,7 @@ describe('MatchRepo', function () {
         .find$({
           filter: { id },
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(count).to.equal(1);
           expect(matches[0].id).to.equal(id);
           done();
@@ -205,7 +213,7 @@ describe('MatchRepo', function () {
         .find$({
           filter: { 'homeTeam.id': chelseaId },
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(matches[0].homeTeam?.id.toString()).to.equal(chelseaId);
           expect(matches[1].homeTeam?.id.toString()).to.equal(chelseaId);
           expect(count).to.equal(2);
@@ -218,7 +226,7 @@ describe('MatchRepo', function () {
         .find$({
           filter: { 'homeTeam.slug': ['chelsea'] },
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(matches).to.have.length(2);
           expect(count).to.equal(2);
           done();
@@ -230,7 +238,7 @@ describe('MatchRepo', function () {
         .find$({
           filter: { 'homeTeam.slug': ['chelsea', 'everton'] },
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(matches).to.have.length(3);
           expect(count).to.equal(3);
           done();
@@ -239,16 +247,18 @@ describe('MatchRepo', function () {
 
     it('should filter matches by gameRound', done => {
       const season = gameData.seasons[0];
-      const gameRound = gameData.gameRounds.find(r => r.season!.toString() == season.id && r.position === 1)!
+      const gameRound = gameData.gameRounds.find(
+        r => r.season!.toString() == season.id && r.position === 1
+      )!;
 
       ligiMatchRepo
         .find$({
           filter: {
-            'homeTeam.slug': ['chelsea', 'everton'],
             gameRound: gameRound.id,
+            'homeTeam.slug': ['chelsea', 'everton'],
           },
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(matches).to.have.length(1);
           expect(count).to.equal(1);
           done();
@@ -260,7 +270,7 @@ describe('MatchRepo', function () {
         .find$({
           filter: { q: 'man' },
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(matches).to.have.length(3);
           expect(count).to.equal(3);
           done();
@@ -285,7 +295,7 @@ describe('MatchRepo', function () {
           filter: { 'team.id': arsenal.id },
           sort: ['utcDate', 'ASC'],
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(matches[0].homeTeam?.id.toString()).to.equal(liverpool.id);
           expect(matches[0].awayTeam?.id.toString()).to.equal(arsenal.id);
 
@@ -300,10 +310,10 @@ describe('MatchRepo', function () {
     it('should paginate matches', done => {
       ligiMatchRepo
         .find$({
-          sort: ['utcDate', 'ASC'],
           range: [0, 2],
+          sort: ['utcDate', 'ASC'],
         })
-        .subscribe(({ result: matches, count }) => {
+        .subscribe(({ count, result: matches }) => {
           expect(count).to.equal(5);
           expect(matches.length).to.equal(2);
           expect(matches[0].homeTeam?.slug).to.equal('liverpool');

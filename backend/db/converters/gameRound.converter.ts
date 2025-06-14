@@ -1,22 +1,22 @@
 import { Observable } from 'rxjs';
 
-import { LigiGameRoundConverter } from '../converters/ligi/gameRound.converter';
-import { Converter } from './converter';
-import { GameRound } from '../models/gameRound.model';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
+import { LigiGameRoundConverter } from '../converters/ligi/gameRound.converter.js';
+import { GameRound } from '../models/gameRound.model.js';
+import { Converter } from './converter.js';
 
 export interface GameRoundConverter extends Converter {
   from(data: any): Observable<GameRound>;
 }
 
-export abstract class GameRoundConverterImpl {
-  public static getInstance(provider: ApiProvider): GameRoundConverter {
+export const GameRoundConverterImpl = {
+  getInstance(provider: ApiProvider): GameRoundConverter {
     switch (provider) {
-      case ApiProvider.LIGI:
       case ApiProvider.API_FOOTBALL_DATA:
+      case ApiProvider.LIGI:
         return LigiGameRoundConverter.getInstance();
       default:
         throw new Error('Converter for Provider does not exist');
     }
-  }
-}
+  },
+};

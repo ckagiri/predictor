@@ -13,14 +13,14 @@ describe('User Repo', function () {
 
   beforeEach(async () => {
     const user1 = new UserModel({
-      username: 'chalo',
       email: 'chalo@example.com',
       local: { password: 'chalo' },
+      username: 'chalo',
     });
 
     const user2 = {
-      username: 'kagiri',
       email: 'kagiri@example.com',
+      username: 'kagiri',
     };
 
     // user is a simple model, try different ways of saving user data to DB; internally these methods are used in the repo classes
@@ -45,9 +45,9 @@ describe('User Repo', function () {
   it('should filter users', done => {
     userRepo
       .find$({
-        filter: { username: ['chalo'] }
+        filter: { username: ['chalo'] },
       })
-      .subscribe(({ result: users, count }) => {
+      .subscribe(({ count, result: users }) => {
         expect(users).to.have.length(1);
         expect(count).to.equal(1);
         done();

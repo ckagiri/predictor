@@ -1,6 +1,6 @@
 import 'mocha';
-import { expect } from 'chai';
 import * as bcrypt from 'bcryptjs';
+import { expect } from 'chai';
 
 import UserModel, { User } from '../../db/models/user.model';
 
@@ -10,10 +10,15 @@ describe('Users', () => {
       const u = new UserModel();
 
       it('should require an username', done => {
-        u.validate((err: any) => {
-          expect(err.errors.username).to.exist;
-          done();
-        });
+        u.validate()
+          .then(() => {
+            // Should not succeed validation
+            done(new Error('Validation should have failed'));
+          })
+          .catch((err: unknown) => {
+            expect((err as any).errors.username).to.exist;
+            done();
+          });
       });
     });
 

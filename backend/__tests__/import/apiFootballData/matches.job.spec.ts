@@ -1,13 +1,12 @@
 import 'mocha';
-import sinon from 'sinon';
 import * as chai from 'chai';
+import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
 import { of } from 'rxjs';
 
 import { MatchesJob } from '../../../import/apiFootballData/matches.job';
-
 import data from '../../fixtures/requests/apiFootballData.epl2018Matches.json';
 const clientStub: any = {
   getCompetitionMatches: () => {
@@ -37,20 +36,20 @@ describe('ApiFootballData:Matches Job', () => {
       await job.start(queueStub);
 
       expect(spy).to.have.been.calledOnce.and.to.have.been.calledWith(
-        competitionId,
+        competitionId
       );
     });
 
     it('should call matchRepo.findEachBySeasonAndTeamsAndUpsert$', async () => {
       const spy = sinon.spy(
         matchRepoStub,
-        'findEachBySeasonAndTeamsAndUpsert$',
+        'findEachBySeasonAndTeamsAndUpsert$'
       );
 
       await job.start(queueStub);
 
       expect(spy).to.have.been.calledOnce.and.to.have.been.calledWith(
-        sinon.match.array,
+        sinon.match.array
       );
     });
   });

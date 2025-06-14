@@ -1,9 +1,9 @@
-export { User } from './user.model';
 export { Competition } from './competition.model';
-export { Season } from './season.model';
-export { Team } from './team.model';
 export { GameRound } from './gameRound.model';
+export { Leaderboard } from './leaderboard.model';
 export { Match } from './match.model';
 export { Prediction } from './prediction.model';
-export { Leaderboard } from './leaderboard.model';
+export { Season } from './season.model';
+export { Team } from './team.model';
+export { User } from './user.model';
 export { UserScore } from './userScore.model';

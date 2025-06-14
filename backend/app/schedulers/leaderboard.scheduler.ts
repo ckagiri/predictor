@@ -1,19 +1,20 @@
-import { LeaderboardService, LeaderboardServiceImpl } from './leaderboard.service';
-import { PredictionService, PredictionServiceImpl } from './prediction.service';
-import { BaseScheduler } from './baseScheduler';
-import { EventMediator, EventMediatorImpl } from '../../common/eventMediator';
+import {
+  EventMediator,
+  EventMediatorImpl,
+} from '../../common/eventMediator.js';
+import { BaseScheduler } from './baseScheduler.js';
+import {
+  LeaderboardService,
+  LeaderboardServiceImpl,
+} from './leaderboard.service.js';
+import {
+  PredictionService,
+  PredictionServiceImpl,
+} from './prediction.service.js';
 
 const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
 
 export class LeaderboardScheduler extends BaseScheduler {
-  public static getInstance(
-    leaderboardService = LeaderboardServiceImpl.getInstance(),
-    predictionService = PredictionServiceImpl.getInstance(),
-    eventMediator = EventMediatorImpl.getInstance(),
-  ) {
-    return new LeaderboardScheduler(leaderboardService, predictionService, eventMediator);
-  }
-
   constructor(
     private leaderboardService: LeaderboardService,
     private predictionService: PredictionService,
@@ -21,10 +22,23 @@ export class LeaderboardScheduler extends BaseScheduler {
   ) {
     super('LeaderboardJob');
     this.eventMediator.addListener(
-      'footballApiMatchUpdatesCompleted', async () => {
+      'footballApiMatchUpdatesCompleted',
+      async () => {
         console.log(`${this.job.name} handle footballApiMatchUpdatesCompleted`);
         await this.runJob();
       }
+    );
+  }
+
+  public static getInstance(
+    leaderboardService = LeaderboardServiceImpl.getInstance(),
+    predictionService = PredictionServiceImpl.getInstance(),
+    eventMediator = EventMediatorImpl.getInstance()
+  ) {
+    return new LeaderboardScheduler(
+      leaderboardService,
+      predictionService,
+      eventMediator
     );
   }
 
