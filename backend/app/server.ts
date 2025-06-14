@@ -59,17 +59,19 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   app.use('/api', router);
   app.use(errorMiddleware);
 
-  const dbUri = process.env.MONGO_URI!;
-  if (!dbUri) {
+  if (!process.env.MONGO_URI) {
     console.error('MONGO_URI ENV variable missing');
     process.exit(1);
   }
+  const dbUri = process.env.MONGO_URI;
 
   await connectWithRetry();
 
   async function connectWithRetry() {
     try {
-      if (mongoose.connection.readyState === ConnectionStates.connected) {
+      if (
+        mongoose.connection.readyState === mongoose.ConnectionStates.connected
+      ) {
         const { host, name, port } = mongoose.connection;
         const mongoUri = `mongodb://${host}:${port}/${name}`;
         console.info(`Connected to MongoDB: ${mongoUri}`);

@@ -16,7 +16,7 @@ const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
 
 export class TodayAndMorrowScheduler extends BaseScheduler {
   private liveMatchHasFinished = false;
-  private liveMatchId = undefined;
+  private liveMatchId: string | number | null = null;
   private nextPoll?: moment.Moment; // ideally what is supposed to be the next poll
   private scheduleDate?: Date;
 
@@ -71,13 +71,13 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
     const liveMatchId = liveMatch?.id;
     if (
-      !this.liveMatchId &&
+      this.liveMatchId == null &&
       liveMatchId !== undefined &&
       liveMatchId !== null
     ) {
       this.liveMatchId = liveMatchId;
     } else if (
-      this.liveMatchId &&
+      this.liveMatchId != null &&
       liveMatchId !== undefined &&
       liveMatchId !== null
     ) {
@@ -86,10 +86,10 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         this.liveMatchHasFinished = true;
       }
     } else if (
-      this.liveMatchId &&
+      this.liveMatchId != null &&
       (liveMatchId === undefined || liveMatchId === null)
     ) {
-      this.liveMatchId = undefined;
+      this.liveMatchId = null;
       this.liveMatchHasFinished = true;
     }
 

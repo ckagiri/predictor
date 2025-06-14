@@ -199,7 +199,7 @@ class SeasonRoundController {
             'createdAt',
             'updatedAt',
           ]) as Prediction;
-          m.prediction = prediction ?? null;
+          m.prediction = prediction;
         });
 
         const leaderboard = await lastValueFrom(
