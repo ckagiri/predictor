@@ -1,12 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "nodenext",
-    "outDir": "build",
+    "target": "es2024", // Specifies the ECMAScript target version
+    "module": "commonjs", // Sets the module system to use (commonjs, nodenext, esnext)
+    "outDir": "./build", // Output directory for compiled files
     "baseUrl": ".",
-    "strict": true,
+    "strict": true, // Enables all strict type-checking options (best practice)
     "esModuleInterop": true,
-    "moduleResolution": "node16",
     "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
     "resolveJsonModule": true
   },

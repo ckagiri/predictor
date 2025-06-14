@@ -29,7 +29,6 @@
   },
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@types/express-jwt": "^7.4.4",
     "@types/passport-local": "^1.0.38",
