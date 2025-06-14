@@ -17,7 +17,9 @@ router.get('/:competition/seasons', (req, res, next) => {
   seasonsController.getSeasons(req, res).catch(next);
 });
 router.get('/:competition/seasons/:slug', seasonsController.getSeason);
-router.get('/:competition/seasons/:season/teams', teamsController.getTeams);
+router.get('/:competition/seasons/:season/teams', (req, res, next) => {
+  teamsController.getTeams(req, res).catch(next);
+});
 router.get('/:competition/seasons/:season/teams/:slug', (req, res, next) => {
   teamsController.getTeam(req, res).catch(next);
 });

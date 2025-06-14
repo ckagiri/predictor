@@ -1,4 +1,13 @@
-import { count, filter, from, lastValueFrom, map, mergeMap, tap } from 'rxjs';
+import {
+  count,
+  filter,
+  from,
+  lastValueFrom,
+  map,
+  mergeMap,
+  tap,
+  throwError,
+} from 'rxjs';
 
 import { Match } from '../../db/models/index.js';
 import { MatchStatus } from '../../db/models/match.model.js';
@@ -46,19 +55,23 @@ export class PredictionProcessorImpl implements PredictionProcessor {
         mergeMap(({ match, userId }) => {
           const matchId = match.id!;
           return this.predictionRepo.findOne$(userId, matchId).pipe(
-            map(prediction => ({ match, prediction })),
-            filter(({ prediction }) => prediction !== null)
+            filter(prediction => prediction !== null),
+            map(prediction => ({ match, prediction }))
           );
         }),
         mergeMap(({ match, prediction }) => {
           const { result } = match;
-          const { choice } = prediction!;
+          const { choice } = prediction;
+
+          if (!result) {
+            return throwError(() => new Error('No result for match'));
+          }
 
           const scorePoints = this.predictionCalculator.calculateScore(
             result,
             choice
           );
-          return this.predictionRepo.findByIdAndUpdate$(prediction!.id, {
+          return this.predictionRepo.findByIdAndUpdate$(prediction.id!, {
             scorePoints,
           });
         }),

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { lastValueFrom } from 'rxjs';
 
-import { Competition } from '../../../../db/models/index.js';
+import { Competition } from '../../../../db/models/competition.model.js';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
@@ -20,7 +20,7 @@ export class CompetitionsController {
   public getCompetition = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
-      let competition: Competition;
+      let competition: Competition | null;
 
       if (isMongoId(id)) {
         competition = await lastValueFrom(this.competitionRepo.findById$(id));

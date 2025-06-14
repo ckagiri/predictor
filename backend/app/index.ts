@@ -1,3 +1,8 @@
-import startServer from './server';
+import startServer from './server.js';
 
-startServer();
+(async () => {
+  await startServer();
+})().catch((error: unknown) => {
+  console.error('Error starting server:', error);
+  process.exit(1);
+});

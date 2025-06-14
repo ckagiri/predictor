@@ -11,6 +11,7 @@ import {
   of,
   takeLast,
   tap,
+  throwError,
 } from 'rxjs';
 
 import { BOARD_TYPE, Leaderboard } from '../../db/models/leaderboard.model.js';
@@ -146,22 +147,22 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 ),
                 mergeMap(({ leaderboardId, matchId, userId }) => {
                   return this.predictionRepo.findOne$(userId, matchId).pipe(
+                    filter(prediction => !!prediction),
                     map(prediction => ({
                       leaderboardId,
                       matchId,
                       prediction,
                       userId,
-                    })),
-                    filter(({ prediction }) => {
-                      return (
-                        isNonNull(prediction) &&
-                        isNonNull(prediction.scorePoints)
-                      );
-                    })
+                    }))
                   );
                 }),
                 concatMap(({ leaderboardId, matchId, prediction, userId }) => {
                   const { hasJoker, scorePoints: points } = prediction;
+                  if (!points) {
+                    return throwError(
+                      () => new Error('No points for prediction')
+                    );
+                  }
                   return this.userScoreRepo.findScoreAndUpsert$(
                     { leaderboardId, userId },
                     points,

@@ -1,7 +1,7 @@
 import mongooseSeeder from 'mais-mongoose-seeder';
 import mongoose, { ConnectOptions } from 'mongoose';
 
-import seedData from '../tasks/seedData/seed-epl24.json' with { type: 'json' };
+import seedData from '../tasks/seedData/seed-epl24.json';
 
 function seed() {
   void mongoose.connect(process.env.MONGO_URI!, {
