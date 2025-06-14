@@ -4,4 +4,5 @@
   "editor.snippetSuggestions": "top",
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

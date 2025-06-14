@@ -1,20 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "sourceMap": true,
+    "target": "es2022",
+    "module": "nodenext",
     "outDir": "build",
     "baseUrl": ".",
     "strict": true,
     "esModuleInterop": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "lib": ["dom", "es2020"],
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "importHelpers": true
+    "moduleResolution": "node16",
+    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
+    "resolveJsonModule": true
   },
   "exclude": ["__tests__"]
 }
