@@ -18,10 +18,7 @@ if (!dbUri) {
 
 async function connectWithRetry() {
   try {
-    await mongoose.connect(dbUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    } as ConnectOptions);
+    await mongoose.connect(dbUri);
     console.info('Connected to MongoDB server');
     await appSchedule.start();
     console.info('schedulers started');

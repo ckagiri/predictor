@@ -34,19 +34,24 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   // and do some background processing. This way, this master process can
   // be freed up to keep processing to a minimum on its servicing threads.
   let node2: cp.ChildProcess;
+  const isTsx =
+    typeof process.env._ === 'string' && process.env._.includes('tsx');
   if (process.env.NODE_ENV !== 'test') {
     const fromBuildDir = fromBase('build');
     const fromBackendDir = fromBase('backend');
     const fromSrcDir = fromBase('src');
-    // @ts-expect-error // check if code is running under ts-node or docker
-    if (process[Symbol.for('ts-node.register.instance')]) {
+    if (isDocker()) {
+      if (isTsx) {
+        node2 = cp.fork(fromSrcDir('app', 'schedulers', 'app_FORK.ts'), [], {
+          execArgv: ['--import', 'tsx'],
+        });
+      } else {
+        node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
+      }
+    } else if (isTsx) {
       node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], {
-        execArgv: ['-r', 'ts-node/register'],
+        execArgv: ['--import', 'tsx'],
       });
-    } else if (isDocker()) {
-      node2 = cp.fork(fromSrcDir('app', 'schedulers', 'app_FORK.js'), []);
-    } else {
-      node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
     }
   }
   app.use(function (req: any, _res, next) {
@@ -76,10 +81,7 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
         const mongoUri = `mongodb://${host}:${port}/${name}`;
         console.info(`Connected to MongoDB: ${mongoUri}`);
       } else {
-        await mongoose.connect(dbUri, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        } as ConnectOptions);
+        await mongoose.connect(dbUri);
         console.info(`Connected to MongoDB: ${dbUri}`);
       }
     } catch (err: any) {

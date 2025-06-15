@@ -21,7 +21,7 @@ export const init = (
       /**/
     });
   mongoose
-    .connect(mongoUri, { useNewUrlParser: true } as ConnectOptions)
+    .connect(mongoUri)
     .then(async () => {
       if (options.drop) {
         if (mongoose.connection.db) {

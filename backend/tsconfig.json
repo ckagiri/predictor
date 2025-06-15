@@ -6,6 +6,7 @@
     "baseUrl": ".",
     "strict": true, // Enables all strict type-checking options (best practice)
     "esModuleInterop": true,
+    "importHelpers": true,
     "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
     "resolveJsonModule": true
   },

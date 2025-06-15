@@ -121,9 +121,11 @@ describe('UserScore Repo', function () {
           .withTeams(manu, manc, che, ars)
           .withGameRounds(gw1, gw2)
           .withMatches(manuVmanc, cheVars)
-          .withLeaderboards(eplBoard, eplGw1Board)
+        //     .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
+    console.log('manu', manu.id);
+    console.log('epl');
     leaderboardId = eplBoard.id;
     userId1 = user1.id;
     userId2 = user2.id;

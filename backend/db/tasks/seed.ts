@@ -4,9 +4,7 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import seedData from '../tasks/seedData/seed-epl24.json';
 
 function seed() {
-  void mongoose.connect(process.env.MONGO_URI!, {
-    useNewUrlParser: true,
-  } as ConnectOptions);
+  void mongoose.connect(process.env.MONGO_URI!);
   mongoose.connection.on('open', () => {
     const seeder = mongooseSeeder(mongoose);
     console.log('seeding db..');
