@@ -12,7 +12,6 @@ export interface Season extends Entity {
   currentGameRound?: string;
   currentMatchday?: number;
   externalReference?: any;
-  id: any;
   name?: string;
   numberOfRounds?: number;
   seasonEnd?: any;

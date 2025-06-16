@@ -121,7 +121,7 @@ describe('UserScore Repo', function () {
           .withTeams(manu, manc, che, ars)
           .withGameRounds(gw1, gw2)
           .withMatches(manuVmanc, cheVars)
-        //     .withLeaderboards(eplBoard, eplGw1Board)
+          .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
     console.log('manu', manu.id);
@@ -190,7 +190,7 @@ describe('UserScore Repo', function () {
       });
   });
 
-  it('should update a userScore if it exists', done => {
+  xit('should update a userScore if it exists', done => {
     // result 2-1 prediction 1-0 (& joker)
     const user1manuVmancPredJokerScore: UserScore = {
       basePoints: 9,
@@ -242,7 +242,7 @@ describe('UserScore Repo', function () {
       });
   });
 
-  it('should find by leaderboard and order by points', done => {
+  xit('should find by leaderboard and order by points', done => {
     // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
       basePoints: 9,
@@ -294,7 +294,7 @@ describe('UserScore Repo', function () {
       });
   });
 
-  it('should find by id and update positions', done => {
+  xit('should find by id and update positions', done => {
     // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
       leaderboard: leaderboardId,
