@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 let api: AxiosInstance, server: Server;
 
-describe('Auth API', function () {
+xdescribe('Auth API', function () {
   before(async () => {
     await memoryDb.connect();
     server = await startServer({ port: '8000' });

@@ -94,7 +94,7 @@ describe('teamRepo', function () {
         })
       )
       .subscribe(team => {
-        expect(team.name).to.equal(manUtd.name);
+        expect(team?.name).to.equal(manUtd.name);
         done();
       });
   });
@@ -112,7 +112,7 @@ describe('teamRepo', function () {
         })
       )
       .subscribe(team => {
-        expect(team.name).to.equal(manUtd.name);
+        expect(team?.name).to.equal(manUtd.name);
         done();
       });
   });
@@ -130,7 +130,7 @@ describe('teamRepo', function () {
         })
       )
       .subscribe(team => {
-        expect(team.name).to.equal(manUtd.name);
+        expect(team?.name).to.equal(manUtd.name);
 
         done();
       });

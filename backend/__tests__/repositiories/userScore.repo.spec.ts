@@ -124,8 +124,6 @@ describe('UserScore Repo', function () {
           .withLeaderboards(eplBoard, eplGw1Board)
       )
       .build();
-    console.log('manu', manu.id);
-    console.log('epl');
     leaderboardId = eplBoard.id;
     userId1 = user1.id;
     userId2 = user2.id;
@@ -190,7 +188,7 @@ describe('UserScore Repo', function () {
       });
   });
 
-  xit('should update a userScore if it exists', done => {
+  it('should update a userScore if it exists', done => {
     // result 2-1 prediction 1-0 (& joker)
     const user1manuVmancPredJokerScore: UserScore = {
       basePoints: 9,
@@ -242,7 +240,7 @@ describe('UserScore Repo', function () {
       });
   });
 
-  xit('should find by leaderboard and order by points', done => {
+  it('should find by leaderboard and order by points', done => {
     // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
       basePoints: 9,
@@ -294,7 +292,7 @@ describe('UserScore Repo', function () {
       });
   });
 
-  xit('should find by id and update positions', done => {
+  it('should find by id and update positions', done => {
     // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
       leaderboard: leaderboardId,

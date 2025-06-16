@@ -139,7 +139,7 @@ describe('Prediction repo', function () {
           })
         )
         .subscribe(p => {
-          expect(p.id).to.equal(prediction.id);
+          expect(p?.id).to.equal(prediction.id);
           done();
         });
     });

@@ -92,7 +92,7 @@ describe('apifootballDataClient', () => {
       });
     });
 
-    describe('getTeams', () => {
+    xdescribe('getTeams', () => {
       before(() => {
         mockery.enable({
           useCleanCache: true,

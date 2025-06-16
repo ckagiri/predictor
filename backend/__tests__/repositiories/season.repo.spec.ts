@@ -124,7 +124,7 @@ describe('seasonRepo', function () {
         })
       )
       .subscribe(s => {
-        expect(s.externalReference).to.deep.equal(epl22.externalReference);
+        expect(s?.externalReference).to.deep.equal(epl22.externalReference);
         done();
       });
   });
@@ -163,7 +163,7 @@ describe('seasonRepo', function () {
       .pipe(
         mergeMap(s => {
           const update = { currentMatchday: 21 };
-          return seasonRepo.findByIdAndUpdate$(s.id, update);
+          return seasonRepo.findByIdAndUpdate$(s.id!, update);
         })
       )
       .subscribe(s => {

@@ -96,6 +96,10 @@ class GameRoundBuilder implements Builder<GameRound> {
     return this.gameRound;
   }
 
+  setSeasonId(id: string) {
+    this.data.season = id;
+  }
+
   setName(value: string) {
     this.data.name = value;
     return this;
@@ -110,16 +114,11 @@ class GameRoundBuilder implements Builder<GameRound> {
     this.data.slug = value;
     return this;
   }
-
-  setSeasonId(id: string) {
-    this.data.season = id;
-  }
 }
 
 class LeaderboardBuilder implements Builder<Leaderboard> {
   private data = {} as Leaderboard;
   private gameRoundBuilder?: GameRoundBuilder;
-  private seasonBuilder?: SeasonBuilder;
 
   public leaderboard?: Leaderboard;
 
@@ -127,17 +126,12 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
     return this.leaderboard?.id!;
   }
 
-  get gameRound(): GameRound {
-    return this.gameRoundBuilder?.gameRound!;
-  }
-
-  get season(): Season {
-    return this.seasonBuilder?.season!;
+  get gameRound(): GameRound | undefined {
+    return this.gameRoundBuilder?.gameRound;
   }
 
   async build(): Promise<Leaderboard> {
-    this.data.season = this.season.id!;
-    this.data.gameRound = this.gameRound.id;
+    this.data.gameRound = this.gameRound?.id;
 
     this.leaderboard = (await db.Leaderboard.create(this.data)).toObject();
     return this.leaderboard;
@@ -154,11 +148,6 @@ class LeaderboardBuilder implements Builder<Leaderboard> {
 
   withGameRound(gameRoundBuilder: GameRoundBuilder) {
     this.gameRoundBuilder = gameRoundBuilder;
-    return this;
-  }
-
-  withSeason(seasonBuilder: SeasonBuilder) {
-    this.seasonBuilder = seasonBuilder;
     return this;
   }
 }
@@ -320,7 +309,7 @@ class PredictionBuilder implements Builder<Prediction> {
     const { id: userId } = this.user as Required<User>;
     this.data.user = userId;
 
-    if (this.userBuilder) {
+    if (this.userBuilder && !this.userBuilder.user) {
       await this.userBuilder.build();
     }
 
@@ -409,8 +398,8 @@ class SeasonBuilder implements Builder<Season> {
   }
 
   async build(): Promise<Season> {
-    if (!this.competitionBuilder?.competition) {
-      await this.competitionBuilder?.build();
+    if (this.competitionBuilder && !this.competitionBuilder.competition) {
+      await this.competitionBuilder.build();
     }
 
     const { id, name, slug } = this.competition as Required<Competition>;
