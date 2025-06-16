@@ -1,16 +1,18 @@
 import { Schema, Types } from 'mongoose';
 
-export default function (schema: Schema, _options?: any) {
+export default function (schema: Schema) {
   schema.set('timestamps', true);
-  schema.virtual('id').get(function (this: { _id: Types.ObjectId }) {
-    return this._id.toHexString();
+  schema.virtual('id').get(function () {
+    return (this._id as Types.ObjectId).toHexString();
   });
   schema.set('toObject', {
-    virtuals: true,
-    transform: (doc: any, ret: any) => {
-      ret.id = ret._id.toHexString();
+    transform: (doc: any, ret: Record<string, any>) => {
+      if (ret._id) {
+        ret.id = (ret._id as Types.ObjectId).toHexString();
+      }
       delete ret.__v;
       return ret;
     },
+    virtuals: true,
   });
 }

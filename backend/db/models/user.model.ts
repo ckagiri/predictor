@@ -1,56 +1,57 @@
-import { Schema, model } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import { model, Schema } from 'mongoose';
 
-import { Entity, schema } from './base.model';
+import { Entity, schema } from './base.model.js';
 
 export interface User extends Entity {
-  username?: string;
+  comparePassword?: (candidatePassword: string, cb: any) => void;
   password?: string;
   role?: string;
-  comparePassword?: (candidatePassword: string, cb: any) => void;
+  username?: string;
 }
-
 
 const roles = ['user', 'admin'];
 
 const userSchema = schema({
-  username: { type: String, unique: true, lowercase: true, required: true },
   password: { type: String },
   role: {
-    type: String,
+    default: 'user',
     enum: roles,
-    default: 'user'
+    type: String,
   },
+  username: { lowercase: true, required: true, type: String, unique: true },
 }) as Schema<User>;
 
 userSchema.pre('save', function (next) {
-  const user = this;
-  if (!user.isModified('password')) {
-    return next();
+  if (!this.isModified('password')) {
+    next();
+    return;
   }
   bcrypt.genSalt(process.env.NODE_ENV !== 'test' ? 10 : 1, (err, salt) => {
     if (err) {
-      return next(err);
+      next(err);
+      return;
     }
-    bcrypt.hash(
-      user.password!,
-      salt,
-      (err, hash) => {
-        if (err) {
-          return next(err);
-        }
-        user.password! = hash;
-        next();
-      },
-    );
+    if (typeof salt !== 'string') {
+      next(new Error('Failed to generate salt'));
+      return;
+    }
+    bcrypt.hash(this.password!, salt, (err, hash) => {
+      if (err) {
+        next(err);
+        return;
+      }
+      this.password = hash;
+      next();
+    });
   });
 });
 
 userSchema.methods.comparePassword = function comparePassword(
   candidatePassword: string,
-  cb: (err: any, isMatch: any) => void,
+  cb: (err: any, isMatch: unknown) => void
 ) {
-  bcrypt.compare(candidatePassword, this.password || '', (err, isMatch) => {
+  bcrypt.compare(candidatePassword, this.password ?? '', (err, isMatch) => {
     cb(err, isMatch);
   });
 };

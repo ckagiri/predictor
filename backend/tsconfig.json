@@ -1,20 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "sourceMap": true,
-    "outDir": "build",
+    "target": "es2024", // Specifies the ECMAScript target version
+    "module": "commonjs", // Sets the module system to use (commonjs, nodenext, esnext)
+    "outDir": "./build", // Output directory for compiled files
     "baseUrl": ".",
-    "strict": true,
+    "strict": true, // Enables all strict type-checking options (best practice)
     "esModuleInterop": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "lib": ["dom", "es2020"],
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
+    "resolveJsonModule": true
   },
   "exclude": ["__tests__"]
 }

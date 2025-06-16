@@ -1,12 +1,12 @@
-import { mergeMap } from 'rxjs/operators';
 import { expect } from 'chai';
+import { mergeMap } from 'rxjs/operators';
+
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
-import memoryDb from '../memoryDb';
+import { ScorePoints } from '../../common/score';
 import { UserScore } from '../../db/models';
 import { UserScoreRepositoryImpl } from '../../db/repositories/userScore.repo';
-import { ScorePoints } from '../../common/score';
-
 import a from '../a';
+import memoryDb from '../memoryDb';
 
 const userScoreRepo = UserScoreRepositoryImpl.getInstance();
 
@@ -24,15 +24,21 @@ const epl2022 = a.season
   .setSeasonEnd('2022-05-17T16:00:00+0200')
   .setExternalReference({
     [ApiProvider.API_FOOTBALL_DATA]: { id: 445 },
-  })
+  });
 
 const manu = a.team.setName('Manchester United').setSlug('man-utd');
 const manc = a.team.setName('Manchester City').setSlug('man-city');
 const che = a.team.setName('Chelsea').setSlug('chelsea');
 const ars = a.team.setName('Arsenal').setSlug('arsenal');
 
-const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
-const gw2 = a.gameRound.setName('Gameweek 2').setSlug('gameweek-2').setPosition(2);
+const gw1 = a.gameRound
+  .setName('Gameweek 1')
+  .setSlug('gameweek-1')
+  .setPosition(1);
+const gw2 = a.gameRound
+  .setName('Gameweek 2')
+  .setSlug('gameweek-2')
+  .setPosition(2);
 
 const user1 = a.user.setUsername('charles');
 const user2 = a.user.setUsername('kagiri');
@@ -40,22 +46,22 @@ const user2 = a.user.setUsername('kagiri');
 const user1_manuVmanc_pred = a.prediction
   .withUser(user1)
   .setHomeScore(1)
-  .setAwayScore(0)
+  .setAwayScore(0);
 
 const user2_manuVmanc_pred = a.prediction
   .withUser(user2)
   .setHomeScore(3)
-  .setAwayScore(0)
+  .setAwayScore(0);
 
 const user1_cheVars_pred = a.prediction
   .withUser(user1)
   .setHomeScore(1)
-  .setAwayScore(1)
+  .setAwayScore(1);
 
 const user2_cheVars_pred = a.prediction
   .withUser(user2)
   .setHomeScore(2)
-  .setAwayScore(2)
+  .setAwayScore(2);
 
 const manuVmanc = a.match
   .withHomeTeam(manu)
@@ -64,7 +70,7 @@ const manuVmanc = a.match
   .withGameRound(gw1)
   .setHomeScore(2)
   .setAwayScore(1)
-  .withPredictions(user1_manuVmanc_pred, user2_manuVmanc_pred)
+  .withPredictions(user1_manuVmanc_pred, user2_manuVmanc_pred);
 
 const cheVars = a.match
   .withHomeTeam(che)
@@ -76,7 +82,9 @@ const cheVars = a.match
   .withPredictions(user1_cheVars_pred, user2_cheVars_pred);
 
 const eplBoard = a.leaderboard.setBoardType('GLOBAL_SEASON');
-const eplGw1Board = a.leaderboard.setBoardType('GLOBAL_ROUND').withGameRound(gw1);
+const eplGw1Board = a.leaderboard
+  .setBoardType('GLOBAL_ROUND')
+  .withGameRound(gw1);
 
 describe('UserScore Repo', function () {
   let leaderboardId: string;
@@ -128,32 +136,31 @@ describe('UserScore Repo', function () {
     // manuVmanc 2-1
     // result 2-1 prediction 1-0
     user1manuVmancPredPoints = {
+      closeMatchScorePoints: 1,
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 1,
-      closeMatchScorePoints: 1,
-      exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
+      exactTeamScorePoints: 0,
     };
     // result 2-1 prediction 3-0
     user2manuVmancPredPoints = {
+      closeMatchScorePoints: 1,
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 0,
-      closeMatchScorePoints: 1,
-      exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
+      exactTeamScorePoints: 0,
     };
 
     // cheVars 1-1
     // result 1-1 prediction 1-1
     user1cheVarsPredPoints = {
+      closeMatchScorePoints: 0,
       correctMatchOutcomePoints: 7,
       exactGoalDifferencePoints: 1,
-      closeMatchScorePoints: 0,
-      exactTeamScorePoints: 2,
       exactMatchScorePoints: 10,
+      exactTeamScorePoints: 2,
     };
-
-  })
+  });
 
   it('should create a userScore if it does not exist', done => {
     // result 2-1 prediction 1-0 (& joker)
@@ -165,10 +172,11 @@ describe('UserScore Repo', function () {
         },
         user1manuVmancPredPoints,
         {
+          hasJoker: true,
           matchId: manuVmancId,
           predictionId: user1manuVmancPredId,
-          hasJoker: true,
-        })
+        }
+      )
       .subscribe(score => {
         expect(score.correctMatchOutcomes).to.equal(1);
         expect(score.closeMatchScorePoints).to.equal(1);
@@ -183,24 +191,25 @@ describe('UserScore Repo', function () {
   it('should update a userScore if it exists', done => {
     // result 2-1 prediction 1-0 (& joker)
     const user1manuVmancPredJokerScore: UserScore = {
+      basePoints: 9,
+      closeMatchScorePoints: 1,
+      closeMatchScores: 1,
+      correctMatchOutcomePoints: 7,
+      correctMatchOutcomes: 1,
+      exactGoalDifferencePoints: 1,
+      exactGoalDiffs: 1,
+      exactMatchScorePoints: 0,
+      exactMatchScores: 0,
+      exactTeamScorePoints: 0,
       leaderboard: leaderboardId,
-      user: userId1,
       matches: [manuVmancId],
       matchesPredicted: 1,
-      correctMatchOutcomePoints: 7,
-      exactGoalDifferencePoints: 1,
-      closeMatchScorePoints: 1,
-      exactTeamScorePoints: 0,
-      exactMatchScorePoints: 0,
-      correctMatchOutcomes: 1,
-      exactMatchScores: 0,
-      exactGoalDiffs: 1,
-      closeMatchScores: 1,
       points: 18,
-      basePoints: 9,
-    }
+      user: userId1,
+    };
 
-    userScoreRepo.insert$(user1manuVmancPredJokerScore)
+    userScoreRepo
+      .insert$(user1manuVmancPredJokerScore)
       .pipe(
         mergeMap(_ => {
           return userScoreRepo.findScoreAndUpsert$(
@@ -208,20 +217,25 @@ describe('UserScore Repo', function () {
               leaderboardId,
               userId: userId1,
             },
-            user1cheVarsPredPoints,  // result 2-1 prediction 2-1
+            user1cheVarsPredPoints, // result 2-1 prediction 2-1
             {
+              hasJoker: false,
               matchId: cheVarsId,
               predictionId: user1cheVarsPredId,
-              hasJoker: false,
-            });
+            }
+          );
         })
-      ).subscribe(score => {
+      )
+      .subscribe(score => {
         expect(score.correctMatchOutcomes).to.equal(2);
         expect(score.exactMatchScores).to.equal(1);
         expect(score.points).to.equal(38);
         expect(score.basePoints).to.equal(29);
-        expect(score.matches?.map(m => m.toString())).to.contain(manuVmancId, cheVarsId);
-        expect(score.matchesPredicted).to.equal(2)
+        expect(score.matches?.map(m => m.toString())).to.contain(
+          manuVmancId,
+          cheVarsId
+        );
+        expect(score.matchesPredicted).to.equal(2);
         done();
       });
   });
@@ -229,67 +243,67 @@ describe('UserScore Repo', function () {
   it('should find by leaderboard and order by points', done => {
     // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
+      basePoints: 9,
+      closeMatchScorePoints: 1,
+      closeMatchScores: 0,
+      correctMatchOutcomePoints: 7,
+      correctMatchOutcomes: 1,
+      exactGoalDifferencePoints: 1,
+      exactGoalDiffs: 1,
+      exactMatchScorePoints: 0,
+      exactMatchScores: 0,
+      exactTeamScorePoints: 0,
       leaderboard: leaderboardId,
-      user: userId1,
       matches: [manuVmancId],
       matchesPredicted: 1,
-      correctMatchOutcomePoints: 7,
-      exactGoalDifferencePoints: 1,
-      closeMatchScorePoints: 1,
-      exactTeamScorePoints: 0,
-      exactMatchScorePoints: 0,
-      correctMatchOutcomes: 1,
-      exactMatchScores: 0,
-      exactGoalDiffs: 1,
-      closeMatchScores: 0,
       points: 9,
-      basePoints: 9,
-    }
+      user: userId1,
+    };
 
     // result 2-1 prediction 3-0
     const user2manuVmancPredScore: UserScore = {
+      basePoints: 8,
+      closeMatchScorePoints: 1,
+      closeMatchScores: 0,
+      correctMatchOutcomePoints: 7,
+      correctMatchOutcomes: 1,
+      exactGoalDifferencePoints: 0,
+      exactGoalDiffs: 0,
+      exactMatchScorePoints: 0,
+      exactMatchScores: 0,
+      exactTeamScorePoints: 0,
       leaderboard: leaderboardId,
-      user: userId2,
       matches: [manuVmancId],
       matchesPredicted: 1,
-      correctMatchOutcomePoints: 7,
-      exactGoalDifferencePoints: 0,
-      closeMatchScorePoints: 1,
-      exactTeamScorePoints: 0,
-      exactMatchScorePoints: 0,
-      correctMatchOutcomes: 1,
-      exactMatchScores: 0,
-      exactGoalDiffs: 0,
-      closeMatchScores: 0,
       points: 8,
-      basePoints: 8,
-    }
+      user: userId2,
+    };
 
     userScoreRepo
       .insertMany$([user1manuVmancPredScore, user2manuVmancPredScore])
       .pipe(
         mergeMap(_ => {
           return userScoreRepo.findByLeaderboardIdOrderByPoints$(leaderboardId);
-        }),
+        })
       )
       .subscribe(standings => {
         expect(standings[1].points).to.be.lt(standings[0].points);
         done();
       });
-  })
+  });
 
   it('should find by id and update positions', done => {
     // result 2-1 prediction 1-0
     const user1manuVmancPredScore: UserScore = {
       leaderboard: leaderboardId,
-      user: userId1,
       matches: [manuVmancId],
+      user: userId1,
       ...user1manuVmancPredPoints,
-      points: 9,
       basePoints: 9,
+      points: 9,
       positionNew: 1,
       positionOld: 2,
-    }
+    };
 
     userScoreRepo
       .insert$(user1manuVmancPredScore)
@@ -302,7 +316,7 @@ describe('UserScore Repo', function () {
             positionNew,
             positionOld,
           });
-        }),
+        })
       )
       .subscribe(standing => {
         expect(standing.positionNew).to.equal(2);

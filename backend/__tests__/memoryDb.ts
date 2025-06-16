@@ -1,12 +1,10 @@
-import mongoose, { ConnectOptions } from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose, { ConnectOptions } from 'mongoose';
 
 let mongoServer: MongoMemoryServer;
 
 const mongooseOpts = {
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-  dbName: 'ligipredictor'
+  dbName: 'ligipredictor',
 } as ConnectOptions;
 
 const connect = async () => {
@@ -28,7 +26,7 @@ const close = async () => {
 };
 
 export default {
+  close,
   connect,
   dropDb,
-  close,
 };

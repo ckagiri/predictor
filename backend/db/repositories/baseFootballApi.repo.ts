@@ -1,26 +1,33 @@
-import { Observable, forkJoin, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
 import { Model } from 'mongoose';
+import { forkJoin, Observable, of } from 'rxjs';
+import { mergeMap } from 'rxjs/operators';
 
-import { BaseRepositoryImpl, BaseRepository } from '../repositories/base.repo';
-import { Entity } from '../models/base.model';
-import { Converter } from '../converters/converter';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
+import { Converter } from '../converters/converter.js';
+import { Entity } from '../models/base.model.js';
+import {
+  BaseRepository,
+  BaseRepositoryImpl,
+} from '../repositories/base.repo.js';
 
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
-  footballApiProvider: ApiProvider;
-  save$(obj: Entity, useConverter?: boolean): Observable<T>;
+  add$(obj: Entity, useConverter?: boolean): Observable<T>;
+  findByExternalId$(id: number | string): Observable<T | null>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
+  findByExternalIds$(ids: (number | string)[]): Observable<T[]>;
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
-  findByExternalId$(id: string | number): Observable<T>;
-  findByExternalIds$(ids: Array<string | number>): Observable<T[]>;
+  footballApiProvider: ApiProvider;
 }
 
-export class BaseFootballApiRepositoryImpl<
-  T extends Entity,
-  > extends BaseRepositoryImpl<T>
-  implements BaseFootballApiRepository<T> {
+export class BaseFootballApiRepositoryImpl<T extends Entity>
+  extends BaseRepositoryImpl<T>
+  implements BaseFootballApiRepository<T>
+{
+  get footballApiProvider() {
+    return this.converter.footballApiProvider;
+  }
+
   protected converter: Converter;
 
   constructor(SchemaModel: Model<T>, converter: Converter) {
@@ -28,17 +35,9 @@ export class BaseFootballApiRepositoryImpl<
     this.converter = converter;
   }
 
-  get footballApiProvider() {
-    return this.converter.footballApiProvider;
-  }
-
-  public save$(obj: Entity, useConverter: boolean = true): Observable<T> {
-    return (useConverter ? this.converter.from(obj) : of(obj))
-      .pipe(
-        mergeMap(entity => {
-          return super.save$(entity);
-        })
-      );
+  public findByExternalId$(id: number | string): Observable<T | null> {
+    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
+    return this.findOne$({ [externalIdKey]: id });
   }
 
   public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
@@ -50,29 +49,32 @@ export class BaseFootballApiRepositoryImpl<
         mergeMap((entity: any) => {
           delete entity.externalReference;
           return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
-        }),
+        })
       );
     } else {
       return super.findOneAndUpdate$({ [externalIdKey]: id }, obj);
     }
   }
 
+  public findByExternalIds$(ids: (number | string)[]): Observable<T[]> {
+    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
+
+    return this.findAll$({ [externalIdKey]: { $in: ids } });
+  }
+
   public findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {
-    const obs: Array<Observable<T>> = [];
+    const obs: Observable<T>[] = [];
     for (const obj of objs) {
       obs.push(this.findByExternalIdAndUpdate$(obj));
     }
     return forkJoin(obs);
   }
 
-  public findByExternalId$(id: string | number): Observable<T> {
-    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-    return this.findOne$({ [externalIdKey]: id });
-  }
-
-  public findByExternalIds$(ids: Array<string | number>): Observable<T[]> {
-    const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-
-    return this.findAll$({ [externalIdKey]: { $in: ids } });
+  public add$(obj: Entity, useConverter = true): Observable<T> {
+    return (useConverter ? this.converter.from(obj) : of(obj)).pipe(
+      mergeMap(entity => {
+        return super.insert$(entity);
+      })
+    );
   }
 }

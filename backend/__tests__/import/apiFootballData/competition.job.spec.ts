@@ -1,6 +1,6 @@
 import 'mocha';
-import sinon from 'sinon';
 import * as chai from 'chai';
+import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -9,9 +9,8 @@ import { of } from 'rxjs';
 import { CompetitionJob } from '../../../import/apiFootballData/competition.job';
 import { MatchesJob } from '../../../import/apiFootballData/matches.job';
 import { TeamsJob } from '../../../import/apiFootballData/teams.job';
-
-import competition from '../../fixtures/requests/apiFootballData.eplCompetitions.json';
 import teams from '../../fixtures/requests/apiFootballData.epl2018Teams.json';
+import competition from '../../fixtures/requests/apiFootballData.eplCompetitions.json';
 
 const queueStub: any = {
   addJob: (n: any) => {
@@ -61,7 +60,7 @@ describe('ApiFootballData:Competition Job', () => {
       await job.start(queueStub);
 
       expect(spy).to.have.been.calledOnce.and.to.have.been.calledWith(
-        competitionId,
+        competitionId
       );
     });
 
@@ -71,7 +70,7 @@ describe('ApiFootballData:Competition Job', () => {
       await job.start(queueStub);
 
       expect(spy).to.have.been.calledOnce.and.to.have.been.calledWith(
-        sinon.match.object,
+        sinon.match.object
       );
     });
 
@@ -81,7 +80,7 @@ describe('ApiFootballData:Competition Job', () => {
       await job.start(queueStub);
 
       expect(spy).to.have.been.called.and.to.have.been.calledWith(
-        sinon.match.instanceOf(MatchesJob),
+        sinon.match.instanceOf(MatchesJob)
       );
 
       queueStub.addJob.restore();
@@ -93,7 +92,7 @@ describe('ApiFootballData:Competition Job', () => {
       await job.start(queueStub);
 
       expect(spy).to.have.been.called.and.to.have.been.calledWith(
-        sinon.match.instanceOf(TeamsJob),
+        sinon.match.instanceOf(TeamsJob)
       );
 
       queueStub.addJob.restore();

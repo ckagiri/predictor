@@ -12,44 +12,43 @@ describe('Match', () => {
         expect(m.schema).to.not.be.undefined;
       });
 
-      it('should require a slug', done => {
-        m.validate((err: any) => {
-          expect(err.errors.slug).to.exist;
-          done();
-        });
+      it('should require a slug', async () => {
+        const err: any = await m.validate().catch((e: unknown) => e);
+        expect(err.errors.slug).to.exist;
       });
 
-      it('should require a date', done => {
-        m.validate((err: any) => {
+      it('should require a date', async () => {
+        try {
+          await m.validate();
+        } catch (err: any) {
           expect(err.errors.utcDate).to.exist;
-          done();
-        });
+        }
       });
 
       it('should require gameRound', done => {
-        m.validate((err: any) => {
-          expect(err.errors.gameRound).to.exist;
+        m.validate().catch((err: unknown) => {
+          expect((err as any).errors.gameRound).to.exist;
           done();
         });
       });
 
       it('should require a home team', done => {
-        m.validate((err: any) => {
-          expect(err.errors['homeTeam.id']).to.exist;
+        m.validate().catch((err: unknown) => {
+          expect((err as any).errors['homeTeam.id']).to.exist;
           done();
         });
       });
 
       it('should require an away team', done => {
-        m.validate((err: any) => {
-          expect(err.errors['awayTeam.id']).to.exist;
+        m.validate().catch((err: unknown) => {
+          expect((err as any).errors['awayTeam.id']).to.exist;
           done();
         });
       });
 
       it('should require status', done => {
-        m.validate((err: any) => {
-          expect(err.errors.status).to.exist;
+        m.validate().catch((err: unknown) => {
+          expect((err as any).errors.status).to.exist;
           done();
         });
       });
@@ -57,29 +56,32 @@ describe('Match', () => {
 
     describe('a match', () => {
       const match = {
-        season: '4edd40c86762e0fb12000001',
-        utcDate: '2018-05-13T14:00:00Z',
-        status: MatchStatus.SCHEDULED,
-        matchRound: 38,
+        awayTeam: {
+          id: '4edd40c86762e0fb12000002',
+          name: 'Chelsea',
+          slug: 'chelsea',
+        },
         gameRound: '4edd40c86762e0fb12000001',
         homeTeam: {
           id: '4edd40c86762e0fb12000001',
           name: 'Arsenal',
           slug: 'arsenal',
         },
-        awayTeam: {
-          id: '4edd40c86762e0fb12000002',
-          name: 'Chelsea',
-          slug: 'chelsea',
-        },
+        matchRound: 38,
+        season: '4edd40c86762e0fb12000001',
         slug: 'arsenal-chelsea',
+        status: MatchStatus.SCHEDULED,
+        utcDate: '2018-05-13T14:00:00Z',
       };
       const m = new MatchModel(match);
-      it('should have 0 errors', done => {
-        m.validate((err: any) => {
-          expect(err).to.not.exist;
-          done();
-        });
+      it('should have 0 errors', async () => {
+        let err: unknown = null;
+        try {
+          await m.validate();
+        } catch (e) {
+          err = e;
+        }
+        expect(err).to.not.exist;
       });
     });
   });

@@ -1,35 +1,28 @@
 import { Request, Response } from 'express';
 import { lastValueFrom } from 'rxjs';
-import { isMongoId } from '../../utils';
+
 import {
-  TeamRepositoryImpl,
+  SeasonRepository,
+  SeasonRepositoryImpl,
+} from '../../../../db/repositories/season.repo.js';
+import {
   TeamRepository,
-} from '../../../../db/repositories/team.repo';
-import { SeasonRepository, SeasonRepositoryImpl } from '../../../../db/repositories/season.repo';
+  TeamRepositoryImpl,
+} from '../../../../db/repositories/team.repo.js';
+import { isMongoId } from '../../utils.js';
 
 export class TeamsController {
+  constructor(
+    private teamRepo: TeamRepository,
+    private seasonRepo: SeasonRepository
+  ) {}
+
   public static getInstance(
     teamRepo = TeamRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(teamRepo.footballApiProvider)
   ) {
     return new TeamsController(teamRepo, seasonRepo);
   }
-
-  constructor(private teamRepo: TeamRepository, private seasonRepo: SeasonRepository) { }
-
-  public getTeams = async (req: Request, res: Response) => {
-    try {
-      const seasonId = req.query.seasonId as string;
-      const season = await lastValueFrom(this.seasonRepo.findById$(seasonId));
-
-      const teams = seasonId
-        ? await lastValueFrom(this.teamRepo.findAllByIds$(season.teams as string[]))
-        : await lastValueFrom(this.teamRepo.findAll$());
-      res.status(200).json(teams);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-  };
 
   public getTeam = async (req: Request, res: Response) => {
     try {
@@ -44,6 +37,28 @@ export class TeamsController {
       } else {
         return res.status(404).send();
       }
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  };
+
+  public getTeams = async (req: Request, res: Response) => {
+    try {
+      const seasonId = req.query.seasonId as string;
+      const season = await lastValueFrom(this.seasonRepo.findById$(seasonId));
+
+      let teams;
+      if (seasonId) {
+        if (!season) {
+          return res.status(404).json({ message: 'Season not found' });
+        }
+        teams = await lastValueFrom(
+          this.teamRepo.findAllByIds$(season.teams as string[])
+        );
+      } else {
+        teams = await lastValueFrom(this.teamRepo.findAll$());
+      }
+      res.status(200).json(teams);
     } catch (error) {
       res.status(500).send(error);
     }

@@ -1,8 +1,8 @@
-import { Job } from './job';
-import { MainJob as ApiFootballDataMainJob } from '../apiFootballData/main.job';
+import { MainJob as ApiFootballDataMainJob } from '../apiFootballData/main.job.js';
+import { Job } from './job.js';
 
-export abstract class MainJob {
-  public static getInstance(): Job {
+export const MainJob = {
+  getInstance(): Job {
     return ApiFootballDataMainJob.getInstance();
-  }
-}
+  },
+};

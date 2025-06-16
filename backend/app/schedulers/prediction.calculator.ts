@@ -1,4 +1,4 @@
-import { ScorePoints, Score } from '../../common/score';
+import { Score, ScorePoints } from '../../common/score.js';
 
 export class PredictionCalculator {
   public static getInstance() {
@@ -7,11 +7,11 @@ export class PredictionCalculator {
 
   public calculateScore(result: Score, choice: Score): ScorePoints {
     const points: ScorePoints = {
+      closeMatchScorePoints: 0,
       correctMatchOutcomePoints: 0,
       exactGoalDifferencePoints: 0,
-      closeMatchScorePoints: 0,
-      exactTeamScorePoints: 0,
       exactMatchScorePoints: 0,
+      exactTeamScorePoints: 0,
     };
 
     const choiceOutcome = outcome(choice.goalsHomeTeam, choice.goalsAwayTeam);
@@ -22,7 +22,8 @@ export class PredictionCalculator {
     const correctWinnerOutcome = correctMatchOutcome && !drawPrediction;
     const exactGoalDiff = goalDiff(choice) === goalDiff(result);
     const oneGoalOffOverall = goalsOff(choice, result) === 1;
-    const oneGoalOffBothTeams = goalsOffHomeTeam(choice, result) === 1 &&
+    const oneGoalOffBothTeams =
+      goalsOffHomeTeam(choice, result) === 1 &&
       goalsOffAwayTeam(choice, result) === 1;
 
     if (correctMatchOutcome) {
@@ -33,8 +34,10 @@ export class PredictionCalculator {
       points.exactGoalDifferencePoints = 1;
     }
 
-    if ((correctDrawOutcome && oneGoalOffBothTeams) ||
-      (correctWinnerOutcome && oneGoalOffOverall)) {
+    if (
+      (correctDrawOutcome && oneGoalOffBothTeams) ||
+      (correctWinnerOutcome && oneGoalOffOverall)
+    ) {
       points.closeMatchScorePoints = 2;
     }
 
@@ -60,12 +63,27 @@ export class PredictionCalculator {
       points.exactMatchScorePoints = 10;
     }
 
-
     return points;
   }
 }
 
 export default PredictionCalculator;
+
+function goalDiff(score: Score): number {
+  return score.goalsHomeTeam - score.goalsAwayTeam;
+}
+
+function goalsOff(choice: Score, result: Score): number {
+  return goalsOffHomeTeam(choice, result) + goalsOffAwayTeam(choice, result);
+}
+
+function goalsOffAwayTeam(choice: Score, result: Score): number {
+  return Math.abs(choice.goalsAwayTeam - result.goalsAwayTeam);
+}
+
+function goalsOffHomeTeam(choice: Score, result: Score): number {
+  return Math.abs(choice.goalsHomeTeam - result.goalsHomeTeam);
+}
 
 function outcome(home: number, away: number): string {
   if (home > away) {
@@ -75,20 +93,4 @@ function outcome(home: number, away: number): string {
   } else {
     return 'd';
   }
-}
-
-function goalDiff(score: Score): number {
-  return score.goalsHomeTeam - score.goalsAwayTeam;
-}
-
-function goalsOffHomeTeam(choice: Score, result: Score): number {
-  return Math.abs(choice.goalsHomeTeam - result.goalsHomeTeam);
-}
-
-function goalsOffAwayTeam(choice: Score, result: Score): number {
-  return Math.abs(choice.goalsAwayTeam - result.goalsAwayTeam);
-}
-
-function goalsOff(choice: Score, result: Score): number {
-  return goalsOffHomeTeam(choice, result) + goalsOffAwayTeam(choice, result);
 }

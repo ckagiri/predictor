@@ -1,104 +1,99 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
-import { Entity, schema } from './base.model';
-import { Score, Odds } from '../../common/score';
-import { Prediction } from './prediction.model';
+import { Odds, Score } from '../../common/score.js';
+import { Entity, schema } from './base.model.js';
+import { Prediction } from './prediction.model.js';
 
 export enum MatchStatus {
-  SCHEDULED = 'SCHEDULED',
-  LIVE = 'LIVE',
   CANCELED = 'CANCELED',
-  POSTPONED = 'POSTPONED',
   FINISHED = 'FINISHED',
+  LIVE = 'LIVE',
+  POSTPONED = 'POSTPONED',
+  SCHEDULED = 'SCHEDULED',
 }
 
+const MATCH_STATUS: Record<string, MatchStatus> = {
+  AWARDED: MatchStatus.FINISHED,
+  CANCELLED: MatchStatus.CANCELED,
+  FINISHED: MatchStatus.FINISHED,
+  IN_PLAY: MatchStatus.LIVE,
+  PAUSED: MatchStatus.LIVE,
+  POSTPONED: MatchStatus.POSTPONED,
+  SCHEDULED: MatchStatus.SCHEDULED,
+  SUSPENDED: MatchStatus.CANCELED,
+  TIMED: MatchStatus.SCHEDULED,
+};
 export const getMatchStatus = (status: string) => {
-  const MATCH_STATUS: { [key: string]: MatchStatus } = {
-    'SCHEDULED': MatchStatus.SCHEDULED,
-    'TIMED': MatchStatus.SCHEDULED,
-    'IN_PLAY': MatchStatus.LIVE,
-    'PAUSED': MatchStatus.LIVE,
-    'FINISHED': MatchStatus.FINISHED,
-    'AWARDED': MatchStatus.FINISHED,
-    'CANCELLED': MatchStatus.CANCELED,
-    'SUSPENDED': MatchStatus.CANCELED,
-    'POSTPONED': MatchStatus.POSTPONED
-  };
+  return Object.prototype.hasOwnProperty.call(MATCH_STATUS, status)
+    ? MATCH_STATUS[status]
+    : MatchStatus.SCHEDULED;
+};
 
-  return MATCH_STATUS[status] || MatchStatus.SCHEDULED;
+export interface Match extends Entity {
+  [key: string]: any;
+  allPredictionPointsCalculated?: boolean;
+  awayTeam?: TeamPartial;
+  awayTeamId?: string;
+  externalReference?: any;
+  gameRound: string;
+  homeTeam?: TeamPartial;
+  homeTeamId?: string;
+  id?: string;
+  matchday?: number;
+  odds?: Odds;
+  prediction?: null | Prediction | undefined;
+  result?: Score;
+  season: string;
+  slug: string;
+  status?: MatchStatus;
+  utcDate?: string;
+  venue?: string;
 }
 
 export interface TeamPartial {
-  name: string;
-  slug: string;
   crestUrl: string;
   id: string;
-}
-
-export interface Match extends Entity {
-  id?: string;
-  season: string;
+  name: string;
   slug: string;
-  utcDate?: string;
-  matchday?: number;
-  gameRound: string;
-  status?: MatchStatus;
-  homeTeam?: TeamPartial;
-  awayTeam?: TeamPartial;
-  homeTeamId?: string;
-  awayTeamId?: string;
-  odds?: Odds;
-  result?: Score;
-  venue?: string;
-  allPredictionPointsCalculated?: boolean;
-  externalReference?: any;
-  prediction?: Prediction | undefined | null;
-  [key: string]: any;
 }
 
-const { ObjectId, Mixed } = Schema.Types;
+const { Mixed, ObjectId } = Schema.Types;
 
 export const matchSchema = schema({
-  season: { type: ObjectId, ref: 'Season', index: true, required: true },
-  slug: { type: String, required: true, trim: true },
-  matchday: { type: Number },
-  gameRound: { type: ObjectId, ref: 'GameRound', index: true, required: true },
-  utcDate: { type: Date, required: true },
-  homeTeam: {
-    name: { type: String, required: true },
-    slug: { type: String, required: true },
-    crestUrl: { type: String },
-    id: { type: ObjectId, ref: 'Team', index: true, required: true },
-  },
+  allPredictionPointsCalculated: { default: false, type: Boolean },
   awayTeam: {
-    name: { type: String, required: true },
-    slug: { type: String, required: true },
     crestUrl: { type: String },
-    id: { type: ObjectId, ref: 'Team', index: true, required: true },
+    id: { index: true, ref: 'Team', required: true, type: ObjectId },
+    name: { required: true, type: String },
+    slug: { required: true, type: String },
   },
-  status: {
-    type: String,
-    required: true,
-    enum: [
-      'SCHEDULED',
-      'LIVE',
-      'CANCELED',
-      'POSTPONED',
-      'FINISHED',
-    ],
+  externalReference: { type: Mixed },
+  gameRound: { index: true, ref: 'GameRound', required: true, type: ObjectId },
+  homeTeam: {
+    crestUrl: { type: String },
+    id: { index: true, ref: 'Team', required: true, type: ObjectId },
+    name: { required: true, type: String },
+    slug: { required: true, type: String },
+  },
+  matchday: { type: Number },
+  odds: {
+    awayWin: { default: 1, type: Number },
+    draw: { default: 1, type: Number },
+    homeWin: { default: 1, type: Number },
   },
   result: {
-    goalsHomeTeam: { type: Number },
     goalsAwayTeam: { type: Number },
+    goalsHomeTeam: { type: Number },
   },
-  odds: {
-    homeWin: { type: Number, default: 1 },
-    awayWin: { type: Number, default: 1 },
-    draw: { type: Number, default: 1 },
+  season: { index: true, ref: 'Season', required: true, type: ObjectId },
+  slug: { required: true, trim: true, type: String },
+  status: {
+    enum: ['SCHEDULED', 'LIVE', 'CANCELED', 'POSTPONED', 'FINISHED'],
+    required: true,
+    type: String,
   },
-  venue: { type: String, trim: true },
-  allPredictionPointsCalculated: { type: Boolean, default: false },
-  externalReference: { type: Mixed },
+  utcDate: { required: true, type: Date },
+  venue: { trim: true, type: String },
 });
 
 const MatchModel = model<Match>('Match', matchSchema);

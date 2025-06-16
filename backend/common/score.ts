@@ -1,19 +1,19 @@
+export interface Odds {
+  awayWin: number;
+  draw: number;
+  homeWin: number;
+}
+
 export interface Score {
-  goalsHomeTeam: number;
   goalsAwayTeam: number;
+  goalsHomeTeam: number;
   isComputerGenerated?: boolean;
 }
 
 export interface ScorePoints {
+  closeMatchScorePoints: number;
   correctMatchOutcomePoints: number;
   exactGoalDifferencePoints: number;
-  closeMatchScorePoints: number;
-  exactTeamScorePoints: number;
   exactMatchScorePoints: number;
-}
-
-export interface Odds {
-  homeWin: number;
-  awayWin: number;
-  draw: number;
+  exactTeamScorePoints: number;
 }

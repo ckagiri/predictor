@@ -1,23 +1,26 @@
-import { Schema, model } from 'mongoose';
-import { Entity, schema } from './base.model';
+import { model, Schema } from 'mongoose';
+
+import { Entity, schema } from './base.model.js';
 
 export interface GameRound extends Entity {
-  season?: string;
   name: string;
-  slug: string;
   position?: number;
+  season?: string;
+  slug: string;
 }
 
 const GameRoundSchema = schema({
-  season: { type: Schema.Types.ObjectId, ref: 'Season', index: true, required: true },
-  name: { type: String, required: true },
-  slug: { type: String, required: true, trim: true },
-  position: { type: Number, required: true },
+  name: { required: true, type: String },
+  position: { required: true, type: Number },
+  season: {
+    index: true,
+    ref: 'Season',
+    required: true,
+    type: Schema.Types.ObjectId,
+  },
+  slug: { required: true, trim: true, type: String },
 });
 
-const GameRoundModel = model<GameRound>(
-  'GameRound',
-  GameRoundSchema,
-);
+const GameRoundModel = model<GameRound>('GameRound', GameRoundSchema);
 
 export default GameRoundModel;

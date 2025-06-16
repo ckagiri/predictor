@@ -1,57 +1,57 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
 import { Entity, schema } from './base.model';
 
 export interface UserScore extends Entity {
+  basePoints: number;
+  closeMatchScorePoints: number;
+  closeMatchScores?: number;
+  correctMatchOutcomePoints: number;
+  correctMatchOutcomes?: number;
+  exactGoalDifferencePoints: number;
+  exactGoalDiffs?: number;
+  exactMatchScorePoints: number;
+  exactMatchScores?: number;
+  exactTeamScorePoints: number;
   id?: string;
   leaderboard: string;
-  user: string;
   matches?: string[];
   matchesPredicted?: number;
   points: number;
-  basePoints: number;
-  correctMatchOutcomePoints: number;
-  exactGoalDifferencePoints: number;
-  closeMatchScorePoints: number;
-  exactTeamScorePoints: number;
-  exactMatchScorePoints: number;
-  correctMatchOutcomes?: number;
-  exactMatchScores?: number;
-  exactGoalDiffs?: number;
-  closeMatchScores?: number;
-  pointsOld?: number;
   pointsNew?: number;
-  positionOld?: number;
+  pointsOld?: number;
   positionNew?: number;
+  positionOld?: number;
+  user: string;
 }
 
 const { ObjectId } = Schema.Types;
 
 const userScoreSchema = schema({
-  user: { type: ObjectId, ref: 'User', required: true, index: true },
+  basePoints: { type: Number },
+  closeMatchScorePoints: { type: Number },
+  closeMatchScores: { type: Number },
+  correctMatchOutcomePoints: { type: Number },
+  correctMatchOutcomes: { type: Number },
+  exactGoalDifferencePoints: { type: Number },
+  exactGoalDiffs: { type: Number },
+  exactMatchScorePoints: { type: Number },
+  exactMatchScores: { type: Number },
+  exactTeamScorePoints: { type: Number },
   leaderboard: {
-    type: ObjectId,
+    index: true,
     ref: 'Leaderboard',
     required: true,
-    index: true,
+    type: ObjectId,
   },
-  matches: [{ type: ObjectId, ref: 'Match' }],
+  matches: [{ ref: 'Match', type: ObjectId }],
   matchesPredicted: { type: Number },
   points: { type: Number },
-  basePoints: { type: Number },
-  correctMatchOutcomePoints: { type: Number },
-  exactGoalDifferencePoints: { type: Number },
-  closeMatchScorePoints: { type: Number },
-  exactMatchScorePoints: { type: Number },
-  exactTeamScorePoints: { type: Number },
-  correctMatchOutcomes: { type: Number },
-  exactMatchScores: { type: Number },
-  exactGoalDiffs: { type: Number },
-  closeMatchScores: { type: Number },
-  pointsOld: { type: Number },
   pointsNew: { type: Number },
-  positionOld: { type: Number },
+  pointsOld: { type: Number },
   positionNew: { type: Number },
+  positionOld: { type: Number },
+  user: { index: true, ref: 'User', required: true, type: ObjectId },
 });
 
 const UserScoreModel = model<UserScore>('UserScore', userScoreSchema);

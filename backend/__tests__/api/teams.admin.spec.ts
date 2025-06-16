@@ -1,22 +1,22 @@
-import * as http from 'http';
-import * as chai from 'chai';
-import sinonChai from 'sinon-chai';
-import chaiHttp = require('chai-http');
 import axios, { AxiosInstance } from 'axios';
-import { setupReqRes } from './testUtils';
-import { TeamsController } from '../../app/api/data/teams/teams.controller';
-import { Team } from '../../db/models';
-import memoryDb from '../memoryDb';
-import a, { GameData } from '../a';
-import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
-import startServer from '../../app/server';
-import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
+import * as chai from 'chai';
+import * as http from 'http';
+import { lastValueFrom } from 'rxjs';
+import sinonChai from 'sinon-chai';
 
-chai.use(chaiHttp);
+import { TeamsController } from '../../app/api/data/teams/teams.controller';
+import startServer from '../../app/server';
+import { Team } from '../../db/models';
+import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
+import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
+import a, { GameData } from '../a';
+import memoryDb from '../memoryDb';
+import { setupReqRes } from './testUtils';
+
 chai.use(sinonChai);
 const expect = chai.expect;
 
-let server: http.Server, teamsAPI: AxiosInstance, baseURL: string;
+let baseURL: string, server: http.Server, teamsAPI: AxiosInstance;
 
 const epl = a.competition
   .setName('English Premier League')
@@ -68,14 +68,14 @@ describe.skip('Teams API', function () {
 
     it('getTeams returns all teams in the database', async () => {
       const { req, res } = setupReqRes();
-      await teamsController.getTeams(<any>req, <any>res);
+      await teamsController.getTeams(req as any, res as any);
 
       expect(res.json).to.have.been.called;
       const firstCall = res.json.args[0];
       const firstArg = firstCall[0];
       const teams = firstArg;
       expect(teams.length).to.be.greaterThan(0);
-      const actualTeams = await teamRepo.findAll$().toPromise();
+      const actualTeams = await lastValueFrom(teamRepo.findAll$());
       expect(teams).to.eql(actualTeams);
     });
   });

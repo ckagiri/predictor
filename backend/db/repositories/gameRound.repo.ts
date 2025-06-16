@@ -1,18 +1,16 @@
-import GameRoundModel, {
-  GameRound
-} from '../models/gameRound.model';
-import { BaseRepository, BaseRepositoryImpl } from './base.repo';
+import GameRoundModel, { GameRound } from '../models/gameRound.model.js';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
 
-export interface GameRoundRepository extends BaseRepository<GameRound> {
-}
-export class GameRoundRepositoryImpl extends BaseRepositoryImpl<GameRound>
-  implements GameRoundRepository {
+export type GameRoundRepository = BaseRepository<GameRound>;
+export class GameRoundRepositoryImpl
+  extends BaseRepositoryImpl<GameRound>
+  implements GameRoundRepository
+{
+  constructor() {
+    super(GameRoundModel);
+  }
 
   public static getInstance(): GameRoundRepository {
     return new GameRoundRepositoryImpl();
-  }
-
-  constructor() {
-    super(GameRoundModel);
   }
 }

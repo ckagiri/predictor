@@ -1,26 +1,24 @@
-import { Schema, model } from 'mongoose';
-import { Entity, schema } from './base.model';
+import { model, Schema } from 'mongoose';
 
-const { ObjectId, Mixed } = Schema.Types;
+import { Entity, schema } from './base.model.js';
+
+const { Mixed, ObjectId } = Schema.Types;
 export interface Competition extends Entity {
-  name: string;
-  slug: string;
   code?: string;
   currentSeason?: string;
   externalReference?: any;
+  name: string;
+  slug: string;
 }
 
 const competitionSchema = schema({
-  name: { type: String, required: true },
-  slug: { type: String, required: true, trim: true },
-  code: { type: String, default: '' },
-  currentSeason: { type: ObjectId, ref: 'Season' },
-  externalReference: { type: Mixed }
+  code: { default: '', type: String },
+  currentSeason: { ref: 'Season', type: ObjectId },
+  externalReference: { type: Mixed },
+  name: { required: true, type: String },
+  slug: { required: true, trim: true, type: String },
 });
 
-const CompetitionModel = model<Competition>(
-  'Competition',
-  competitionSchema,
-);
+const CompetitionModel = model<Competition>('Competition', competitionSchema);
 
 export default CompetitionModel;

@@ -1,26 +1,24 @@
 import { Observable, zip } from 'rxjs';
 
-import { Match } from '../../models/match.model';
-import { MatchConverter } from '../match.converter';
-import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider';
+import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider.js';
+import { Match } from '../../models/match.model.js';
 import {
   TeamRepository,
   TeamRepositoryImpl,
-} from '../../repositories/team.repo';
+} from '../../repositories/team.repo.js';
+import { MatchConverter } from '../match.converter.js';
 
 export class LigiMatchConverter implements MatchConverter {
-  public static getInstance(): MatchConverter {
-    return new LigiMatchConverter(
-      TeamRepositoryImpl.getInstance(ApiProvider.LIGI),
-    );
-  }
-
   public footballApiProvider: ApiProvider;
 
-  constructor(
-    private teamRepo: TeamRepository,
-  ) {
+  constructor(private teamRepo: TeamRepository) {
     this.footballApiProvider = ApiProvider.LIGI;
+  }
+
+  public static getInstance(): MatchConverter {
+    return new LigiMatchConverter(
+      TeamRepositoryImpl.getInstance(ApiProvider.LIGI)
+    );
   }
 
   public from(data: any): Observable<Match> {
@@ -30,21 +28,21 @@ export class LigiMatchConverter implements MatchConverter {
       (homeTeam: any, awayTeam: any) => {
         return {
           ...data,
-          homeTeam: {
-            id: homeTeam.id!,
-            name: homeTeam.name,
-            slug: homeTeam.slug!,
-            crestUrl: homeTeam.crestUrl!,
-          },
           awayTeam: {
+            crestUrl: awayTeam.crestUrl!,
             id: awayTeam.id!,
             name: awayTeam.name,
             slug: awayTeam.slug!,
-            crestUrl: awayTeam.crestUrl!,
+          },
+          homeTeam: {
+            crestUrl: homeTeam.crestUrl!,
+            id: homeTeam.id!,
+            name: homeTeam.name,
+            slug: homeTeam.slug!,
           },
           slug: `${homeTeam.slug}-v-${awayTeam.slug}`,
         };
-      },
+      }
     );
   }
 

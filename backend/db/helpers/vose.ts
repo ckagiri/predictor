@@ -5,14 +5,14 @@
  */
 
 export class Vose {
-  totalDistinctValues: number;
-  probability: number[];
   alias: number[];
+  probability: number[];
+  totalDistinctValues: number;
 
   constructor(weights: number[]) {
-    let large: number[] = [];
-    let small: number[] = [];
-    let average: number, less: number, more: number;
+    const large: number[] = [];
+    const small: number[] = [];
+    let less: number, more: number;
 
     if (!(weights instanceof Array) || weights.length < 1) {
       throw new Error('Vose: weights must be a non-empty array');
@@ -21,11 +21,11 @@ export class Vose {
     this.totalDistinctValues = weights.length;
     this.probability = [];
     this.alias = [];
-    average = 1.0 / this.totalDistinctValues;
+    const average = 1.0 / this.totalDistinctValues;
     weights = normalizeScale(weights.slice(0));
 
-    for (var i = 0; i < this.totalDistinctValues; i++) {
-      ((weights[i] >= average) ? large : small).push(i);
+    for (let i = 0; i < this.totalDistinctValues; i++) {
+      (weights[i] >= average ? large : small).push(i);
     }
 
     while (small.length > 0 && large.length > 0) {
@@ -35,8 +35,8 @@ export class Vose {
       this.probability[less] = weights[less] * this.totalDistinctValues;
       this.alias[less] = more;
 
-      weights[more] = (weights[more] + weights[less]) - average;
-      ((weights[more] >= average) ? large : small).push(more);
+      weights[more] = weights[more] + weights[less] - average;
+      (weights[more] >= average ? large : small).push(more);
     }
 
     while (large.length !== 0) {
@@ -52,7 +52,7 @@ export class Vose {
     const column = getRandomInt(0, this.totalDistinctValues - 1);
     const coinToss = Math.random() < this.probability[column];
     return coinToss ? column : this.alias[column];
-  }
+  };
 }
 
 function getRandomInt(min: number, max: number) {

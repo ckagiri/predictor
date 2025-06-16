@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
-import { Entity } from '../models/base.model';
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider';
+
+import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
+import { Entity } from '../models/base.model.js';
 
 export interface Converter {
   footballApiProvider: ApiProvider;

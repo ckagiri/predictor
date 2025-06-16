@@ -1,43 +1,54 @@
 import { Observable, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { ScorePoints } from '../../common/score';
-import UserScoreModel, {
-  UserScore
-} from '../models/userScore.model';
-import { BaseRepository, BaseRepositoryImpl } from './base.repo';
+import { ScorePoints } from '../../common/score.js';
+import UserScoreModel, { UserScore } from '../models/userScore.model.js';
+import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
 
-type Query = {
-  leaderboardId: string,
-  userId: string,
-}
-
-type Metadata = {
-  matchId: string,
-  predictionId: string,
-  hasJoker: boolean,
-}
 export interface UserScoreRepository extends BaseRepository<UserScore> {
+  findByLeaderboardIdOrderByPoints$(
+    leaderboardId: string
+  ): Observable<UserScore[]>;
+
   findScoreAndUpsert$(
     query: Query,
     predictionPoints: ScorePoints,
     rest: Metadata
   ): Observable<UserScore>;
+}
 
-  findByLeaderboardIdOrderByPoints$(
-    leaderboardId: string,
-  ): Observable<UserScore[]>;
+interface Metadata {
+  hasJoker: boolean;
+  matchId: string;
+  predictionId: string;
+}
+interface Query {
+  leaderboardId: string;
+  userId: string;
 }
 
 export class UserScoreRepositoryImpl
   extends BaseRepositoryImpl<UserScore>
-  implements UserScoreRepository {
+  implements UserScoreRepository
+{
+  constructor() {
+    super(UserScoreModel);
+  }
+
   public static getInstance() {
     return new UserScoreRepositoryImpl();
   }
 
-  constructor() {
-    super(UserScoreModel);
+  public findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
+    return this.findAll$({ leaderboard: leaderboardId }, null, {
+      sort: {
+        closeMatchScorePoints: -1,
+        correctMatchOutcomePoints: -1,
+        exactGoalDifferencePoints: -1,
+        exactMatchScorePoints: -1,
+        points: -1,
+      },
+    });
   }
 
   findScoreAndUpsert$(
@@ -47,31 +58,35 @@ export class UserScoreRepositoryImpl
   ): Observable<UserScore> {
     const { leaderboardId, userId } = query;
     const {
+      closeMatchScorePoints,
       correctMatchOutcomePoints,
       exactGoalDifferencePoints,
-      closeMatchScorePoints,
-      exactTeamScorePoints,
       exactMatchScorePoints,
+      exactTeamScorePoints,
     } = predictionPoints;
-    const { matchId, predictionId, hasJoker } = rest;
-    const basePoints = correctMatchOutcomePoints + exactGoalDifferencePoints +
-      closeMatchScorePoints + exactTeamScorePoints + exactMatchScorePoints;
+    const { hasJoker, matchId, predictionId } = rest;
+    const basePoints =
+      correctMatchOutcomePoints +
+      exactGoalDifferencePoints +
+      closeMatchScorePoints +
+      exactTeamScorePoints +
+      exactMatchScorePoints;
 
-    let score: UserScore = {
-      leaderboard: leaderboardId,
-      user: userId,
-      correctMatchOutcomePoints,
-      exactTeamScorePoints,
-      exactMatchScorePoints,
-      closeMatchScorePoints,
-      exactGoalDifferencePoints,
+    const score: UserScore = {
       basePoints,
+      closeMatchScorePoints,
+      correctMatchOutcomePoints,
+      exactGoalDifferencePoints,
+      exactMatchScorePoints,
+      exactTeamScorePoints,
+      leaderboard: leaderboardId,
       points: basePoints,
+      user: userId,
     };
 
     return this.findOne$({ leaderboard: leaderboardId, user: userId }).pipe(
       mergeMap(userScore => {
-        if (userScore == null) {
+        if (userScore === null) {
           score.matches = [matchId];
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
@@ -85,7 +100,7 @@ export class UserScoreRepositoryImpl
 
           return this.insert$(score);
         } else {
-          const matches = userScore.matches as string[];
+          const matches = userScore.matches!;
           const matchExists = matches.some(m => m.toString() === matchId);
           if (matchExists) {
             return of(userScore);
@@ -100,42 +115,30 @@ export class UserScoreRepositoryImpl
           userScore.basePoints += basePoints;
           userScore.points += hasJoker ? basePoints * 2 : basePoints;
 
-          userScore.correctMatchOutcomes! += (correctMatchOutcomePoints / 7);
-          userScore.exactMatchScores! += (exactMatchScorePoints / 10);
+          userScore.correctMatchOutcomes! += correctMatchOutcomePoints / 7;
+          userScore.exactMatchScores! += exactMatchScorePoints / 10;
           userScore.exactGoalDiffs! += exactGoalDifferencePoints;
           userScore.closeMatchScores! += Math.ceil(closeMatchScorePoints / 2);
 
           return this.findByIdAndUpdate$(userScore.id!, {
-            $set: {
-              basePoints: userScore.basePoints,
-              points: userScore.points,
-              correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
-              exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
-              closeMatchScorePoints: userScore.closeMatchScorePoints,
-              exactTeamScorePoints: userScore.exactTeamScorePoints,
-              exactMatchScorePoints: userScore.exactMatchScorePoints,
-              correctMatchOutcomes: userScore.correctMatchOutcomes,
-              exactMatchScores: userScore.exactMatchScores,
-              exactGoalDiffs: userScore.exactGoalDiffs,
-              closeMatchScores: userScore.closeMatchScores,
-            },
             $inc: { matchesPredicted: 1 },
             $push: { matches: matchId, predictions: predictionId },
+            $set: {
+              basePoints: userScore.basePoints,
+              closeMatchScorePoints: userScore.closeMatchScorePoints,
+              closeMatchScores: userScore.closeMatchScores,
+              correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
+              correctMatchOutcomes: userScore.correctMatchOutcomes,
+              exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
+              exactGoalDiffs: userScore.exactGoalDiffs,
+              exactMatchScorePoints: userScore.exactMatchScorePoints,
+              exactMatchScores: userScore.exactMatchScores,
+              exactTeamScorePoints: userScore.exactTeamScorePoints,
+              points: userScore.points,
+            },
           });
         }
       })
     );
-  }
-
-  public findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
-    return this.findAll$({ leaderboard: leaderboardId }, null, {
-      sort: {
-        points: -1,
-        correctMatchOutcomePoints: -1,
-        exactMatchScorePoints: -1,
-        exactGoalDifferencePoints: -1,
-        closeMatchScorePoints: -1,
-      },
-    });
   }
 }

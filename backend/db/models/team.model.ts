@@ -1,28 +1,28 @@
-import { Schema, model } from 'mongoose';
+import { model, Schema } from 'mongoose';
 
-import { Entity, schema } from './base.model';
+import { Entity, schema } from './base.model.js';
 
 export interface Team extends Entity {
-  name?: string;
-  slug?: string;
-  shortName?: string;
-  tla?: string;
+  [key: string]: any;
   aliases?: string[];
   crestUrl?: string;
   externalReference?: any;
-  [key: string]: any;
+  name?: string;
+  shortName?: string;
+  slug?: string;
+  tla?: string;
 }
 
 const { Mixed } = Schema.Types;
 
 export const teamSchema = schema({
-  name: { type: String, required: true, trim: true },
-  slug: { type: String, required: true, trim: true },
-  shortName: { type: String, trim: true },
-  tla: { type: String },
   aliases: { type: [String] },
   crestUrl: { type: String },
   externalReference: { type: Mixed },
+  name: { required: true, trim: true, type: String },
+  shortName: { trim: true, type: String },
+  slug: { required: true, trim: true, type: String },
+  tla: { type: String },
 });
 
 const TeamModel = model<Team>('Team', teamSchema);

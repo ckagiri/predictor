@@ -1,11 +1,26 @@
-import express from 'express'
-import { authMiddleware } from './utils'
-import * as authController from './auth.controller'
+import express from 'express';
+import {
+  NextFunction,
+  ParamsDictionary,
+  Request,
+  Response,
+} from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 
-const router = express.Router()
+import * as authController from './auth.controller.js';
 
-router.post('/register', authController.register)
-router.post('/login', authController.login)
-router.get('/me', authMiddleware(), authController.me)
+const router = express.Router();
+
+function asyncHandler(
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
+) {
+  return function (req: Request, res: Response, next: NextFunction) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+
+router.post('/register', asyncHandler(authController.register));
+router.post('/login', asyncHandler(authController.login));
+// router.get('/me', authMiddleware(), asyncHandler(authController.me))
 
 export default router;

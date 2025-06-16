@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import { BOARD_TYPE } from '../../db/models/leaderboard.model';
 
+import { BOARD_TYPE } from '../../db/models/leaderboard.model';
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
-import memoryDb from '../memoryDb';
 import a from '../a';
+import memoryDb from '../memoryDb';
 
 const leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
 
@@ -12,7 +12,10 @@ const epl = a.competition
   .setSlug('english-premier-league')
   .setCode('epl');
 
-const gw1 = a.gameRound.setName('Gameweek 1').setSlug('gameweek-1').setPosition(1);
+const gw1 = a.gameRound
+  .setName('Gameweek 1')
+  .setSlug('gameweek-1')
+  .setPosition(1);
 
 const epl2020 = a.season
   .withCompetition(epl)
@@ -21,7 +24,7 @@ const epl2020 = a.season
   .setYear(2020)
   .setSeasonStart('2021-08-09T00:00:00+0200')
   .setSeasonEnd('2022-05-17T16:00:00+0200')
-  .withGameRounds(gw1)
+  .withGameRounds(gw1);
 
 describe('LeaderboardRepo', function () {
   before(async () => {
@@ -38,19 +41,19 @@ describe('LeaderboardRepo', function () {
 
   beforeEach(async () => {
     await epl2020.build();
-  })
+  });
 
   it('should create seasonBoard if it doesnt exist', done => {
-    leaderboardRepo.findOrCreateSeasonLeaderboard$(epl2020.id)
-      .subscribe(lb => {
-        expect(lb.season.toString()).to.equal(epl2020.id);
-        expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_SEASON);
-        done();
-      });
+    leaderboardRepo.findOrCreateSeasonLeaderboard$(epl2020.id).subscribe(lb => {
+      expect(lb.season.toString()).to.equal(epl2020.id);
+      expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_SEASON);
+      done();
+    });
   });
 
   it('should create roundboard if it doesnt exist', done => {
-    leaderboardRepo.findOrCreateRoundLeaderboard$(epl2020.id, gw1.id)
+    leaderboardRepo
+      .findOrCreateRoundLeaderboard$(epl2020.id, gw1.id)
       .subscribe(lb => {
         expect(lb.season.toString()).to.equal(epl2020.id);
         expect(lb.gameRound?.toString()).to.equal(gw1.id);
@@ -59,4 +62,3 @@ describe('LeaderboardRepo', function () {
       });
   });
 });
-

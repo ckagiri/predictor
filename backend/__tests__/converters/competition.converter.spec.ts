@@ -9,9 +9,9 @@ describe('Competition Converter', () => {
   describe('Ligi CompetitionConverterImpl', () => {
     const converter: CompetitionConverter = new LigiCompetitionConverter();
     const competition = {
+      code: 'epl',
       name: 'English Premier League',
       slug: 'english_premier_league',
-      code: 'epl',
     };
 
     it('should return an observable when converting', () => {

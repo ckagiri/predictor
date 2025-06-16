@@ -9,13 +9,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "lib": [
-      "dom",
-      "es5",
-      "es6",
-      "es7",
-      "es2017"
-    ],
+    "lib": ["dom", "es5", "es6", "es7", "es2017"],
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "importHelpers": true

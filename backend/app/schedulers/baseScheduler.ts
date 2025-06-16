@@ -1,15 +1,16 @@
 import { isNumber, isString } from 'lodash';
 import schedule, { Job } from 'node-schedule';
-import { Scheduler, SchedulerOptions, SCHEDULE_TYPE } from './scheduler';
+
+import { SCHEDULE_TYPE, Scheduler, SchedulerOptions } from './scheduler.js';
 
 const DEFAULT_INTERVAL_MILLISECONDS = 3 * 60 * 60 * 1000; // 3H
 
 export abstract class BaseScheduler implements Scheduler {
   protected readonly job: Job;
-  private jobScheduled: boolean = false;
-  private taskRunning: boolean = false;
   private intervalMs: number | undefined = undefined;
+  private jobScheduled = false;
   private scheduleType: string = SCHEDULE_TYPE.LOOP;
+  private taskRunning = false;
 
   constructor(name: string) {
     this.job = new schedule.Job(name, this.jobTask.bind(this));
@@ -20,42 +21,23 @@ export abstract class BaseScheduler implements Scheduler {
     });
   }
 
-  async startJob(options: SchedulerOptions = { runImmediately: false }) {
-    const { interval, runImmediately } = options;
-    if (this.jobScheduled) {
-      throw new Error('Job already scheduled');
-    }
-    if (runImmediately) {
-      const result = await this.jobTask();
-      this.initJob(interval, result);
-    } else {
-      this.initJob(interval);
-    }
+  cancelJob(): void {
+    this.job.cancel();
+    this.jobScheduled = false;
   }
 
-  initJob(interval?: string | number, result?: any) {
+  initJob(interval?: number | string, result?: any) {
     if (isString(interval)) {
       this.scheduleType = SCHEDULE_TYPE.CRON;
       this.job.schedule(interval);
     } else if (isNumber(interval)) {
       this.setIntervalMs(interval);
-      this.scheduleJob(result)
+      this.scheduleJob(result);
     } else {
-      this.setIntervalMs(this.getDefaultIntervalMs())
-      this.scheduleJob(result)
+      this.setIntervalMs(this.getDefaultIntervalMs());
+      this.scheduleJob(result);
     }
     this.jobScheduled = true;
-  }
-
-  scheduleJob(result: any, reschedule: boolean = false) {
-    const nextInterval = this.calculateNextInterval(result)
-    const nextUpdate = new Date(Date.now() + nextInterval);
-
-    if (reschedule) {
-      this.job.reschedule(nextUpdate.getTime());
-    } else {
-      this.job.schedule(nextUpdate)
-    }
   }
 
   async jobTask() {
@@ -73,28 +55,47 @@ export abstract class BaseScheduler implements Scheduler {
     return result;
   }
 
-  abstract task(): Promise<any>;
-
-  cancelJob(): void {
-    this.job.cancel();
-    this.jobScheduled = false;
-  }
-
   async runJob() {
     const result = await this.jobTask();
     this.scheduleJob(result, true);
+  }
+
+  scheduleJob(result: any, reschedule = false) {
+    const nextInterval = this.calculateNextInterval(result);
+    const nextUpdate = new Date(Date.now() + nextInterval);
+
+    if (reschedule) {
+      this.job.reschedule(nextUpdate.getTime());
+    } else {
+      this.job.schedule(nextUpdate);
+    }
+  }
+
+  async startJob(options: SchedulerOptions = { runImmediately: false }) {
+    const { interval, runImmediately } = options;
+    if (this.jobScheduled) {
+      throw new Error('Job already scheduled');
+    }
+    if (runImmediately) {
+      const result = await this.jobTask();
+      this.initJob(interval, result);
+    } else {
+      this.initJob(interval);
+    }
+  }
+
+  abstract task(): Promise<any>;
+
+  protected calculateNextInterval(_result: any) {
+    return this.getIntervalMs();
   }
 
   protected getDefaultIntervalMs(): number {
     return DEFAULT_INTERVAL_MILLISECONDS;
   }
 
-  protected calculateNextInterval(_result: any) {
-    return this.getIntervalMs();
-  }
-
   protected getIntervalMs(): number {
-    return this.intervalMs as number;
+    return this.intervalMs!;
   }
 
   private setIntervalMs(value: number) {

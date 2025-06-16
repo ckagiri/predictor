@@ -1,18 +1,31 @@
-import { FootballApiClient } from '../../thirdParty/footballApi/apiClient';
-import { TeamRepository } from '../../db/repositories/team.repo';
-import { TeamsJob } from './teams.job';
+import { TeamRepository } from '../../db/repositories/team.repo.js';
+import { FootballApiClient } from '../../thirdParty/footballApi/apiClient.js';
+import { TeamsJob } from './teams.job.js';
 
 export default class Builder {
-  private _competitionId?: number | string;
+  get apiClient() {
+    return this._apiClient;
+  }
+  get competitionId() {
+    return this._competitionId;
+  }
+  get teamRepo() {
+    return this._teamRepo;
+  }
+
   private _apiClient?: FootballApiClient;
+
+  private _competitionId?: number | string;
+
   private _teamRepo?: TeamRepository;
 
   public build() {
     return new TeamsJob(this);
   }
 
-  get apiClient() {
-    return this._apiClient;
+  public setCompetition(competitionId?: number | string): this {
+    this._competitionId = competitionId;
+    return this;
   }
 
   public withApiClient(value?: FootballApiClient) {
@@ -20,21 +33,8 @@ export default class Builder {
     return this;
   }
 
-  get teamRepo() {
-    return this._teamRepo;
-  }
-
-  public withTeamRepo(value?: TeamRepository): Builder {
+  public withTeamRepo(value?: TeamRepository): this {
     this._teamRepo = value;
     return this;
-  }
-
-  public setCompetition(competitionId?: string | number): Builder {
-    this._competitionId = competitionId;
-    return this;
-  }
-
-  get competitionId() {
-    return this._competitionId;
   }
 }
