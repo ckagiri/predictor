@@ -73,38 +73,12 @@ export class PredictionRepositoryImpl
     roundMatches: Match[]
   ): Observable<null | Prediction> {
     const matchIds = roundMatches.map(m => m.id);
-    return this.findAll$({
-      hasJoker: true,
-      match: { $in: matchIds },
-      user: userId,
-    }).pipe(
+    return this.findJokers$(userId, roundMatches).pipe(
       mergeMap(jokerPredictions => {
-        const jokers = [];
-        if (jokerPredictions.length === 0) {
-          const selectableMatchIds = roundMatches
-            .filter(m => m.status === MatchStatus.SCHEDULED)
-            .map(m => m.id);
-          if (selectableMatchIds.length) {
-            const jokerMatchId =
-              selectableMatchIds[
-                Math.floor(Math.random() * selectableMatchIds.length)
-              ]!;
-            const jokerMatch = roundMatches.find(m => m.id === jokerMatchId)!;
-
-            const { season, slug: jokerMatchSlug } = jokerMatch;
-            const randomScore = this.defaultVosePredictor.predict();
-            const joker: Prediction = {
-              choice: this.getPredictionScore(randomScore),
-              hasJoker: true,
-              jokerAutoPicked: true,
-              match: jokerMatchId,
-              matchSlug: jokerMatchSlug,
-              season,
-              user: userId,
-            };
-            jokers.push(joker);
-          }
-        } else if (jokerPredictions.length > 1) {
+        if (jokerPredictions.length === 1) {
+          return of(head(jokerPredictions));
+        }
+        if (jokerPredictions.length > 1) {
           // Precautionary
           const getTime = (date?: Date | number | string): number =>
             date != null ? new Date(date).getTime() : 0;
@@ -116,15 +90,47 @@ export class PredictionRepositoryImpl
           otherJokers.forEach(j => {
             j.hasJoker = false;
             j.jokerAutoPicked = false;
-            jokers.push(j);
           });
+          return this.updateMany$(otherJokers);
         }
+        if (jokerPredictions.length === 0) {
+          const selectableMatches = roundMatches.filter(
+            m => m.status === MatchStatus.SCHEDULED
+          );
+          if (selectableMatches.length === 0) {
+            return of(undefined);
+          }
+          const jokerMatch =
+            selectableMatches[
+              Math.floor(Math.random() * selectableMatches.length)
+            ];
+          const jokerMatchId = jokerMatch.id!;
+          return this.findOne$(userId, jokerMatchId).pipe(
+            mergeMap(jokerPred => {
+              if (jokerPred) {
+                jokerPred.hasJoker = true;
+                jokerPred.jokerAutoPicked = true;
+                return this.findByIdAndUpdate$(jokerPred.id!, jokerPred);
+              } else {
+                const { season, slug } = jokerMatch;
+                const randomScore = this.defaultVosePredictor.predict();
 
-        if (jokers.length) {
-          return this.upsertMany$(jokers);
-        } else {
-          return of(head(jokerPredictions));
+                const newJokerPred: Prediction = {
+                  choice: this.getPredictionScore(randomScore),
+                  hasJoker: true,
+                  jokerAutoPicked: true,
+                  match: jokerMatchId,
+                  matchSlug: slug,
+                  season,
+                  user: userId,
+                };
+                return this.insert$(newJokerPred);
+              }
+            })
+          );
         }
+        // Ensure all code paths return an Observable
+        return of(undefined);
       }),
       mergeMap(result => {
         if (
@@ -261,7 +267,7 @@ export class PredictionRepositoryImpl
     }
     return this.findJokers$(userId, roundMatches).pipe(
       mergeMap(currentJokers => {
-        if (isEmpty(currentJokers) || currentJokers.length > 1) {
+        if (currentJokers.length === 0 || currentJokers.length > 1) {
           return this.findOrCreatePredictions$(userId, roundMatches).pipe(
             map(predictions => {
               const currentJoker = predictions.find(p => p.hasJoker === true);

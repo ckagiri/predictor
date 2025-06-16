@@ -194,37 +194,26 @@ export class DocumentDao<T extends Entity> {
     );
   }
 
-  public remove(id: string) {
-    return this.Model.deleteOne({
-      _id: new mongoose.Types.ObjectId(id),
-    }).exec();
-  }
-
-  public save(obj: Entity): Promise<T> {
-    let model: HydratedDocument<T>;
-    if (obj instanceof this.Model) {
-      model = obj as HydratedDocument<T>;
-    } else {
-      model = new this.Model(obj) as HydratedDocument<T>;
-    }
-
-    return model.save().then(model => model.toObject() as T);
-  }
-
-  public saveMany(objs: Entity[]): Promise<T[]> {
+  public createMany(objs: Entity[]): Promise<T[]> {
     // create is a convenience method that automatically calls new Model() and save() for you
     return this.Model.create(objs).then(
       models => models.map(m => m.toObject()) as T[]
     );
   }
 
+  public remove(id: string) {
+    return this.Model.deleteOne({
+      _id: new mongoose.Types.ObjectId(id),
+    }).exec();
+  }
+
   public updateMany(objs: Entity[]): Promise<any> {
     //Create bulk operations
-    const ops = objs.map((obj: any) => {
+    const ops = objs.map(obj => {
       //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
         obj = new this.Model({
-          _id: mongoose.Types.ObjectId.createFromHexString(obj.id),
+          _id: new mongoose.Types.ObjectId(obj.id!),
           ...obj,
         });
       }
@@ -250,8 +239,10 @@ export class DocumentDao<T extends Entity> {
       //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
         obj = new this.Model({
-          _id: mongoose.Types.ObjectId.createFromHexString(obj.id),
           ...obj,
+          _id: obj.id
+            ? mongoose.Types.ObjectId.createFromHexString(obj.id)
+            : undefined,
         });
       }
       // Convert to plain object

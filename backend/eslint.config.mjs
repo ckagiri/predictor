@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import pluginChaiFriendly from 'eslint-plugin-chai-friendly';
 import perfectionist from 'eslint-plugin-perfectionist';
 import tseslint from 'typescript-eslint';
 
@@ -41,13 +42,12 @@ export default tseslint.config(
   },
   {
     files: ['**/*.spec.ts'],
+    plugins: { 'chai-friendly': pluginChaiFriendly },
     rules: {
-      '@typescript-eslint/no-unused-expressions': 'off',
+      '@typescript-eslint/no-unused-expressions': 0, // disable TypeScript ESLint version
+      'chai-friendly/no-unused-expressions': 2,
+      'no-unused-expressions': 0, // disable original rule
+      // '@typescript-eslint/no-unused-expressions': 'off',
     },
-    // languageOptions: {
-    //   parserOptions: {
-    //     project: ['./tsconfig.json'],
-    //   },
-    // },
   }
 );

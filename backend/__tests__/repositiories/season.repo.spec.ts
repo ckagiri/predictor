@@ -50,7 +50,7 @@ describe('seasonRepo', function () {
       name: 'Premier League',
     };
 
-    // properly construct season with its competition prop to insert$ not save$
+    // properly construct season with its competition prop to insert$ not add$
     epl21 = {
       competition,
       currentMatchday: 20,
@@ -87,7 +87,7 @@ describe('seasonRepo', function () {
   it('should save new season', done => {
     const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
 
-    // competitionId is for LIGI season-repo; season-repo converter will find competition and construct season competition prop during save$
+    // competitionId is for LIGI season-repo; season-repo converter will find competition and construct season competition prop during add$
     const theEpl22 = {
       competitionId: epl.id,
       currentMatchday: 20,
@@ -99,8 +99,8 @@ describe('seasonRepo', function () {
       year: 2022,
     };
 
-    // save$ calls converter, insert$ doesn't
-    seasonRepo.save$(theEpl22).subscribe((data: any) => {
+    // add$ calls converter, insert$ doesn't
+    seasonRepo.add$(theEpl22).subscribe((data: any) => {
       const { competition, name, slug, year } = data;
       expect(name).to.equal(theEpl22.name);
       expect(slug).to.equal(theEpl22.slug);

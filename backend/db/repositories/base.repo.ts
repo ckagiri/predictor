@@ -6,6 +6,7 @@ import { DocumentDao } from './document.dao.js';
 
 export interface BaseRepository<T extends Entity> {
   count$(conditions: any): Observable<number>;
+  createMany$(objs: Entity[]): Observable<T[]>;
   distinct$(field: string, conditions?: any): Observable<string[]>;
   find$(
     query?: any,
@@ -23,8 +24,6 @@ export interface BaseRepository<T extends Entity> {
   insert$(obj: Entity): Observable<T>;
   insertMany$(objs: Entity[]): Observable<T[]>;
   remove$(id: string): Observable<void>;
-  save$(obj: Entity): Observable<T>;
-  saveMany$(objs: Entity[]): Observable<T[]>;
   updateMany$(objs: Entity[]): Observable<any>;
   upsertMany$(objs: Entity[]): Observable<any>;
 }
@@ -244,23 +243,9 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     });
   }
 
-  public save$(obj: Entity): Observable<T> {
-    return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.save(obj).then(
-        (result: T) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public saveMany$(objs: Entity[]): Observable<T[]> {
+  public createMany$(objs: Entity[]): Observable<T[]> {
     return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.saveMany(objs).then(
+      this.documentDao.createMany(objs).then(
         (result: T[]) => {
           observer.next(result);
           observer.complete();

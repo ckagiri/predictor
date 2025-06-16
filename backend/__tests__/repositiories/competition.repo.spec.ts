@@ -29,7 +29,7 @@ describe('CompetitionRepo', function () {
       ApiProvider.LIGI
     );
 
-    competitionRepo.save$(competition).subscribe((data: any) => {
+    competitionRepo.add$(competition).subscribe((data: any) => {
       const { code, name, slug } = data;
       expect(name).to.equal(competition.name);
       expect(slug).to.equal(competition.slug);

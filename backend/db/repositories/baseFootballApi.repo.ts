@@ -12,12 +12,12 @@ import {
 
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
+  add$(obj: Entity, useConverter?: boolean): Observable<T>;
   findByExternalId$(id: number | string): Observable<T | null>;
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T>;
   findByExternalIds$(ids: (number | string)[]): Observable<T[]>;
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
   footballApiProvider: ApiProvider;
-  save$(obj: Entity, useConverter?: boolean): Observable<T>;
 }
 
 export class BaseFootballApiRepositoryImpl<T extends Entity>
@@ -70,10 +70,10 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
     return forkJoin(obs);
   }
 
-  public save$(obj: Entity, useConverter = true): Observable<T> {
+  public add$(obj: Entity, useConverter = true): Observable<T> {
     return (useConverter ? this.converter.from(obj) : of(obj)).pipe(
       mergeMap(entity => {
-        return super.save$(entity);
+        return super.insert$(entity);
       })
     );
   }

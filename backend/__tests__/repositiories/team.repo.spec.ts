@@ -72,7 +72,7 @@ describe('teamRepo', function () {
   it('should save a new Team', done => {
     const teamRepo = TeamRepositoryImpl.getInstance(ApiProvider.LIGI);
 
-    teamRepo.save$(manUtd).subscribe(team => {
+    teamRepo.add$(manUtd).subscribe(team => {
       expect(team.name).to.equal(manUtd.name);
       expect(team.slug).to.equal(manUtd.slug);
       expect(team.aliases).to.contain('ManU', 'ManUtd');

@@ -79,6 +79,7 @@
     "copyfiles": "^2.4.1",
     "dotenv-flow": "^4.1.0",
     "eslint": "^9.28.0",
+    "eslint-plugin-chai-friendly": "^1.1.0",
     "eslint-plugin-perfectionist": "^4.14.0",
     "mais-mongoose-seeder": "^1.0.7",
     "mocha": "^11.6.0",

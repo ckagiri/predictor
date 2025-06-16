@@ -485,6 +485,51 @@ describe('Prediction repo', function () {
         });
     });
 
+    it('should findOrCreatePredictions when we have a wrongful two+ initial jokers', done => {
+      const userId1 = user1.id;
+      const roundMatches = epl2022Matches
+        .filter(m => m.gameRound.id === gw1.id)
+        .map(m => m.match!);
+
+      const userId1matchId1Pred: Prediction = {
+        choice: {
+          goalsAwayTeam: 0,
+          goalsHomeTeam: 1,
+          isComputerGenerated: true,
+        },
+        jokerAutoPicked: true,
+        match: manuVmanc.id,
+        matchSlug: manuVmanc.slug,
+        season: epl2022.id,
+        user: userId1,
+      };
+      const userId1matchId2Pred: Prediction = {
+        choice: {
+          goalsAwayTeam: 0,
+          goalsHomeTeam: 2,
+          isComputerGenerated: false,
+        },
+        jokerAutoPicked: false,
+        match: cheVars.id,
+        matchSlug: cheVars.slug,
+        season: epl2022.id,
+        user: userId1,
+      };
+
+      predictionRepo
+        .insertMany$([userId1matchId1Pred, userId1matchId2Pred])
+        .pipe(
+          mergeMap(() =>
+            predictionRepo.findOrCreatePredictions$(userId1, roundMatches)
+          )
+        )
+        .subscribe(preds => {
+          expect(preds).to.have.length(2);
+          expect(preds.filter(p => p.hasJoker)).to.have.length(1);
+          done();
+        });
+    });
+
     describe('pick joker', () => {
       it('should pick a different joker if joker exists', done => {
         const userId1matchId1Pred: Prediction = {
