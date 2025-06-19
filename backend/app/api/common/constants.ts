@@ -1,0 +1,2 @@
+export const ERR_VALIDATION = 'ERR_VALIDATION';
+export const ERR_VALUE_NOT_FOUND = 'ERR_VALUE_NOT_FOUND';

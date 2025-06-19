@@ -16,7 +16,7 @@ function asyncHandler(fn: any) {
   };
 }
 
-router.get('/', asyncHandler(gameDataController.getDefaultData));
+router.get('/', gameDataController.getDefaultData);
 router.get('/:competition', asyncHandler(getCompetition.getCompetition));
 router.get('/:competition/:season', competitionSeasonController.getSeason);
 router.get(

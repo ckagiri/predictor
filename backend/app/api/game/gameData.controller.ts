@@ -15,13 +15,13 @@ export class GameDataController {
     return new GameDataController(competitionRepo);
   }
 
-  getDefaultData = async (req: Request, res: Response) => {
+  public getDefaultData = async (req: Request, res: Response) => {
     try {
       const slug = req.params.slug;
       const competition = await lastValueFrom(
         this.competitionRepo.findOne$({ slug }, '-createdAt')
       );
-      return res.status(200).json({
+      res.status(200).json({
         competition,
       });
     } catch (error) {

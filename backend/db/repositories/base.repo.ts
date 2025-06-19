@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { from, Observable, Subscriber } from 'rxjs';
+import { Observable, Subscriber } from 'rxjs';
 
 import { Entity } from '../models/base.model.js';
 import { DocumentDao } from './document.dao.js';
@@ -18,9 +18,9 @@ export interface BaseRepository<T extends Entity> {
   findById$(id: string): Observable<T | null>;
   findByIdAndUpdate$(id: string, update: any): Observable<T>;
   findOne$(conditions: any, projection?: any): Observable<T | null>;
-  findOneAndUpdate$(conditions: any, update: any, options?: any): Observable<T>;
-  findOneAndUpsert$(conditions: any, update: any, options?: any): Observable<T>;
-  findOneOrCreate$(conditions: any, mergeContents: any): Observable<T>;
+  findOneAndUpdate$(conditions: any, update: any): Observable<T>;
+  findOneAndUpsert$(conditions: any, update: any): Observable<T>;
+  findOneOrCreate$(conditions: any, data?: any): Observable<T>;
   insert$(obj: Entity): Observable<T>;
   insertMany$(objs: Entity[]): Observable<T[]>;
   remove$(id: string): Observable<void>;
@@ -157,13 +157,9 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     });
   }
 
-  public findOneAndUpdate$(
-    conditions: any,
-    update: any,
-    options: any = { new: true, overwrite: false }
-  ): Observable<T> {
+  public findOneAndUpdate$(conditions: any, update: any): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOneAndUpdate(conditions, update, options).then(
+      this.documentDao.findOneAndUpdate(conditions, update).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -175,13 +171,9 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     });
   }
 
-  public findOneAndUpsert$(
-    conditions: any,
-    update: any,
-    options: any = { new: true, setDefaultsOnInsert: true, upsert: true }
-  ): Observable<T> {
+  public findOneAndUpsert$(conditions: any, update: any = {}): Observable<T> {
     return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOneAndUpsert(conditions, update, options).then(
+      this.documentDao.findOneAndUpsert(conditions, update).then(
         (result: T) => {
           observer.next(result);
           observer.complete();
@@ -193,12 +185,18 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     });
   }
 
-  public findOneOrCreate$(
-    conditions: any,
-    mergeContents: any = {}
-  ): Observable<T> {
-    const options: any = { new: true, setDefaultsOnInsert: true, upsert: true };
-    return this.findOneAndUpsert$(conditions, mergeContents, options);
+  findOneOrCreate$(conditions: any, data = conditions): Observable<T> {
+    return new Observable((observer: Subscriber<T>) => {
+      this.documentDao.findOneOrCreate(conditions, data).then(
+        (result: T) => {
+          observer.next(result);
+          observer.complete();
+        },
+        (error: unknown) => {
+          observer.error(error);
+        }
+      );
+    });
   }
 
   public insert$(obj: Entity): Observable<T> {

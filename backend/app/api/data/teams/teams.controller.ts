@@ -67,4 +67,17 @@ export class TeamsController {
 
 const teamsController = TeamsController.getInstance();
 
+// const makeGetTeamController => res => {
+//   const okResponder = new OkResponder(res);
+//   const useCase = GetTeamUseCase.getInstance(okResponder, teamRepo)
+//   return GetTeamController.getInstance(validation, useCase);
+// }
+// handleRequest(makeGetTeamController)
+
+// req,res,next => makeController
+// controller = makeController(res);
+// requestHandler = new RequestHandler(req, res, next, controller)
+// requestHandler.handleRequest()
+// this.controller.processRequest(mappedHttpRequest)
+// this.getTeamUseCase.execute(model)
 export default teamsController;

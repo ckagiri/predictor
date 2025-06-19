@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { mergeMap } from 'rxjs';
 
 import { BOARD_TYPE } from '../../db/models/leaderboard.model';
 import { LeaderboardRepositoryImpl } from '../../db/repositories/leaderboard.repo';
@@ -58,6 +59,24 @@ describe('LeaderboardRepo', function () {
         expect(lb.season.toString()).to.equal(epl2020.id);
         expect(lb.gameRound?.toString()).to.equal(gw1.id);
         expect(lb.boardType).to.equal(BOARD_TYPE.GLOBAL_ROUND);
+        done();
+      });
+  });
+
+  it('should return seasonboard if it exists', done => {
+    leaderboardRepo
+      .findOneOrCreate$({
+        boardType: BOARD_TYPE.GLOBAL_SEASON,
+        season: epl2020.id,
+      })
+      .pipe(
+        mergeMap(() =>
+          leaderboardRepo.findOrCreateSeasonLeaderboard$(epl2020.id)
+        ),
+        mergeMap(() => leaderboardRepo.findAll$())
+      )
+      .subscribe(boards => {
+        expect(boards).to.have.length(1);
         done();
       });
   });
