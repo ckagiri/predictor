@@ -1,5 +1,5 @@
-import { omit } from 'lodash';
-import mongoose, { HydratedDocument, Model } from 'mongoose';
+import { merge, omit } from 'lodash';
+import mongoose, { Model } from 'mongoose';
 
 import { Entity } from '../models/base.model.js';
 
@@ -182,6 +182,16 @@ export class DocumentDao<T extends Entity> {
     return this.Model.findOneAndUpdate(conditions, update, options)
       .lean({ transform })
       .exec() as Promise<T>;
+  }
+
+  findOneOrCreate(conditions: any, data: any): Promise<T> {
+    return this.findOne(conditions).then(doc => {
+      if (doc) {
+        return doc;
+      } else {
+        return this.insert(merge({}, conditions, data));
+      }
+    });
   }
 
   public insert(obj: Entity): Promise<T> {
