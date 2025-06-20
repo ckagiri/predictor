@@ -1,7 +1,7 @@
 import HttpRequestModel from 'app/api/common/interfaces/HttpRequestModel.js';
 import { Response } from 'express';
 
-import OkResponder from '../../../common/responders/ok.responder.js';
+import OkResponder from '../../common/responders/ok.responder.js';
 import GetTeamsUseCase from './getTeams.useCase.js';
 
 class GetTeamsController {

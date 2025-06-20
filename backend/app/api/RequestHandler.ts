@@ -1,9 +1,8 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import createHttpError, { HttpError } from 'http-errors';
 
 import * as constants from './common/constants.js';
 import HttpRequestModel from './common/interfaces/HttpRequestModel.js';
-import { FailResponse } from './common/responses.js';
 
 export default class RequestHandler {
   private req: Request;
@@ -17,15 +16,20 @@ export default class RequestHandler {
   }
 
   public async handleRequest(): Promise<void> {
-    await this.controller.processRequest(this.mapHttpRequest(this.req));
+    try {
+      await this.controller.processRequest(this.mapHttpRequest(this.req));
+    } catch (err: any) {
+      this.handleError(err);
+    }
   }
 
   public handleError(err: any): void {
     if (err.isFailure) {
-      const httpError = this.makeHttpError(err.getError());
-      this.errorHandler(httpError);
+      const httpError = this.makeHttpError(err.unwrap());
+      this.errorHandler(httpError, err.message);
+    } else {
+      this.errorHandler(err);
     }
-    this.errorHandler(err);
   }
 
   private mapHttpRequest(req: Request): HttpRequestModel {
@@ -37,15 +41,13 @@ export default class RequestHandler {
     };
   }
 
-  private errorHandler(err: any): void {
+  private errorHandler(err: any, reason?: string): void {
     this.res.status(err.status ?? 500);
-    this.res.send(
-      FailResponse.create({
-        msg: err.msg ?? err.message,
-        reason: err.reason ?? 'Something went wrong',
-        validationErrors: err.validationErrors,
-      })
-    );
+    this.res.send({
+      msg: err.msg ?? err.message,
+      reason: reason ?? err.reason ?? 'Something went wrong',
+      validationErrors: err.validationErrors,
+    });
   }
 
   private makeHttpError(unknownError: any): HttpError {

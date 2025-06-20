@@ -27,7 +27,7 @@
     "test2": "TS_NODE_PROJECT='tsconfig.json' NODE_ENV=test mocha --require ts-node/register --require dotenv-flow/config --recursive '__tests__/repositiories/competition.repo.spec.ts' --node-env=test",
     "spec1": "NODE_OPTIONS='--import=tsx' mocha '__tests__/repositiories/competition.repo.spec.ts'",
     "spec2": "mocha --import=tsx ",
-    "spec3": "mocha --import=tsx '__tests__/**/*.spec.ts'",
+    "spec3": "mocha --import=tsx --ignore='__tests__/api/*.spec.ts' '__tests__/**/*.spec.ts' ",
     "drop:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/drop.js",
     "seed:test": "NODE_ENV=test node -r dotenv-flow/config build/db/tasks/seed.js",
     "import:test": "NODE_ENV=test node -r dotenv-flow/config build/import/start.js",

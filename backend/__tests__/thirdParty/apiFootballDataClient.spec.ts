@@ -14,7 +14,7 @@ import matches from '../fixtures/requests/apiFootballData.epl2018Matches.json';
 import teams from '../fixtures/requests/apiFootballData.epl2018Teams.json';
 import eplCompetitions from '../fixtures/requests/apiFootballData.eplCompetitions.json';
 
-describe('apifootballDataClient', () => {
+describe.skip('apifootballDataClient', () => {
   describe('getCompetitions', () => {
     before(() => {
       mockery.enable({

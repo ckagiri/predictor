@@ -1,8 +1,8 @@
 import { Router } from 'express';
 
 import handleRequest from '../../handleRequest.js';
-import { makeGetTeamsController } from './getAll/getTeams.controller.js';
-import { makeGetTeamController } from './getOne/getTeam.controller.js';
+import { makeGetTeamController } from './getTeam.controller.js';
+import { makeGetTeamsController } from './getTeams.controller.js';
 
 const router = Router();
 
