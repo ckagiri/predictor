@@ -148,11 +148,8 @@ export class DocumentDao<T extends Entity> {
       .exec() as Promise<T | null>;
   }
 
-  public findByIdAndUpdate(
-    id: string,
-    update: any,
-    options: any = { new: true, overwrite: false }
-  ): Promise<T> {
+  public findByIdAndUpdate(id: string, update: any): Promise<T> {
+    const options = { new: true, overwrite: false };
     return this.Model.findByIdAndUpdate(id, update, options)
       .lean({ transform })
       .exec() as Promise<T>;
@@ -164,21 +161,15 @@ export class DocumentDao<T extends Entity> {
       .exec() as Promise<T | null>;
   }
 
-  public findOneAndUpdate(
-    conditions: any,
-    update: any,
-    options: any = { new: true, overwrite: false }
-  ): Promise<T> {
+  public findOneAndUpdate(conditions: any, update: any): Promise<T> {
+    const options = { new: true, overwrite: false };
     return this.Model.findOneAndUpdate(conditions, update, options)
       .lean({ transform })
       .exec() as Promise<T>;
   }
 
-  public findOneAndUpsert(
-    conditions: any,
-    update: any,
-    options: any = { new: true, setDefaultsOnInsert: true, upsert: true }
-  ): Promise<T> {
+  public findOneAndUpsert(conditions: any, update: any): Promise<T> {
+    const options = { new: true, setDefaultsOnInsert: true, upsert: true };
     return this.Model.findOneAndUpdate(conditions, update, options)
       .lean({ transform })
       .exec() as Promise<T>;
