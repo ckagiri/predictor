@@ -37,7 +37,7 @@ export default class GetTeamUseCase {
         throw err;
       }
 
-      throw Result.fail(err);
+      throw Result.fail(err, 'Internal Server Error');
     }
   }
 }

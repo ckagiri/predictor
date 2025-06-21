@@ -63,9 +63,9 @@ export class SuccessResult<T = unknown> implements ResultType<T, undefined> {
 
 export function fail<E extends Error>(
   cause: E,
-  message?: string
+  reason?: string
 ): FailureResult<E> {
-  return new FailureResult<E>(cause, message);
+  return new FailureResult<E>(cause, reason);
 }
 
 export function ok<T>(value: T): SuccessResult<T> {
