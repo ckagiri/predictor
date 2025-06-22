@@ -1,19 +1,20 @@
 import * as chai from 'chai';
 import { expect } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import { of } from 'rxjs';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import { ValueNotFoundError } from '../../../../../app/api/common/errors';
-import { FailureResult } from '../../../../../app/api/common/result/mod';
+import { AppError } from '../../../../../app/api/common/AppError';
 import GetTeamUseCase from '../../../../../app/api/data/teams/getTeam.useCase';
 import {
   TeamRepository,
   TeamRepositoryImpl,
 } from '../../../../../db/repositories/team.repo';
 chai.use(sinonChai);
+chai.use(chaiAsPromised);
 
-describe('GetTeam Use Case', () => {
+describe.only('GetTeam Use Case', () => {
   let teamRepo: TeamRepository;
   let respondSpy: unknown;
 
@@ -41,21 +42,14 @@ describe('GetTeam Use Case', () => {
     expect(respondSpy).to.have.been.calledOnceWith(team);
   });
 
-  it('should throw an error if team not found', async () => {
+  it('should throw an error if team not found', () => {
     teamRepo.findById$ = sinon.stub().returns(of(null));
     const respondSpy = sinon.spy(responder, 'respond');
 
     const useCase = GetTeamUseCase.getInstance(responder, teamRepo);
-    try {
-      await useCase.execute('fooBar');
-    } catch (err: unknown) {
-      expect(err).to.be.an.instanceOf(FailureResult);
-      expect(err).to.have.property('message', 'Not Found');
-      expect(err)
-        .to.have.property('error')
-        .that.is.an.instanceOf(ValueNotFoundError)
-        .which.has.property('message', 'Could not find team with id fooBar');
-    }
+    expect(useCase.execute('fooBar')).to.be.rejectedWith(
+      AppError.createResourceNotFoundError('Could not find team with id fooBar')
+    );
     expect(respondSpy).to.not.have.been.called;
   });
 });

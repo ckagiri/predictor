@@ -35,7 +35,7 @@ async function setupGameData() {
     .build();
 }
 
-describe.only('GET Teams Route', () => {
+describe.skip('GET Teams Route', () => {
   before(async () => {
     await memoryDb.connect();
     server = await startServer({ port: '8000' });

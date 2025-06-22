@@ -4,7 +4,6 @@ import { RequestHandler } from 'express';
 import matchesController from '../matches/matches.controller.js';
 import roundsController from '../rounds/rounds.controller.js';
 import seasonsController from '../seasons/seasons.controller.js';
-import teamsController from '../teams/teams.controller.js';
 import competitionsController from './competitions.controller.js';
 
 const router = Router();
@@ -17,12 +16,6 @@ router.get('/:competition/seasons', (req, res, next) => {
   seasonsController.getSeasons(req, res).catch(next);
 });
 router.get('/:competition/seasons/:slug', seasonsController.getSeason);
-router.get('/:competition/seasons/:season/teams', (req, res, next) => {
-  teamsController.getTeams(req, res).catch(next);
-});
-router.get('/:competition/seasons/:season/teams/:slug', (req, res, next) => {
-  teamsController.getTeam(req, res).catch(next);
-});
 router.get('/:competition/seasons/:season/matches/:slug', (req, res, next) => {
   matchesController.getMatch(req, res).catch(next);
 });

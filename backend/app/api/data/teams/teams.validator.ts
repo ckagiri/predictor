@@ -12,6 +12,4 @@ const GetTeamSchema = Joi.object({
     .required(),
 }).required();
 
-const getTeamValidator = new JoiValidator(GetTeamSchema);
-
-export default getTeamValidator;
+export const getTeamValidator = new JoiValidator(GetTeamSchema);
