@@ -59,9 +59,7 @@ export default class RequestHandler {
     });
   }
 
-  private makeHttpError(
-    unknownError: AppError | HttpError
-  ): AppError | HttpError {
+  private makeHttpError(unknownError: AppError | HttpError): HttpError {
     if (unknownError instanceof HttpError) return unknownError;
 
     if (unknownError.code === undefined) {
@@ -74,7 +72,9 @@ export default class RequestHandler {
     };
 
     const createError = httpErrorCreatorByCode[String(unknownError.code)];
-    if (typeof createError !== 'function') return unknownError;
+    if (typeof createError !== 'function') {
+      return createHttpError(500, unknownError);
+    }
 
     return createError();
   }
