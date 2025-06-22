@@ -48,7 +48,7 @@ describe.only('GetTeam Use Case', () => {
 
     const useCase = GetTeamUseCase.getInstance(responder, teamRepo);
     expect(useCase.execute('fooBar')).to.be.rejectedWith(
-      AppError.createResourceNotFoundError('Could not find team with id fooBar')
+      AppError.createNotFoundError('Could not find team with id fooBar')
     );
     expect(respondSpy).to.not.have.been.called;
   });
