@@ -59,21 +59,21 @@ export default class RequestHandler {
     });
   }
 
-  private makeHttpError(unknownError: AppError | HttpError): HttpError {
-    if (unknownError instanceof HttpError) return unknownError;
+  private makeHttpError(appError: AppError | HttpError): HttpError {
+    if (appError instanceof HttpError) return appError;
 
-    if (unknownError.code === undefined) {
-      return createHttpError(500, unknownError.message);
+    if (appError.code === undefined) {
+      return createHttpError(500, appError.message);
     }
 
     const httpErrorCreatorByCode: Record<string, () => HttpError> = {
-      [constants.ERR_VALIDATION]: () => createHttpError(400, unknownError),
-      [constants.ERR_VALUE_NOT_FOUND]: () => createHttpError(404, unknownError),
+      [constants.ERR_VALIDATION]: () => createHttpError(400, appError),
+      [constants.ERR_VALUE_NOT_FOUND]: () => createHttpError(404, appError),
     };
 
-    const createError = httpErrorCreatorByCode[String(unknownError.code)];
+    const createError = httpErrorCreatorByCode[String(appError.code)];
     if (typeof createError !== 'function') {
-      return createHttpError(500, unknownError);
+      return createHttpError(500, appError);
     }
 
     return createError();
