@@ -13,27 +13,32 @@ import {
 } from '../../../../../db/repositories/team.repo';
 chai.use(sinonChai);
 
-describe.only('GetTeam Use Case', () => {
+describe('GetTeam Use Case', () => {
   let teamRepo: TeamRepository;
+  let respondSpy: unknown;
+
   const responder = {
     respond: () => {
       return null;
     },
   };
+
   before(() => {
     teamRepo = TeamRepositoryImpl.getInstance();
+    respondSpy = sinon.spy(responder, 'respond');
   });
+
   afterEach(() => {
     sinon.restore();
   });
+
   it('should return a team by ID', async () => {
     const team = { id: 'abc123', name: 'Test Team' };
     teamRepo.findById$ = sinon.stub().returns(of(team));
-    const spy = sinon.spy(responder, 'respond');
     const useCase = GetTeamUseCase.getInstance(responder, teamRepo);
     await useCase.execute('abc123');
 
-    expect(spy).to.have.been.calledOnceWith(team);
+    expect(respondSpy).to.have.been.calledOnceWith(team);
   });
 
   it('should throw an error if team not found', async () => {
@@ -49,7 +54,7 @@ describe.only('GetTeam Use Case', () => {
       expect(err)
         .to.have.property('error')
         .that.is.an.instanceOf(ValueNotFoundError)
-        .and.that.has.property('message', 'Could not find team with id fooBar');
+        .which.has.property('message', 'Could not find team with id fooBar');
     }
     expect(respondSpy).to.not.have.been.called;
   });

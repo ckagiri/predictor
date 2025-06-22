@@ -1,10 +1,9 @@
 import bodyParser from 'body-parser';
 import cp from 'child_process';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express from 'express';
 import { Server } from 'http';
-import mongoose, { ConnectionStates, ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 import passport from 'passport';
 
 import errorMiddleware from './api/auth/error.middleware.js';
@@ -12,8 +11,6 @@ import { getLocalStrategy } from './api/auth/passport.js';
 import router from './api/routes.js';
 import isDocker from './isDocker.js';
 import { fromBase } from './util.js';
-const { ENV_FILE } = process.env;
-dotenv.config({ path: ENV_FILE });
 
 async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   if (!process.env.NODE_ENV || !port) {

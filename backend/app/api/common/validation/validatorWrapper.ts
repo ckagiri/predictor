@@ -12,8 +12,8 @@ export class JoiValidator implements Validator {
   }
 
   public async validate<T>(
-    payload: Record<string, any>
-  ): Promise<Result.ResultType<T | undefined, ValidationError | undefined>> {
+    payload: Record<string, unknown>
+  ): Promise<Result.ResultType<T, ValidationError>> {
     try {
       const value: T = await this.schema.validateAsync(payload, {
         abortEarly: true,

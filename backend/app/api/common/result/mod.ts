@@ -3,7 +3,7 @@ export type Result<T = unknown, E extends Error = Error> =
   | FailureResult<E>;
 
 export interface ResultType<T, E> {
-  readonly error: E;
+  readonly error?: E;
   /** Returns `true` if an error result, `false` otherwise */
   isFailure: boolean;
 
@@ -12,7 +12,7 @@ export interface ResultType<T, E> {
 
   unwrap(): T | E;
 
-  readonly value: T;
+  readonly value?: T;
 }
 
 export class FailureResult<E extends Error>
