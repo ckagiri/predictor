@@ -50,7 +50,7 @@ export default class RequestHandler {
   ): void {
     // eslint-disable-next-line @typescript-eslint/no-base-to-string
     console.log('Error ', appError?.toString() ?? error.toString());
-    console.log('Error-Cause ', appError?.cause ?? error.cause);
+    console.log('Error-Cause ', appError?.cause ?? error.cause ?? 'N/A');
     this.res.status(error.status ?? 500);
     this.res.send({
       msg: error.msg ?? error.message,
