@@ -1,3 +1,4 @@
+import { AppError } from 'app/api/common/AppError.js';
 import HttpRequestModel from 'app/api/common/interfaces/HttpRequestModel.js';
 import { Response } from 'express';
 
@@ -5,7 +6,7 @@ import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
 import GetTeamUseCase from './getTeam.useCase.js';
-import getTeamValidator from './getTeam.validator.js';
+import { getTeamValidator } from './teams.validator.js';
 
 class GetTeamController {
   constructor(
@@ -26,7 +27,7 @@ class GetTeamController {
     });
 
     if (requestValidated.isFailure) {
-      throw Result.fail(requestValidated.unwrap() as Error, 'Bad Request');
+      throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
     }
 
     const requestModel = requestValidated.value!;

@@ -33,6 +33,8 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
   let node2: cp.ChildProcess;
   const isTsx =
     typeof process.env._ === 'string' && process.env._.includes('tsx');
+  console.log('isTsx', isTsx);
+  console.log(process.env.NODE_ENV);
   if (process.env.NODE_ENV !== 'test') {
     const fromBuildDir = fromBase('build');
     const fromBackendDir = fromBase('backend');
@@ -46,6 +48,7 @@ async function startServer({ port = process.env.PORT } = {}): Promise<Server> {
         node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
       }
     } else if (isTsx) {
+      console.log('waith');
       node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], {
         execArgv: ['--import', 'tsx'],
       });
