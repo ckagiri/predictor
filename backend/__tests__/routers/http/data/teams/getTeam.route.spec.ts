@@ -1,13 +1,8 @@
-import axios, { AxiosInstance } from 'axios';
 import { expect } from 'chai';
-import http from 'http';
-import { AddressInfo } from 'net';
 
-import startServer from '../../../../../app/server';
 import a from '../../../../a';
 import memoryDb from '../../../../memoryDb';
-
-let axiosAPIClient: AxiosInstance, baseURL: string, server: http.Server;
+import testSetup from '../../../../testSetup';
 
 const epl = a.competition
   .setName('English Premier League')
@@ -35,17 +30,10 @@ async function setupGameData() {
     .build();
 }
 
-describe.skip('GET Teams Route', () => {
+describe.only('GET Teams Route', () => {
   before(async () => {
     await memoryDb.connect();
-    server = await startServer({ port: '8000' });
-    const serverAddress = server.address();
-    baseURL = `http://localhost:${String((serverAddress as AddressInfo).port)}/api`;
-    const axiosConfig = {
-      baseURL,
-      validateStatus: () => true,
-    };
-    axiosAPIClient = axios.create(axiosConfig);
+    await testSetup.start({ startAPI: true, webPort: '8000' });
   });
 
   beforeEach(async () => {
@@ -58,12 +46,12 @@ describe.skip('GET Teams Route', () => {
 
   after(async () => {
     await memoryDb.close();
-    server.close();
+    await testSetup.tearDown();
   });
 
   describe('GET api/teams', () => {
     it('When asked for teams, Then should retrieve and receive 200 response', async () => {
-      const { data, status } = await axiosAPIClient.get('/teams');
+      const { data, status } = await testSetup.getHttpClient().get('/teams');
 
       expect({
         data,

@@ -1,10 +1,9 @@
 import axios, { AxiosInstance } from 'axios';
 import * as chai from 'chai';
 import { Server } from 'http';
-import { AddressInfo } from 'net';
 import sinonChai from 'sinon-chai';
 
-import startServer from '../../app/server';
+import { startWebServer, stopWebServer } from '../../app/server';
 import memoryDb from '../memoryDb';
 import { handleRequestFailure, loginForm } from './testUtils';
 
@@ -16,9 +15,8 @@ let api: AxiosInstance, server: Server;
 xdescribe('Auth API', function () {
   before(async () => {
     await memoryDb.connect();
-    server = await startServer({ port: '8000' });
-    const serverAddress = server.address() as AddressInfo;
-    const baseURL = `http://localhost:${serverAddress.port}/api`;
+    const serverAddress = await startWebServer({ port: '8000' });
+    const baseURL = `http://localhost:${String(serverAddress.port)}/api`;
     api = axios.create({ baseURL });
     api.interceptors.response.use(res => res.data, handleRequestFailure);
   });
@@ -29,7 +27,7 @@ xdescribe('Auth API', function () {
 
   after(async () => {
     await memoryDb.close();
-    server.close();
+    await stopWebServer();
   });
 
   it('Auth flow', async () => {

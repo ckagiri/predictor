@@ -35,7 +35,7 @@ describe.only('GetTeam Use Case', () => {
 
   it('should return a team by ID', async () => {
     const team = { id: 'abc123', name: 'Test Team' };
-    teamRepo.findById$ = sinon.stub().returns(of(team));
+    teamRepo.findOne$ = sinon.stub().returns(of(team));
     const useCase = GetTeamUseCase.getInstance(responder, teamRepo);
     await useCase.execute('abc123');
 

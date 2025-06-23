@@ -5,7 +5,7 @@ import { lastValueFrom } from 'rxjs';
 import sinonChai from 'sinon-chai';
 
 import { SeasonsController } from '../../app/api/data/seasons/seasons.controller';
-import startServer from '../../app/server';
+import { startWebServer, stopWebServer } from '../../app/server';
 import { Season } from '../../db/models';
 import { SeasonRepositoryImpl } from '../../db/repositories/season.repo';
 import { TeamRepositoryImpl } from '../../db/repositories/team.repo';
@@ -110,18 +110,18 @@ describe.skip('Seasons API', function () {
 
   describe('Season Routes', function () {
     before(async () => {
-      server = await startServer();
-      baseURL = `http://localhost:${process.env.PORT}/api`;
+      await startWebServer();
+      baseURL = `http://localhost:${String(process.env.PORT)}/api`;
       seasonsAPI = axios.create({ baseURL });
     });
 
-    after(() => {
-      server.close();
+    after(async () => {
+      await stopWebServer();
     });
 
     it('should respond with JSON array', async function () {
       const seasons: Season[] = await seasonsAPI
-        .get(`seasons/?competition=${gameData.competitions[0].id}`)
+        .get(`seasons/?competition=${gameData.competitions[0].id!}`)
         .then(res => res.data);
       expect(seasons).to.be.an.instanceof(Array);
       expect(seasons).to.have.length(2);
