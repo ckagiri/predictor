@@ -30,7 +30,7 @@ async function setupGameData() {
     .build();
 }
 
-describe.only('GET Teams Route', () => {
+describe('GET Teams Route', () => {
   before(async () => {
     await memoryDb.connect();
     await testSetup.start({ startAPI: true, webPort: '8000' });

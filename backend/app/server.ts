@@ -39,7 +39,6 @@ export async function startWebServer({
   const isTsx =
     typeof process.env._ === 'string' && process.env._.includes('tsx');
   console.log('isTsx', isTsx);
-  console.log(process.env.NODE_ENV);
   if (process.env.NODE_ENV !== 'test') {
     const fromBuildDir = fromBase('build');
     const fromBackendDir = fromBase('backend');
