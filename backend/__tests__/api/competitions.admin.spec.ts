@@ -5,7 +5,7 @@ import { lastValueFrom } from 'rxjs';
 import sinonChai from 'sinon-chai';
 
 import { CompetitionsController } from '../../app/api/data/competitions/competitions.controller';
-import startServer from '../../app/server';
+import { startWebServer, stopWebServer } from '../../app/server';
 import { Competition } from '../../db/models';
 import { CompetitionRepositoryImpl } from '../../db/repositories/competition.repo';
 import a, { GameData } from '../a';
@@ -70,13 +70,13 @@ describe.skip('Competitions API', function () {
 
   describe('Competition Routes', function () {
     before(async () => {
-      server = await startServer();
-      baseURL = `http://localhost:${process.env.PORT}/api`;
+      await startWebServer();
+      baseURL = `http://localhost:${String(process.env.PORT)}/api`;
       competitionsAPI = axios.create({ baseURL });
     });
 
-    after(() => {
-      server.close();
+    after(async () => {
+      await stopWebServer();
     });
 
     it('should respond with JSON array', async function () {

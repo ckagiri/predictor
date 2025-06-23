@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import createHttpError, { HttpError } from 'http-errors';
 
+import { AppError } from './common/AppError.js';
 import * as constants from './common/constants.js';
 import HttpRequestModel from './common/interfaces/HttpRequestModel.js';
 
@@ -18,17 +19,18 @@ export default class RequestHandler {
   public async handleRequest(): Promise<void> {
     try {
       await this.controller.processRequest(this.mapHttpRequest(this.req));
-    } catch (err: any) {
-      this.handleError(err);
+    } catch (error: any) {
+      this.handleError(error);
     }
   }
 
-  public handleError(err: any): void {
-    if (err.isFailure) {
-      const httpError = this.makeHttpError(err.unwrap());
-      this.errorHandler(httpError, err.message);
+  public handleError(error: any): void {
+    if (error.isFailure) {
+      const appError = error.unwrap() as AppError;
+      const httpError = this.makeHttpError(appError);
+      this.errorHandler(httpError, appError, error.message);
     } else {
-      this.errorHandler(err);
+      this.errorHandler(error);
     }
   }
 
@@ -41,29 +43,38 @@ export default class RequestHandler {
     };
   }
 
-  private errorHandler(err: any, reason?: string): void {
-    this.res.status(err.status ?? 500);
+  private errorHandler(
+    error: any,
+    appError?: AppError,
+    failReason?: string
+  ): void {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+    console.log('Error ', appError?.toString() ?? error.toString());
+    console.log('Error-Cause ', appError?.cause ?? error.cause ?? 'N/A');
+    this.res.status(error.status ?? 500);
     this.res.send({
-      msg: err.msg ?? err.message,
-      reason: reason ?? err.reason ?? 'Something went wrong',
-      validationErrors: err.validationErrors,
+      msg: error.msg ?? error.message,
+      reason: failReason ?? 'Something went wrong',
+      validationErrors: appError?.validationErrors,
     });
   }
 
-  private makeHttpError(unknownError: any): HttpError {
-    if (unknownError.statusCode) return unknownError;
+  private makeHttpError(appError: AppError | HttpError): HttpError {
+    if (appError instanceof HttpError) return appError;
 
-    if (unknownError.code === null || unknownError.code === undefined) {
-      return createHttpError(500, unknownError.message);
+    if (appError.code === undefined) {
+      return createHttpError(500, appError.message);
     }
 
     const httpErrorCreatorByCode: Record<string, () => HttpError> = {
-      [constants.ERR_VALIDATION]: () => createHttpError(400, unknownError),
-      [constants.ERR_VALUE_NOT_FOUND]: () => createHttpError(404, unknownError),
+      [constants.ERR_VALIDATION]: () => createHttpError(400, appError),
+      [constants.ERR_VALUE_NOT_FOUND]: () => createHttpError(404, appError),
     };
 
-    const createError = httpErrorCreatorByCode[String(unknownError.code)];
-    if (typeof createError !== 'function') return unknownError;
+    const createError = httpErrorCreatorByCode[String(appError.code)];
+    if (typeof createError !== 'function') {
+      return createHttpError(500, appError);
+    }
 
     return createError();
   }

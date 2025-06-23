@@ -1,10 +1,10 @@
+import { AppError } from 'app/api/common/AppError.js';
 import { lastValueFrom } from 'rxjs';
 
 import {
   TeamRepository,
   TeamRepositoryImpl,
 } from '../../../../db/repositories/team.repo.js';
-import { ValueNotFoundError } from '../../common/errors/index.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';
 
@@ -21,14 +21,14 @@ export default class GetTeamUseCase {
     return new GetTeamUseCase(responder, teamRepo);
   }
 
-  async execute(teamId: string): Promise<void> {
+  async execute(slug: string): Promise<void> {
     try {
-      const foundTeam = await lastValueFrom(this.teamRepo.findById$(teamId));
+      const foundTeam = await lastValueFrom(this.teamRepo.findOne$({ slug }));
 
       if (!foundTeam) {
         throw Result.fail(
-          new ValueNotFoundError(`Could not find team with id ${teamId}`),
-          'Not Found'
+          AppError.createNotFoundError(`Could not find team with slug ${slug}`),
+          'Resource Not Found'
         );
       }
       this.responder.respond(foundTeam);
@@ -36,8 +36,10 @@ export default class GetTeamUseCase {
       if (err.isFailure) {
         throw err;
       }
-
-      throw Result.fail(err);
+      throw Result.fail(
+        AppError.createError('fetch-failed', 'Team could not be fetched', err),
+        'Internal Server Error'
+      );
     }
   }
 }

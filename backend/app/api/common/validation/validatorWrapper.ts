@@ -1,6 +1,6 @@
 import { ValidationError as joiError, ObjectSchema } from 'joi';
 
-import { ValidationError } from '../errors/ValidationError.js';
+import { AppError } from '../AppError.js';
 import Result from '../result/index.js';
 import Validator from './validator.js';
 
@@ -12,8 +12,8 @@ export class JoiValidator implements Validator {
   }
 
   public async validate<T>(
-    payload: Record<string, any>
-  ): Promise<Result.ResultType<T | undefined, ValidationError | undefined>> {
+    payload: Record<string, unknown>
+  ): Promise<Result.ResultType<T, AppError>> {
     try {
       const value: T = await this.schema.validateAsync(payload, {
         abortEarly: true,
@@ -25,7 +25,9 @@ export class JoiValidator implements Validator {
 
       const FIRST_ERROR = 0;
       const errorMessage = error.details[FIRST_ERROR].message;
-      return Result.fail(new ValidationError(errorMessage.replace(/"/g, "'")));
+      return Result.fail(
+        AppError.createValidationError(errorMessage.replace(/"/g, "'"))
+      );
     }
   }
 }

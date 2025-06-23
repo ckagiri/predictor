@@ -7,6 +7,6 @@ import { makeGetTeamsController } from './getTeams.controller.js';
 const router = Router();
 
 router.get('/', handleRequest(makeGetTeamsController));
-router.get('/:id', handleRequest(makeGetTeamController));
+router.get('/:slug', handleRequest(makeGetTeamController));
 
 export default router;

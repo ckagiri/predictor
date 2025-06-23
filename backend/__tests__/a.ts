@@ -517,6 +517,10 @@ class TeamBuilder implements Builder<Team> {
     return this.team?.tla!;
   }
 
+  get name() {
+    return this.team?.name;
+  }
+
   async build(): Promise<Team> {
     this.team = (await db.Team.create(this.data)).toObject();
     return this.team;

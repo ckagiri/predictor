@@ -1,4 +1,4 @@
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 
 import CompetitionModel from './models/competition.model.js';
 import GameRoundModel from './models/gameRound.model.js';
