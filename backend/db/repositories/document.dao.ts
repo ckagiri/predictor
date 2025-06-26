@@ -1,11 +1,23 @@
-import { merge, omit } from 'lodash';
-import mongoose, { Model } from 'mongoose';
+// Use the mongodb types from mongoose's dependency to avoid type conflicts
+import type { BulkWriteResult } from 'mongoose/node_modules/mongodb';
+
+import { merge } from 'lodash';
+import mongoose, {
+  FilterQuery,
+  Model,
+  ProjectionType,
+  QueryOptions,
+  RootFilterQuery,
+  Types,
+  UpdateQuery,
+} from 'mongoose';
 
 import { Entity } from '../models/base.model.js';
+import { DatabaseOptions, FindQuery } from './interfaces.js';
 
 const transform = (doc: any, ret: any) => {
   doc.id = doc._id.toString();
-  delete doc._id; // TODO
+  delete doc._id;
   delete doc.__v;
   return doc;
 };
@@ -17,26 +29,30 @@ export class DocumentDao<T extends Entity> {
     this.Model = SchemaModel;
   }
 
-  public count(conditions: any) {
+  count(conditions?: RootFilterQuery<T>): Promise<number> {
     return this.Model.countDocuments(conditions).exec();
   }
 
-  public distinct(field: string, conditions: any = {}): Promise<string[]> {
-    return this.Model.find(conditions)
-      .distinct(field)
-      .exec()
-      .then(xs => xs.map(x => (typeof x === 'string' ? x : String(x))));
+  distinct(
+    field: string,
+    conditions: RootFilterQuery<T> = {}
+  ): Promise<string[]> {
+    return this.Model.find(conditions).distinct(field).exec() as Promise<
+      string[]
+    >;
   }
 
-  public find(query: any = {}, projection?: any, options?: any) {
+  find(
+    query: FindQuery,
+    options?: DatabaseOptions
+  ): Promise<{ count: number; result: T[] }> {
     const { filter, range, sort } = query;
-    const conditions: any = {};
+    const conditions: RootFilterQuery<T> = {};
     if (filter) {
-      const search = omit(filter, 'criteria');
-      const { q } = search;
+      const { q } = filter;
       if (q) {
         /* Search for case-insensitive match on any field: */
-        const schema: any = this.Model.schema;
+        const schema = this.Model.schema;
         const combinedOr = Object.keys(schema.paths)
           .filter(
             k =>
@@ -53,7 +69,7 @@ export class DocumentDao<T extends Entity> {
                     }
                   : null;
               case 'ObjectID':
-                return mongoose.Types.ObjectId.isValid(q)
+                return Types.ObjectId.isValid(q)
                   ? {
                       [k]: q,
                     }
@@ -67,37 +83,31 @@ export class DocumentDao<T extends Entity> {
           })
           .filter(condition => !!condition);
         if (combinedOr.length > 0) {
-          conditions.$or = combinedOr;
+          conditions.$or = combinedOr as FilterQuery<T>[];
         }
       } else {
-        const combinedAnd = Object.keys(search).map(key => {
+        const combinedAnd = Object.keys(filter).map(key => {
           const isId = key === 'id';
-          const needle = search[key];
-          if (Array.isArray(needle)) {
+          const needle = filter[key];
+          if (key === '$or') {
+            return {
+              $or: needle,
+            };
+          } else if (Array.isArray(needle)) {
             return {
               [isId ? '_id' : key]: {
                 $in: needle.map(n =>
-                  isId ? mongoose.Types.ObjectId.createFromHexString(n) : n
+                  isId ? Types.ObjectId.createFromHexString(n) : n
                 ),
               },
             };
           }
           return {
             [isId ? '_id' : key]: isId
-              ? mongoose.Types.ObjectId.createFromHexString(needle)
+              ? Types.ObjectId.createFromHexString(needle)
               : needle,
           };
         });
-
-        // Todo: if key start with '$', it is a mongo filter
-        const { criteria } = filter;
-        if (criteria) {
-          const andCriteria = Object.entries(criteria).map(([key, value]) => ({
-            [key]: value,
-          }));
-          combinedAnd.push(...andCriteria);
-        }
-
         if (combinedAnd.length > 0) {
           conditions.$and = combinedAnd;
         }
@@ -106,115 +116,153 @@ export class DocumentDao<T extends Entity> {
     return this.Model.countDocuments(conditions)
       .exec()
       .then(async count => {
-        let query = this.Model.find(conditions, projection, options);
+        let query = this.Model.find(conditions);
+        if (options?.select) {
+          query.select(options.select);
+        }
         if (sort) {
           const [field, order] = sort;
-          query = query.sort({
-            [options?.primaryKey && field === 'id'
-              ? options.primaryKey
-              : field]: order === 'ASC' ? 1 : -1,
+          query.sort({
+            [field]: order === 'ASC' ? 1 : -1,
           });
         }
         if (range) {
           const [start, end] = range;
-          query = query.skip(start).limit(end - start);
+          const limit = end ? end - start + 1 : 10;
+          query = query.skip(start).limit(limit);
         }
         const result = await query.lean({ transform }).exec();
         return Promise.resolve({ count, result });
       }) as Promise<{ count: number; result: T[] }>;
   }
 
-  public findAll(
-    conditions: any = {},
-    projection?: any,
-    options?: any
+  findAll(
+    conditions: RootFilterQuery<T> = {},
+    projection?: ProjectionType<T> | null,
+    options?: QueryOptions<T> & { lean: true }
   ): Promise<T[]> {
     return this.Model.find(conditions, projection, options)
       .lean({ transform })
       .then(res => Promise.resolve(res)) as Promise<T[]>;
   }
 
-  findAllByIds(ids: string[] = []): Promise<T[]> {
-    return this.Model.find({
-      _id: { $in: ids.map(id => new mongoose.Types.ObjectId(id)) },
-    })
+  findAllByIds(
+    ids: string[] = [],
+    projection?: ProjectionType<T> | null
+  ): Promise<T[]> {
+    return this.Model.find(
+      {
+        _id: { $in: ids.map(id => new Types.ObjectId(id)) },
+      },
+      projection
+    )
       .lean({ transform })
       .then(res => Promise.resolve(res)) as Promise<T[]>;
   }
 
-  public findById(id: string) {
-    return this.Model.findById(id)
+  findById(
+    id: string,
+    projection?: ProjectionType<T> | null
+  ): Promise<T | null> {
+    return this.Model.findById(id, projection)
       .lean({ transform })
       .exec() as Promise<T | null>;
   }
 
-  public findByIdAndUpdate(id: string, update: any): Promise<T> {
-    const options = { new: true, overwrite: false };
-    return this.Model.findByIdAndUpdate(id, update, options)
+  findByIdAndUpdate(
+    id: string,
+    patch: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Promise<T | null> {
+    const options = { new: true, overwrite: false, select: projection };
+    return this.Model.findByIdAndUpdate(id, patch, options)
       .lean({ transform })
       .exec() as Promise<T>;
   }
 
-  public findOne(conditions: any, projection?: any) {
+  findOne(
+    conditions: RootFilterQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Promise<T | null> {
     return this.Model.findOne(conditions, projection)
       .lean({ transform })
       .exec() as Promise<T | null>;
   }
 
-  public findOneAndUpdate(conditions: any, update: any): Promise<T> {
-    const options = { new: true, overwrite: false };
-    return this.Model.findOneAndUpdate(conditions, update, options)
+  findOneAndUpdate(
+    conditions: RootFilterQuery<T>,
+    patch: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Promise<T> {
+    const options = { new: true, overwrite: false, select: projection };
+    return this.Model.findOneAndUpdate(conditions, patch, options)
       .lean({ transform })
       .exec() as Promise<T>;
   }
 
-  public findOneAndUpsert(conditions: any, update: any): Promise<T> {
-    const options = { new: true, setDefaultsOnInsert: true, upsert: true };
-    return this.Model.findOneAndUpdate(conditions, update, options)
+  findOneAndUpsert(
+    conditions: RootFilterQuery<T>,
+    data?: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Promise<T> {
+    const options = {
+      new: true,
+      select: projection,
+      setDefaultsOnInsert: true,
+      upsert: true,
+    };
+    return this.Model.findOneAndUpdate(conditions, data, options)
       .lean({ transform })
       .exec() as Promise<T>;
   }
 
-  findOneOrCreate(conditions: any, data: any): Promise<T> {
+  findOneOrCreate(
+    conditions: RootFilterQuery<T>,
+    data?: UpdateQuery<T>
+  ): Promise<T> {
     return this.findOne(conditions).then(doc => {
       if (doc) {
         return doc;
       } else {
-        return this.insert(merge({}, conditions, data));
+        return this.create(merge({}, conditions, data));
       }
     });
   }
 
-  public insert(obj: Entity): Promise<T> {
+  create(obj: Entity): Promise<T> {
     return this.Model.create(obj).then(model => model.toObject() as T);
   }
 
-  public insertMany(objs: Entity[]): Promise<T[]> {
+  insertMany(objs: Entity[]): Promise<T[]> {
     return this.Model.insertMany(objs).then(
       models => models.map(m => m.toObject()) as T[]
     );
   }
 
-  public createMany(objs: Entity[]): Promise<T[]> {
+  createMany(objs: Entity[]): Promise<T[]> {
     // create is a convenience method that automatically calls new Model() and save() for you
     return this.Model.create(objs).then(
       models => models.map(m => m.toObject()) as T[]
     );
   }
 
-  public remove(id: string) {
-    return this.Model.deleteOne({
-      _id: new mongoose.Types.ObjectId(id),
+  findByIdAndDelete(id: string): Promise<T | null> {
+    return this.Model.findByIdAndDelete({
+      _id: new Types.ObjectId(id),
     }).exec();
   }
 
-  public updateMany(objs: Entity[]): Promise<any> {
+  findOneAndDelete(conditions: RootFilterQuery<T>): Promise<T | null> {
+    return this.Model.findOneAndDelete(conditions).exec();
+  }
+
+  updateMany(objs: Entity[]): Promise<BulkWriteResult> {
     //Create bulk operations
     const ops = objs.map(obj => {
       //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
         obj = new this.Model({
-          _id: new mongoose.Types.ObjectId(obj.id!),
+          _id: new Types.ObjectId(obj.id!),
           ...obj,
         });
       }
@@ -234,16 +282,16 @@ export class DocumentDao<T extends Entity> {
     return this.Model.bulkWrite(ops);
   }
 
-  public upsertMany(objs: Entity[]): Promise<any> {
+  upsertMany(objs: Entity[]): Promise<BulkWriteResult> {
+    type Entity = Record<string, any>;
+
     //Create bulk operations
-    const ops = objs.map((obj: any) => {
+    const ops = objs.map((obj: Entity) => {
       //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
         obj = new this.Model({
           ...obj,
-          _id: obj.id
-            ? mongoose.Types.ObjectId.createFromHexString(obj.id)
-            : undefined,
+          _id: obj.id ? Types.ObjectId.createFromHexString(obj.id) : undefined,
         });
       }
       // Convert to plain object

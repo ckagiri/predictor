@@ -1,4 +1,5 @@
-import { mergeMap, Observable, toArray } from 'rxjs';
+import { AppError } from 'app/api/common/AppError.js';
+import { EMPTY, mergeMap, Observable, of, throwIfEmpty, toArray } from 'rxjs';
 
 import LeaderboardModel, {
   BOARD_TYPE,
@@ -40,7 +41,7 @@ export class LeaderboardRepositoryImpl
     super(LeaderboardModel);
   }
 
-  public static getInstance() {
+  static getInstance() {
     return new LeaderboardRepositoryImpl();
   }
 
@@ -65,7 +66,12 @@ export class LeaderboardRepositoryImpl
   ): Observable<Leaderboard> {
     return this.findByIdAndUpdate$(leaderboardId, {
       $addToSet: { matches: { $each: matchIds } },
-    });
+    }).pipe(
+      mergeMap(p => (p ? of(p) : EMPTY)),
+      throwIfEmpty(() =>
+        AppError.createNotFoundError(`leaderboard:${leaderboardId}`)
+      )
+    );
   }
 
   findOrCreateRoundLeaderboard$(

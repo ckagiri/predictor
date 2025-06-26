@@ -1,5 +1,6 @@
-import { Observable, of } from 'rxjs';
-import { mergeMap } from 'rxjs/operators';
+import { AppError } from 'app/api/common/AppError.js';
+import { EMPTY, Observable, of } from 'rxjs';
+import { mergeMap, throwIfEmpty } from 'rxjs/operators';
 
 import { ScorePoints } from '../../common/score.js';
 import UserScoreModel, { UserScore } from '../models/userScore.model.js';
@@ -35,11 +36,11 @@ export class UserScoreRepositoryImpl
     super(UserScoreModel);
   }
 
-  public static getInstance() {
+  static getInstance() {
     return new UserScoreRepositoryImpl();
   }
 
-  public findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
+  findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
         closeMatchScorePoints: -1,
@@ -98,7 +99,7 @@ export class UserScoreRepositoryImpl
             score.points += basePoints;
           }
 
-          return this.insert$(score);
+          return this.create$(score);
         } else {
           const matches = userScore.matches!;
           const matchExists = matches.some(m => m.toString() === matchId);
@@ -136,7 +137,12 @@ export class UserScoreRepositoryImpl
               exactTeamScorePoints: userScore.exactTeamScorePoints,
               points: userScore.points,
             },
-          });
+          }).pipe(
+            mergeMap(s => (s ? of(s) : EMPTY)),
+            throwIfEmpty(() =>
+              AppError.createError(`userscore: ${String(userScore.id)}`)
+            )
+          );
         }
       })
     );

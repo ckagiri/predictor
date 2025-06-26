@@ -7,7 +7,6 @@ export interface Prediction extends Entity {
   [key: string]: any;
   choice: Score;
   hasJoker?: boolean;
-  id?: string;
   jokerAutoPicked?: boolean;
   match: string;
   matchSlug?: string;

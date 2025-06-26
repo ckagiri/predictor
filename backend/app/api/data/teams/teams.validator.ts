@@ -12,7 +12,7 @@ const notValidSlugSchema = Joi.string()
   .message('ObjectID is not a valid identifier');
 
 const GetTeamSchema = Joi.object({
-  slug: Joi.alternatives(notValidSlugSchema).required(),
+  slug: notValidSlugSchema.required(),
 });
 
 export const getTeamValidator = new JoiValidator(GetTeamSchema);

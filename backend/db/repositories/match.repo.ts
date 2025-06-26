@@ -40,23 +40,10 @@ export class MatchRepositoryImpl
     super(MatchModel, converter);
   }
 
-  public static getInstance(
+  static getInstance(
     provider: ApiProvider = ApiProvider.LIGI
   ): MatchRepository {
     return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider));
-  }
-
-  public find$(query?: any, projection?: any, options?: any) {
-    let { filter } = query;
-    const teamId = get(filter, 'team.id');
-    if (teamId) {
-      filter = omit(filter, 'team.id');
-      filter.criteria = {
-        $or: [{ 'homeTeam.id': teamId }, { 'awayTeam.id': teamId }],
-      };
-      query.filter = filter;
-    }
-    return super.find$(query, projection, options);
   }
 
   findAllFinishedByCurrentRound$(
@@ -107,7 +94,7 @@ export class MatchRepositoryImpl
     return this.findAll$({ ...filter, season, status: MatchStatus.FINISHED });
   }
 
-  public findBySeasonAndTeamsAndUpsert$(obj: any) {
+  findBySeasonAndTeamsAndUpsert$(obj: any) {
     return (this.converter as MatchConverter).from(obj).pipe(
       mergeMap(data => {
         const { awayTeam, externalReference, homeTeam, season } = data;
@@ -131,7 +118,7 @@ export class MatchRepositoryImpl
     );
   }
 
-  public findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
+  findEachBySeasonAndTeamsAndUpsert$(objs: any[]) {
     const obs: Observable<Match>[] = [];
 
     for (const obj of objs) {

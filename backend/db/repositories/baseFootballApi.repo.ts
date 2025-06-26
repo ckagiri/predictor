@@ -9,6 +9,7 @@ import {
   BaseRepository,
   BaseRepositoryImpl,
 } from '../repositories/base.repo.js';
+import { ExternalReferenceFilter } from './interfaces.js';
 
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
@@ -19,7 +20,6 @@ export interface BaseFootballApiRepository<T extends Entity>
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
   footballApiProvider: ApiProvider;
 }
-
 export class BaseFootballApiRepositoryImpl<T extends Entity>
   extends BaseRepositoryImpl<T>
   implements BaseFootballApiRepository<T>
@@ -35,12 +35,18 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
     this.converter = converter;
   }
 
-  public findByExternalId$(id: number | string): Observable<T | null> {
+  findByExternalId$(id: number | string): Observable<T | null> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-    return this.findOne$({ [externalIdKey]: id });
+    return this.findOne$({
+      externalReference: {
+        [this.footballApiProvider]: {
+          id: id,
+        },
+      },
+    } as ExternalReferenceFilter);
   }
 
-  public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
+  findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
     if (obj === undefined) {
       obj = id;
@@ -48,21 +54,32 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
       return this.converter.from(obj).pipe(
         mergeMap((entity: any) => {
           delete entity.externalReference;
-          return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
+          return this.findOneAndUpdate$(
+            { [externalIdKey]: id } as ExternalReferenceFilter,
+            entity
+          );
         })
       );
     } else {
-      return super.findOneAndUpdate$({ [externalIdKey]: id }, obj);
+      return this.findOneAndUpdate$(
+        { [externalIdKey]: id } as ExternalReferenceFilter,
+        obj
+      );
     }
   }
 
-  public findByExternalIds$(ids: (number | string)[]): Observable<T[]> {
+  findByExternalIds$(ids: (number | string)[]): Observable<T[]> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-
-    return this.findAll$({ [externalIdKey]: { $in: ids } });
+    return this.findAll$({
+      externalReference: {
+        [this.footballApiProvider]: {
+          id: { $in: ids },
+        },
+      },
+    } as ExternalReferenceFilter);
   }
 
-  public findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {
+  findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {
     const obs: Observable<T>[] = [];
     for (const obj of objs) {
       obs.push(this.findByExternalIdAndUpdate$(obj));
@@ -70,10 +87,10 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
     return forkJoin(obs);
   }
 
-  public add$(obj: Entity, useConverter = true): Observable<T> {
+  add$(obj: Entity, useConverter = true): Observable<T> {
     return (useConverter ? this.converter.from(obj) : of(obj)).pipe(
       mergeMap(entity => {
-        return super.insert$(entity);
+        return this.create$(entity);
       })
     );
   }

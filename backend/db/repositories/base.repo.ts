@@ -1,31 +1,71 @@
-import { Model } from 'mongoose';
-import { Observable, Subscriber } from 'rxjs';
+// Use the mongodb types from mongoose's dependency to avoid type conflicts
+import type { BulkWriteResult } from 'mongoose/node_modules/mongodb';
+
+import {
+  Model,
+  ProjectionType,
+  QueryOptions,
+  RootFilterQuery,
+  UpdateQuery,
+} from 'mongoose';
+import { from, Observable } from 'rxjs';
 
 import { Entity } from '../models/base.model.js';
 import { DocumentDao } from './document.dao.js';
+import { DatabaseOptions, FindQuery } from './interfaces.js';
 
 export interface BaseRepository<T extends Entity> {
-  count$(conditions: any): Observable<number>;
+  count$(conditions?: RootFilterQuery<T>): Observable<number>;
+  create$(obj: Entity): Observable<T>;
   createMany$(objs: Entity[]): Observable<T[]>;
-  distinct$(field: string, conditions?: any): Observable<string[]>;
+  distinct$(
+    field: string,
+    conditions?: RootFilterQuery<T>
+  ): Observable<string[]>;
   find$(
-    query?: any,
-    projection?: any,
-    options?: any
+    query: FindQuery,
+    options?: DatabaseOptions
   ): Observable<{ count: number; result: T[] }>;
-  findAll$(conditions?: any, projection?: any, options?: any): Observable<T[]>;
-  findAllByIds$(ids?: string[]): Observable<T[]>;
-  findById$(id: string): Observable<T | null>;
-  findByIdAndUpdate$(id: string, update: any): Observable<T>;
-  findOne$(conditions: any, projection?: any): Observable<T | null>;
-  findOneAndUpdate$(conditions: any, update: any): Observable<T>;
-  findOneAndUpsert$(conditions: any, update: any): Observable<T>;
-  findOneOrCreate$(conditions: any, data?: any): Observable<T>;
-  insert$(obj: Entity): Observable<T>;
+  findAll$(
+    conditions?: RootFilterQuery<T>,
+    projection?: ProjectionType<T> | null,
+    options?: QueryOptions<T>
+  ): Observable<T[]>;
+  findAllByIds$(
+    ids: string[],
+    projection?: ProjectionType<T> | null
+  ): Observable<T[]>;
+  findById$(
+    id: string,
+    projection?: ProjectionType<T> | null
+  ): Observable<T | null>;
+  findByIdAndUpdate$(
+    id: string,
+    patch: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T | null>;
+  findOne$(
+    conditions: RootFilterQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T | null>;
+  findOneAndDelete$(conditions: RootFilterQuery<T>): Observable<T | null>;
+  findOneAndUpdate$(
+    conditions: RootFilterQuery<T>,
+    patch: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T>;
+  findOneAndUpsert$(
+    conditions: RootFilterQuery<T>,
+    data?: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T>;
+  findOneOrCreate$(
+    conditions: RootFilterQuery<T>,
+    data?: UpdateQuery<T>
+  ): Observable<T>;
   insertMany$(objs: Entity[]): Observable<T[]>;
-  remove$(id: string): Observable<void>;
-  updateMany$(objs: Entity[]): Observable<any>;
-  upsertMany$(objs: Entity[]): Observable<any>;
+  updateMany$(objs: Entity[]): Observable<BulkWriteResult>;
+  upsertMany$(objs: Entity[]): Observable<BulkWriteResult>;
 }
 
 export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
@@ -34,252 +74,96 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   constructor(SchemaModel: Model<T>) {
     this.documentDao = new DocumentDao<T>(SchemaModel);
   }
-
-  public count$(conditions: any): Observable<number> {
-    return new Observable((observer: Subscriber<number>) => {
-      this.documentDao.count(conditions).then(
-        (result: number) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  count$(conditions?: RootFilterQuery<T>): Observable<number> {
+    return from(this.documentDao.count(conditions));
   }
-
-  public distinct$(field: string, conditions?: any): Observable<string[]> {
-    return new Observable((observer: Subscriber<string[]>) => {
-      this.documentDao.distinct(field, conditions).then(
-        (result: string[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  create$(obj: Entity): Observable<T> {
+    return from(this.documentDao.create(obj));
   }
-
-  public find$(
-    query?: any,
-    projection?: any,
-    options?: any
+  createMany$(objs: Entity[]): Observable<T[]> {
+    return from(this.documentDao.createMany(objs));
+  }
+  distinct$(
+    field: string,
+    conditions?: RootFilterQuery<T>
+  ): Observable<string[]> {
+    return from(this.documentDao.distinct(field, conditions));
+  }
+  find$(
+    query: FindQuery,
+    options?: DatabaseOptions
   ): Observable<{ count: number; result: T[] }> {
-    return new Observable(
-      (observer: Subscriber<{ count: number; result: T[] }>) => {
-        this.documentDao.find(query, projection, options).then(
-          ({ count, result }) => {
-            observer.next({ count, result });
-            observer.complete();
-          },
-          (error: unknown) => {
-            observer.error(error);
-          }
-        );
-      }
+    return from(this.documentDao.find(query, options));
+  }
+  findAll$(
+    conditions?: RootFilterQuery<T>,
+    projection?: ProjectionType<T> | null,
+    options?: QueryOptions<T>
+  ): Observable<T[]> {
+    const queryOptions: QueryOptions<T> & { lean: true } = options
+      ? { ...options, lean: true as const }
+      : { lean: true as const };
+    return from(this.documentDao.findAll(conditions, projection, queryOptions));
+  }
+  findAllByIds$(
+    ids: string[],
+    projection?: ProjectionType<T> | null
+  ): Observable<T[]> {
+    return from(this.documentDao.findAllByIds(ids, projection));
+  }
+  findById$(
+    id: string,
+    projection?: ProjectionType<T> | null
+  ): Observable<T | null> {
+    return from(this.documentDao.findById(id, projection));
+  }
+  findByIdAndUpdate$(
+    id: string,
+    patch: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T | null> {
+    return from(this.documentDao.findByIdAndUpdate(id, patch, projection));
+  }
+  findOne$(
+    conditions: RootFilterQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T | null> {
+    return from(this.documentDao.findOne(conditions, projection));
+  }
+  findOneAndDelete$(conditions: RootFilterQuery<T>): Observable<T | null> {
+    return from(this.documentDao.findOneAndDelete(conditions));
+  }
+  findOneAndUpdate$(
+    conditions: RootFilterQuery<T>,
+    patch: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T> {
+    return from(
+      this.documentDao.findOneAndUpdate(conditions, patch, projection)
     );
   }
-
-  public findAll$(
-    conditions?: any,
-    projection?: any,
-    options?: any
-  ): Observable<T[]> {
-    return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.findAll(conditions, projection, options).then(
-        (result: T[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  findOneAndUpsert$(
+    conditions: RootFilterQuery<T>,
+    data?: UpdateQuery<T>,
+    projection?: ProjectionType<T> | null
+  ): Observable<T> {
+    return from(
+      this.documentDao.findOneAndUpsert(conditions, data, projection)
+    );
   }
-
-  public findAllByIds$(ids: string[] = []): Observable<T[]> {
-    return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.findAllByIds(ids).then(
-        (result: T[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  findOneOrCreate$(
+    conditions: RootFilterQuery<T>,
+    data?: UpdateQuery<T>
+  ): Observable<T> {
+    return from(this.documentDao.findOneOrCreate(conditions, data));
   }
-
-  public findById$(id: string): Observable<T | null> {
-    return new Observable((observer: Subscriber<T | null>) => {
-      this.documentDao.findById(id).then(
-        (result: T | null) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  insertMany$(objs: Entity[]): Observable<T[]> {
+    return from(this.documentDao.insertMany(objs));
   }
-
-  public findByIdAndUpdate$(id: string, update: any): Observable<T> {
-    return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findByIdAndUpdate(id, update).then(
-        (result: T) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  updateMany$(objs: Entity[]): Observable<BulkWriteResult> {
+    return from(this.documentDao.updateMany(objs));
   }
-
-  public findOne$(conditions: any, projection?: any): Observable<T | null> {
-    return new Observable((observer: Subscriber<T | null>) => {
-      this.documentDao.findOne(conditions, projection).then(
-        (result: T | null) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public findOneAndUpdate$(conditions: any, update: any): Observable<T> {
-    return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOneAndUpdate(conditions, update).then(
-        (result: T) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public findOneAndUpsert$(conditions: any, update: any = {}): Observable<T> {
-    return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOneAndUpsert(conditions, update).then(
-        (result: T) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public findOneOrCreate$(conditions: any, data = conditions): Observable<T> {
-    return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.findOneOrCreate(conditions, data).then(
-        (result: T) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public insert$(obj: Entity): Observable<T> {
-    return new Observable((observer: Subscriber<T>) => {
-      this.documentDao.insert(obj).then(
-        (result: T) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public insertMany$(objs: Entity[]): Observable<T[]> {
-    return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.insertMany(objs).then(
-        (result: T[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public remove$(id: string): Observable<void> {
-    return new Observable((observer: Subscriber<void>) => {
-      this.documentDao.remove(id).then(
-        () => {
-          observer.next();
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public createMany$(objs: Entity[]): Observable<T[]> {
-    return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.createMany(objs).then(
-        (result: T[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public updateMany$(objs: Entity[]): Observable<any> {
-    return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.updateMany(objs).then(
-        (result: T[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
-  }
-
-  public upsertMany$(objs: Entity[]): Observable<any> {
-    return new Observable((observer: Subscriber<T[]>) => {
-      this.documentDao.upsertMany(objs).then(
-        (result: T[]) => {
-          observer.next(result);
-          observer.complete();
-        },
-        (error: unknown) => {
-          observer.error(error);
-        }
-      );
-    });
+  upsertMany$(objs: Entity[]): Observable<BulkWriteResult> {
+    return from(this.documentDao.upsertMany(objs));
   }
 }

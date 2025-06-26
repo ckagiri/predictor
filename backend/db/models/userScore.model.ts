@@ -13,7 +13,6 @@ export interface UserScore extends Entity {
   exactMatchScorePoints: number;
   exactMatchScores?: number;
   exactTeamScorePoints: number;
-  id?: string;
   leaderboard: string;
   matches?: string[];
   matchesPredicted?: number;

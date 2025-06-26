@@ -92,7 +92,7 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
               takeLast(1),
               tap(() => {
                 console.log(
-                  `All positions updated for ${leaderboard?.boardType} ${leaderboard?.id}`
+                  `All positions updated for ${leaderboard?.boardType!} ${leaderboard?.id!}`
                 );
               })
             );
@@ -146,15 +146,17 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                   )
                 ),
                 mergeMap(({ leaderboardId, matchId, userId }) => {
-                  return this.predictionRepo.findOne$(userId, matchId).pipe(
-                    filter(prediction => !!prediction),
-                    map(prediction => ({
-                      leaderboardId,
-                      matchId,
-                      prediction,
-                      userId,
-                    }))
-                  );
+                  return this.predictionRepo
+                    .findOneByUserAndMatch$(userId, matchId)
+                    .pipe(
+                      filter(prediction => !!prediction),
+                      map(prediction => ({
+                        leaderboardId,
+                        matchId,
+                        prediction,
+                        userId,
+                      }))
+                    );
                 }),
                 concatMap(({ leaderboardId, matchId, prediction, userId }) => {
                   const { hasJoker, scorePoints: points } = prediction;

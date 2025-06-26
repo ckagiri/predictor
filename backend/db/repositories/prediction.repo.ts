@@ -1,4 +1,6 @@
+import { AppError } from 'app/api/common/AppError.js';
 import { head, isEmpty, uniq } from 'lodash';
+import { ProjectionType } from 'mongoose';
 import { from, iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeMap, toArray } from 'rxjs/operators';
 
@@ -9,10 +11,10 @@ import PredictionModel, { Prediction } from '../models/prediction.model.js';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
-  findOne$(
+  findOneByUserAndMatch$(
     userId: string,
     matchId: string,
-    projection?: any
+    projection?: ProjectionType<Prediction> | null
   ): Observable<null | Prediction>;
   findOrCreatePicks$(
     userId: string,
@@ -34,7 +36,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     match: Match,
     roundMatches: Match[],
     choice: Score
-  ): Observable<Prediction>;
+  ): Observable<Prediction | null>;
 }
 
 export class PredictionRepositoryImpl
@@ -48,24 +50,24 @@ export class PredictionRepositoryImpl
     this.defaultVosePredictor = new VosePredictor();
   }
 
-  public static getInstance() {
+  static getInstance() {
     return new PredictionRepositoryImpl();
   }
 
   findJokers$(userId: string, roundMatches: Match[]): Observable<Prediction[]> {
-    return super.findAll$({
+    return this.findAll$({
       hasJoker: true,
       match: { $in: roundMatches.map(m => m.id) },
       user: userId,
     });
   }
 
-  public findOne$(
+  findOneByUserAndMatch$(
     userId: string,
     matchId: string,
     projection?: any
   ): Observable<null | Prediction> {
-    return super.findOne$({ match: matchId, user: userId }, projection);
+    return this.findOne$({ match: matchId, user: userId }, projection);
   }
 
   findOrCreateJoker$(
@@ -105,7 +107,7 @@ export class PredictionRepositoryImpl
               Math.floor(Math.random() * selectableMatches.length)
             ];
           const jokerMatchId = jokerMatch.id!;
-          return this.findOne$(userId, jokerMatchId).pipe(
+          return this.findOneByUserAndMatch$(userId, jokerMatchId).pipe(
             mergeMap(jokerPred => {
               if (jokerPred) {
                 jokerPred.hasJoker = true;
@@ -124,7 +126,7 @@ export class PredictionRepositoryImpl
                   season,
                   user: userId,
                 };
-                return this.insert$(newJokerPred);
+                return this.create$(newJokerPred);
               }
             })
           );
@@ -137,7 +139,7 @@ export class PredictionRepositoryImpl
           result?.constructor &&
           result.constructor.name === 'BulkWriteResult'
         ) {
-          return super.findOne$({
+          return this.findOne$({
             hasJoker: true,
             match: { $in: matchIds },
             user: userId,
@@ -298,7 +300,7 @@ export class PredictionRepositoryImpl
           );
         }
 
-        return this.findOne$(userId, matchId).pipe(
+        return this.findOneByUserAndMatch$(userId, matchId).pipe(
           mergeMap(newJoker => {
             const jokers = [];
             if (
@@ -345,12 +347,12 @@ export class PredictionRepositoryImpl
     match: Match,
     roundMatches: Match[],
     choice: Score
-  ): Observable<Prediction> {
+  ): Observable<Prediction | null> {
     if (match.status !== MatchStatus.SCHEDULED) {
-      return throwError(() => new Error('Match not scheduled'));
+      return throwError(() => AppError.createError('Match not scheduled'));
     }
     const matchId = match.id!;
-    return this.findOne$(userId, matchId).pipe(
+    return this.findOneByUserAndMatch$(userId, matchId).pipe(
       mergeMap(prediction => {
         if (!prediction) {
           return this.findOrCreatePredictions$(userId, roundMatches).pipe(
@@ -366,7 +368,9 @@ export class PredictionRepositoryImpl
       }),
       mergeMap(prediction => {
         if (!prediction) {
-          return throwError(() => new Error('Prediction does not exist'));
+          return throwError(() =>
+            AppError.createError('Prediction does not exist')
+          );
         }
         return this.findByIdAndUpdate$(prediction.id!, {
           choice: { ...choice, isComputerGenerated: false },

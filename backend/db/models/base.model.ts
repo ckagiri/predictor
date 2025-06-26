@@ -1,6 +1,6 @@
 import { Schema, SchemaDefinition, SchemaOptions } from 'mongoose';
 
-import Plugin from './plugin.js';
+import Plugin from './base.plugin.js';
 
 export interface Entity {
   id?: string;

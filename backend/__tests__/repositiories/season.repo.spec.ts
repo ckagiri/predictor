@@ -50,7 +50,7 @@ describe('seasonRepo', function () {
       name: 'Premier League',
     };
 
-    // properly construct season with its competition prop to insert$ not add$
+    // properly construct season with its competition prop to create$ not add$
     epl21 = {
       competition,
       currentMatchday: 20,
@@ -99,7 +99,7 @@ describe('seasonRepo', function () {
       year: 2022,
     };
 
-    // add$ calls converter, insert$ doesn't
+    // add$ calls converter, create$ doesn't
     seasonRepo.add$(theEpl22).subscribe((data: any) => {
       const { competition, name, slug, year } = data;
       expect(name).to.equal(theEpl22.name);
@@ -117,7 +117,7 @@ describe('seasonRepo', function () {
     );
 
     seasonRepo
-      .insert$(epl22)
+      .create$(epl22)
       .pipe(
         mergeMap(_ => {
           return seasonRepo.findByExternalId$(EPL_22_REF);
@@ -159,7 +159,7 @@ describe('seasonRepo', function () {
     const seasonRepo = SeasonRepositoryImpl.getInstance(ApiProvider.LIGI);
 
     seasonRepo
-      .insert$(epl22)
+      .create$(epl22)
       .pipe(
         mergeMap(s => {
           const update = { currentMatchday: 21 };
@@ -178,7 +178,7 @@ describe('seasonRepo', function () {
     );
 
     seasonRepo
-      .insert$(epl22)
+      .create$(epl22)
       .pipe(
         mergeMap(() => {
           afdEpl22.currentSeason.currentMatchday = 21;
@@ -198,7 +198,7 @@ describe('seasonRepo', function () {
     );
 
     seasonRepo
-      .insert$(epl22)
+      .create$(epl22)
       .pipe(
         mergeMap(() => {
           const update = { currentMatchday: 21 };
@@ -225,7 +225,7 @@ describe('seasonRepo', function () {
     };
 
     seasonRepo
-      .insert$(epl22)
+      .create$(epl22)
       .pipe(
         mergeMap(() => {
           afdEpl22.currentSeason.currentMatchday = 21;

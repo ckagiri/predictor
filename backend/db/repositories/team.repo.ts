@@ -27,20 +27,18 @@ export class TeamRepositoryImpl
     super(TeamModel, converter);
   }
 
-  public static getInstance(
-    provider: ApiProvider = ApiProvider.LIGI
-  ): TeamRepository {
+  static getInstance(provider: ApiProvider = ApiProvider.LIGI): TeamRepository {
     return new TeamRepositoryImpl(TeamConverterImpl.getInstance(provider));
   }
 
-  public findByName$(name: string): Observable<Team | null> {
+  findByName$(name: string): Observable<Team | null> {
     const query = {
       $or: [{ name }, { shortName: name }, { aliases: name }],
     };
     return this.findOne$(query);
   }
 
-  public findByNameAndUpsert$(obj: any): Observable<Team> {
+  findByNameAndUpsert$(obj: any): Observable<Team> {
     return (this.converter as TeamConverter).from(obj).pipe(
       mergeMap(data => {
         const name = data.name;
@@ -64,7 +62,7 @@ export class TeamRepositoryImpl
     );
   }
 
-  public findEachByNameAndUpsert$(teams: any[]): Observable<Team[]> {
+  findEachByNameAndUpsert$(teams: any[]): Observable<Team[]> {
     const obs: Observable<Team>[] = [];
 
     for (const team of teams) {
