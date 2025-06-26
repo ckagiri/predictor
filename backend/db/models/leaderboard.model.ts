@@ -9,7 +9,6 @@ export enum BOARD_TYPE {
 export interface Leaderboard extends Entity {
   boardType?: BOARD_TYPE;
   gameRound?: string;
-  id?: string;
   lastStatusUpdate?: Date;
   matches?: string[];
   month?: number;

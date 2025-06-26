@@ -292,7 +292,9 @@ describe('MatchRepo', function () {
     it('should sort matches by date and filter by team', done => {
       ligiMatchRepo
         .find$({
-          filter: { 'team.id': arsenal.id },
+          filter: {
+            $or: [{ 'homeTeam.id': arsenal.id }, { 'awayTeam.id': arsenal.id }],
+          },
           sort: ['utcDate', 'ASC'],
         })
         .subscribe(({ count, result: matches }) => {
@@ -315,7 +317,7 @@ describe('MatchRepo', function () {
         })
         .subscribe(({ count, result: matches }) => {
           expect(count).to.equal(5);
-          expect(matches.length).to.equal(2);
+          expect(matches.length).to.equal(3);
           expect(matches[0].homeTeam?.slug).to.equal('liverpool');
           expect(matches[0].awayTeam?.slug).to.equal('arsenal');
           expect(matches[1].homeTeam?.slug).to.equal('chelsea');

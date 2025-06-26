@@ -96,7 +96,11 @@ export class RoundMatchController {
       const userId = req.auth?.id;
       if (userId) {
         const prediction = await lastValueFrom(
-          this.predictionRepo.findOne$(userId, match?.id!, '-createdAt')
+          this.predictionRepo.findOneByUserAndMatch$(
+            userId,
+            match?.id!,
+            '-createdAt'
+          )
         );
         if (match) {
           match.prediction = prediction ?? null;

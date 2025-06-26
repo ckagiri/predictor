@@ -37,7 +37,7 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
 
   public findByExternalId$(id: number | string): Observable<T | null> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-    return this.findOne$({ [externalIdKey]: id });
+    return this.findOne$({ [externalIdKey]: id } as any);
   }
 
   public findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
@@ -48,18 +48,21 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
       return this.converter.from(obj).pipe(
         mergeMap((entity: any) => {
           delete entity.externalReference;
-          return super.findOneAndUpdate$({ [externalIdKey]: id }, entity);
+          return super.findOneAndUpdate$(
+            { [externalIdKey]: id } as any,
+            entity
+          );
         })
       );
     } else {
-      return super.findOneAndUpdate$({ [externalIdKey]: id }, obj);
+      return super.findOneAndUpdate$({ [externalIdKey]: id } as any, obj);
     }
   }
 
   public findByExternalIds$(ids: (number | string)[]): Observable<T[]> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
 
-    return this.findAll$({ [externalIdKey]: { $in: ids } });
+    return this.findAll$({ [externalIdKey]: { $in: ids } } as any);
   }
 
   public findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {
@@ -73,7 +76,7 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
   public add$(obj: Entity, useConverter = true): Observable<T> {
     return (useConverter ? this.converter.from(obj) : of(obj)).pipe(
       mergeMap(entity => {
-        return super.insert$(entity);
+        return super.create$(entity);
       })
     );
   }

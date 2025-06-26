@@ -54,10 +54,12 @@ export class PredictionProcessorImpl implements PredictionProcessor {
         ),
         mergeMap(({ match, userId }) => {
           const matchId = match.id!;
-          return this.predictionRepo.findOne$(userId, matchId).pipe(
-            filter(prediction => prediction !== null),
-            map(prediction => ({ match, prediction }))
-          );
+          return this.predictionRepo
+            .findOneByUserAndMatch$(userId, matchId)
+            .pipe(
+              filter(prediction => prediction !== null),
+              map(prediction => ({ match, prediction }))
+            );
         }),
         mergeMap(({ match, prediction }) => {
           const { result } = match;

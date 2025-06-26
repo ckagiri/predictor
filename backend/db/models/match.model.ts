@@ -38,7 +38,6 @@ export interface Match extends Entity {
   gameRound: string;
   homeTeam?: TeamPartial;
   homeTeamId?: string;
-  id?: string;
   matchday?: number;
   odds?: Odds;
   prediction?: null | Prediction | undefined;

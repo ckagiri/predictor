@@ -46,19 +46,6 @@ export class MatchRepositoryImpl
     return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider));
   }
 
-  public find$(query?: any, projection?: any, options?: any) {
-    let { filter } = query;
-    const teamId = get(filter, 'team.id');
-    if (teamId) {
-      filter = omit(filter, 'team.id');
-      filter.criteria = {
-        $or: [{ 'homeTeam.id': teamId }, { 'awayTeam.id': teamId }],
-      };
-      query.filter = filter;
-    }
-    return super.find$(query, projection, options);
-  }
-
   findAllFinishedByCurrentRound$(
     seasons: Season[]
   ): Observable<[string, Match[]][]> {

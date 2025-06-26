@@ -209,7 +209,7 @@ describe('UserScore Repo', function () {
     };
 
     userScoreRepo
-      .insert$(user1manuVmancPredJokerScore)
+      .create$(user1manuVmancPredJokerScore)
       .pipe(
         mergeMap(_ => {
           return userScoreRepo.findScoreAndUpsert$(
@@ -306,7 +306,7 @@ describe('UserScore Repo', function () {
     };
 
     userScoreRepo
-      .insert$(user1manuVmancPredScore)
+      .create$(user1manuVmancPredScore)
       .pipe(
         mergeMap(userScore => {
           const prevPosition = userScore.positionNew!;

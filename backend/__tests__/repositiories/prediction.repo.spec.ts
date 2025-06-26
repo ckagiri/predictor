@@ -131,11 +131,11 @@ describe('Prediction repo', function () {
         user: userId,
       };
       predictionRepo
-        .insert$(predData)
+        .create$(predData)
         .pipe(
           mergeMap(p => {
             prediction = p;
-            return predictionRepo.findOne$(userId, matchId);
+            return predictionRepo.findOneByUserAndMatch$(userId, matchId);
           })
         )
         .subscribe(p => {
@@ -168,7 +168,7 @@ describe('Prediction repo', function () {
       };
 
       predictionRepo
-        .insert$(userId1matchId1Pred)
+        .create$(userId1matchId1Pred)
         .pipe(
           mergeMap(() => {
             return predictionRepo.findOneAndUpdate$(
@@ -232,7 +232,7 @@ describe('Prediction repo', function () {
       };
 
       predictionRepo
-        .insert$(userId1matchId1Pred)
+        .create$(userId1matchId1Pred)
         .pipe(
           mergeMap(() => {
             return predictionRepo.findOneAndUpdate$(

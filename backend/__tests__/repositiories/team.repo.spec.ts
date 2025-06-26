@@ -87,7 +87,7 @@ describe('teamRepo', function () {
     );
 
     teamRepo
-      .insert$(manUtd)
+      .create$(manUtd)
       .pipe(
         mergeMap(_ => {
           return teamRepo.findByName$(manUtd.name);
@@ -105,7 +105,7 @@ describe('teamRepo', function () {
     );
 
     teamRepo
-      .insert$(manUtd)
+      .create$(manUtd)
       .pipe(
         mergeMap(_ => {
           return teamRepo.findByName$(manUtd.shortName);
@@ -123,7 +123,7 @@ describe('teamRepo', function () {
     );
 
     teamRepo
-      .insert$(manUtd)
+      .create$(manUtd)
       .pipe(
         mergeMap(_ => {
           return teamRepo.findByName$(manUtd.aliases[0]);
@@ -143,7 +143,7 @@ describe('teamRepo', function () {
 
     //todo: should sanitize patch object props
     teamRepo
-      .insert$(manUtd)
+      .create$(manUtd)
       .pipe(
         mergeMap(_ => {
           return teamRepo.findByNameAndUpsert$(afdManUtd);
@@ -170,7 +170,7 @@ describe('teamRepo', function () {
       externalReference: { SomeOtherApi: { id: 'someExternalId' } },
     };
     teamRepo
-      .insert$(teamManUtd)
+      .create$(teamManUtd)
       .pipe(
         mergeMap(_ => {
           return teamRepo.findByNameAndUpsert$(afdManUtd);
