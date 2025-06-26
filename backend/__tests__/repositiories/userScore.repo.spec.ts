@@ -319,8 +319,8 @@ describe('UserScore Repo', function () {
         })
       )
       .subscribe(standing => {
-        expect(standing.positionNew).to.equal(2);
-        expect(standing.positionOld).to.equal(1);
+        expect(standing?.positionNew).to.equal(2);
+        expect(standing?.positionOld).to.equal(1);
         done();
       });
   });

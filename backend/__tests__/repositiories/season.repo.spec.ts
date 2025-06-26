@@ -167,7 +167,7 @@ describe('seasonRepo', function () {
         })
       )
       .subscribe(s => {
-        expect(s.currentMatchday).to.equal(21);
+        expect(s?.currentMatchday).to.equal(21);
         done();
       });
   });
