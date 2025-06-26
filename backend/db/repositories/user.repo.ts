@@ -11,7 +11,7 @@ export class UserRepositoryImpl
     super(UserModel);
   }
 
-  public static getInstance() {
+  static getInstance() {
     return new UserRepositoryImpl();
   }
 }

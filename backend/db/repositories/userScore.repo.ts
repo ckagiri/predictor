@@ -36,11 +36,11 @@ export class UserScoreRepositoryImpl
     super(UserScoreModel);
   }
 
-  public static getInstance() {
+  static getInstance() {
     return new UserScoreRepositoryImpl();
   }
 
-  public findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
+  findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
         closeMatchScorePoints: -1,

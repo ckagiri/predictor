@@ -18,7 +18,7 @@ export class SeasonRepositoryImpl
     super(SeasonModel, converter);
   }
 
-  public static getInstance(
+  static getInstance(
     provider: ApiProvider = ApiProvider.LIGI
   ): SeasonRepository {
     return new SeasonRepositoryImpl(SeasonConverterImpl.getInstance(provider));

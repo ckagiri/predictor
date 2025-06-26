@@ -3,10 +3,12 @@ import type { BulkWriteResult } from 'mongoose/node_modules/mongodb';
 
 import { merge } from 'lodash';
 import mongoose, {
+  FilterQuery,
   Model,
   ProjectionType,
   QueryOptions,
   RootFilterQuery,
+  Types,
   UpdateQuery,
 } from 'mongoose';
 
@@ -67,7 +69,7 @@ export class DocumentDao<T extends Entity> {
                     }
                   : null;
               case 'ObjectID':
-                return mongoose.Types.ObjectId.isValid(q)
+                return Types.ObjectId.isValid(q)
                   ? {
                       [k]: q,
                     }
@@ -81,7 +83,7 @@ export class DocumentDao<T extends Entity> {
           })
           .filter(condition => !!condition);
         if (combinedOr.length > 0) {
-          conditions.$or = combinedOr as mongoose.FilterQuery<T>[];
+          conditions.$or = combinedOr as FilterQuery<T>[];
         }
       } else {
         const combinedAnd = Object.keys(filter).map(key => {
@@ -95,14 +97,14 @@ export class DocumentDao<T extends Entity> {
             return {
               [isId ? '_id' : key]: {
                 $in: needle.map(n =>
-                  isId ? mongoose.Types.ObjectId.createFromHexString(n) : n
+                  isId ? Types.ObjectId.createFromHexString(n) : n
                 ),
               },
             };
           }
           return {
             [isId ? '_id' : key]: isId
-              ? mongoose.Types.ObjectId.createFromHexString(needle)
+              ? Types.ObjectId.createFromHexString(needle)
               : needle,
           };
         });
@@ -150,7 +152,7 @@ export class DocumentDao<T extends Entity> {
   ): Promise<T[]> {
     return this.Model.find(
       {
-        _id: { $in: ids.map(id => new mongoose.Types.ObjectId(id)) },
+        _id: { $in: ids.map(id => new Types.ObjectId(id)) },
       },
       projection
     )
@@ -246,7 +248,7 @@ export class DocumentDao<T extends Entity> {
 
   findByIdAndDelete(id: string): Promise<T | null> {
     return this.Model.findByIdAndDelete({
-      _id: new mongoose.Types.ObjectId(id),
+      _id: new Types.ObjectId(id),
     }).exec();
   }
 
@@ -260,7 +262,7 @@ export class DocumentDao<T extends Entity> {
       //Ensure item is a model, to allow inclusion of default values
       if (!(obj instanceof this.Model)) {
         obj = new this.Model({
-          _id: new mongoose.Types.ObjectId(obj.id!),
+          _id: new Types.ObjectId(obj.id!),
           ...obj,
         });
       }
@@ -289,9 +291,7 @@ export class DocumentDao<T extends Entity> {
       if (!(obj instanceof this.Model)) {
         obj = new this.Model({
           ...obj,
-          _id: obj.id
-            ? mongoose.Types.ObjectId.createFromHexString(obj.id)
-            : undefined,
+          _id: obj.id ? Types.ObjectId.createFromHexString(obj.id) : undefined,
         });
       }
       // Convert to plain object

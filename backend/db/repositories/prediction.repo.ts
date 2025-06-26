@@ -55,7 +55,7 @@ export class PredictionRepositoryImpl
   }
 
   findJokers$(userId: string, roundMatches: Match[]): Observable<Prediction[]> {
-    return super.findAll$({
+    return this.findAll$({
       hasJoker: true,
       match: { $in: roundMatches.map(m => m.id) },
       user: userId,
@@ -67,7 +67,7 @@ export class PredictionRepositoryImpl
     matchId: string,
     projection?: any
   ): Observable<null | Prediction> {
-    return super.findOne$({ match: matchId, user: userId }, projection);
+    return this.findOne$({ match: matchId, user: userId }, projection);
   }
 
   findOrCreateJoker$(
@@ -139,7 +139,7 @@ export class PredictionRepositoryImpl
           result?.constructor &&
           result.constructor.name === 'BulkWriteResult'
         ) {
-          return super.findOne$({
+          return this.findOne$({
             hasJoker: true,
             match: { $in: matchIds },
             user: userId,

@@ -41,7 +41,7 @@ export class LeaderboardRepositoryImpl
     super(LeaderboardModel);
   }
 
-  public static getInstance() {
+  static getInstance() {
     return new LeaderboardRepositoryImpl();
   }
 

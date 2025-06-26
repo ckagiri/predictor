@@ -10,7 +10,7 @@ export class GameRoundRepositoryImpl
     super(GameRoundModel);
   }
 
-  public static getInstance(): GameRoundRepository {
+  static getInstance(): GameRoundRepository {
     return new GameRoundRepositoryImpl();
   }
 }

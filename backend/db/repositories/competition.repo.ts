@@ -19,7 +19,7 @@ export class CompetitionRepositoryImpl
     super(CompetitionModel, converter);
   }
 
-  public static getInstance(
+  static getInstance(
     provider: ApiProvider = ApiProvider.LIGI
   ): CompetitionRepository {
     return new CompetitionRepositoryImpl(
