@@ -9,6 +9,7 @@ import {
   BaseRepository,
   BaseRepositoryImpl,
 } from '../repositories/base.repo.js';
+import { ExternalReferenceFilter } from './interfaces.js';
 
 export interface BaseFootballApiRepository<T extends Entity>
   extends BaseRepository<T> {
@@ -19,7 +20,6 @@ export interface BaseFootballApiRepository<T extends Entity>
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]>;
   footballApiProvider: ApiProvider;
 }
-
 export class BaseFootballApiRepositoryImpl<T extends Entity>
   extends BaseRepositoryImpl<T>
   implements BaseFootballApiRepository<T>
@@ -37,7 +37,13 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
 
   findByExternalId$(id: number | string): Observable<T | null> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-    return this.findOne$({ [externalIdKey]: id } as any);
+    return this.findOne$({
+      externalReference: {
+        [this.footballApiProvider]: {
+          id: id,
+        },
+      },
+    } as ExternalReferenceFilter);
   }
 
   findByExternalIdAndUpdate$(id: any, obj?: any): Observable<T> {
@@ -48,18 +54,29 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
       return this.converter.from(obj).pipe(
         mergeMap((entity: any) => {
           delete entity.externalReference;
-          return this.findOneAndUpdate$({ [externalIdKey]: id } as any, entity);
+          return this.findOneAndUpdate$(
+            { [externalIdKey]: id } as ExternalReferenceFilter,
+            entity
+          );
         })
       );
     } else {
-      return this.findOneAndUpdate$({ [externalIdKey]: id } as any, obj);
+      return this.findOneAndUpdate$(
+        { [externalIdKey]: id } as ExternalReferenceFilter,
+        obj
+      );
     }
   }
 
   findByExternalIds$(ids: (number | string)[]): Observable<T[]> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
-
-    return this.findAll$({ [externalIdKey]: { $in: ids } } as any);
+    return this.findAll$({
+      externalReference: {
+        [this.footballApiProvider]: {
+          id: { $in: ids },
+        },
+      },
+    } as ExternalReferenceFilter);
   }
 
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {
