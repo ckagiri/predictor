@@ -6,7 +6,8 @@ export interface ExternalReferenceFilter {
   externalReference: Record<
     string,
     {
-      id: number | string | { $in: any[] };
+      $in?: string[];
+      id?: string;
     }
   >;
 }

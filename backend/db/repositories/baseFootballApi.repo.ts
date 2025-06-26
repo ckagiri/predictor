@@ -71,12 +71,8 @@ export class BaseFootballApiRepositoryImpl<T extends Entity>
   findByExternalIds$(ids: (number | string)[]): Observable<T[]> {
     const externalIdKey = `externalReference.${this.footballApiProvider}.id`;
     return this.findAll$({
-      externalReference: {
-        [this.footballApiProvider]: {
-          id: { $in: ids },
-        },
-      },
-    } as ExternalReferenceFilter);
+      [externalIdKey]: { $in: ids },
+    } as unknown as ExternalReferenceFilter);
   }
 
   findEachByExternalIdAndUpdate$(objs: Entity[]): Observable<T[]> {

@@ -2,7 +2,7 @@
 import type { BulkWriteResult } from 'mongoose/node_modules/mongodb';
 
 import { merge } from 'lodash';
-import mongoose, {
+import {
   FilterQuery,
   Model,
   ProjectionType,
