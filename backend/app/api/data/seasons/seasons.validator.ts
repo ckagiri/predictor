@@ -5,7 +5,7 @@ import { JoiValidator } from '../../common/validation/validatorWrapper.js';
 
 const GetSeasonSchema = Joi.object({
   competition: validSlugSchema.required(),
-  slug: validSlugSchema.required(),
+  slug: Joi.string().min(4).max(9).required(),
 });
 
 const GetSeasonsSchema = Joi.object({

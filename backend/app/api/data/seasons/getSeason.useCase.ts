@@ -8,12 +8,16 @@ import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../../../db/repositories/season.repo.js';
-import { AppError } from '../../common/AppError.js';
-import { ValidationMessage } from '../../common/AppError.js';
+import { AppError, ValidationMessage } from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';
 
-export default class GetSeasonsUseCase {
+export interface RequestModel {
+  competition: string;
+  slug: string;
+}
+
+export default class GetSeasonUseCase {
   constructor(
     private responder: Responder,
     private competitionRepo: CompetitionRepository,
@@ -25,28 +29,42 @@ export default class GetSeasonsUseCase {
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance()
   ) {
-    return new GetSeasonsUseCase(responder, competitionRepo, seasonRepo);
+    return new GetSeasonUseCase(responder, competitionRepo, seasonRepo);
   }
 
-  async execute(competition: string): Promise<void> {
+  async execute(requestModel: RequestModel): Promise<void> {
     try {
-      await this.validate(competition);
+      await this.validate(requestModel);
 
-      const foundSeasons = await lastValueFrom(
-        this.seasonRepo.findAll$({ 'competition.slug': competition })
+      const { slug } = requestModel;
+      const foundSeason = await lastValueFrom(
+        this.seasonRepo.findOne$({ slug })
       );
 
-      this.responder.respond(foundSeasons);
+      if (!foundSeason) {
+        throw Result.fail(
+          AppError.createNotFoundError(
+            `Could not find Season with slug ${slug}`
+          ),
+          'Resource Not Found'
+        );
+      }
+      this.responder.respond(foundSeason);
     } catch (err: any) {
       if (err.isFailure) {
         throw err;
       }
-
-      throw Result.fail(err);
+      throw Result.fail(
+        AppError.createError(
+          'fetch-failed',
+          'Season could not be fetched',
+          err
+        ),
+        'Internal Server Error'
+      );
     }
   }
-
-  private async validate(competition: string): Promise<void> {
+  private async validate({ competition }: RequestModel) {
     const messages = [] as ValidationMessage[];
 
     const foundCompetition = await lastValueFrom(
