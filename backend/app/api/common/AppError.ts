@@ -1,8 +1,14 @@
 import * as constants from './constants.js';
 
+export interface ValidationMessage {
+  field?: string;
+  msg: string;
+  param?: string;
+}
+
 export class AppError extends Error {
   code?: string;
-  validationErrors?: any;
+  validationErrors?: ValidationMessage[];
 
   constructor({
     cause,
@@ -15,7 +21,7 @@ export class AppError extends Error {
     code?: string;
     message?: string;
     name: string;
-    validationErrors?: string;
+    validationErrors?: ValidationMessage[];
   }) {
     super(message, { cause });
     this.name = name;
@@ -35,7 +41,10 @@ export class AppError extends Error {
     });
   }
 
-  static createValidationError(message: string, validationErrors?: any) {
+  static createValidationError(
+    message: string,
+    validationErrors?: ValidationMessage[]
+  ) {
     return new AppError({
       code: constants.ERR_VALIDATION,
       message,

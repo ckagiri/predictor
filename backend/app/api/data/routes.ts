@@ -1,11 +1,13 @@
 import express from 'express';
 
-import competitionsRoutes from './competitions/competitions.router.js';
-import teamsRoutes from './teams/teams.router.js';
+import competitionsRouter from './competitions/competitions.router.js';
+import seasonsRoutes from './seasons/seasons.routes.js';
+import teamsRouter from './teams/teams.router.js';
 
 const router = express.Router();
 
-router.use('/competitions', competitionsRoutes);
-router.use('/teams', teamsRoutes);
+router.use('/competitions', competitionsRouter);
+seasonsRoutes.use(competitionsRouter);
+router.use('/teams', teamsRouter);
 
 export default router;

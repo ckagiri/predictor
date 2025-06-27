@@ -27,7 +27,7 @@ export default class GetTeamsUseCase {
       this.responder.respond(foundTeams);
     } catch (err: any) {
       if (err.isFailure) {
-        throw err.unwrap();
+        throw err;
       }
 
       throw Result.fail(err);
