@@ -2,12 +2,12 @@ import HttpRequestModel from 'app/api/common/interfaces/HttpRequestModel.js';
 import { Response } from 'express';
 
 import OkResponder from '../../common/responders/ok.responder.js';
-import GetTeamsUseCase from './getTeams.useCase.js';
+import GetTeamsUseCase from './useCases/getTeams.useCase.js';
 
 class GetTeamsController {
   constructor(private readonly getTeamsUseCase: GetTeamsUseCase) {}
 
-  public static getInstance(getTeamsUseCase: GetTeamsUseCase) {
+  static getInstance(getTeamsUseCase: GetTeamsUseCase) {
     return new GetTeamsController(getTeamsUseCase);
   }
 

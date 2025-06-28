@@ -6,20 +6,20 @@ import Controller from '../../common/interfaces/Controller.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getTeamValidator } from './teams.validator.js';
-import GetTeamUseCase from './useCases/getTeam.useCase.js';
+import { getCompetitionValidator } from './competitions.validator.js';
+import GetCompetitionUseCase from './useCases/getCompetition.useCase.js';
 
-class GetTeamController implements Controller {
+class GetCompetitionController implements Controller {
   constructor(
-    private readonly getTeamUseCase: GetTeamUseCase,
+    private readonly getCompetitionUseCase: GetCompetitionUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getTeamUseCase: GetTeamUseCase,
-    validation = getTeamValidator
+    getCompetitionUseCase: GetCompetitionUseCase,
+    validation = getCompetitionValidator
   ) {
-    return new GetTeamController(getTeamUseCase, validation);
+    return new GetCompetitionController(getCompetitionUseCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -32,12 +32,12 @@ class GetTeamController implements Controller {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getTeamUseCase.execute(requestModel.slug);
+    await this.getCompetitionUseCase.execute(requestModel.slug);
   }
 }
 
-export const makeGetTeamController = (res: Response) => {
+export const makeGetCompetitionController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getTeamUseCase = GetTeamUseCase.getInstance(okResponder);
-  return GetTeamController.getInstance(getTeamUseCase);
+  const getCompetitionUseCase = GetCompetitionUseCase.getInstance(okResponder);
+  return GetCompetitionController.getInstance(getCompetitionUseCase);
 };

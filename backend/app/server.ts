@@ -52,7 +52,6 @@ export async function startWebServer({
         node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
       }
     } else if (isTsx) {
-      console.log('waith');
       node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], {
         execArgv: ['--import', 'tsx'],
       });
