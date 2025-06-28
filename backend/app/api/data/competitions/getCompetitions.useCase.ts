@@ -4,6 +4,7 @@ import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
 } from '../../../../db/repositories/competition.repo.js';
+import { AppError } from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';
 
@@ -32,7 +33,14 @@ export default class GetCompetitionsUseCase {
         throw err;
       }
 
-      throw Result.fail(err);
+      throw Result.fail(
+        AppError.createError(
+          'fetch-failed',
+          'Competitions could not be fetched',
+          err
+        ),
+        'Internal Server Error'
+      );
     }
   }
 }

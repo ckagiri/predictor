@@ -30,7 +30,8 @@ export default class GetSeasonsUseCase {
 
   async execute(competition: string): Promise<void> {
     try {
-      await this.validate(competition);
+      const validator = makeValidator(this.competitionRepo);
+      await validator.validateCompetition(competition);
 
       const foundSeasons = await lastValueFrom(
         this.seasonRepo.findAll$({ 'competition.slug': competition })
@@ -42,29 +43,40 @@ export default class GetSeasonsUseCase {
         throw err;
       }
 
-      throw Result.fail(err);
+      throw Result.fail(
+        AppError.createError(
+          'fetch-failed',
+          'Competition-Seasons could not be fetched',
+          err
+        ),
+        'Internal Server Error'
+      );
     }
   }
-
-  private async validate(competition: string): Promise<void> {
-    const messages = [] as ValidationMessage[];
-
-    const foundCompetition = await lastValueFrom(
-      this.competitionRepo.findOne$({
-        slug: competition,
-      })
-    );
-
-    if (foundCompetition) return;
-
-    messages.push({
-      msg: `No competition with slug ${competition}`,
-      param: 'competition',
-    });
-
-    throw Result.fail(
-      AppError.createValidationError('Bad data', messages),
-      'Bad Request'
-    );
-  }
 }
+
+export const makeValidator = (competitionRepo: CompetitionRepository) => {
+  return {
+    validateCompetition: async (competition: string) => {
+      const foundCompetition = await lastValueFrom(
+        competitionRepo.findOne$({
+          slug: competition,
+        })
+      );
+
+      if (foundCompetition) return;
+
+      const errors: ValidationMessage[] = [
+        {
+          msg: `No competition with slug ${competition}`,
+          param: 'competition',
+        },
+      ];
+
+      throw Result.fail(
+        AppError.createValidationError('Bad data', errors),
+        'Bad Request'
+      );
+    },
+  };
+};

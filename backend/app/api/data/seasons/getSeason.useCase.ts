@@ -8,9 +8,10 @@ import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../../../db/repositories/season.repo.js';
-import { AppError, ValidationMessage } from '../../common/AppError.js';
+import { AppError } from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';
+import { makeValidator as makeGetSeasonsValidator } from './getSeasons.useCase.js';
 
 export interface RequestModel {
   competition: string;
@@ -34,9 +35,10 @@ export default class GetSeasonUseCase {
 
   async execute(requestModel: RequestModel): Promise<void> {
     try {
-      await this.validate(requestModel);
+      const { competition, slug } = requestModel;
+      const validator = makeGetSeasonsValidator(this.competitionRepo);
+      await validator.validateCompetition(competition);
 
-      const { slug } = requestModel;
       const foundSeason = await lastValueFrom(
         this.seasonRepo.findOne$({ slug })
       );
@@ -57,32 +59,11 @@ export default class GetSeasonUseCase {
       throw Result.fail(
         AppError.createError(
           'fetch-failed',
-          'Season could not be fetched',
+          'Competition-Season could not be fetched',
           err
         ),
         'Internal Server Error'
       );
     }
-  }
-  private async validate({ competition }: RequestModel) {
-    const messages = [] as ValidationMessage[];
-
-    const foundCompetition = await lastValueFrom(
-      this.competitionRepo.findOne$({
-        slug: competition,
-      })
-    );
-
-    if (foundCompetition) return;
-
-    messages.push({
-      msg: `No competition with slug ${competition}`,
-      param: 'competition',
-    });
-
-    throw Result.fail(
-      AppError.createValidationError('Bad data', messages),
-      'Bad Request'
-    );
   }
 }
