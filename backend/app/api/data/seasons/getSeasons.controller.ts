@@ -5,8 +5,8 @@ import { AppError } from '../../common/AppError.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import GetSeasonsUseCase from './getSeasons.useCase.js';
 import { getSeasonsValidator } from './seasons.validator.js';
+import GetSeasonsUseCase from './useCases/getSeasons.useCase.js';
 
 class GetSeasonsController {
   constructor(
@@ -14,7 +14,7 @@ class GetSeasonsController {
     private readonly validation: Validator
   ) {}
 
-  public static getInstance(
+  static getInstance(
     getSeasonsUseCase: GetSeasonsUseCase,
     validation = getSeasonsValidator
   ) {

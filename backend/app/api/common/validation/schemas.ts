@@ -1,6 +1,7 @@
 import Joi from 'joi';
 
-export const validSlugSchema = Joi.string()
+export const slugStringSchema = Joi.string()
+  .max(20)
   .pattern(/^\d+$/, { invert: true })
   .messages({
     'string.pattern.invert.base':

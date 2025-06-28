@@ -5,8 +5,10 @@ import { AppError } from '../../common/AppError.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import GetRoundsUseCase, { RequestModel } from './getRounds.useCase.js';
 import { getRoundsValidator } from './rounds.validator.js';
+import GetRoundsUseCase, {
+  RequestModel,
+} from './useCases/getRounds.useCase.js';
 
 class GetRoundsController {
   constructor(
@@ -14,7 +16,7 @@ class GetRoundsController {
     private readonly validation: Validator
   ) {}
 
-  public static getInstance(
+  static getInstance(
     getRoundsUseCase: GetRoundsUseCase,
     validation = getRoundsValidator
   ) {

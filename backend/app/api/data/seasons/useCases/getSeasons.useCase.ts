@@ -3,15 +3,15 @@ import { lastValueFrom } from 'rxjs';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
-} from '../../../../db/repositories/competition.repo.js';
+} from '../../../../../db/repositories/competition.repo.js';
 import {
   SeasonRepository,
   SeasonRepositoryImpl,
-} from '../../../../db/repositories/season.repo.js';
-import { AppError } from '../../common/AppError.js';
-import { ValidationMessage } from '../../common/AppError.js';
-import Responder from '../../common/responders/Responder.js';
-import Result from '../../common/result/index.js';
+} from '../../../../../db/repositories/season.repo.js';
+import { AppError } from '../../../common/AppError.js';
+import Responder from '../../../common/responders/Responder.js';
+import Result from '../../../common/result/index.js';
+import { makeGetSeasonsValidator } from '../../useCase.validators.js';
 
 export default class GetSeasonsUseCase {
   constructor(
@@ -20,7 +20,7 @@ export default class GetSeasonsUseCase {
     private seasonRepo: SeasonRepository
   ) {}
 
-  public static getInstance(
+  static getInstance(
     responder: Responder,
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance()
@@ -30,7 +30,7 @@ export default class GetSeasonsUseCase {
 
   async execute(competition: string): Promise<void> {
     try {
-      const validator = makeValidator(this.competitionRepo);
+      const validator = makeGetSeasonsValidator(this.competitionRepo);
       await validator.validateCompetition(competition);
 
       const foundSeasons = await lastValueFrom(
@@ -54,29 +54,3 @@ export default class GetSeasonsUseCase {
     }
   }
 }
-
-export const makeValidator = (competitionRepo: CompetitionRepository) => {
-  return {
-    validateCompetition: async (competition: string) => {
-      const foundCompetition = await lastValueFrom(
-        competitionRepo.findOne$({
-          slug: competition,
-        })
-      );
-
-      if (foundCompetition) return;
-
-      const errors: ValidationMessage[] = [
-        {
-          msg: `No competition with slug ${competition}`,
-          param: 'competition',
-        },
-      ];
-
-      throw Result.fail(
-        AppError.createValidationError('Bad data', errors),
-        'Bad Request'
-      );
-    },
-  };
-};

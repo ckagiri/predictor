@@ -3,15 +3,15 @@ import { lastValueFrom } from 'rxjs';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
-} from '../../../../db/repositories/competition.repo.js';
+} from '../../../../../db/repositories/competition.repo.js';
 import {
   SeasonRepository,
   SeasonRepositoryImpl,
-} from '../../../../db/repositories/season.repo.js';
-import { AppError } from '../../common/AppError.js';
-import Responder from '../../common/responders/Responder.js';
-import Result from '../../common/result/index.js';
-import { makeValidator as makeGetSeasonsValidator } from './getSeasons.useCase.js';
+} from '../../../../../db/repositories/season.repo.js';
+import { AppError } from '../../../common/AppError.js';
+import Responder from '../../../common/responders/Responder.js';
+import Result from '../../../common/result/index.js';
+import { makeGetSeasonsValidator } from '../../useCase.validators.js';
 
 export interface RequestModel {
   competition: string;
@@ -25,7 +25,7 @@ export default class GetSeasonUseCase {
     private seasonRepo: SeasonRepository
   ) {}
 
-  public static getInstance(
+  static getInstance(
     responder: Responder,
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance()

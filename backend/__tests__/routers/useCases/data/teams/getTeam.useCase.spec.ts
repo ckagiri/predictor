@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
 import { FailureResult } from '../../../../../app/api/common/result';
-import GetTeamUseCase from '../../../../../app/api/data/teams/getTeam.useCase';
+import GetTeamUseCase from '../../../../../app/api/data/teams/useCases/getTeam.useCase';
 import {
   TeamRepository,
   TeamRepositoryImpl,

@@ -3,10 +3,10 @@ import { lastValueFrom } from 'rxjs';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
-} from '../../../../db/repositories/competition.repo.js';
-import { AppError } from '../../common/AppError.js';
-import Responder from '../../common/responders/Responder.js';
-import Result from '../../common/result/index.js';
+} from '../../../../../db/repositories/competition.repo.js';
+import { AppError } from '../../../common/AppError.js';
+import Responder from '../../../common/responders/Responder.js';
+import Result from '../../../common/result/index.js';
 
 export default class GetCompetitionsUseCase {
   constructor(
@@ -14,7 +14,7 @@ export default class GetCompetitionsUseCase {
     private competitionRepo: CompetitionRepository
   ) {}
 
-  public static getInstance(
+  static getInstance(
     responder: Responder,
     competitionRepo = CompetitionRepositoryImpl.getInstance()
   ) {

@@ -5,40 +5,42 @@ import { AppError } from '../../common/AppError.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getRoundValidator } from './rounds.validator.js';
-import GetRoundUseCase, { RequestModel } from './useCases/getRound.useCase.js';
+import { getRoundMatchesValidator as getMatchesValidator } from './matches.validator.js';
+import GetRoundMatchesUseCase, {
+  RequestModel,
+} from './useCases/getRoundMatches.useCase.js';
 
-class GetRoundController {
+class GetRoundMatchesController {
   constructor(
-    private readonly getRoundUseCase: GetRoundUseCase,
+    private readonly getMatchesUseCase: GetRoundMatchesUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getRoundUseCase: GetRoundUseCase,
-    validation = getRoundValidator
+    getMatchesUseCase: GetRoundMatchesUseCase,
+    validation = getMatchesValidator
   ) {
-    return new GetRoundController(getRoundUseCase, validation);
+    return new GetRoundMatchesController(getMatchesUseCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
+    const { competition, round, season } = request.params;
     const requestValidated = await this.validation.validate<RequestModel>({
-      competition: request.params.competition,
-      season: request.params.season,
-      slug: request.params.slug,
+      competition,
+      round,
+      season,
     });
-
     if (requestValidated.isFailure) {
       throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
     }
 
     const requestModel = requestValidated.value!;
-    await this.getRoundUseCase.execute(requestModel);
+    await this.getMatchesUseCase.execute(requestModel);
   }
 }
 
-export const makeGetRoundController = (res: Response) => {
+export const makeGetRoundMatchesController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getRoundUseCase = GetRoundUseCase.getInstance(okResponder);
-  return GetRoundController.getInstance(getRoundUseCase);
+  const getMatchesUseCase = GetRoundMatchesUseCase.getInstance(okResponder);
+  return GetRoundMatchesController.getInstance(getMatchesUseCase);
 };

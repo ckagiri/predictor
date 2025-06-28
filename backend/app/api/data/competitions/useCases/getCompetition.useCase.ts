@@ -4,9 +4,9 @@ import { lastValueFrom } from 'rxjs';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
-} from '../../../../db/repositories/competition.repo.js';
-import Responder from '../../common/responders/Responder.js';
-import Result from '../../common/result/index.js';
+} from '../../../../../db/repositories/competition.repo.js';
+import Responder from '../../../common/responders/Responder.js';
+import Result from '../../../common/result/index.js';
 
 export default class GetCompetitionUseCase {
   constructor(
@@ -14,7 +14,7 @@ export default class GetCompetitionUseCase {
     private competitionRepo: CompetitionRepository
   ) {}
 
-  public static getInstance(
+  static getInstance(
     responder: Responder,
     competitionRepo = CompetitionRepositoryImpl.getInstance()
   ) {

@@ -7,11 +7,11 @@ import Validator from './validator.js';
 export class JoiValidator implements Validator {
   private schema: ObjectSchema;
 
-  public constructor(schema: ObjectSchema) {
+  constructor(schema: ObjectSchema) {
     this.schema = schema;
   }
 
-  public async validate<T>(
+  async validate<T>(
     payload: Record<string, unknown>
   ): Promise<Result.ResultType<T, AppError>> {
     try {

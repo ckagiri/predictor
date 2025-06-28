@@ -1,21 +1,21 @@
-import {
-  SeasonRepository,
-  SeasonRepositoryImpl,
-} from 'db/repositories/season.repo.js';
 import { lastValueFrom } from 'rxjs';
 
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
-} from '../../../../db/repositories/competition.repo.js';
+} from '../../../../../db/repositories/competition.repo.js';
 import {
   GameRoundRepository,
   GameRoundRepositoryImpl,
-} from '../../../../db/repositories/gameRound.repo.js';
-import { AppError, ValidationMessage } from '../../common/AppError.js';
-import Responder from '../../common/responders/Responder.js';
-import Result from '../../common/result/index.js';
-import { makeValidator as makeGetRoundsValidator } from './getRounds.useCase.js';
+} from '../../../../../db/repositories/gameRound.repo.js';
+import {
+  SeasonRepository,
+  SeasonRepositoryImpl,
+} from '../../../../../db/repositories/season.repo.js';
+import { AppError } from '../../../common/AppError.js';
+import Responder from '../../../common/responders/Responder.js';
+import Result from '../../../common/result/index.js';
+import { makeGetRoundsValidator } from '../../useCase.validators.js';
 
 export interface RequestModel {
   competition: string;
@@ -31,7 +31,7 @@ export default class GetRoundUseCase {
     private roundRepo: GameRoundRepository
   ) {}
 
-  public static getInstance(
+  static getInstance(
     responder: Responder,
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(),
@@ -45,28 +45,14 @@ export default class GetRoundUseCase {
     );
   }
 
-  async execute(requestModel: RequestModel): Promise<void> {
+  async execute({ competition, season, slug }: RequestModel): Promise<void> {
     try {
-      const { competition, season, slug } = requestModel;
-      const validator = makeGetRoundsValidator(this.competitionRepo);
-      await validator.validateCompetition(competition);
-
-      const foundSeason = await lastValueFrom(
-        this.seasonRepo.findOne$({ slug: season })
+      const validator = makeGetRoundsValidator(
+        this.competitionRepo,
+        this.seasonRepo
       );
-
-      if (!foundSeason) {
-        const errors: ValidationMessage[] = [
-          {
-            msg: `No Competition-Season with slug ${season}`,
-            param: 'season',
-          },
-        ];
-        throw Result.fail(
-          AppError.createValidationError('Bad data', errors),
-          'Bad Request'
-        );
-      }
+      await validator.validateCompetition(competition);
+      const foundSeason = await validator.validateSeason(competition, season);
 
       const foundRound = await lastValueFrom(
         this.roundRepo.findOne$(
@@ -86,7 +72,7 @@ export default class GetRoundUseCase {
           'Resource Not Found'
         );
       }
-      this.responder.respond(foundSeason);
+      this.responder.respond(foundRound);
     } catch (err: any) {
       if (err.isFailure) {
         throw err;

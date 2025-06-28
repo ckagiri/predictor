@@ -7,7 +7,7 @@ import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
 import { getCompetitionValidator } from './competitions.validator.js';
-import GetCompetitionUseCase from './getCompetition.useCase.js';
+import GetCompetitionUseCase from './useCases/getCompetition.useCase.js';
 
 class GetCompetitionController implements Controller {
   constructor(
@@ -15,7 +15,7 @@ class GetCompetitionController implements Controller {
     private readonly validation: Validator
   ) {}
 
-  public static getInstance(
+  static getInstance(
     getCompetitionUseCase: GetCompetitionUseCase,
     validation = getCompetitionValidator
   ) {
