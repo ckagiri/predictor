@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import handleRequest from '../handleRequest.js';
-import { makeGetCompetitionController } from './contestCompetition/getCompetition.controller.js';
+import { makeGetCompetitionController } from './competition/getCompetition.controller.js';
 import { makeGetContestsController } from './getContests.controller.js';
 import { makeGetCompetitionMatchesController } from './matches/getCompetitionMatches.controller.js';
 import { makeGetRoundMatchesController } from './matches/getRoundMatches.controller.js';
