@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import handleRequest from '../../handleRequest.js';
-import { makeGetSeasonController } from './getSeasonController.js';
+import { makeGetSeasonController } from './getSeason.controller.js';
 import { makeGetSeasonsController } from './getSeasons.controller.js';
 
 export default {

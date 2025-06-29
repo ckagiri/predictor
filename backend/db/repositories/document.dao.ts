@@ -5,6 +5,7 @@ import { merge } from 'lodash';
 import {
   FilterQuery,
   Model,
+  PopulateOptions,
   ProjectionType,
   QueryOptions,
   RootFilterQuery,
@@ -182,11 +183,14 @@ export class DocumentDao<T extends Entity> {
 
   findOne(
     conditions: RootFilterQuery<T>,
-    projection?: ProjectionType<T> | null
+    projection?: ProjectionType<T> | null,
+    join?: PopulateOptions | PopulateOptions[]
   ): Promise<T | null> {
-    return this.Model.findOne(conditions, projection)
-      .lean({ transform })
-      .exec() as Promise<T | null>;
+    const repository = this.Model.findOne(conditions, projection);
+    if (join) {
+      repository.populate(join);
+    }
+    return repository.lean({ transform }).exec() as Promise<T | null>;
   }
 
   findOneAndUpdate(

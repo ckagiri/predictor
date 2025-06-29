@@ -41,7 +41,7 @@ const makeGetSeasonResourcesValidator = (
   const validator = makeGetSeasonsValidator(competitionRepo);
 
   return {
-    validateCompetition: validator.validateCompetition,
+    ...validator,
     validateSeason: async (competition: string, season: string) => {
       const foundSeason = await lastValueFrom(
         seasonRepo.findOne$({ 'competition.slug': competition, slug: season })
@@ -64,6 +64,38 @@ const makeGetSeasonResourcesValidator = (
   };
 };
 export const makeGetRoundsValidator = makeGetSeasonResourcesValidator;
+export const makeGetSeasonTeamsValidator = (
+  competitionRepo: CompetitionRepository,
+  seasonRepo: SeasonRepository
+) => {
+  const validator = makeGetSeasonsValidator(competitionRepo);
+  return {
+    ...validator,
+    validateSeason: async (competition: string, season: string) => {
+      const foundSeason = await lastValueFrom(
+        seasonRepo.findOne$(
+          { 'competition.slug': competition, slug: season },
+          undefined,
+          { path: 'teams', select: '-createdAt' }
+        )
+      );
+
+      if (!foundSeason) {
+        throw Result.fail(
+          AppError.createValidationError('Bad data', [
+            {
+              msg: `No Competition-Season with slug ${season}`,
+              param: 'season',
+            },
+          ]),
+          'Bad Request'
+        );
+      }
+
+      return foundSeason;
+    },
+  };
+};
 
 export const makeGetMatchesValidator = (
   competitionRepo: CompetitionRepository,

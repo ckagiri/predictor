@@ -3,6 +3,7 @@ import type { BulkWriteResult } from 'mongoose/node_modules/mongodb';
 
 import {
   Model,
+  PopulateOptions,
   ProjectionType,
   QueryOptions,
   RootFilterQuery,
@@ -46,7 +47,8 @@ export interface BaseRepository<T extends Entity> {
   ): Observable<T | null>;
   findOne$(
     conditions: RootFilterQuery<T>,
-    projection?: ProjectionType<T> | null
+    projection?: ProjectionType<T> | null,
+    join?: PopulateOptions | PopulateOptions[]
   ): Observable<T | null>;
   findOneAndDelete$(conditions: RootFilterQuery<T>): Observable<T | null>;
   findOneAndUpdate$(
@@ -126,9 +128,10 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   }
   findOne$(
     conditions: RootFilterQuery<T>,
-    projection?: ProjectionType<T> | null
+    projection?: ProjectionType<T> | null,
+    join?: PopulateOptions | PopulateOptions[]
   ): Observable<T | null> {
-    return from(this.documentDao.findOne(conditions, projection));
+    return from(this.documentDao.findOne(conditions, projection, join));
   }
   findOneAndDelete$(conditions: RootFilterQuery<T>): Observable<T | null> {
     return from(this.documentDao.findOneAndDelete(conditions));
