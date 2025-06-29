@@ -5,43 +5,41 @@ import { AppError } from '../../common/AppError.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getSeasonMatchValidator as getMatchValidator } from './matches.validator.js';
-import GetSeasonMatchUseCase, {
+import { getCompetitionMatchesValidator as getMatchesValidator } from './matches.validator.js';
+import GetCompetitionMatchesUseCase, {
   RequestModel,
-} from './useCases/getSeasonMatch.useCase.js';
+} from './useCases/getCompetitionMatches.useCase.js';
 
-class GetSeasonMatchController {
+class GetCompetitionMatchesController {
   constructor(
-    private readonly getMatchUseCase: GetSeasonMatchUseCase,
+    private readonly getMatchesUseCase: GetCompetitionMatchesUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getMatchUseCase: GetSeasonMatchUseCase,
-    validation = getMatchValidator
+    getMatchesUseCase: GetCompetitionMatchesUseCase,
+    validation = getMatchesValidator
   ) {
-    return new GetSeasonMatchController(getMatchUseCase, validation);
+    return new GetCompetitionMatchesController(getMatchesUseCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
-    const { competition, season, slug } = request.params;
+    const { competition } = request.params;
     const requestValidated = await this.validation.validate<RequestModel>({
       competition,
-      season,
-      slug,
     });
-
     if (requestValidated.isFailure) {
       throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
     }
 
     const requestModel = requestValidated.value!;
-    await this.getMatchUseCase.execute(requestModel);
+    await this.getMatchesUseCase.execute(requestModel);
   }
 }
 
-export const makeGetSeasonMatchController = (res: Response) => {
+export const makeGetCompetitionMatchesController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchUseCase = GetSeasonMatchUseCase.getInstance(okResponder);
-  return GetSeasonMatchController.getInstance(getMatchUseCase);
+  const getMatchesUseCase =
+    GetCompetitionMatchesUseCase.getInstance(okResponder);
+  return GetCompetitionMatchesController.getInstance(getMatchesUseCase);
 };

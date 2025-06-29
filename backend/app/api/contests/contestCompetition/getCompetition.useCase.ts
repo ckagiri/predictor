@@ -37,6 +37,7 @@ export default class GetCompetitionUseCase {
       }
       this.responder.respond({
         competition: foundCompetition,
+        seasons: [],
       });
     } catch (err: any) {
       if (err.isFailure) {

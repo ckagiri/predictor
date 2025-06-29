@@ -29,6 +29,7 @@ export default class GetContestsUseCase {
 
       this.responder.respond({
         competitions: foundCompetitions,
+        defaults: {},
       });
     } catch (err: any) {
       if (err.isFailure) {
