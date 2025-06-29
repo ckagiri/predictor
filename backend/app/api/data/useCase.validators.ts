@@ -75,7 +75,7 @@ export const makeGetSeasonTeamsValidator = (
       const foundSeason = await lastValueFrom(
         seasonRepo.findOne$(
           { 'competition.slug': competition, slug: season },
-          undefined,
+          null,
           { path: 'teams', select: '-createdAt' }
         )
       );
