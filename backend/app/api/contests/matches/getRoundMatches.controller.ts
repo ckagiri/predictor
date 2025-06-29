@@ -5,28 +5,30 @@ import { AppError } from '../../common/AppError.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getCompetitionMatchesValidator as getMatchesValidator } from '../controller.validators.js';
-import GetCompetitionMatchesUseCase, {
+import { getRoundMatchesValidator as getMatchesValidator } from '../controller.validators.js';
+import GetRoundMatchesUseCase, {
   RequestModel,
-} from './useCases/getCompetitionMatches.useCase.js';
+} from './useCases/getRoundMatches.useCase.js';
 
-class GetCompetitionMatchesController {
+class GetRoundMatchesController {
   constructor(
-    private readonly getMatchesUseCase: GetCompetitionMatchesUseCase,
+    private readonly getMatchesUseCase: GetRoundMatchesUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getMatchesUseCase: GetCompetitionMatchesUseCase,
+    getMatchesUseCase: GetRoundMatchesUseCase,
     validation = getMatchesValidator
   ) {
-    return new GetCompetitionMatchesController(getMatchesUseCase, validation);
+    return new GetRoundMatchesController(getMatchesUseCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
-    const { competition } = request.params;
+    const { competition, round, season } = request.params;
     const requestValidated = await this.validation.validate<RequestModel>({
       competition,
+      round,
+      season,
     });
     if (requestValidated.isFailure) {
       throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
@@ -37,9 +39,8 @@ class GetCompetitionMatchesController {
   }
 }
 
-export const makeGetCompetitionMatchesController = (res: Response) => {
+export const makeGetRoundMatchesController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchesUseCase =
-    GetCompetitionMatchesUseCase.getInstance(okResponder);
-  return GetCompetitionMatchesController.getInstance(getMatchesUseCase);
+  const getMatchesUseCase = GetRoundMatchesUseCase.getInstance(okResponder);
+  return GetRoundMatchesController.getInstance(getMatchesUseCase);
 };

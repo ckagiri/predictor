@@ -3,7 +3,7 @@ import { lastValueFrom } from 'rxjs';
 import { CompetitionRepository } from '../../../db/repositories/competition.repo';
 import { GameRoundRepository } from '../../../db/repositories/gameRound.repo';
 import { SeasonRepository } from '../../../db/repositories/season.repo';
-import { AppError, ValidationMessage } from '../common/AppError';
+import { AppError } from '../common/AppError';
 import Result from '../common/result';
 
 export const makeGetSeasonsValidator = (
