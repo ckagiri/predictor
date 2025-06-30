@@ -1,6 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
+import { JwtPayload } from 'jsonwebtoken';
 
 export default interface HttpRequestModel {
+  auth?: JwtPayload; // Optional user object, can be used for authenticated requests
   body: any;
   headers: IncomingHttpHeaders;
   params: ParamsDictionary;

@@ -1,26 +1,15 @@
-import express from 'express';
-import {
-  NextFunction,
-  ParamsDictionary,
-  Request,
-  Response,
-} from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
+import { Router } from 'express';
 
-import * as authController from './auth.controller.js';
+import handleRequest from '../handleRequest';
+import authMiddleware from './auth.middleware';
+import { makeAuthenticateUserController } from './authenticateUser.controller.js';
+import { makeGetMeController } from './getMe.controller.js';
+import { makeRegisterUserController } from './registerUser.controller.js';
 
-const router = express.Router();
+const router = Router();
 
-function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>
-) {
-  return function (req: Request, res: Response, next: NextFunction) {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-}
-
-router.post('/register', asyncHandler(authController.register));
-router.post('/login', asyncHandler(authController.login));
-// router.get('/me', authMiddleware(), asyncHandler(authController.me))
+router.post('/register', handleRequest(makeRegisterUserController));
+router.post('/login', handleRequest(makeAuthenticateUserController));
+router.get('/me', authMiddleware(), handleRequest(makeGetMeController));
 
 export default router;

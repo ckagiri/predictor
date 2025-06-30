@@ -6,11 +6,12 @@ export default function (schema: Schema) {
     return (this._id as Types.ObjectId).toHexString();
   });
   schema.set('toObject', {
-    transform: (doc: any, ret: Record<string, any>) => {
+    transform: (_doc: unknown, ret: Record<string, unknown>) => {
       if (ret._id) {
         ret.id = (ret._id as Types.ObjectId).toHexString();
       }
       delete ret.__v;
+      delete ret._id;
       return ret;
     },
     virtuals: true,

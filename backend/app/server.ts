@@ -5,10 +5,8 @@ import express from 'express';
 import { Server } from 'http';
 import mongoose from 'mongoose';
 import { AddressInfo } from 'net';
-import passport from 'passport';
 
 import errorMiddleware from './api/auth/error.middleware.js';
-import { getLocalStrategy } from './api/auth/passport.js';
 import router from './api/routes.js';
 import isDocker from './isDocker.js';
 import { fromBase } from './util.js';
@@ -62,8 +60,6 @@ export async function startWebServer({
     next();
   });
 
-  app.use(passport.initialize());
-  passport.use(getLocalStrategy());
   app.use('/api', router);
   app.use(errorMiddleware);
 

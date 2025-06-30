@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Request as JWTRequest } from 'express-jwt';
 import createHttpError, { HttpError } from 'http-errors';
 
 import { AppError } from './common/AppError.js';
@@ -34,8 +35,9 @@ export default class RequestHandler {
     }
   }
 
-  private mapHttpRequest(req: Request): HttpRequestModel {
+  private mapHttpRequest(req: JWTRequest): HttpRequestModel {
     return {
+      auth: req.auth, // Optional user object for authenticated requests
       body: req.body,
       headers: req.headers,
       params: req.params,
