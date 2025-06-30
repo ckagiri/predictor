@@ -5,6 +5,7 @@ export default interface HttpRequestModel {
   headers: IncomingHttpHeaders;
   params: ParamsDictionary;
   query: ParsedQs;
+  user?: any; // Optional user object, can be used for authenticated requests
 }
 
 type ParamsDictionary = Record<string, string>;
