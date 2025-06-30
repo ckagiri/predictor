@@ -70,7 +70,7 @@ export class RegisterUserUseCase {
       } as User)
     );
     const userDto = mapUserToDto(newUser, this.tokenGen);
-    this.responder.respond(userDto);
+    this.responder.respond({ user: userDto });
   }
 }
 

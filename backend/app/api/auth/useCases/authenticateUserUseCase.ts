@@ -58,7 +58,7 @@ export class AuthenticateUserUseCase {
     }
 
     const userDto = mapUserToDto(foundUser, this.tokenGen);
-    this.responder.respond(userDto);
+    this.responder.respond({ user: userDto });
   }
 }
 export { RequestModel };

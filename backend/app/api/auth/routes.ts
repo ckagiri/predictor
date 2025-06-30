@@ -8,8 +8,8 @@ import { makeRegisterUserController } from './registerUser.controller.js';
 
 const router = Router();
 
-router.get('/register', handleRequest(makeRegisterUserController));
-router.get('/login', handleRequest(makeAuthenticateUserController));
+router.post('/register', handleRequest(makeRegisterUserController));
+router.post('/login', handleRequest(makeAuthenticateUserController));
 router.get('/me', authMiddleware(), handleRequest(makeGetMeController));
 
 export default router;

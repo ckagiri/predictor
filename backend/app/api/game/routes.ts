@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { authMiddleware } from '../auth/utils.js';
+import authMiddleware from '../auth/auth.middleware.js';
 import getCompetition from './competition.controller.js';
 import competitionSeasonController from './competitionSeason.controller.js';
 import gameDataController from './gameData.controller.js';

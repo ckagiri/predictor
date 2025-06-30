@@ -22,10 +22,10 @@ class GetMeController implements Controller {
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
-    if (request.user) {
+    if (request.auth) {
       await Promise.resolve();
       this.responder.respond({
-        user: mapUserToDto(request.user, this.tokenGen),
+        user: mapUserToDto(request.auth, this.tokenGen),
       });
     } else {
       throw Result.fail(new Error('User not authenticated'), 'Unauthorized');
