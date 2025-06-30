@@ -9,27 +9,10 @@ const GetCompetitionSchema = Joi.object({
 
 export const getCompetitionValidator = new JoiValidator(GetCompetitionSchema);
 
-const GetCompetitionMatchesSchema = Joi.object({
-  competition: slugStringSchema.required(),
-});
-
-export const getCompetitionMatchesValidator = new JoiValidator(
-  GetCompetitionMatchesSchema
-);
-
-const GetSeasonMatchesSchema = Joi.object({
-  competition: slugStringSchema.required(),
-  season: Joi.string().min(4).max(9).required(),
-});
-
-export const getSeasonMatchesValidator = new JoiValidator(
-  GetSeasonMatchesSchema
-);
-
 const GetRoundMatchesSchema = Joi.object({
   competition: slugStringSchema.required(),
-  round: Joi.string().max(20).required(),
-  season: Joi.string().min(4).max(9).required(),
+  round: Joi.string().max(20),
+  season: Joi.string().min(4).max(9),
 });
 
 export const getRoundMatchesValidator = new JoiValidator(GetRoundMatchesSchema);

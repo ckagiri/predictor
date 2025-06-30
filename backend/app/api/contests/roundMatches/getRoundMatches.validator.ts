@@ -2,6 +2,7 @@ import { AppError } from 'app/api/common/AppError';
 import Result from 'app/api/common/result';
 import { CompetitionRepository } from 'db/repositories/competition.repo';
 import { SeasonRepository } from 'db/repositories/season.repo';
+import { ObjectId } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 
 import { GameRoundRepository } from '../../../../db/repositories/gameRound.repo.js';
@@ -34,6 +35,44 @@ export const makeGetRoundMatchesValidator = (
         );
       }
       return foundCompetition;
+    },
+    validateCurrentRound: async (
+      competitionSeason: string,
+      currentRoundId?: string | ObjectId
+    ) => {
+      if (!currentRoundId) {
+        throw failWithFetchError(
+          new Error(`No current-round-id for season ${competitionSeason}`)
+        );
+      }
+      const currentRound = await lastValueFrom(
+        roundRepo.findById$(currentRoundId)
+      );
+      if (!currentRound) {
+        throw failWithFetchError(
+          new Error(`No current round for season ${competitionSeason}`)
+        );
+      }
+      return currentRound;
+    },
+    validateCurrentSeason: async (
+      competition: string,
+      currentSeasonId?: string | ObjectId
+    ) => {
+      if (!currentSeasonId) {
+        throw failWithFetchError(
+          new Error(`No current-season-id for competition ${competition}`)
+        );
+      }
+      const currentSeason = await lastValueFrom(
+        seasonRepo.findById$(currentSeasonId)
+      );
+      if (!currentSeason) {
+        throw failWithFetchError(
+          new Error(`No current season for competition ${competition}`)
+        );
+      }
+      return currentSeason;
     },
     validateRound: async (
       competitionSeason: string,

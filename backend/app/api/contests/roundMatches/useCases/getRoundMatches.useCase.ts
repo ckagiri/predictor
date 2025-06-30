@@ -1,5 +1,6 @@
 import { lastValueFrom } from 'rxjs';
 
+import { GameRound, Season } from '../../../../../db/models/index.js';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
@@ -19,23 +20,15 @@ import {
 import { AppError } from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
+import { makeGetRoundMatchesValidator } from '../getRoundMatches.validator.js';
 
 export interface RequestModel {
   competition: string;
-  season: string;
+  round?: string;
+  season?: string;
 }
 
-const failWithFetchError = (error: Error) =>
-  Result.fail(
-    AppError.createError(
-      'fetch-failed',
-      'Current-Matches for Season could not be fetched',
-      error
-    ),
-    'Internal Server Error'
-  );
-
-export default class GetSeasonMatchesUseCase {
+export default class GetRoundMatchesUseCase {
   constructor(
     private responder: Responder,
     private competitionRepo: CompetitionRepository,
@@ -51,7 +44,7 @@ export default class GetSeasonMatchesUseCase {
     roundRepo = GameRoundRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance()
   ) {
-    return new GetSeasonMatchesUseCase(
+    return new GetRoundMatchesUseCase(
       responder,
       competitionRepo,
       seasonRepo,
@@ -60,35 +53,34 @@ export default class GetSeasonMatchesUseCase {
     );
   }
 
-  async execute({ competition, season }: RequestModel): Promise<void> {
+  async execute({ competition, round, season }: RequestModel): Promise<void> {
     try {
-      const foundCompetition = await lastValueFrom(
-        this.competitionRepo.findOne$({
-          slug: competition,
-        })
+      const validator = makeGetRoundMatchesValidator(
+        this.competitionRepo,
+        this.seasonRepo,
+        this.roundRepo
       );
-      if (!foundCompetition) {
-        throw failWithFetchError(
-          new Error(`No competition with slug ${competition}`)
+      const foundCompetition = await validator.validateCompetition(competition);
+      let foundSeason: Season;
+      if (season) {
+        foundSeason = await validator.validateSeason(competition, season);
+      } else {
+        foundSeason = await validator.validateCurrentSeason(
+          competition,
+          foundCompetition.currentSeason
         );
       }
-
-      const foundSeason = await lastValueFrom(
-        this.seasonRepo.findOne$({
-          'competition.slug': competition,
-          slug: season,
-        })
-      );
-      if (!foundSeason) {
-        throw failWithFetchError(
-          new Error(`No season ${season} for competition ${competition}`)
+      let foundRound: GameRound;
+      if (round) {
+        foundRound = await validator.validateRound(
+          `${competition}-${foundSeason.slug!}`,
+          foundSeason.id!,
+          round
         );
-      }
-
-      const currentRoundId = foundSeason.currentGameRound?.toString();
-      if (!currentRoundId) {
-        throw failWithFetchError(
-          new Error(`No current-round-id for season ${competition}-${season}`)
+      } else {
+        foundRound = await validator.validateCurrentRound(
+          `${competition}-${foundSeason.slug!}`,
+          foundSeason.currentGameRound
         );
       }
 
@@ -96,13 +88,15 @@ export default class GetSeasonMatchesUseCase {
         this.roundRepo.findAll$({ season: foundSeason.id })
       );
       const matches = await lastValueFrom(
-        this.matchRepo.findAll$({ gameRound: currentRoundId })
+        this.matchRepo.findAll$({ gameRound: foundRound.id })
       );
 
       this.responder.respond({
         defaults: {
-          round: currentRoundId,
+          competition: foundCompetition.slug,
+          round: foundRound.slug,
           rounds: rounds,
+          season: foundSeason.slug,
         },
         matches: matches,
       });
@@ -114,7 +108,7 @@ export default class GetSeasonMatchesUseCase {
       throw Result.fail(
         AppError.createError(
           'fetch-failed',
-          'Current-Matches for Season could not be fetched',
+          'Current-Matches for Round could not be fetched',
           err
         ),
         'Internal Server Error'
