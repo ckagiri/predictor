@@ -43,7 +43,7 @@ export class FailureResult<E extends Error>
       ? this.message
       : cause && cause instanceof Error && cause.name
         ? startCase(cause.name)
-        : null;
+        : 'Something went wrong';
   }
 
   readonly isSuccess = false;
