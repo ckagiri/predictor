@@ -1,7 +1,7 @@
 import { JwtPayload } from 'jsonwebtoken';
 import { omit } from 'lodash';
 
-import { User } from '../../../db/models';
+import { User } from '../../../db/models/index.js';
 import { TokenGenerator } from './providers/tokenGenerator.js';
 
 export const mapUserToDto = (

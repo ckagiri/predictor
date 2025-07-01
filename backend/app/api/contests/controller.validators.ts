@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
-import { slugStringSchema } from '../common/validation/schemas';
-import { JoiValidator } from '../common/validation/validatorWrapper';
+import { slugStringSchema } from '../common/validation/schemas.js';
+import { JoiValidator } from '../common/validation/validatorWrapper.js';
 
 const GetCompetitionSchema = Joi.object({
   competition: slugStringSchema.required(),

@@ -4,7 +4,7 @@ import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
 } from '../../../db/repositories/competition.repo.js';
-import { AppError } from '../common/AppError.js';
+import AppError from '../common/AppError.js';
 import Responder from '../common/responders/Responder.js';
 import Result from '../common/result/index.js';
 

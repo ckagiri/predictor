@@ -1,6 +1,6 @@
 import { Response } from 'express';
 
-import { AppError } from '../../common/AppError.js';
+import AppError from '../../common/AppError.js';
 import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';

@@ -6,7 +6,7 @@ export interface ValidationMessage {
   param?: string;
 }
 
-export class AppError extends Error {
+class AppError extends Error {
   code?: string;
   validationErrors?: ValidationMessage[];
 
@@ -53,3 +53,5 @@ export class AppError extends Error {
     });
   }
 }
+
+export default AppError;

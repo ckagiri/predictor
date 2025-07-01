@@ -5,7 +5,7 @@ import { CompetitionRepository } from '../../../../db/repositories/competition.r
 import { GameRoundRepository } from '../../../../db/repositories/gameRound.repo.js';
 import { SeasonRepository } from '../../../../db/repositories/season.repo';
 import Result from '../../../api/common/result/index.js';
-import { AppError } from '../../common/AppError';
+import AppError from '../../common/AppError.js';
 
 export const makeGetRoundMatchesValidator = (
   competitionRepo: CompetitionRepository,

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Request as JWTRequest } from 'express-jwt';
 import createHttpError, { HttpError } from 'http-errors';
 
-import { AppError } from './common/AppError.js';
+import AppError from './common/AppError.js';
 import * as constants from './common/constants.js';
 import HttpRequestModel from './common/interfaces/HttpRequestModel.js';
 
