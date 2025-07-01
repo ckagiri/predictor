@@ -63,7 +63,7 @@ export default class GetRoundsUseCase {
       }
 
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Season-Rounds could not be fetched',
           err

@@ -29,7 +29,7 @@ export default class RequestHandler {
     if (error.isFailure) {
       const appError = error.unwrap() as AppError;
       const httpError = this.makeHttpError(appError);
-      this.errorHandler(httpError, appError, error.message);
+      this.errorHandler(httpError, appError, error.reason);
     } else {
       this.errorHandler(error);
     }
@@ -55,8 +55,8 @@ export default class RequestHandler {
     console.log('Error-Cause ', appError?.cause ?? error.cause ?? 'N/A');
     this.res.status(error.status ?? 500);
     this.res.send({
-      msg: error.msg ?? error.message,
-      reason: failReason ?? 'Something went wrong',
+      message: error.message,
+      reason: failReason,
       validationErrors: appError?.validationErrors,
     });
   }

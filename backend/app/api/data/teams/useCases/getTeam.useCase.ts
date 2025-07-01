@@ -27,8 +27,7 @@ export default class GetTeamUseCase {
 
       if (!foundTeam) {
         throw Result.fail(
-          AppError.createNotFoundError(`Could not find team with slug ${slug}`),
-          'Resource Not Found'
+          AppError.resourceNotFound(`Could not find team with slug ${slug}`)
         );
       }
       this.responder.respond(foundTeam);
@@ -37,7 +36,7 @@ export default class GetTeamUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.createError('fetch-failed', 'Team could not be fetched', err),
+        AppError.create('fetch-failed', 'Team could not be fetched', err),
         'Internal Server Error'
       );
     }

@@ -66,10 +66,7 @@ export default class GetSeasonMatchUseCase {
 
       if (!foundMatch) {
         throw Result.fail(
-          AppError.createNotFoundError(
-            `Could not find Match with slug ${slug}`
-          ),
-          'Resource Not Found'
+          AppError.resourceNotFound(`Could not find Match with slug ${slug}`)
         );
       }
       this.responder.respond(foundMatch);
@@ -78,7 +75,7 @@ export default class GetSeasonMatchUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Season-Match could not be fetched',
           err

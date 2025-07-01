@@ -29,10 +29,9 @@ export default class GetCompetitionUseCase {
 
       if (!foundCompetition) {
         throw Result.fail(
-          AppError.createNotFoundError(
+          AppError.resourceNotFound(
             `Could not find competition with slug ${slug}`
-          ),
-          'Resource Not Found'
+          )
         );
       }
       this.responder.respond(foundCompetition);
@@ -41,7 +40,7 @@ export default class GetCompetitionUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Competition could not be fetched',
           err

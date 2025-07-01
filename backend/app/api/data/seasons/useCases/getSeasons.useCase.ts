@@ -44,7 +44,7 @@ export default class GetSeasonsUseCase {
       }
 
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Competition-Seasons could not be fetched',
           err

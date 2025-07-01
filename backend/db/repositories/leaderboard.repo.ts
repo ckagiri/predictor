@@ -69,7 +69,7 @@ export class LeaderboardRepositoryImpl
     }).pipe(
       mergeMap(p => (p ? of(p) : EMPTY)),
       throwIfEmpty(() =>
-        AppError.createNotFoundError(`leaderboard:${leaderboardId}`)
+        AppError.resourceNotFound(`leaderboard:${leaderboardId}`)
       )
     );
   }

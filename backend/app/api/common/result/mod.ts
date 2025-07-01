@@ -1,3 +1,5 @@
+import { startCase } from 'lodash';
+
 export type Result<T = unknown, E extends Error = Error> =
   | SuccessResult<T>
   | FailureResult<E>;
@@ -33,6 +35,15 @@ export class FailureResult<E extends Error>
 
   get value() {
     return undefined;
+  }
+
+  get reason() {
+    const cause = this.cause;
+    return typeof this.message === 'string' && this.message.length > 0
+      ? this.message
+      : cause && cause instanceof Error && cause.name
+        ? startCase(cause.name)
+        : 'Something went wrong';
   }
 
   readonly isSuccess = false;

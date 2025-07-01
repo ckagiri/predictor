@@ -140,7 +140,7 @@ export class UserScoreRepositoryImpl
           }).pipe(
             mergeMap(s => (s ? of(s) : EMPTY)),
             throwIfEmpty(() =>
-              AppError.createError(`userscore: ${String(userScore.id)}`)
+              AppError.create(`userscore: ${String(userScore.id)}`)
             )
           );
         }

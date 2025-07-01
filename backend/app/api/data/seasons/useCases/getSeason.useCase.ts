@@ -45,10 +45,7 @@ export default class GetSeasonUseCase {
 
       if (!foundSeason) {
         throw Result.fail(
-          AppError.createNotFoundError(
-            `Could not find Season with slug ${slug}`
-          ),
-          'Resource Not Found'
+          AppError.resourceNotFound(`Could not find Season with slug ${slug}`)
         );
       }
       this.responder.respond(foundSeason);
@@ -57,7 +54,7 @@ export default class GetSeasonUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Competition-Season could not be fetched',
           err
