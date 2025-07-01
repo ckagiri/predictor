@@ -66,10 +66,7 @@ export default class GetRoundUseCase {
 
       if (!foundRound) {
         throw Result.fail(
-          AppError.createNotFoundError(
-            `Could not find Round with slug ${slug}`
-          ),
-          'Resource Not Found'
+          AppError.resourceNotFound(`Could not find Round with slug ${slug}`)
         );
       }
       this.responder.respond(foundRound);
@@ -78,7 +75,7 @@ export default class GetRoundUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Competition-Season could not be fetched',
           err

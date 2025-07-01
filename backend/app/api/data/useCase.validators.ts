@@ -26,10 +26,7 @@ export const makeGetSeasonsValidator = (
         },
       ];
 
-      throw Result.fail(
-        AppError.createValidationError('Bad data', errors),
-        'Bad Request'
-      );
+      throw Result.fail(AppError.validationFailed(errors));
     },
   };
 };
@@ -49,7 +46,7 @@ const makeGetSeasonResourcesValidator = (
 
       if (!foundSeason) {
         throw Result.fail(
-          AppError.createValidationError('Bad data', [
+          AppError.validationFailed('Bad data', [
             {
               msg: `No Competition-Season with slug ${season}`,
               param: 'season',
@@ -82,7 +79,7 @@ export const makeGetSeasonTeamsValidator = (
 
       if (!foundSeason) {
         throw Result.fail(
-          AppError.createValidationError('Bad data', [
+          AppError.validationFailed('Bad data', [
             {
               msg: `No Competition-Season with slug ${season}`,
               param: 'season',
@@ -111,7 +108,7 @@ export const makeGetMatchesValidator = (
     validateRound: async (seasonId: string, round: string) => {
       if (!roundRepo) {
         throw Result.fail(
-          AppError.createError(
+          AppError.create(
             'validation-failed',
             'Round repository is not provided'
           ),
@@ -125,7 +122,7 @@ export const makeGetMatchesValidator = (
 
       if (!foundRound) {
         throw Result.fail(
-          AppError.createValidationError('Bad data', [
+          AppError.validationFailed('Bad data', [
             {
               msg: `No Season-Round with slug ${round}`,
               param: 'round',

@@ -63,7 +63,6 @@ export default class GetRoundMatchesUseCase {
       const foundSeason = await validator.validateSeason(competition, season);
       const foundRound = await validator.validateRound(foundSeason.id!, round);
 
-      console.log('foundR', foundRound);
       const foundMatches = await lastValueFrom(
         this.matchRepo.findAll$({ gameRound: foundRound.id }, '-createdAt')
       );
@@ -74,7 +73,7 @@ export default class GetRoundMatchesUseCase {
       }
 
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Round-Matches could not be fetched',
           err

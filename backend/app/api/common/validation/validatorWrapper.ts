@@ -26,7 +26,7 @@ export class JoiValidator implements Validator {
       const FIRST_ERROR = 0;
       const errorMessage = error.details[FIRST_ERROR].message;
       return Result.fail(
-        AppError.createValidationError(errorMessage.replace(/"/g, "'"))
+        AppError.validationFailed(errorMessage.replace(/"/g, "'"))
       );
     }
   }

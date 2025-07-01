@@ -34,7 +34,7 @@ export default class GetCompetitionsUseCase {
       }
 
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Competitions could not be fetched',
           err

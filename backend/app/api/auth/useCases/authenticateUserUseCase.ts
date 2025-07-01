@@ -6,6 +6,7 @@ import {
 } from '../../../../db/repositories/user.repo.js';
 import { AppError } from '../../common/AppError';
 import Responder from '../../common/responders/Responder.js';
+import Result from '../../common/result/index.js';
 import { mapUserToDto } from '../data.mapper.js';
 import {
   PasswordHasher,
@@ -40,25 +41,41 @@ export class AuthenticateUserUseCase {
   }
 
   async execute({ password, username }: RequestModel): Promise<void> {
-    const foundUser = await lastValueFrom(
-      this.userRepository.findOne$({ username })
-    );
+    try {
+      const foundUser = await lastValueFrom(
+        this.userRepository.findOne$({ username })
+      );
 
-    if (!foundUser) {
-      throw AppError.createValidationError('username or password is invalid');
+      if (!foundUser) {
+        throw Result.fail(
+          AppError.validationFailed('username or password is invalid'),
+          'Bad Request'
+        );
+      }
+
+      const isPasswordValid = await this.passwordHasher.comparePasswords(
+        password,
+        foundUser.password!
+      );
+
+      if (!isPasswordValid) {
+        throw Result.fail(
+          AppError.validationFailed('username or password is invalid'),
+          'Bad Request'
+        );
+      }
+
+      const userDto = mapUserToDto(foundUser, this.tokenGen);
+      this.responder.respond({ user: userDto });
+    } catch (err: any) {
+      if (err.isFailure) {
+        throw err;
+      }
+      throw Result.fail(
+        AppError.create('auth-failed', 'Authentication failed', err),
+        'Internal Server Error'
+      );
     }
-
-    const isPasswordValid = await this.passwordHasher.comparePasswords(
-      password,
-      foundUser.password!
-    );
-
-    if (!isPasswordValid) {
-      throw AppError.createValidationError('username or password is invalid');
-    }
-
-    const userDto = mapUserToDto(foundUser, this.tokenGen);
-    this.responder.respond({ user: userDto });
   }
 }
 export { RequestModel };

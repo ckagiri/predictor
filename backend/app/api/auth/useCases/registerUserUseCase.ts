@@ -7,6 +7,7 @@ import {
 } from '../../../../db/repositories/user.repo.js';
 import { AppError } from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
+import Result from '../../common/result/index.js';
 import { mapUserToDto } from '../data.mapper.js';
 import {
   PasswordHasher,
@@ -45,32 +46,49 @@ export class RegisterUserUseCase {
   }
 
   async execute({ password, username }: RequestModel): Promise<any> {
-    if (!isPasswordAllowed(password)) {
-      throw AppError.createValidationError('password is not strong enough');
-    }
+    try {
+      if (!isPasswordAllowed(password)) {
+        throw Result.fail(
+          AppError.validationFailed('password is not strong enough')
+        );
+      }
 
-    if (!isUsernameAllowed(username)) {
-      throw AppError.createValidationError(
-        'username limited to 4-15 alphanumeric (except underscore) characters'
+      if (!isUsernameAllowed(username)) {
+        throw Result.fail(
+          AppError.validationFailed(
+            'username limited to 4-15 alphanumeric (except underscore) characters'
+          )
+        );
+      }
+
+      const existingUser = await lastValueFrom(
+        this.userRepository.findOne$({ username })
+      );
+      if (existingUser) {
+        throw Result.fail(
+          AppError.validationFailed('username is already taken'),
+          'Conflict'
+        );
+      }
+
+      const passwordHashed = await this.passwordHasher.hashPassword(password);
+      const newUser = await lastValueFrom(
+        this.userRepository.create$({
+          password: passwordHashed,
+          username,
+        } as User)
+      );
+      const userDto = mapUserToDto(newUser, this.tokenGen);
+      this.responder.respond({ user: userDto });
+    } catch (err: any) {
+      if (err.isFailure) {
+        throw err;
+      }
+      throw Result.fail(
+        AppError.create('auth-failed', 'Registration failed', err),
+        'Internal Server Error'
       );
     }
-
-    const existingUser = await lastValueFrom(
-      this.userRepository.findOne$({ username })
-    );
-    if (existingUser) {
-      throw AppError.createValidationError('username is already taken');
-    }
-
-    const passwordHashed = await this.passwordHasher.hashPassword(password);
-    const newUser = await lastValueFrom(
-      this.userRepository.create$({
-        password: passwordHashed,
-        username,
-      } as User)
-    );
-    const userDto = mapUserToDto(newUser, this.tokenGen);
-    this.responder.respond({ user: userDto });
   }
 }
 

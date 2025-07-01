@@ -29,11 +29,11 @@ export class AppError extends Error {
     this.validationErrors = validationErrors;
   }
 
-  static createError(name: string, message?: string, cause?: Error) {
+  static create(name: string, message?: string, cause?: Error) {
     return new AppError({ cause, message, name });
   }
 
-  static createNotFoundError(message: string) {
+  static resourceNotFound(message: string) {
     return new AppError({
       code: constants.ERR_VALUE_NOT_FOUND,
       message,
@@ -41,15 +41,15 @@ export class AppError extends Error {
     });
   }
 
-  static createValidationError(
-    message: string,
+  static validationFailed(
+    message: string | ValidationMessage[],
     validationErrors?: ValidationMessage[]
   ) {
     return new AppError({
       code: constants.ERR_VALIDATION,
-      message,
-      name: 'validation-errors',
-      validationErrors,
+      message: typeof message === 'string' ? message : 'Validation failed',
+      name: 'bad-request',
+      validationErrors: Array.isArray(message) ? message : validationErrors,
     });
   }
 }

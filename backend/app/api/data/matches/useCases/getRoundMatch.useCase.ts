@@ -81,10 +81,7 @@ export default class GetRoundMatchUseCase {
 
       if (!foundMatch) {
         throw Result.fail(
-          AppError.createNotFoundError(
-            `Could not find Match with slug ${slug}`
-          ),
-          'Resource Not Found'
+          AppError.resourceNotFound(`Could not find Match with slug ${slug}`)
         );
       }
       this.responder.respond(foundMatch);
@@ -93,7 +90,7 @@ export default class GetRoundMatchUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Round-Match could not be fetched',
           err
