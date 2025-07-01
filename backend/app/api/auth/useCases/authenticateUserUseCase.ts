@@ -48,8 +48,7 @@ export class AuthenticateUserUseCase {
 
       if (!foundUser) {
         throw Result.fail(
-          AppError.validationFailed('username or password is invalid'),
-          'Bad Request'
+          AppError.validationFailed('username or password is invalid')
         );
       }
 
@@ -60,8 +59,7 @@ export class AuthenticateUserUseCase {
 
       if (!isPasswordValid) {
         throw Result.fail(
-          AppError.validationFailed('username or password is invalid'),
-          'Bad Request'
+          AppError.validationFailed('username or password is invalid')
         );
       }
 
