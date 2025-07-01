@@ -106,7 +106,7 @@ export default class GetRoundMatchesUseCase {
       }
 
       throw Result.fail(
-        AppError.createError(
+        AppError.create(
           'fetch-failed',
           'Current-Matches for Round could not be fetched',
           err

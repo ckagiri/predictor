@@ -1,21 +1,11 @@
-import { AppError } from 'app/api/common/AppError';
-import Result from 'app/api/common/result';
-import { CompetitionRepository } from 'db/repositories/competition.repo';
-import { SeasonRepository } from 'db/repositories/season.repo';
 import { ObjectId } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 
+import { CompetitionRepository } from '../../../../db/repositories/competition.repo.js';
 import { GameRoundRepository } from '../../../../db/repositories/gameRound.repo.js';
-
-const failWithFetchError = (error: Error) =>
-  Result.fail(
-    AppError.createError(
-      'fetch-failed',
-      'Matches for Round could not be fetched',
-      error
-    ),
-    'Internal Server Error'
-  );
+import { SeasonRepository } from '../../../../db/repositories/season.repo';
+import Result from '../../../api/common/result/index.js';
+import { AppError } from '../../common/AppError';
 
 export const makeGetRoundMatchesValidator = (
   competitionRepo: CompetitionRepository,
@@ -30,8 +20,8 @@ export const makeGetRoundMatchesValidator = (
         })
       );
       if (!foundCompetition) {
-        throw failWithFetchError(
-          new Error(`No competition with slug ${competition}`)
+        throw Result.fail(
+          AppError.validationFailed(`No competition with slug ${competition}`)
         );
       }
       return foundCompetition;
@@ -41,16 +31,20 @@ export const makeGetRoundMatchesValidator = (
       currentRoundId?: string | ObjectId
     ) => {
       if (!currentRoundId) {
-        throw failWithFetchError(
-          new Error(`No current-round-id for season ${competitionSeason}`)
+        throw Result.fail(
+          AppError.validationFailed(
+            `No current-round-id for season ${competitionSeason}`
+          )
         );
       }
       const currentRound = await lastValueFrom(
         roundRepo.findById$(currentRoundId)
       );
       if (!currentRound) {
-        throw failWithFetchError(
-          new Error(`No current round for season ${competitionSeason}`)
+        throw Result.fail(
+          AppError.validationFailed(
+            `No current round for season ${competitionSeason}`
+          )
         );
       }
       return currentRound;
@@ -60,16 +54,20 @@ export const makeGetRoundMatchesValidator = (
       currentSeasonId?: string | ObjectId
     ) => {
       if (!currentSeasonId) {
-        throw failWithFetchError(
-          new Error(`No current-season-id for competition ${competition}`)
+        throw Result.fail(
+          AppError.validationFailed(
+            `No current-season-id for competition ${competition}`
+          )
         );
       }
       const currentSeason = await lastValueFrom(
         seasonRepo.findById$(currentSeasonId)
       );
       if (!currentSeason) {
-        throw failWithFetchError(
-          new Error(`No current season for competition ${competition}`)
+        throw Result.fail(
+          AppError.validationFailed(
+            `No current season for competition ${competition}`
+          )
         );
       }
       return currentSeason;
@@ -83,8 +81,10 @@ export const makeGetRoundMatchesValidator = (
         roundRepo.findOne$({ season: seasonId, slug: round })
       );
       if (!foundRound) {
-        throw failWithFetchError(
-          new Error(`No round ${round} for season ${competitionSeason}`)
+        throw Result.fail(
+          AppError.validationFailed(
+            `No round ${round} for season ${competitionSeason}`
+          )
         );
       }
       return foundRound;
@@ -97,8 +97,10 @@ export const makeGetRoundMatchesValidator = (
         })
       );
       if (!foundSeason) {
-        throw failWithFetchError(
-          new Error(`No season ${season} for competition ${competition}`)
+        throw Result.fail(
+          AppError.validationFailed(
+            `No season ${season} for competition ${competition}`
+          )
         );
       }
       return foundSeason;

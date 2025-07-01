@@ -1,4 +1,3 @@
-import { AppError } from 'app/api/common/AppError.js';
 import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap, throwIfEmpty } from 'rxjs/operators';
 
@@ -139,9 +138,7 @@ export class UserScoreRepositoryImpl
             },
           }).pipe(
             mergeMap(s => (s ? of(s) : EMPTY)),
-            throwIfEmpty(() =>
-              AppError.create(`userscore: ${String(userScore.id)}`)
-            )
+            throwIfEmpty(() => new Error(`userscore: ${String(userScore.id)}`))
           );
         }
       })

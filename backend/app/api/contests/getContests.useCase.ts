@@ -37,11 +37,7 @@ export default class GetContestsUseCase {
       }
 
       throw Result.fail(
-        AppError.createError(
-          'fetch-failed',
-          'Contests could not be fetched',
-          err
-        ),
+        AppError.create('fetch-failed', 'Contests could not be fetched', err),
         'Internal Server Error'
       );
     }
