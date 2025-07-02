@@ -1,7 +1,6 @@
-import { omit } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
-import { Match, Prediction, Season } from '../../../../../db/models/index.js';
+import { Match } from '../../../../../db/models/index.js';
 import { CompetitionRepositoryImpl } from '../../../../../db/repositories/competition.repo';
 import { GameRoundRepositoryImpl } from '../../../../../db/repositories/gameRound.repo';
 import { MatchRepositoryImpl } from '../../../../../db/repositories/match.repo';
@@ -15,10 +14,10 @@ import GetRoundMatchesUseCase from './getRoundMatches.useCase';
 
 export interface RequestModel {
   competition: string;
-  loggedInUserId?: string;
-  match: string;
-  round?: string;
-  season?: string;
+  loggedInUserId: string;
+  matchSlug: string;
+  round: string;
+  season: string;
 }
 
 export default class PickJokerUseCase extends GetRoundMatchesUseCase {
@@ -44,14 +43,11 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
   async execute({
     competition,
     loggedInUserId,
-    match,
+    matchSlug,
     round,
     season,
   }: RequestModel): Promise<void> {
     try {
-      if (!loggedInUserId) {
-        throw Result.fail(AppError.unauthorized());
-      }
       const foundCompetition = await this.findCompetition(competition);
       const foundSeason = await this.findSeason(foundCompetition, season);
       const [foundRound] = await this.findRound(foundSeason, round);
@@ -61,12 +57,12 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
       )) as Match[];
       const foundMatch = this.findMatch(
         foundSeason,
-        round!,
+        round,
         roundMatches,
-        match
+        matchSlug
       );
 
-      const jokerPredictions = await this.getJokerPredictions(
+      const jokerPredictions = await this.pickJoker(
         loggedInUserId,
         foundMatch,
         roundMatches
@@ -85,14 +81,9 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
     }
   }
 
-  async getJokerPredictions(
-    userId: string,
-    match: Match,
-    roundMatches: Match[]
-  ) {
-    const jokers = await lastValueFrom(
+  async pickJoker(userId: string, match: Match, roundMatches: Match[]) {
+    return await lastValueFrom(
       this.predictionRepo.pickJoker$(userId, match, roundMatches)
     );
-    return jokers.map((joker: Prediction) => omit(joker, ['createdAt']));
   }
 }
