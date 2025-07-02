@@ -134,7 +134,7 @@ export default class GetRoundMatchesUseCase {
     }
   }
 
-  async findRound(
+  protected async findRound(
     season: Season,
     round: string | undefined
   ): Promise<[GameRound, GameRound[]]> {
@@ -163,7 +163,10 @@ export default class GetRoundMatchesUseCase {
     return [foundRound, rounds];
   }
 
-  async findSeason(competition: Competition, seasonSlug: string | undefined) {
+  protected async findSeason(
+    competition: Competition,
+    seasonSlug: string | undefined
+  ) {
     const competitionSlug = competition.slug;
     const currentSeason = competition.currentSeason;
     if (seasonSlug) {
@@ -176,11 +179,11 @@ export default class GetRoundMatchesUseCase {
     );
   }
 
-  async findCompetition(competition: string) {
+  protected async findCompetition(competition: string) {
     return await this.validator.validateCompetition(competition);
   }
 
-  async getPredictorId(
+  protected async getPredictorId(
     loggedInUserId: string | undefined,
     predictorUsername: string | undefined
   ) {
@@ -200,7 +203,7 @@ export default class GetRoundMatchesUseCase {
     return userId;
   }
 
-  async getMatchesWithPredictions(
+  protected async getMatchesWithPredictions(
     roundMatches: Match[],
     userId: string | undefined
   ) {
@@ -227,7 +230,7 @@ export default class GetRoundMatchesUseCase {
     }
   }
 
-  async getRoundMatches(roundId: string) {
+  protected async getRoundMatches(roundId: string) {
     const getTime = (date?: Date | number | string): number =>
       date != null ? new Date(date).getTime() : 0;
 
@@ -246,5 +249,24 @@ export default class GetRoundMatchesUseCase {
           homeTeam: match.homeTeam?.id,
         };
       });
+  }
+
+  protected findMatch(
+    season: Season,
+    round: string,
+    roundMatches: Match[],
+    match: string
+  ) {
+    const foundMatch = roundMatches.find(m => m.slug === match);
+    if (!foundMatch) {
+      const competitionSlug = String(season.competition?.slug);
+      const seasonSlug = String(season.slug);
+      throw Result.fail(
+        AppError.validationFailed(
+          `No match ${match} found in round ${round} for season ${competitionSlug}-${seasonSlug}`
+        )
+      );
+    }
+    return foundMatch;
   }
 }

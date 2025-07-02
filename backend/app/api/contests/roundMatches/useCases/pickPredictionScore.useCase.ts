@@ -1,6 +1,7 @@
 import { omit } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
+import { Score } from '../../../../../common/score.js';
 import { Match, Prediction, Season } from '../../../../../db/models/index.js';
 import { CompetitionRepositoryImpl } from '../../../../../db/repositories/competition.repo';
 import { GameRoundRepositoryImpl } from '../../../../../db/repositories/gameRound.repo';
@@ -18,10 +19,11 @@ export interface RequestModel {
   loggedInUserId?: string;
   match: string;
   round?: string;
+  scoreChoice: Score;
   season?: string;
 }
 
-export default class PickJokerUseCase extends GetRoundMatchesUseCase {
+export default class PickPredictionScore extends GetRoundMatchesUseCase {
   static getInstance(
     responder: Responder,
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
@@ -31,7 +33,7 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
     userRepo = UserRepositoryImpl.getInstance(),
     predictionRepo = PredictionRepositoryImpl.getInstance()
   ) {
-    return new PickJokerUseCase(
+    return new PickPredictionScore(
       responder,
       competitionRepo,
       seasonRepo,
@@ -46,6 +48,7 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
     loggedInUserId,
     match,
     round,
+    scoreChoice,
     season,
   }: RequestModel): Promise<void> {
     try {
@@ -66,20 +69,22 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
         match
       );
 
-      const jokerPredictions = await this.getJokerPredictions(
-        loggedInUserId,
-        foundMatch,
-        roundMatches
+      const pick = await lastValueFrom(
+        this.predictionRepo.pickScore$(
+          loggedInUserId,
+          foundMatch,
+          roundMatches,
+          scoreChoice
+        )
       );
-
-      this.responder.respond(jokerPredictions);
+      this.responder.respond(pick);
     } catch (err: any) {
       if (err.isFailure) {
         throw err;
       }
 
       throw Result.fail(
-        AppError.create('request-failed', 'Failed to pick round joker', err),
+        AppError.create('request-failed', 'Failed to make prediction', err),
         'Internal Server Error'
       );
     }
