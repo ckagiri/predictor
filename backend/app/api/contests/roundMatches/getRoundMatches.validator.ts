@@ -1,19 +1,39 @@
 import { ObjectId } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 
+import { Competition, GameRound, Season } from '../../../../db/models/index.js';
 import { CompetitionRepository } from '../../../../db/repositories/competition.repo.js';
 import { GameRoundRepository } from '../../../../db/repositories/gameRound.repo.js';
 import { SeasonRepository } from '../../../../db/repositories/season.repo';
 import Result from '../../../api/common/result/index.js';
 import AppError from '../../common/AppError.js';
 
+export interface GetRoundMatchesValidator {
+  validateCompetition: (competition: string) => Promise<Competition>;
+  validateCurrentRound: (
+    competitionSeason: string,
+    currentRoundId?: string | ObjectId
+  ) => Promise<GameRound>;
+  validateCurrentSeason: (
+    competition: string,
+    currentSeasonId?: string | ObjectId
+  ) => Promise<Season>;
+  validateRound: (
+    competitionSeason: string,
+    seasonId: string,
+    round: string
+  ) => Promise<GameRound>;
+  validateSeason: (competition: string, season: string) => Promise<Season>;
+}
+
 export const makeGetRoundMatchesValidator = (
   competitionRepo: CompetitionRepository,
   seasonRepo: SeasonRepository,
   roundRepo: GameRoundRepository
-) => {
+): GetRoundMatchesValidator => {
   return {
     validateCompetition: async (competition: string) => {
+      console.log('valid');
       const foundCompetition = await lastValueFrom(
         competitionRepo.findOne$({
           slug: competition,

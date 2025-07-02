@@ -109,6 +109,6 @@ const isPasswordAllowed = (password: string): boolean => {
 };
 
 const isUsernameAllowed = (username: string): boolean => {
-  // 4-15 alphanumeric characters (with exception of underscore)
-  return /^[A-Za-z0-9_]{4,15}$/.test(username);
+  // 4-32 alphanumeric characters (with exception of underscore)
+  return /^[A-Za-z0-9_]{4,32}$/.test(username);
 };
