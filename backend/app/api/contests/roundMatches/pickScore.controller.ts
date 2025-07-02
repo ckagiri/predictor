@@ -5,7 +5,7 @@ import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getRoundMatchesValidator as getMatchesValidator } from '../controller.validators.js';
+import { pickScoreValidator } from '../controller.validators.js';
 import PickScoreUseCase, {
   RequestModel,
 } from './useCases/pickScore.useCase.js';
@@ -18,7 +18,7 @@ class PickScoreController {
 
   static getInstance(
     pickScoreUseCase: PickScoreUseCase,
-    validation = getMatchesValidator
+    validation = pickScoreValidator
   ) {
     return new PickScoreController(pickScoreUseCase, validation);
   }
