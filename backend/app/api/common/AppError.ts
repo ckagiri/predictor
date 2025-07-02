@@ -41,6 +41,14 @@ class AppError extends Error {
     });
   }
 
+  static unauthorized() {
+    return new AppError({
+      code: constants.ERR_UNAUTHORIZED,
+      message: 'valid authentication credentials were not provided',
+      name: 'unauthorized',
+    });
+  }
+
   static validationFailed(
     message: string | ValidationMessage[],
     validationErrors?: ValidationMessage[]

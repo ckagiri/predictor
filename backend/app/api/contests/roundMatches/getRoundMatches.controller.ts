@@ -25,12 +25,12 @@ class GetRoundMatchesController {
 
   async processRequest(request: HttpRequestModel): Promise<void> {
     const { competition, round, season } = request.params;
-    const predictor = request.query.predictor as string | undefined;
-    const authId = request.auth?.id;
+    const predictorUsername = request.query.predictor as string | undefined;
+    const loggedInUserId = request.auth?.id;
     const requestValidated = await this.validation.validate<RequestModel>({
-      authId,
       competition,
-      predictor,
+      loggedInUserId,
+      predictorUsername,
       round,
       season,
     });

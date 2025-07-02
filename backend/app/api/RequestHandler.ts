@@ -69,6 +69,11 @@ export default class RequestHandler {
     }
 
     const httpErrorCreatorByCode: Record<string, () => HttpError> = {
+      [constants.ERR_UNAUTHORIZED]: () => {
+        return createHttpError(401, appError.message, {
+          headers: { 'WWW-Authenticate': 'Bearer' },
+        });
+      },
       [constants.ERR_VALIDATION]: () => createHttpError(400, appError),
       [constants.ERR_VALUE_NOT_FOUND]: () => createHttpError(404, appError),
     };

@@ -33,7 +33,6 @@ export const makeGetRoundMatchesValidator = (
 ): GetRoundMatchesValidator => {
   return {
     validateCompetition: async (competition: string) => {
-      console.log('valid');
       const foundCompetition = await lastValueFrom(
         competitionRepo.findOne$({
           slug: competition,

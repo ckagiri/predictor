@@ -41,9 +41,9 @@ import {
 } from '../getRoundMatches.validator.js';
 
 export interface RequestModel {
-  authId?: string;
   competition: string;
-  predictor?: string;
+  loggedInUserId?: string;
+  predictorUsername?: string;
   round?: string;
   season?: string;
 }
@@ -52,13 +52,13 @@ export default class GetRoundMatchesUseCase {
   private readonly validator: GetRoundMatchesValidator;
 
   constructor(
-    private responder: Responder,
-    private competitionRepo: CompetitionRepository,
-    private seasonRepo: SeasonRepository,
-    private roundRepo: GameRoundRepository,
-    private matchRepo: MatchRepository,
-    private userRepo: UserRepository,
-    private predictionRepo: PredictionRepository
+    protected responder: Responder,
+    protected competitionRepo: CompetitionRepository,
+    protected seasonRepo: SeasonRepository,
+    protected roundRepo: GameRoundRepository,
+    protected matchRepo: MatchRepository,
+    protected userRepo: UserRepository,
+    protected predictionRepo: PredictionRepository
   ) {
     this.validator = makeGetRoundMatchesValidator(
       this.competitionRepo,
@@ -88,9 +88,9 @@ export default class GetRoundMatchesUseCase {
   }
 
   async execute({
-    authId: loggedInUserId,
     competition,
-    predictor: predictorUsername,
+    loggedInUserId,
+    predictorUsername,
     round,
     season,
   }: RequestModel): Promise<void> {
@@ -125,7 +125,7 @@ export default class GetRoundMatchesUseCase {
 
       throw Result.fail(
         AppError.create(
-          'fetch-failed',
+          'request-failed',
           'Current-Matches for Round could not be fetched',
           err
         ),
