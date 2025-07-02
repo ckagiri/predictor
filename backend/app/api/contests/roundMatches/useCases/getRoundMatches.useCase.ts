@@ -203,33 +203,6 @@ export default class GetRoundMatchesUseCase {
     return userId;
   }
 
-  protected async getMatchesWithPredictions(
-    roundMatches: Match[],
-    userId: string | undefined
-  ) {
-    if (!userId) return roundMatches;
-
-    const userPredictions = await lastValueFrom(
-      this.predictionRepo.findOrCreatePredictions$(userId, roundMatches)
-    );
-    return roundMatches.map(match => {
-      const prediction = userPredictions.find(
-        prediction => prediction.match.toString() === match.id
-      );
-      if (!prediction) {
-        return match;
-      }
-      return {
-        ...match,
-        prediction: mapPrediction(prediction),
-      };
-    });
-
-    function mapPrediction(prediction: Prediction) {
-      return omit(prediction, 'createdAt', 'updatedAt');
-    }
-  }
-
   protected async getRoundMatches(roundId: string) {
     const getTime = (date?: Date | number | string): number =>
       date != null ? new Date(date).getTime() : 0;
@@ -268,5 +241,28 @@ export default class GetRoundMatchesUseCase {
       );
     }
     return foundMatch;
+  }
+
+  private async getMatchesWithPredictions(
+    roundMatches: Match[],
+    userId: string | undefined
+  ) {
+    if (!userId) return roundMatches;
+
+    const userPredictions = await lastValueFrom(
+      this.predictionRepo.findOrCreatePredictions$(userId, roundMatches)
+    );
+    return roundMatches.map(match => {
+      const prediction = userPredictions.find(
+        prediction => prediction.match.toString() === match.id
+      );
+      if (!prediction) {
+        return match;
+      }
+      return {
+        ...match,
+        prediction,
+      };
+    });
   }
 }
