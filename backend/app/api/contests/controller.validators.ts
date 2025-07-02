@@ -30,7 +30,7 @@ const predictionSlipSchema = Joi.object()
 
 const PickScoreSchema = Joi.object({
   competition: slugStringSchema.required(),
-  loggedInUserId: Joi.string().optional(),
+  loggedInUserId: Joi.string().required(),
   predictionSlipSchema: predictionSlipSchema.required(),
   round: Joi.string().max(20).required(),
   season: Joi.string().min(4).max(9).required(),
@@ -40,13 +40,25 @@ export const pickScoreValidator = new JoiValidator(PickScoreSchema);
 
 const PickJokerSchema = Joi.object({
   competition: slugStringSchema.required(),
-  loggedInUserId: Joi.string().optional(),
+  loggedInUserId: Joi.string().required(),
   matchSlug: Joi.string().min(9).max(9).required(),
   round: Joi.string().max(20).required(),
   season: Joi.string().min(4).max(9).required(),
 });
 
 export const pickJokerValidator = new JoiValidator(PickJokerSchema);
+
+const AutoPickPredictionsSchema = Joi.object({
+  competition: slugStringSchema.required(),
+  loggedInUserId: Joi.string().required(),
+  predictionSlipSchema: predictionSlipSchema.required(),
+  round: Joi.string().max(20).required(),
+  season: Joi.string().min(4).max(9).required(),
+});
+
+export const autoPickPredictionsValidator = new JoiValidator(
+  AutoPickPredictionsSchema
+);
 
 const GetRoundMatchesSchema = Joi.object({
   competition: slugStringSchema.required(),

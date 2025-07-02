@@ -24,7 +24,7 @@ class AppError extends Error {
     validationErrors?: ValidationMessage[];
   }) {
     super(message, { cause });
-    this.name = name;
+    this.name = name || 'internal-server-error';
     this.code = code;
     this.validationErrors = validationErrors;
   }

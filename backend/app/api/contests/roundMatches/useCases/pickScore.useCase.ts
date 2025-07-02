@@ -68,7 +68,11 @@ export default class PickScore extends GetRoundMatchesUseCase {
       }
 
       throw Result.fail(
-        AppError.create('request-failed', 'Failed to make prediction', err),
+        AppError.create(
+          'request-failed',
+          'Failed to pick prediction scores',
+          err
+        ),
         'Internal Server Error'
       );
     }
