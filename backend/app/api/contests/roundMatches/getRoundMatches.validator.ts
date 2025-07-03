@@ -85,7 +85,10 @@ export const makeGetRoundMatchesValidator = (
         );
       }
       const currentSeason = await lastValueFrom(
-        seasonRepo.findById$(currentSeasonId)
+        seasonRepo.findById$(currentSeasonId, null, {
+          path: 'teams',
+          select: '-createdAt',
+        })
       );
       if (!currentSeason) {
         throw Result.fail(
@@ -115,10 +118,11 @@ export const makeGetRoundMatchesValidator = (
     },
     validateSeason: async (competition: string, season: string) => {
       const foundSeason = await lastValueFrom(
-        seasonRepo.findOne$({
-          'competition.slug': competition,
-          slug: season,
-        })
+        seasonRepo.findOne$(
+          { 'competition.slug': competition, slug: season },
+          null,
+          { path: 'teams', select: '-createdAt' }
+        )
       );
       if (!foundSeason) {
         throw Result.fail(

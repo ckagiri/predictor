@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-objects */
 import { lastValueFrom } from 'rxjs';
 
 import {
@@ -108,12 +109,11 @@ export default class GetRoundMatchesUseCase {
         userId
       );
       this.responder.respond({
-        defaults: {
-          competition: foundCompetition.slug,
-          round: foundRound.slug,
-          rounds: rounds,
-          season: foundSeason.slug,
-        },
+        competition: foundCompetition.slug,
+        season: foundSeason.slug,
+        round: foundRound.slug,
+        rounds: rounds,
+        teams: foundSeason.teams ?? [],
         matches: matchesWithPredictions,
       });
     } catch (err: any) {

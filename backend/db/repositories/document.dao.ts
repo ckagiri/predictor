@@ -164,11 +164,14 @@ export class DocumentDao<T extends Entity> {
 
   findById(
     id: string | ObjectId,
-    projection?: ProjectionType<T> | null
+    projection?: ProjectionType<T> | null,
+    join?: PopulateOptions | PopulateOptions[]
   ): Promise<T | null> {
-    return this.Model.findById(id, projection)
-      .lean({ transform })
-      .exec() as Promise<T | null>;
+    const query = this.Model.findById(id, projection);
+    if (join) {
+      query.populate(join);
+    }
+    return query.lean({ transform }).exec() as Promise<T | null>;
   }
 
   findByIdAndUpdate(
