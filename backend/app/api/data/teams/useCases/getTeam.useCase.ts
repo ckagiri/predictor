@@ -36,7 +36,7 @@ export default class GetTeamUseCase {
         throw err;
       }
       throw Result.fail(
-        AppError.create('fetch-failed', 'Team could not be fetched', err),
+        AppError.create('request-failed', 'Team could not be fetched', err),
         'Internal Server Error'
       );
     }

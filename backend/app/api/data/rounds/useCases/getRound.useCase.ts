@@ -72,7 +72,7 @@ export default class GetRoundUseCase {
       }
       throw Result.fail(
         AppError.create(
-          'fetch-failed',
+          'request-failed',
           'Competition-Season could not be fetched',
           err
         ),

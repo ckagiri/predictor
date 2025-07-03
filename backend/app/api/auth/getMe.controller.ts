@@ -1,5 +1,6 @@
 import { Response } from 'express';
 
+import AppError from '../common/AppError.js';
 import Controller from '../common/interfaces/Controller.js';
 import HttpRequestModel from '../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../common/responders/ok.responder.js';
@@ -28,7 +29,7 @@ class GetMeController implements Controller {
         user: mapUserToDto(request.auth, this.tokenGen),
       });
     } else {
-      throw Result.fail(new Error('User not authenticated'), 'Unauthorized');
+      throw Result.fail(AppError.unauthorized());
     }
   }
 }
