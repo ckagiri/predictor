@@ -3,7 +3,7 @@ import { Response } from 'express';
 import AppError from '../../common/AppError.js';
 import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
-import Result from '../../common/result/index.js';
+import Result, { FailureResult } from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
 import { pickJokerValidator } from '../controller.validators.js';
 import PickJokerUseCase, {
@@ -39,7 +39,7 @@ class PickJokerController {
       season,
     });
     if (requestValidated.isFailure) {
-      throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
+      throw requestValidated as FailureResult<AppError>;
     }
 
     const requestModel = requestValidated.value!;
