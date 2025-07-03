@@ -6,7 +6,7 @@ export interface ValidationMessage {
   param?: string;
 }
 
-export class AppError extends Error {
+class AppError extends Error {
   code?: string;
   validationErrors?: ValidationMessage[];
 
@@ -24,7 +24,7 @@ export class AppError extends Error {
     validationErrors?: ValidationMessage[];
   }) {
     super(message, { cause });
-    this.name = name;
+    this.name = name || 'internal-server-error';
     this.code = code;
     this.validationErrors = validationErrors;
   }
@@ -41,6 +41,14 @@ export class AppError extends Error {
     });
   }
 
+  static unauthorized() {
+    return new AppError({
+      code: constants.ERR_UNAUTHORIZED,
+      message: 'valid authentication credentials were not provided',
+      name: 'unauthorized',
+    });
+  }
+
   static validationFailed(
     message: string | ValidationMessage[],
     validationErrors?: ValidationMessage[]
@@ -53,3 +61,5 @@ export class AppError extends Error {
     });
   }
 }
+
+export default AppError;

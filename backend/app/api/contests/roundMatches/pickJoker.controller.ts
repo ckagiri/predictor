@@ -5,28 +5,36 @@ import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getRoundMatchesValidator as getMatchesValidator } from './matches.validator.js';
-import GetRoundMatchesUseCase, {
+import { pickJokerValidator } from '../controller.validators.js';
+import PickJokerUseCase, {
   RequestModel,
-} from './useCases/getRoundMatches.useCase.js';
+} from './useCases/pickJoker.useCase.js';
 
-class GetRoundMatchesController {
+class PickJokerController {
   constructor(
-    private readonly getMatchesUseCase: GetRoundMatchesUseCase,
+    private readonly pickJokerUseCase: PickJokerUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getMatchesUseCase: GetRoundMatchesUseCase,
-    validation = getMatchesValidator
+    pickJokerUseCase: PickJokerUseCase,
+    validation = pickJokerValidator
   ) {
-    return new GetRoundMatchesController(getMatchesUseCase, validation);
+    return new PickJokerController(pickJokerUseCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
+    const loggedInUserId = request.auth?.id as string | undefined;
+    if (!loggedInUserId) {
+      throw Result.fail(AppError.unauthorized());
+    }
+
     const { competition, round, season } = request.params;
+    const matchSlug = request.body as string | undefined;
     const requestValidated = await this.validation.validate<RequestModel>({
       competition,
+      loggedInUserId,
+      matchSlug,
       round,
       season,
     });
@@ -35,12 +43,12 @@ class GetRoundMatchesController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getMatchesUseCase.execute(requestModel);
+    await this.pickJokerUseCase.execute(requestModel);
   }
 }
 
-export const makeGetRoundMatchesController = (res: Response) => {
+export const makePickJokerController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchesUseCase = GetRoundMatchesUseCase.getInstance(okResponder);
-  return GetRoundMatchesController.getInstance(getMatchesUseCase);
+  const pickJokerUseCase = PickJokerUseCase.getInstance(okResponder);
+  return PickJokerController.getInstance(pickJokerUseCase);
 };

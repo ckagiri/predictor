@@ -1,4 +1,3 @@
-import { AppError } from 'app/api/common/AppError.js';
 import { EMPTY, mergeMap, Observable, of, throwIfEmpty, toArray } from 'rxjs';
 
 import LeaderboardModel, {
@@ -68,9 +67,7 @@ export class LeaderboardRepositoryImpl
       $addToSet: { matches: { $each: matchIds } },
     }).pipe(
       mergeMap(p => (p ? of(p) : EMPTY)),
-      throwIfEmpty(() =>
-        AppError.resourceNotFound(`leaderboard:${leaderboardId}`)
-      )
+      throwIfEmpty(() => new Error(`leaderboard:${leaderboardId}`))
     );
   }
 

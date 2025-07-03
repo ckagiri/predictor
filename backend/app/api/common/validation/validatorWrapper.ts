@@ -1,6 +1,6 @@
 import { ValidationError as joiError, ObjectSchema } from 'joi';
 
-import { AppError } from '../AppError.js';
+import AppError from '../AppError.js';
 import Result from '../result/index.js';
 import Validator from './validator.js';
 

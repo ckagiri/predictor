@@ -3,7 +3,7 @@ import { lastValueFrom } from 'rxjs';
 import { CompetitionRepository } from '../../../db/repositories/competition.repo';
 import { GameRoundRepository } from '../../../db/repositories/gameRound.repo';
 import { SeasonRepository } from '../../../db/repositories/season.repo';
-import { AppError, ValidationMessage } from '../common/AppError';
+import AppError from '../common/AppError';
 import Result from '../common/result';
 
 export const makeGetSeasonsValidator = (
@@ -17,16 +17,17 @@ export const makeGetSeasonsValidator = (
         })
       );
 
-      if (foundCompetition) return;
-
-      const errors: ValidationMessage[] = [
-        {
-          msg: `No competition with slug ${competition}`,
-          param: 'competition',
-        },
-      ];
-
-      throw Result.fail(AppError.validationFailed(errors));
+      if (!foundCompetition) {
+        throw Result.fail(
+          AppError.validationFailed([
+            {
+              msg: `No competition with slug ${competition}`,
+              param: 'competition',
+            },
+          ])
+        );
+      }
+      return foundCompetition;
     },
   };
 };
@@ -46,13 +47,12 @@ const makeGetSeasonResourcesValidator = (
 
       if (!foundSeason) {
         throw Result.fail(
-          AppError.validationFailed('Bad data', [
+          AppError.validationFailed([
             {
               msg: `No Competition-Season with slug ${season}`,
               param: 'season',
             },
-          ]),
-          'Bad Request'
+          ])
         );
       }
 
@@ -79,13 +79,12 @@ export const makeGetSeasonTeamsValidator = (
 
       if (!foundSeason) {
         throw Result.fail(
-          AppError.validationFailed('Bad data', [
+          AppError.validationFailed([
             {
               msg: `No Competition-Season with slug ${season}`,
               param: 'season',
             },
-          ]),
-          'Bad Request'
+          ])
         );
       }
 
@@ -108,11 +107,7 @@ export const makeGetMatchesValidator = (
     validateRound: async (seasonId: string, round: string) => {
       if (!roundRepo) {
         throw Result.fail(
-          AppError.create(
-            'validation-failed',
-            'Round repository is not provided'
-          ),
-          'Internal Server Error'
+          AppError.validationFailed('Round repository is not provided')
         );
       }
 
@@ -122,13 +117,12 @@ export const makeGetMatchesValidator = (
 
       if (!foundRound) {
         throw Result.fail(
-          AppError.validationFailed('Bad data', [
+          AppError.validationFailed([
             {
               msg: `No Season-Round with slug ${round}`,
               param: 'round',
             },
-          ]),
-          'Bad Request'
+          ])
         );
       }
 

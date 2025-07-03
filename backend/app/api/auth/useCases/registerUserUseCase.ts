@@ -5,7 +5,7 @@ import {
   UserRepository,
   UserRepositoryImpl,
 } from '../../../../db/repositories/user.repo.js';
-import { AppError } from '../../common/AppError.js';
+import AppError from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';
 import { mapUserToDto } from '../data.mapper.js';
@@ -109,6 +109,6 @@ const isPasswordAllowed = (password: string): boolean => {
 };
 
 const isUsernameAllowed = (username: string): boolean => {
-  // 4-15 alphanumeric characters (with exception of underscore)
-  return /^[A-Za-z0-9_]{4,15}$/.test(username);
+  // 4-32 alphanumeric characters (with exception of underscore)
+  return /^[A-Za-z0-9_]{4,32}$/.test(username);
 };

@@ -1,4 +1,3 @@
-import { AppError } from 'app/api/common/AppError.js';
 import { head, isEmpty, uniq } from 'lodash';
 import { ProjectionType } from 'mongoose';
 import { from, iif, Observable, of, throwError } from 'rxjs';
@@ -20,7 +19,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     userId: string,
     roundMatches: Match[],
     withJoker?: boolean
-  ): Observable<null | Prediction[]>;
+  ): Observable<Prediction[]>;
   findOrCreatePredictions$(
     userId: string,
     roundMatches: Match[],
@@ -349,7 +348,7 @@ export class PredictionRepositoryImpl
     choice: Score
   ): Observable<Prediction | null> {
     if (match.status !== MatchStatus.SCHEDULED) {
-      return throwError(() => AppError.create('Match not scheduled'));
+      return throwError(() => new Error('Match not scheduled'));
     }
     const matchId = match.id!;
     return this.findOneByUserAndMatch$(userId, matchId).pipe(
@@ -368,7 +367,7 @@ export class PredictionRepositoryImpl
       }),
       mergeMap(prediction => {
         if (!prediction) {
-          return throwError(() => AppError.create('Prediction does not exist'));
+          return throwError(() => new Error('Prediction does not exist'));
         }
         return this.findByIdAndUpdate$(prediction.id!, {
           choice: { ...choice, isComputerGenerated: false },

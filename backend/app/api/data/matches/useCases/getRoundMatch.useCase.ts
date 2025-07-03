@@ -16,7 +16,7 @@ import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../../../../db/repositories/season.repo.js';
-import { AppError } from '../../../common/AppError.js';
+import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
 import { makeGetMatchesValidator } from '../../useCase.validators.js';

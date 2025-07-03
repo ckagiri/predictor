@@ -1,4 +1,4 @@
-import { AppError } from '../AppError.js';
+import AppError from '../AppError.js';
 import Result from '../result/index.js';
 
 export default interface Validator {

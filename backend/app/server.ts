@@ -49,10 +49,18 @@ export async function startWebServer({
       } else {
         node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
       }
-    } else if (isTsx) {
-      node2 = cp.fork(fromBackendDir('app', 'schedulers', 'app_FORK.ts'), [], {
-        execArgv: ['--import', 'tsx'],
-      });
+    } else {
+      if (isTsx) {
+        node2 = cp.fork(
+          fromBackendDir('app', 'schedulers', 'app_FORK.ts'),
+          [],
+          {
+            execArgv: ['--import', 'tsx'],
+          }
+        );
+      } else {
+        node2 = cp.fork(fromBuildDir('app', 'schedulers', 'app_FORK.js'), []);
+      }
     }
   }
   app.use(function (req: any, _res, next) {

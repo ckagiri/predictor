@@ -1,6 +1,6 @@
-import HttpRequestModel from 'app/api/common/interfaces/HttpRequestModel.js';
 import { Response } from 'express';
 
+import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import GetCompetitionsUseCase from './useCases/getCompetitions.useCase.js';
 

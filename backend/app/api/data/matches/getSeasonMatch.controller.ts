@@ -1,7 +1,7 @@
-import HttpRequestModel from 'app/api/common/interfaces/HttpRequestModel.js';
 import { Response } from 'express';
 
-import { AppError } from '../../common/AppError.js';
+import AppError from '../../common/AppError.js';
+import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
@@ -35,7 +35,6 @@ class GetSeasonMatchController {
       throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
     }
 
-    console.log('valid', true);
     const requestModel = requestValidated.value!;
     await this.getMatchUseCase.execute(requestModel);
   }

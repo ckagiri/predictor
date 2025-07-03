@@ -5,28 +5,36 @@ import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
 import Result from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
-import { getRoundMatchesValidator as getMatchesValidator } from './matches.validator.js';
-import GetRoundMatchesUseCase, {
+import { pickScoreValidator } from '../controller.validators.js';
+import PickScoreUseCase, {
   RequestModel,
-} from './useCases/getRoundMatches.useCase.js';
+} from './useCases/pickScore.useCase.js';
 
-class GetRoundMatchesController {
+class PickScoreController {
   constructor(
-    private readonly getMatchesUseCase: GetRoundMatchesUseCase,
+    private readonly pickScoreUseCase: PickScoreUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getMatchesUseCase: GetRoundMatchesUseCase,
-    validation = getMatchesValidator
+    pickScoreUseCase: PickScoreUseCase,
+    validation = pickScoreValidator
   ) {
-    return new GetRoundMatchesController(getMatchesUseCase, validation);
+    return new PickScoreController(pickScoreUseCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
+    const loggedInUserId = request.auth?.id as string | undefined;
+    if (!loggedInUserId) {
+      throw Result.fail(AppError.unauthorized());
+    }
+
     const { competition, round, season } = request.params;
+    const predictionSlip = request.body as Record<string, string>;
     const requestValidated = await this.validation.validate<RequestModel>({
       competition,
+      loggedInUserId,
+      predictionSlip,
       round,
       season,
     });
@@ -35,12 +43,12 @@ class GetRoundMatchesController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getMatchesUseCase.execute(requestModel);
+    await this.pickScoreUseCase.execute(requestModel);
   }
 }
 
-export const makeGetRoundMatchesController = (res: Response) => {
+export const makePickScoreController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchesUseCase = GetRoundMatchesUseCase.getInstance(okResponder);
-  return GetRoundMatchesController.getInstance(getMatchesUseCase);
+  const pickScoreUseCase = PickScoreUseCase.getInstance(okResponder);
+  return PickScoreController.getInstance(pickScoreUseCase);
 };
