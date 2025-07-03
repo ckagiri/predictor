@@ -98,16 +98,4 @@ export default class GetMatchUseCase extends GetRoundMatchesUseCase {
     );
     return prediction;
   }
-
-  private async findMatchById(matchId: string) {
-    const match = await lastValueFrom(
-      this.matchRepo.findOne$({ id: matchId }, '-createdAt')
-    );
-    if (!match) {
-      throw Result.fail(
-        AppError.resourceNotFound(`No match found with id ${matchId}`)
-      );
-    }
-    return match;
-  }
 }

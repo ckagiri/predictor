@@ -8,6 +8,7 @@ import { makeGetRoundMatchesController } from './roundMatches/getRoundMatches.co
 const router = Router();
 
 router.get('/', handleRequest(makeGetContestsController));
+
 router.get('/:competition', handleRequest(makeGetCompetitionController));
 router.get(
   '/:competition/matches',

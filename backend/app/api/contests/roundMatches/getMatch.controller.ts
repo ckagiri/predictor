@@ -24,10 +24,10 @@ class GetMatchController implements Controller {
 
   async processRequest(request: HttpRequestModel): Promise<void> {
     const loggedInUserId = request.auth?.id;
-    const matchId = request.params.matchId;
+    const match = request.params.match;
     const requestValidated = await this.validation.validate<RequestModel>({
       loggedInUserId,
-      matchId,
+      match,
     });
 
     if (requestValidated.isFailure) {

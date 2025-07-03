@@ -13,7 +13,7 @@ const GetCompetitionSchema = Joi.object({
 export const getCompetitionValidator = new JoiValidator(GetCompetitionSchema);
 
 const GetMatchSchema = Joi.object({
-  matchId: objectIdSchema.required(),
+  match: Joi.string().min(9).max(9).required(), // Match slug
 });
 
 export const getMatchValidator = new JoiValidator(GetMatchSchema);
