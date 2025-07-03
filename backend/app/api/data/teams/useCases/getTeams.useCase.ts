@@ -3,7 +3,7 @@ import { lastValueFrom } from 'rxjs';
 import {
   TeamRepository,
   TeamRepositoryImpl,
-} from '../../../../../db/repositories/team.repo.js';
+} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
