@@ -2,8 +2,8 @@ import { Router } from 'express';
 
 import handleRequest from '../handleRequest.js';
 import { makeGetCompetitionController } from './competition/getCompetition.controller.js';
-import { makeGetContestsController } from './getContests.controller.js';
 import { makeAutoPickPredictionsController } from './roundMatches/autoPickPredictions.controller.js';
+import { makeGetContestsController } from './roundMatches/getContests.controller.js';
 import { makeGetMatchController } from './roundMatches/getMatch.controller.js';
 import { makeGetRoundMatchesController } from './roundMatches/getRoundMatches.controller.js';
 import { makePickJokerController } from './roundMatches/pickJoker.controller.js';

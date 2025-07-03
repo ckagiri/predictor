@@ -134,7 +134,7 @@ export default class GetRoundMatchesUseCase {
 
   protected async findRound(
     season: Season,
-    round: string | undefined
+    round?: string
   ): Promise<[GameRound, GameRound[]]> {
     const competitionSlug = String(season.competition?.slug);
     const seasonSlug = String(season.slug);
@@ -162,10 +162,7 @@ export default class GetRoundMatchesUseCase {
     return [foundRound, rounds];
   }
 
-  protected async findSeason(
-    competition: Competition,
-    seasonSlug: string | undefined
-  ) {
+  protected async findSeason(competition: Competition, seasonSlug?: string) {
     const competitionSlug = competition.slug;
     const currentSeason = competition.currentSeason?.toString();
     if (seasonSlug) {
@@ -261,7 +258,7 @@ export default class GetRoundMatchesUseCase {
     return foundMatch;
   }
 
-  private async getMatchesWithPredictions(
+  protected async getMatchesWithPredictions(
     roundMatches: Match[],
     userId: string | undefined
   ) {

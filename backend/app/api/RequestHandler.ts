@@ -55,8 +55,8 @@ export default class RequestHandler {
     console.log('Error-Cause ', appError?.cause ?? error.cause ?? 'N/A');
     this.res.status(error.status ?? 500);
     this.res.send({
-      message: error.message,
-      reason: failReason,
+      message: error.message, // TODO: if NODE_ENV === 'production', do not send error message (appError.message is fine though)
+      reason: failReason ?? 'Something went wrong',
       validationErrors: appError?.validationErrors,
     });
   }
