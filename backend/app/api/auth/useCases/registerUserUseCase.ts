@@ -4,7 +4,7 @@ import { User } from '../../../../db/models/index.js';
 import {
   UserRepository,
   UserRepositoryImpl,
-} from '../../../../db/repositories/user.repo.js';
+} from '../../../../db/repositories/index.js';
 import AppError from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';

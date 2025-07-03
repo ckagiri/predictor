@@ -10,27 +10,17 @@ import {
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
-} from '../../../../../db/repositories/competition.repo.js';
-import {
   GameRoundRepository,
   GameRoundRepositoryImpl,
-} from '../../../../../db/repositories/gameRound.repo.js';
-import {
   MatchRepository,
   MatchRepositoryImpl,
-} from '../../../../../db/repositories/match.repo.js';
-import {
   PredictionRepository,
   PredictionRepositoryImpl,
-} from '../../../../../db/repositories/prediction.repo.js';
-import {
   SeasonRepository,
   SeasonRepositoryImpl,
-} from '../../../../../db/repositories/season.repo.js';
-import {
   UserRepository,
   UserRepositoryImpl,
-} from '../../../../../db/repositories/user.repo.js';
+} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
@@ -262,7 +252,6 @@ export default class GetRoundMatchesUseCase {
     roundMatches: Match[],
     userId: string | undefined
   ) {
-    console.log('getMatchesWithPredictions', roundMatches.length, userId);
     if (!userId) return roundMatches;
 
     const userPredictions = await lastValueFrom(

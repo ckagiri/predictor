@@ -3,7 +3,7 @@ import { lastValueFrom } from 'rxjs';
 import {
   UserRepository,
   UserRepositoryImpl,
-} from '../../../../db/repositories/user.repo.js';
+} from '../../../../db/repositories/index.js';
 import AppError from '../../common/AppError';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';

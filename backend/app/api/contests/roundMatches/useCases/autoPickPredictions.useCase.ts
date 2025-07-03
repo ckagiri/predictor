@@ -1,12 +1,14 @@
 import { lastValueFrom } from 'rxjs';
 
 import { Match } from '../../../../../db/models/index.js';
-import { CompetitionRepositoryImpl } from '../../../../../db/repositories/competition.repo';
-import { GameRoundRepositoryImpl } from '../../../../../db/repositories/gameRound.repo';
-import { MatchRepositoryImpl } from '../../../../../db/repositories/match.repo';
-import { PredictionRepositoryImpl } from '../../../../../db/repositories/prediction.repo';
-import { SeasonRepositoryImpl } from '../../../../../db/repositories/season.repo';
-import { UserRepositoryImpl } from '../../../../../db/repositories/user.repo';
+import {
+  CompetitionRepositoryImpl,
+  GameRoundRepositoryImpl,
+  MatchRepositoryImpl,
+  PredictionRepositoryImpl,
+  SeasonRepositoryImpl,
+  UserRepositoryImpl,
+} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError';
 import Responder from '../../../common/responders/Responder';
 import Result from '../../../common/result';
