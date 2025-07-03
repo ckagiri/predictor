@@ -39,7 +39,8 @@ export interface BaseRepository<T extends Entity> {
   ): Observable<T[]>;
   findById$(
     id: string | ObjectId,
-    projection?: ProjectionType<T> | null
+    projection?: ProjectionType<T> | null,
+    join?: PopulateOptions | PopulateOptions[]
   ): Observable<T | null>;
   findByIdAndUpdate$(
     id: string | ObjectId,
@@ -116,9 +117,10 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   }
   findById$(
     id: string | ObjectId,
-    projection?: ProjectionType<T> | null
+    projection?: ProjectionType<T> | null,
+    join?: PopulateOptions | PopulateOptions[]
   ): Observable<T | null> {
-    return from(this.documentDao.findById(id, projection));
+    return from(this.documentDao.findById(id, projection, join));
   }
   findByIdAndUpdate$(
     id: string,

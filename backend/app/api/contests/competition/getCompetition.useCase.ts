@@ -4,6 +4,7 @@ import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
 } from '../../../../db/repositories/competition.repo.js';
+import { SeasonRepositoryImpl } from '../../../../db/repositories/season.repo.js';
 import AppError from '../../common/AppError.js';
 import Responder from '../../common/responders/Responder.js';
 import Result from '../../common/result/index.js';
@@ -11,20 +12,31 @@ import Result from '../../common/result/index.js';
 export default class GetCompetitionUseCase {
   constructor(
     private responder: Responder,
-    private competitionRepo: CompetitionRepository
+    private competitionRepo: CompetitionRepository,
+    private seasonRepo = SeasonRepositoryImpl.getInstance()
   ) {}
 
   static getInstance(
     responder: Responder,
-    competitionRepo = CompetitionRepositoryImpl.getInstance()
+    competitionRepo = CompetitionRepositoryImpl.getInstance(),
+    seasonRepo = SeasonRepositoryImpl.getInstance()
   ) {
-    return new GetCompetitionUseCase(responder, competitionRepo);
+    return new GetCompetitionUseCase(responder, competitionRepo, seasonRepo);
   }
 
   async execute(competition: string): Promise<void> {
     try {
       const foundCompetition = await lastValueFrom(
-        this.competitionRepo.findOne$({ slug: competition })
+        this.competitionRepo.findOne$(
+          { slug: competition },
+          '-createdAt -externalReference'
+        )
+      );
+      const seasons = await lastValueFrom(
+        this.seasonRepo.findAll$(
+          { 'competition.slug': competition },
+          '-createdAt -externalReference -teams -competition'
+        )
       );
 
       if (!foundCompetition) {
@@ -36,7 +48,7 @@ export default class GetCompetitionUseCase {
       }
       this.responder.respond({
         competition: foundCompetition,
-        seasons: [],
+        seasons,
       });
     } catch (err: any) {
       if (err.isFailure) {

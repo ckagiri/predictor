@@ -1,8 +1,8 @@
 import { Response } from 'express';
 
-import HttpRequestModel from '../common/interfaces/HttpRequestModel.js';
-import OkResponder from '../common/responders/ok.responder.js';
-import GetContestsUseCase from './getContests.useCase.js';
+import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
+import OkResponder from '../../common/responders/ok.responder.js';
+import GetContestsUseCase from './useCases/getContests.useCase.js';
 
 class GetContestsController {
   constructor(private readonly getContestsUseCase: GetContestsUseCase) {}
@@ -11,8 +11,11 @@ class GetContestsController {
     return new GetContestsController(getContestsUseCase);
   }
 
-  async processRequest(_request: HttpRequestModel): Promise<void> {
-    await this.getContestsUseCase.execute();
+  async processRequest(request: HttpRequestModel): Promise<void> {
+    const requestModel = {
+      loggedInUserId: request.auth?.id,
+    };
+    await this.getContestsUseCase.execute(requestModel);
   }
 }
 

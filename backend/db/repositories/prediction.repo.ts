@@ -19,7 +19,7 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     userId: string,
     roundMatches: Match[],
     withJoker?: boolean
-  ): Observable<null | Prediction[]>;
+  ): Observable<Prediction[]>;
   findOrCreatePredictions$(
     userId: string,
     roundMatches: Match[],

@@ -24,7 +24,7 @@ class AppError extends Error {
     validationErrors?: ValidationMessage[];
   }) {
     super(message, { cause });
-    this.name = name;
+    this.name = name || 'internal-server-error';
     this.code = code;
     this.validationErrors = validationErrors;
   }
@@ -38,6 +38,14 @@ class AppError extends Error {
       code: constants.ERR_VALUE_NOT_FOUND,
       message,
       name: 'resource-not-found',
+    });
+  }
+
+  static unauthorized() {
+    return new AppError({
+      code: constants.ERR_UNAUTHORIZED,
+      message: 'valid authentication credentials were not provided',
+      name: 'unauthorized',
     });
   }
 

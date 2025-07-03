@@ -40,7 +40,7 @@ export class LigiMatchConverter implements MatchConverter {
             name: homeTeam.name,
             slug: homeTeam.slug!,
           },
-          slug: `${homeTeam.slug}-v-${awayTeam.slug}`,
+          slug: `${homeTeam.tla}-v-${awayTeam.tla}`,
         };
       }
     );
