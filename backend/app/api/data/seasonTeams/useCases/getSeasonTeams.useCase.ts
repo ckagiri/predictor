@@ -47,7 +47,7 @@ export default class GetSeasonTeamsUseCase {
 
       throw Result.fail(
         AppError.create(
-          'fetch-failed',
+          'request-failed',
           'SeasonTeams could not be fetched',
           err
         ),

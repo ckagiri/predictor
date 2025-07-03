@@ -72,7 +72,7 @@ export default class GetSeasonMatchUseCase {
       }
       throw Result.fail(
         AppError.create(
-          'fetch-failed',
+          'request-failed',
           'Season-Match could not be fetched',
           err
         ),

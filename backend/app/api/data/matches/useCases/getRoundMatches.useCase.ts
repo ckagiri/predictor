@@ -68,7 +68,7 @@ export default class GetRoundMatchesUseCase {
 
       throw Result.fail(
         AppError.create(
-          'fetch-failed',
+          'request-failed',
           'Round-Matches could not be fetched',
           err
         ),
