@@ -1,9 +1,6 @@
 import Joi from 'joi';
 
-import {
-  objectIdSchema,
-  slugStringSchema,
-} from '../common/validation/schemas.js';
+import { slugStringSchema } from '../common/validation/schemas.js';
 import { JoiValidator } from '../common/validation/validatorWrapper.js';
 
 const GetCompetitionSchema = Joi.object({
@@ -23,10 +20,10 @@ const predictionSlipSchema = Joi.object()
     Joi.string().min(9).max(9), // key type
     Joi.string().min(3).max(3) // value type
   )
+  .min(1)
   .message(
     'Prediction(s) must have correct match-slug and score format, e.g., "abc-v-foo": "3-2"'
-  )
-  .min(1); // Require at least one key-value pair
+  );
 
 const PickScoreSchema = Joi.object({
   competition: slugStringSchema.required(),

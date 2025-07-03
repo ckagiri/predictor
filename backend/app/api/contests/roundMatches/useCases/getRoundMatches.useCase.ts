@@ -103,7 +103,7 @@ export default class GetRoundMatchesUseCase {
         loggedInUserId,
         predictorUsername
       );
-      const matchesWithPredictions = this.getMatchesWithPredictions(
+      const matchesWithPredictions = await this.getMatchesWithPredictions(
         matches as Match[],
         userId
       );
@@ -265,6 +265,7 @@ export default class GetRoundMatchesUseCase {
     roundMatches: Match[],
     userId: string | undefined
   ) {
+    console.log('getMatchesWithPredictions', roundMatches.length, userId);
     if (!userId) return roundMatches;
 
     const userPredictions = await lastValueFrom(
