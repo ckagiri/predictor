@@ -55,7 +55,7 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
       const roundMatches = (await this.getRoundMatches(
         foundRound.id!
       )) as Match[];
-      const foundMatch = this.findMatch(
+      const foundMatch = this.findRoundMatch(
         foundSeason,
         round,
         roundMatches,

@@ -4,10 +4,10 @@ import AppError from '../../common/AppError.js';
 import Controller from '../../common/interfaces/Controller.js';
 import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
-import Result from '../../common/result/index.js';
+import { FailureResult } from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
 import { getMatchValidator } from '../controller.validators.js';
-import GetMatchUseCase, { RequestModel } from './getMatch.useCase.js';
+import GetMatchUseCase, { RequestModel } from './useCases/getMatch.useCase.js';
 
 class GetMatchController implements Controller {
   constructor(
@@ -31,7 +31,7 @@ class GetMatchController implements Controller {
     });
 
     if (requestValidated.isFailure) {
-      throw Result.fail(requestValidated.unwrap() as AppError, 'Bad Request');
+      throw requestValidated as FailureResult<AppError>;
     }
 
     const requestModel = requestValidated.value!;

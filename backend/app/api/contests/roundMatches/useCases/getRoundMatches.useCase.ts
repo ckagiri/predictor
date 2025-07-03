@@ -1,11 +1,9 @@
-import { omit } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
 import {
   Competition,
   GameRound,
   Match,
-  Prediction,
   Season,
 } from '../../../../../db/models/index.js';
 import {
@@ -141,7 +139,7 @@ export default class GetRoundMatchesUseCase {
     const competitionSlug = String(season.competition?.slug);
     const seasonSlug = String(season.slug);
     const seasonId = String(season.id);
-    const currentGameRound = season.currentGameRound;
+    const currentGameRound = season.currentGameRound?.toString();
 
     let foundRound: GameRound | undefined;
     if (round) {
@@ -150,11 +148,12 @@ export default class GetRoundMatchesUseCase {
         seasonId,
         round
       );
+    } else {
+      foundRound = await this.validator.validateCurrentRound(
+        `${competitionSlug}-${seasonSlug}`,
+        currentGameRound
+      );
     }
-    foundRound = await this.validator.validateCurrentRound(
-      `${competitionSlug}-${seasonSlug}`,
-      currentGameRound
-    );
 
     const rounds = await lastValueFrom(
       this.roundRepo.findAll$({ season: seasonId }, '-createdAt')
@@ -168,7 +167,7 @@ export default class GetRoundMatchesUseCase {
     seasonSlug: string | undefined
   ) {
     const competitionSlug = competition.slug;
-    const currentSeason = competition.currentSeason;
+    const currentSeason = competition.currentSeason?.toString();
     if (seasonSlug) {
       return await this.validator.validateSeason(competitionSlug, seasonSlug);
     }
@@ -224,7 +223,26 @@ export default class GetRoundMatchesUseCase {
       });
   }
 
-  protected findMatch(
+  protected async findMatch(season: Season, match: string) {
+    const competitionSlug = String(season.competition?.slug);
+    const seasonSlug = String(season.slug);
+    const foundMatch = await lastValueFrom(
+      this.matchRepo.findOne$({
+        season: season,
+        slug: match,
+      })
+    );
+    if (!foundMatch) {
+      throw Result.fail(
+        AppError.resourceNotFound(
+          `No match ${match} for season ${competitionSlug}-${seasonSlug}`
+        )
+      );
+    }
+    return foundMatch;
+  }
+
+  protected findRoundMatch(
     season: Season,
     round: string,
     roundMatches: Match[],
@@ -235,7 +253,7 @@ export default class GetRoundMatchesUseCase {
       const competitionSlug = String(season.competition?.slug);
       const seasonSlug = String(season.slug);
       throw Result.fail(
-        AppError.validationFailed(
+        AppError.resourceNotFound(
           `No match ${match} found in round ${round} for season ${competitionSlug}-${seasonSlug}`
         )
       );

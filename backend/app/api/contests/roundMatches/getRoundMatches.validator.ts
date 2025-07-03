@@ -1,7 +1,12 @@
 import { ObjectId } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 
-import { Competition, GameRound, Season } from '../../../../db/models/index.js';
+import {
+  Competition,
+  GameRound,
+  Match,
+  Season,
+} from '../../../../db/models/index.js';
 import { CompetitionRepository } from '../../../../db/repositories/competition.repo.js';
 import { GameRoundRepository } from '../../../../db/repositories/gameRound.repo.js';
 import { SeasonRepository } from '../../../../db/repositories/season.repo';
@@ -12,11 +17,11 @@ export interface GetRoundMatchesValidator {
   validateCompetition: (competition: string) => Promise<Competition>;
   validateCurrentRound: (
     competitionSeason: string,
-    currentRoundId?: string | ObjectId
+    currentRoundId: string | undefined
   ) => Promise<GameRound>;
   validateCurrentSeason: (
     competition: string,
-    currentSeasonId?: string | ObjectId
+    currentSeasonId: string | undefined
   ) => Promise<Season>;
   validateRound: (
     competitionSeason: string,
@@ -47,7 +52,7 @@ export const makeGetRoundMatchesValidator = (
     },
     validateCurrentRound: async (
       competitionSeason: string,
-      currentRoundId?: string | ObjectId
+      currentRoundId: string | undefined
     ) => {
       if (!currentRoundId) {
         throw Result.fail(
@@ -70,7 +75,7 @@ export const makeGetRoundMatchesValidator = (
     },
     validateCurrentSeason: async (
       competition: string,
-      currentSeasonId?: string | ObjectId
+      currentSeasonId: string | undefined
     ) => {
       if (!currentSeasonId) {
         throw Result.fail(
