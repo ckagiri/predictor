@@ -51,7 +51,7 @@ describe('GetTeam Use Case', () => {
     const useCase = GetTeamUseCase.getInstance(responder, teamRepo);
     await expect(useCase.execute('fooBar')).to.be.rejectedWith(
       FailureResult,
-      'Resource Not Found'
+      'Could not find team with slug fooBar'
     );
     expect(respondSpy).to.not.have.been.called;
   });

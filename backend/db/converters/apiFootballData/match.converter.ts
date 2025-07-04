@@ -2,10 +2,7 @@ import { Observable, zip } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider.js';
-import { GameRound } from '../../models/gameRound.model.js';
 import { getMatchStatus, Match } from '../../models/match.model.js';
-import { Season } from '../../models/season.model.js';
-import { Team } from '../../models/team.model.js';
 import {
   GameRoundRepository,
   GameRoundRepositoryImpl,
@@ -21,7 +18,7 @@ import {
 import { MatchConverter } from '../match.converter.js';
 
 export class AfdMatchConverter implements MatchConverter {
-  public footballApiProvider: ApiProvider;
+  footballApiProvider: ApiProvider;
   constructor(
     private seasonRepo: SeasonRepository,
     private teamRepo: TeamRepository,
@@ -30,7 +27,7 @@ export class AfdMatchConverter implements MatchConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public static getInstance(
+  static getInstance(
     seasonRepo?: SeasonRepository,
     teamRepo?: TeamRepository,
     gameRoundRepo?: GameRoundRepository
@@ -49,7 +46,7 @@ export class AfdMatchConverter implements MatchConverter {
       gameRoundRepoImpl
     );
   }
-  public from(data: any): Observable<Match> {
+  from(data: any): Observable<Match> {
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.shortName),
@@ -86,7 +83,7 @@ export class AfdMatchConverter implements MatchConverter {
             goalsHomeTeam: data.score.fullTime.home,
           },
           season: season.id!,
-          slug: `${homeTeam.tla?.toLowerCase()}-${awayTeam.tla?.toLowerCase()}`,
+          slug: `${String(homeTeam.tla).toLowerCase()}-${String(awayTeam.tla).toLowerCase()}`,
           status: getMatchStatus(data.status.toUpperCase()),
           utcDate: data.utcDate,
         } as Match;
@@ -94,7 +91,7 @@ export class AfdMatchConverter implements MatchConverter {
     );
   }
 
-  public map(data: any[]): any[] {
+  map(data: any[]): any[] {
     return data.map(item => item);
   }
 }

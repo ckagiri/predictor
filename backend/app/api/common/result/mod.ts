@@ -22,7 +22,7 @@ export class FailureResult<E extends Error>
   implements ResultType<undefined, E>
 {
   constructor(cause: E, message?: string) {
-    super(message, { cause });
+    super(message ?? cause.message, { cause });
     this.name = 'FailureResult';
   }
   unwrap(): E {
