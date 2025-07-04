@@ -18,7 +18,7 @@
     "typeconfig": "tsc --showConfig",
     "format": "prettier --write '**/*.{js,ts,json,md}'",
     "format:check": "prettier --check '**/*.{js,ts,json,md}'",
-    "test": "dotenvx run -f .env.test -- mocha --import=tsx --ignore='__tests__/api/*.spec.ts' '__tests__/**/*.spec.ts' ",
+    "test": "dotenvx run -f .env.test -- mocha --import=tsx --ignore='__tests__/api/**/*.spec.ts' '__tests__/**/*.spec.ts' ",
     "test:file": "mocha --import=tsx ",
     "test:e2e": "dotenvx run -f .env.test -- mocha --import=tsx '__tests__/api/**/*.spec.ts'",
     "drop:test": "dotenvx run -f .env.test -- npx tsx db/tasks/drop.ts",
