@@ -20,6 +20,9 @@ export interface BaseRepository<T extends Entity> {
   count$(conditions?: RootFilterQuery<T>): Observable<number>;
   create$(obj: Entity): Observable<T>;
   createMany$(objs: Entity[]): Observable<T[]>;
+  deleteMany$(
+    conditions: RootFilterQuery<T>
+  ): Observable<{ deletedCount?: number }>;
   distinct$(
     field: string,
     conditions?: RootFilterQuery<T>
@@ -31,7 +34,7 @@ export interface BaseRepository<T extends Entity> {
   findAll$(
     conditions?: RootFilterQuery<T>,
     projection?: ProjectionType<T> | null,
-    options?: QueryOptions<T>
+    join?: PopulateOptions | PopulateOptions[] | string
   ): Observable<T[]>;
   findAllByIds$(
     ids: string[],
@@ -87,6 +90,13 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   createMany$(objs: Entity[]): Observable<T[]> {
     return from(this.documentDao.createMany(objs));
   }
+
+  deleteMany$(
+    conditions: RootFilterQuery<T>
+  ): Observable<{ deletedCount?: number }> {
+    return from(this.documentDao.deleteMany(conditions));
+  }
+
   distinct$(
     field: string,
     conditions?: RootFilterQuery<T>
@@ -102,12 +112,12 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   findAll$(
     conditions?: RootFilterQuery<T>,
     projection?: ProjectionType<T> | null,
-    options?: QueryOptions<T>
+    join?: PopulateOptions | PopulateOptions[] | string
   ): Observable<T[]> {
-    const queryOptions: QueryOptions<T> & { lean: true } = options
-      ? { ...options, lean: true as const }
-      : { lean: true as const };
-    return from(this.documentDao.findAll(conditions, projection, queryOptions));
+    // const queryOptions: QueryOptions<T> & { lean: true } = options
+    //   ? { ...options, lean: true as const }
+    //   : { lean: true as const };
+    return from(this.documentDao.findAll(conditions, projection, join));
   }
   findAllByIds$(
     ids: string[],

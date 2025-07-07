@@ -9,7 +9,7 @@ export interface Team extends Entity {
   externalReference?: any;
   name?: string;
   shortName?: string;
-  slug?: string;
+  slug: string;
   tla?: string;
 }
 

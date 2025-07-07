@@ -50,7 +50,7 @@ export interface Match extends Entity {
 }
 
 export interface TeamPartial {
-  crestUrl: string;
+  crestUrl?: string;
   id: string;
   name: string;
   slug: string;

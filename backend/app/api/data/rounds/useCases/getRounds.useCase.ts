@@ -49,9 +49,13 @@ export default class GetRoundsUseCase {
       await validator.validateCompetition(competition);
       const foundSeason = await validator.validateSeason(competition, season);
 
-      const foundRounds = await lastValueFrom(
-        this.roundRepo.findAll$({ season: foundSeason.id }, '-createdAt')
-      );
+      const foundRounds = (
+        await lastValueFrom(
+          this.roundRepo.findAll$({ season: foundSeason.id }, '-createdAt')
+        )
+      ).sort((a, b) => {
+        return a.position! - b.position!;
+      });
       this.responder.respond(foundRounds);
     } catch (err: any) {
       if (err.isFailure) {

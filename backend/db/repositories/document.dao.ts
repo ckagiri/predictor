@@ -118,22 +118,22 @@ export class DocumentDao<T extends Entity> {
     return this.Model.countDocuments(conditions)
       .exec()
       .then(async count => {
-        let query = this.Model.find(conditions);
+        let repository = this.Model.find(conditions);
         if (options?.select) {
-          query.select(options.select);
+          repository.select(options.select);
         }
         if (sort) {
           const [field, order] = sort;
-          query.sort({
+          repository.sort({
             [field]: order === 'ASC' ? 1 : -1,
           });
         }
         if (range) {
           const [start, end] = range;
           const limit = end ? end - start + 1 : 10;
-          query = query.skip(start).limit(limit);
+          repository = repository.skip(start).limit(limit);
         }
-        const result = await query.lean({ transform }).exec();
+        const result = await repository.lean({ transform }).exec();
         return Promise.resolve({ count, result });
       }) as Promise<{ count: number; result: T[] }>;
   }
@@ -141,11 +141,22 @@ export class DocumentDao<T extends Entity> {
   findAll(
     conditions: RootFilterQuery<T> = {},
     projection?: ProjectionType<T> | null,
-    options?: QueryOptions<T> & { lean: true }
+    join?: PopulateOptions | PopulateOptions[] | string
   ): Promise<T[]> {
-    return this.Model.find(conditions, projection, options)
-      .lean({ transform })
-      .then(res => Promise.resolve(res)) as Promise<T[]>;
+    const repository = this.Model.find(conditions, projection);
+
+    if (join) {
+      // Ensure join is never a plain string for populate
+      if (typeof join === 'string') {
+        repository.populate([join]);
+      } else {
+        repository.populate(join);
+      }
+      // Somehow we can't use lean-transform with populate; no worries we'll use toObject
+      return repository.exec() as Promise<T[]>;
+    }
+
+    return repository.lean({ transform }).exec() as Promise<T[]>;
   }
 
   findAllByIds(
@@ -167,11 +178,11 @@ export class DocumentDao<T extends Entity> {
     projection?: ProjectionType<T> | null,
     join?: PopulateOptions | PopulateOptions[]
   ): Promise<T | null> {
-    const query = this.Model.findById(id, projection);
+    const repository = this.Model.findById(id, projection);
     if (join) {
-      query.populate(join);
+      repository.populate(join);
     }
-    return query.lean({ transform }).exec() as Promise<T | null>;
+    return repository.lean({ transform }).exec() as Promise<T | null>;
   }
 
   findByIdAndUpdate(
@@ -262,6 +273,16 @@ export class DocumentDao<T extends Entity> {
 
   findOneAndDelete(conditions: RootFilterQuery<T>): Promise<T | null> {
     return this.Model.findOneAndDelete(conditions).exec();
+  }
+
+  deleteMany(
+    conditions: RootFilterQuery<T>
+  ): Promise<{ deletedCount?: number }> {
+    return this.Model.deleteMany(conditions)
+      .exec()
+      .then(result => {
+        return { deletedCount: result.deletedCount };
+      });
   }
 
   updateMany(objs: Entity[]): Promise<BulkWriteResult> {
