@@ -1,9 +1,9 @@
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 
-import { stopWebServer } from '../../app/server';
-import memoryDb from '../memoryDb';
-import testSetup from '../testSetup';
+import { stopWebServer } from '../../../app/server';
+import memoryDb from '../../memoryDb';
+import testSetup from '../../testSetup';
 import { loginForm } from './testUtils';
 
 chai.use(sinonChai);

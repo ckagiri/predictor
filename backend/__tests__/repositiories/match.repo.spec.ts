@@ -121,7 +121,8 @@ describe('MatchRepo', function () {
     it('should save a match', done => {
       ligiMatchRepo.add$(manuVsmanc).subscribe(match => {
         expect(match.season.toString()).to.equal(epl2020.id);
-        expect(match.slug).to.equal(`${manutd.slug}-v-${mancity.slug}`);
+        const expectedMatchSlug = `${manutd.tla}-${mancity.tla}`.toLowerCase();
+        expect(match.slug).to.equal(expectedMatchSlug);
         done();
       });
     });

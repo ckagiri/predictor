@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 
-import a from '../../../../a';
-import memoryDb from '../../../../memoryDb';
-import testSetup from '../../../../testSetup';
+import a from '../../../a';
+import memoryDb from '../../../memoryDb';
+import testSetup from '../../../testSetup';
 
 const epl = a.competition
   .setName('English Premier League')

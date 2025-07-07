@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
 
-import { TokenGeneratorImpl } from '../../app/api/auth/providers/tokenGenerator';
+import { TokenGeneratorImpl } from '../../../app/api/auth/providers/tokenGenerator';
 
 // passwords must have at least these kinds of characters to be valid, so we'll
 // prefex all of the ones we generate with `!0_Oo` to ensure it's valid.
