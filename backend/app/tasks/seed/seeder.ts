@@ -178,17 +178,19 @@ export class Seeder {
       seasons.map(season => {
         const teams: Team[] = season.teams as Team[];
 
-        const gamedays = generateGamedays(teams);
-        const gameRounds: GameRound[] = gamedays.map((_, index) => ({
-          name: `Gameweek ${(index + 1).toString()}`,
-          position: index + 1,
-          season: season.id,
-          slug: `gameweek-${(index + 1).toString()}`,
-        }));
+        const schedule = generateSchedule(teams, true);
+        const gameRounds: GameRound[] = schedule.map(
+          (_gamedayMatches, index) => ({
+            name: `Gameweek ${(index + 1).toString()}`,
+            position: index + 1,
+            season: season.id,
+            slug: `gameweek-${(index + 1).toString()}`,
+          })
+        );
         return gameRounds;
       })
     );
-    await lastValueFrom(this.gameRoundRepo.createMany$(gameRounds));
+    await lastValueFrom(this.matchRepo.createMany$(gameRounds));
   }
 
   private async seedMatches() {
@@ -200,7 +202,6 @@ export class Seeder {
         seasons.map(async season => {
           const teams: Team[] = season.teams as Team[];
           const schedule = generateSchedule(teams, true);
-          console.log('gamedays', schedule.length);
           const seasonMatches = flatMap(
             await Promise.all(
               schedule.map(async (gamedayMatches, index) => {
@@ -246,6 +247,7 @@ export class Seeder {
         })
       )
     );
+    console.log('seedMatches', seedMatches);
     await lastValueFrom(this.matchRepo.createMany$(seedMatches));
   }
 
