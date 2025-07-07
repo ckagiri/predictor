@@ -1,11 +1,13 @@
 import { from, lastValueFrom, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 
-import { Season } from '../../db/models/season.model.js';
-import { MatchRepository } from '../../db/repositories/match.repo.js';
-import { SeasonRepository } from '../../db/repositories/season.repo.js';
-import { TeamRepository } from '../../db/repositories/team.repo.js';
-import { FootballApiClient } from '../../thirdParty/footballApi/apiClient.js';
+import { Season } from '../../../../db/models/index.js';
+import {
+  MatchRepository,
+  SeasonRepository,
+  TeamRepository,
+} from '../../../../db/repositories/index.js';
+import { FootballApiClient } from '../../../../thirdParty/footballApi/apiClient.js';
 import { Job } from '../jobs/job.js';
 import { Queue } from '../queue.js';
 import Builder from './competitionJob.builder.js';

@@ -2,7 +2,7 @@ import 'mocha';
 import { assert, expect } from 'chai';
 import sinon, { SinonSpy } from 'sinon';
 
-import { Queue } from '../../import/queue';
+import { Queue } from '../../app/tasks/import/queue';
 
 describe('Queue', () => {
   const newJob = () => ({ start: () => Promise.resolve({}) });

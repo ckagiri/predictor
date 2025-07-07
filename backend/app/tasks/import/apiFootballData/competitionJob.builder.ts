@@ -1,7 +1,9 @@
-import { MatchRepository } from '../../db/repositories/match.repo.js';
-import { SeasonRepository } from '../../db/repositories/season.repo.js';
-import { TeamRepository } from '../../db/repositories/team.repo.js';
-import { FootballApiClient } from '../../thirdParty/footballApi/apiClient.js';
+import {
+  MatchRepository,
+  SeasonRepository,
+  TeamRepository,
+} from '../../../../db/repositories/index.js';
+import { FootballApiClient } from '../../../../thirdParty/footballApi/apiClient.js';
 import { CompetitionJob } from '../apiFootballData/competition.job.js';
 
 export default class Builder {

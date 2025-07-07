@@ -1,4 +1,4 @@
-import * as db from '../db/index.js';
+import * as db from '../../../db/index.js';
 import { apiFootballDataImporter } from './apiFootballData/start.js';
 
 function start() {
