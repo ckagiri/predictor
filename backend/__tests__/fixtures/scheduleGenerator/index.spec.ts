@@ -9,7 +9,7 @@ import {
   initGameday,
 } from '../../../db/scheduleGenerator';
 
-describe.only('initGameday', () => {
+describe('initGameday', () => {
   it('initializes first gameday with four teams', () => {
     const expectedGameday: Gameday<string> = {
       buckets: [{ home: 'a', away: 'c' }],
@@ -32,7 +32,7 @@ describe.only('initGameday', () => {
   });
 });
 
-describe.only('generateGameday', () => {
+describe('generateGameday', () => {
   it('generates second gameday with four teams', () => {
     const expectedGameday: Gameday<string> = {
       leftJoker: { home: 'd', away: 'a' },
@@ -58,7 +58,7 @@ describe.only('generateGameday', () => {
   });
 });
 
-describe.only('generateGamedays', () => {
+describe('generateGamedays', () => {
   it('generates 3 gamedays for 4 teams', () => {
     const expectedGameday1: Gameday<string> = {
       buckets: [{ home: 'a', away: 'c' }],
@@ -81,7 +81,7 @@ describe.only('generateGamedays', () => {
   });
 });
 
-describe.only('generate schedule', () => {
+describe('generate schedule', () => {
   it('generates schedule with 3 gamedays for 4 teams', () => {
     const expectedGameday1 = [
       { home: 'b', away: 'd' },
@@ -160,7 +160,7 @@ describe.only('generate schedule', () => {
   });
 });
 
-describe.only('generate schedule with rematch', () => {
+describe('generate schedule with rematch', () => {
   it('generates schedule with 6 gamedays for 4 teams', () => {
     const expectedGameday1 = [
       { home: 'b', away: 'd' },
@@ -198,7 +198,7 @@ describe.only('generate schedule with rematch', () => {
   });
 });
 
-describe.only('generate schedule for arbitrary objects', () => {
+describe('generate schedule for arbitrary objects', () => {
   it('generates schedule with 3 gamedays for 4 objects', () => {
     const team1 = { myteamname: 'foo', myplayers: [] };
     const team2 = { myteamname: 'bar', myplayers: [] };

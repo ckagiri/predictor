@@ -1,9 +1,11 @@
+import { faker } from '@faker-js/faker';
+import GetRoundMatchUseCase from 'app/api/data/matches/useCases/getRoundMatch.useCase.js';
 import { generateSchedule } from 'db/scheduleGenerator/index.js';
 import fs from 'fs';
-import { flatMap } from 'lodash';
+import { flatMap, merge, round } from 'lodash';
 import mongoose from 'mongoose';
 import path from 'path';
-import { lastValueFrom } from 'rxjs';
+import { from, lastValueFrom, map, mergeMap, of } from 'rxjs';
 
 import {
   Competition,
@@ -11,46 +13,38 @@ import {
   Match,
   Season,
   Team,
+  User,
 } from '../../../db/models/index.js';
 import {
-  CompetitionRepository,
   CompetitionRepositoryImpl,
-  GameRoundRepository,
   GameRoundRepositoryImpl,
-  MatchRepository,
   MatchRepositoryImpl,
-  SeasonRepository,
+  PredictionRepositoryImpl,
   SeasonRepositoryImpl,
-  TeamRepository,
   TeamRepositoryImpl,
+  UserRepositoryImpl,
 } from '../../../db/repositories/index.js';
+import { PasswordHasherImpl } from '../../api/auth/providers/passwordHasher.js';
 
 const SEED_COMPETITION_SLUG = 'what-premier-league';
+const TESTER_1 = 'tester1';
+const TESTER_2 = 'tester2';
 export class Seeder {
-  constructor(
-    private connectionUrl: string,
-    private competitionRepo: CompetitionRepository,
-    private teamRepo: TeamRepository,
-    private seasonRepo: SeasonRepository,
-    private gameRoundRepo: GameRoundRepository,
-    private matchRepo: MatchRepository
-  ) {}
+  constructor(private connectionUrl: string) {}
+
+  private competitionRepo = CompetitionRepositoryImpl.getInstance();
+  private teamRepo = TeamRepositoryImpl.getInstance();
+  private seasonRepo = SeasonRepositoryImpl.getInstance();
+  private gameRoundRepo = GameRoundRepositoryImpl.getInstance();
+  private matchRepo = MatchRepositoryImpl.getInstance();
+  private userRepo = UserRepositoryImpl.getInstance();
+  private passwordHasher = PasswordHasherImpl.getInstance();
+  private predictionRepo = PredictionRepositoryImpl.getInstance();
 
   static getInstance(connectionUrl: string) {
     const competitionRepo = CompetitionRepositoryImpl.getInstance();
-    const teamRepo = TeamRepositoryImpl.getInstance();
-    const seasonRepo = SeasonRepositoryImpl.getInstance();
-    const gameRoundRepo = GameRoundRepositoryImpl.getInstance();
-    const matchRepo = MatchRepositoryImpl.getInstance();
 
-    return new Seeder(
-      connectionUrl,
-      competitionRepo,
-      teamRepo,
-      seasonRepo,
-      gameRoundRepo,
-      matchRepo
-    );
+    return new Seeder(connectionUrl);
   }
 
   async init(): Promise<void> {
@@ -96,7 +90,13 @@ export class Seeder {
     await this.seedMatches();
     console.info('Seeding completed successfully.');
 
-    // await this.seedUsers()
+    await this.seedUsers();
+    console.info('Seeded users successfully.');
+
+    await this.seedPredictions();
+    console.info('Seeded predictions successfully.');
+    // update matches
+    // process predictions
   }
 
   private ensureConnected(): void {
@@ -125,6 +125,8 @@ export class Seeder {
     await this.clearGameRounds(seasons.map(s => s.id!));
     await this.clearMatches(seasons.map(s => s.id!));
     await this.clearTeams();
+    await this.clearUsers();
+    await this.clearPredictions(seasons.map(s => s.id!));
   }
 
   private async seedCompetitions() {
@@ -291,6 +293,55 @@ export class Seeder {
     await lastValueFrom(this.matchRepo.createMany$(seedMatches));
   }
 
+  private async seedUsers() {
+    const hashPassword = this.passwordHasher.hashPassword.bind(
+      this.passwordHasher
+    );
+    const testUser1: User = {
+      password: await hashPassword(`!0_Az${faker.internet.password()}`), // must have at least these letters be valid
+      username: TESTER_1,
+    };
+
+    const testUser2: User = {
+      password: await hashPassword(`!0_Az${faker.internet.password()}`),
+      username: TESTER_2,
+    };
+
+    await lastValueFrom(this.userRepo.createMany$([testUser1, testUser2]));
+  }
+
+  private async seedPredictions() {
+    const users = await this.getSeededUsers();
+    const seasons = await this.getSeededSeasons();
+
+    await lastValueFrom(
+      from(seasons).pipe(
+        mergeMap(season => {
+          return this.gameRoundRepo.findAll$({
+            season: season.id,
+          });
+        }),
+        mergeMap(rounds => {
+          return from(rounds).pipe(
+            mergeMap(round => {
+              return this.matchRepo.findAll$({
+                gameRound: round.id,
+              });
+            })
+          );
+        }),
+        mergeMap(roundMatches => {
+          return from(users).pipe(
+            map(user => ({ roundMatches, userId: user.id! }))
+          );
+        }),
+        mergeMap(({ roundMatches, userId }) => {
+          return this.predictionRepo.findOrCreatePicks$(userId, roundMatches);
+        })
+      )
+    );
+  }
+
   private async clearCompetitions(competitionSlugs: string[]) {
     await lastValueFrom(
       this.competitionRepo.deleteMany$({
@@ -325,9 +376,24 @@ export class Seeder {
   }
 
   private async clearMatches(seasonIds: string[]) {
-    console.log('Clearing matches for seasons:', seasonIds);
     await lastValueFrom(
       this.matchRepo.deleteMany$({
+        season: { $in: seasonIds },
+      })
+    );
+  }
+
+  private async clearUsers() {
+    await lastValueFrom(
+      this.userRepo.deleteMany$({
+        username: { $in: [TESTER_1, TESTER_2] },
+      })
+    );
+  }
+
+  private async clearPredictions(seasonIds: string[]) {
+    await lastValueFrom(
+      this.predictionRepo.deleteMany$({
         season: { $in: seasonIds },
       })
     );
@@ -355,5 +421,31 @@ export class Seeder {
       throw new Error(`No seasons found for ${SEED_COMPETITION_SLUG}`);
     }
     return seasons;
+  }
+
+  private async getSeededUsers(): Promise<User[]> {
+    const users = await lastValueFrom(
+      this.userRepo.findAll$({
+        username: { $in: [TESTER_1, TESTER_2] },
+      })
+    );
+    if (users.length === 0) {
+      throw new Error('No seeded users found');
+    }
+    return users;
+  }
+
+  private async getSeededMatches(): Promise<Match[]> {
+    const seasons = await this.getSeededSeasons();
+
+    const matches = await lastValueFrom(
+      this.matchRepo.findAll$({
+        season: { $in: seasons.map(s => s.id) },
+      })
+    );
+    if (matches.length === 0) {
+      throw new Error('No seeded matches found');
+    }
+    return matches;
   }
 }
