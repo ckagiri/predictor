@@ -58,7 +58,10 @@ export default class GetRoundMatchesUseCase {
       const foundRound = await validator.validateRound(foundSeason.id!, round);
 
       const foundMatches = await lastValueFrom(
-        this.matchRepo.findAll$({ gameRound: foundRound.id }, '-createdAt')
+        this.matchRepo.findAll$(
+          { gameRound: foundRound.id },
+          '-createdAt -odds'
+        )
       );
       this.responder.respond(foundMatches);
     } catch (err: any) {

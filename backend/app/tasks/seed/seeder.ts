@@ -1,12 +1,9 @@
-import {
-  generateGamedays,
-  generateSchedule,
-} from 'db/scheduleGenerator/index.js';
+import { generateSchedule } from 'db/scheduleGenerator/index.js';
 import fs from 'fs';
 import { flatMap } from 'lodash';
 import mongoose from 'mongoose';
 import path from 'path';
-import { generate, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 import {
   Competition,
@@ -28,6 +25,7 @@ import {
   TeamRepositoryImpl,
 } from '../../../db/repositories/index.js';
 
+const SEED_COMPETITION_SLUG = 'what-premier-league';
 export class Seeder {
   constructor(
     private connectionUrl: string,
@@ -78,31 +76,27 @@ export class Seeder {
 
   async seed() {
     this.ensureConnected();
+
     console.log('seeding db..');
+    await this.clearCollections();
+
     await this.seedCompetitions();
     console.info('Seeded competitions successfully.');
-    const teams = await this.seedTeams();
+
+    const seasonTeams = await this.seedTeams();
     console.info('Seeded teams successfully.');
-    await this.seedSeasons(teams);
+
+    await this.seedSeasons(seasonTeams);
     console.info('Seeded seasons successfully.');
+
     await this.seedGameRounds();
-    console.info('Seeded game rounds successfully.');
+    await this.updateCurrentRound();
+    console.info('Seeded game-rounds successfully.');
+
     await this.seedMatches();
-    // await this.seedUsers()
     console.info('Seeding completed successfully.');
-  }
 
-  private async seedCompetitions() {
-    const competitions = [
-      {
-        code: 'WPL',
-        name: 'What Premier League',
-        slug: 'what-premier-league',
-      },
-    ] as Competition[];
-
-    await this.clearCompetitions(competitions.map(c => c.slug));
-    await lastValueFrom(this.competitionRepo.createMany$(competitions));
+    // await this.seedUsers()
   }
 
   private ensureConnected(): void {
@@ -116,24 +110,52 @@ export class Seeder {
     }
   }
 
-  private async seedTeams() {
-    const dataPath = path.resolve(__dirname, './what-teams.json');
-    const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as Team[];
+  private async clearCollections() {
+    await this.clearCompetitions([SEED_COMPETITION_SLUG]);
+    const seasons = await lastValueFrom(
+      this.seasonRepo.findAll$(
+        {
+          'competition.slug': SEED_COMPETITION_SLUG,
+        },
+        null,
+        'teams'
+      )
+    );
+    await this.clearSeasons(seasons.map(s => s.slug!));
+    await this.clearGameRounds(seasons.map(s => s.id!));
+    await this.clearMatches(seasons.map(s => s.id!));
+    await this.clearTeams();
+  }
 
-    await this.clearTeams(data.map(t => t.slug));
-    const teams = await lastValueFrom(this.teamRepo.createMany$(data));
+  private async seedCompetitions() {
+    const competitions = [
+      {
+        code: 'WPL',
+        name: 'What Premier League',
+        slug: SEED_COMPETITION_SLUG,
+      },
+    ] as Competition[];
+
+    await lastValueFrom(this.competitionRepo.createMany$(competitions));
+  }
+
+  private async seedTeams() {
+    const teamData = this.getTeamsToSeed();
+    const teams = await lastValueFrom(this.teamRepo.createMany$(teamData));
     return teams;
   }
 
   private async seedSeasons(teams: Team[]) {
     const competition = await lastValueFrom(
       this.competitionRepo.findOne$({
-        slug: 'what-premier-league',
+        slug: SEED_COMPETITION_SLUG,
       })
     );
 
     if (!competition) {
-      throw new Error('No competition found with slug "what-premier-league"');
+      throw new Error(
+        `No competition found with slug ${SEED_COMPETITION_SLUG}`
+      );
     }
 
     const baseSeason = {
@@ -166,14 +188,11 @@ export class Seeder {
       year: '2024',
     };
 
-    await this.clearSeasons([season1.slug, season2.slug]);
     await lastValueFrom(this.seasonRepo.createMany$([season1, season2]));
   }
 
   private async seedGameRounds() {
     const seasons = await this.getSeededSeasons();
-    await this.clearGameRounds(seasons.map(s => s.id!));
-
     const gameRounds = flatMap(
       seasons.map(season => {
         const teams: Team[] = season.teams as Team[];
@@ -190,13 +209,34 @@ export class Seeder {
         return gameRounds;
       })
     );
-    await lastValueFrom(this.matchRepo.createMany$(gameRounds));
+    await lastValueFrom(this.gameRoundRepo.createMany$(gameRounds));
+  }
+
+  private async updateCurrentRound() {
+    const seasons = await this.getSeededSeasons();
+    for (const season of seasons) {
+      const currentMatchday = season.currentMatchday;
+      const gameRound = await lastValueFrom(
+        this.gameRoundRepo.findOne$({
+          position: currentMatchday,
+          season: season.id,
+        })
+      );
+      if (!gameRound) {
+        throw new Error(
+          `No game round found for season ${String(season.slug)}`
+        );
+      }
+      await lastValueFrom(
+        this.seasonRepo.findByIdAndUpdate$(season.id!, {
+          currentGameRound: gameRound.id,
+        })
+      );
+    }
   }
 
   private async seedMatches() {
     const seasons = await this.getSeededSeasons();
-    await this.clearMatches(seasons.map(s => s.id!));
-
     const seedMatches = flatMap(
       await Promise.all(
         seasons.map(async season => {
@@ -209,6 +249,7 @@ export class Seeder {
                 const gameRound = await lastValueFrom(
                   this.gameRoundRepo.findOne$({
                     position,
+                    season: season.id,
                   })
                 );
 
@@ -247,7 +288,6 @@ export class Seeder {
         })
       )
     );
-    console.log('seedMatches', seedMatches);
     await lastValueFrom(this.matchRepo.createMany$(seedMatches));
   }
 
@@ -259,7 +299,8 @@ export class Seeder {
     );
   }
 
-  private async clearTeams(teamSlugs: string[]) {
+  private async clearTeams() {
+    const teamSlugs = this.getTeamsToSeed().map(t => t.slug);
     await lastValueFrom(
       this.teamRepo.deleteMany$({
         slug: { $in: teamSlugs },
@@ -284,6 +325,7 @@ export class Seeder {
   }
 
   private async clearMatches(seasonIds: string[]) {
+    console.log('Clearing matches for seasons:', seasonIds);
     await lastValueFrom(
       this.matchRepo.deleteMany$({
         season: { $in: seasonIds },
@@ -291,12 +333,18 @@ export class Seeder {
     );
   }
 
+  private getTeamsToSeed() {
+    const dataPath = path.resolve(__dirname, './what-teams.json');
+    const teams = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as Team[];
+
+    return teams;
+  }
+
   private async getSeededSeasons(): Promise<Season[]> {
-    const competitionSlug = 'what-premier-league';
     const seasons = await lastValueFrom(
       this.seasonRepo.findAll$(
         {
-          'competition.slug': competitionSlug,
+          'competition.slug': SEED_COMPETITION_SLUG,
           slug: { $in: ['2023-24', '2024-25'] },
         },
         null,
@@ -304,7 +352,7 @@ export class Seeder {
       )
     );
     if (seasons.length === 0) {
-      throw new Error(`No seasons found for ${competitionSlug}`);
+      throw new Error(`No seasons found for ${SEED_COMPETITION_SLUG}`);
     }
     return seasons;
   }
