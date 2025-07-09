@@ -138,17 +138,17 @@ describe('UserScore Repo', function () {
     user1manuVmancPredPoints = {
       closeMatchScorePoints: 1,
       correctMatchOutcomePoints: 7,
+      correctTeamScorePoints: 0,
       exactGoalDifferencePoints: 1,
       exactMatchScorePoints: 0,
-      exactTeamScorePoints: 0,
     };
     // result 2-1 prediction 3-0
     user2manuVmancPredPoints = {
       closeMatchScorePoints: 1,
       correctMatchOutcomePoints: 7,
+      correctTeamScorePoints: 0,
       exactGoalDifferencePoints: 0,
       exactMatchScorePoints: 0,
-      exactTeamScorePoints: 0,
     };
 
     // cheVars 1-1
@@ -156,9 +156,9 @@ describe('UserScore Repo', function () {
     user1cheVarsPredPoints = {
       closeMatchScorePoints: 0,
       correctMatchOutcomePoints: 7,
+      correctTeamScorePoints: 2,
       exactGoalDifferencePoints: 1,
       exactMatchScorePoints: 10,
-      exactTeamScorePoints: 2,
     };
   });
 
@@ -196,11 +196,11 @@ describe('UserScore Repo', function () {
       closeMatchScores: 1,
       correctMatchOutcomePoints: 7,
       correctMatchOutcomes: 1,
+      correctTeamScorePoints: 0,
       exactGoalDifferencePoints: 1,
       exactGoalDiffs: 1,
       exactMatchScorePoints: 0,
       exactMatchScores: 0,
-      exactTeamScorePoints: 0,
       leaderboard: leaderboardId,
       matches: [manuVmancId],
       matchesPredicted: 1,
@@ -248,11 +248,11 @@ describe('UserScore Repo', function () {
       closeMatchScores: 0,
       correctMatchOutcomePoints: 7,
       correctMatchOutcomes: 1,
+      correctTeamScorePoints: 0,
       exactGoalDifferencePoints: 1,
       exactGoalDiffs: 1,
       exactMatchScorePoints: 0,
       exactMatchScores: 0,
-      exactTeamScorePoints: 0,
       leaderboard: leaderboardId,
       matches: [manuVmancId],
       matchesPredicted: 1,
@@ -267,11 +267,11 @@ describe('UserScore Repo', function () {
       closeMatchScores: 0,
       correctMatchOutcomePoints: 7,
       correctMatchOutcomes: 1,
+      correctTeamScorePoints: 0,
       exactGoalDifferencePoints: 0,
       exactGoalDiffs: 0,
       exactMatchScorePoints: 0,
       exactMatchScores: 0,
-      exactTeamScorePoints: 0,
       leaderboard: leaderboardId,
       matches: [manuVmancId],
       matchesPredicted: 1,

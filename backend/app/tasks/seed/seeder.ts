@@ -1,11 +1,9 @@
-import { faker } from '@faker-js/faker';
-import GetRoundMatchUseCase from 'app/api/data/matches/useCases/getRoundMatch.useCase.js';
 import { generateSchedule } from 'db/scheduleGenerator/index.js';
 import fs from 'fs';
-import { flatMap, merge, round } from 'lodash';
+import { flatMap, matches } from 'lodash';
 import mongoose from 'mongoose';
 import path from 'path';
-import { from, lastValueFrom, map, mergeMap, of } from 'rxjs';
+import { from, lastValueFrom, map, mergeMap, of, tap, toArray } from 'rxjs';
 
 import {
   Competition,
@@ -88,14 +86,17 @@ export class Seeder {
     console.info('Seeded game-rounds successfully.');
 
     await this.seedMatches();
-    console.info('Seeding completed successfully.');
+    console.info('Seeded matches successfully.');
 
     await this.seedUsers();
     console.info('Seeded users successfully.');
 
     await this.seedPredictions();
     console.info('Seeded predictions successfully.');
+
     // update matches
+    // await this.updateMatches();
+    console.info('Updated matches successfully.');
     // process predictions
   }
 
@@ -118,7 +119,9 @@ export class Seeder {
           'competition.slug': SEED_COMPETITION_SLUG,
         },
         null,
-        'teams'
+        {
+          populate: 'teams',
+        }
       )
     );
     await this.clearSeasons(seasons.map(s => s.slug!));
@@ -239,58 +242,70 @@ export class Seeder {
 
   private async seedMatches() {
     const seasons = await this.getSeededSeasons();
-    const seedMatches = flatMap(
-      await Promise.all(
-        seasons.map(async season => {
-          const teams: Team[] = season.teams as Team[];
+    await lastValueFrom(
+      from(seasons).pipe(
+        mergeMap(season => {
+          const teams = season.teams as Team[];
           const schedule = generateSchedule(teams, true);
-          const seasonMatches = flatMap(
-            await Promise.all(
-              schedule.map(async (gamedayMatches, index) => {
-                const position = index + 1;
-                const gameRound = await lastValueFrom(
-                  this.gameRoundRepo.findOne$({
-                    position,
-                    season: season.id,
+          return of({ schedule, seasonId: season.id!, teams });
+        }),
+        mergeMap(({ schedule, seasonId, teams }) => {
+          return from(schedule).pipe(
+            mergeMap((gamedayMatches, index) => {
+              const position = index + 1;
+              return this.gameRoundRepo
+                .findOne$({
+                  position,
+                  season: seasonId,
+                })
+                .pipe(
+                  map(gameRound => {
+                    if (!gameRound) {
+                      throw new Error(
+                        `Game round not found for season ${String(seasonId)} position ${position.toString()}`
+                      );
+                    }
+                    return {
+                      gamedayMatches,
+                      gameRoundId: gameRound.id,
+                      seasonId,
+                      teams,
+                    };
                   })
                 );
-
-                if (!gameRound) {
-                  throw new Error(
-                    `Game round not found for season ${String(season.slug)} position ${position.toString()}`
-                  );
-                }
-
-                const roundMatches = gamedayMatches.map(match => {
-                  const homeTeam = teams.find(t => t.id === match.home?.id)!;
-                  const awayTeam = teams.find(t => t.id === match.away?.id)!;
-                  return {
-                    awayTeam: {
-                      id: awayTeam.id,
-                      name: awayTeam.name,
-                      slug: awayTeam.slug,
-                    },
-                    gameRound: gameRound.id,
-                    homeTeam: {
-                      id: homeTeam.id,
-                      name: homeTeam.name,
-                      slug: homeTeam.slug,
-                    },
-                    season: season.id!,
-                    slug: `${String(homeTeam.tla).toLowerCase()}-v-${String(awayTeam.tla).toLowerCase()}`,
-                    status: 'SCHEDULED',
-                    utcDate: new Date().toUTCString(), // TODO: set better kickoff
-                  };
-                }) as Match[];
-                return roundMatches;
-              })
-            )
+            })
           );
-          return seasonMatches;
+        }),
+        mergeMap(({ gamedayMatches, gameRoundId, seasonId, teams }) => {
+          return gamedayMatches.map(match => {
+            const homeTeam = teams.find(t => t.id === match.home?.id)!;
+            const awayTeam = teams.find(t => t.id === match.away?.id)!;
+            return {
+              awayTeam: {
+                id: awayTeam.id,
+                name: awayTeam.name,
+                slug: awayTeam.slug,
+              },
+              gameRound: gameRoundId,
+              homeTeam: {
+                id: homeTeam.id,
+                name: homeTeam.name,
+                slug: homeTeam.slug,
+              },
+              season: seasonId,
+              slug: `${String(homeTeam.tla).toLowerCase()}-v-${String(awayTeam.tla).toLowerCase()}`,
+              status: 'SCHEDULED',
+              utcDate: new Date().toUTCString(), // TODO: set better kickoff
+            };
+          }) as Match[];
+        }),
+        toArray(),
+        map(arrays => arrays.flat()),
+        mergeMap(matches => {
+          return this.matchRepo.createMany$(matches);
         })
       )
     );
-    await lastValueFrom(this.matchRepo.createMany$(seedMatches));
   }
 
   private async seedUsers() {
@@ -298,12 +313,12 @@ export class Seeder {
       this.passwordHasher
     );
     const testUser1: User = {
-      password: await hashPassword(`!0_Az${faker.internet.password()}`), // must have at least these letters be valid
+      password: await hashPassword(`!0_Az${TESTER_1}`), // must have at least these letters be valid
       username: TESTER_1,
     };
 
     const testUser2: User = {
-      password: await hashPassword(`!0_Az${faker.internet.password()}`),
+      password: await hashPassword(`!0_Az${TESTER_2}`),
       username: TESTER_2,
     };
 
@@ -414,7 +429,9 @@ export class Seeder {
           slug: { $in: ['2023-24', '2024-25'] },
         },
         null,
-        'teams'
+        {
+          populate: 'teams',
+        }
       )
     );
     if (seasons.length === 0) {

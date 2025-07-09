@@ -34,7 +34,7 @@ export interface BaseRepository<T extends Entity> {
   findAll$(
     conditions?: RootFilterQuery<T>,
     projection?: ProjectionType<T> | null,
-    join?: PopulateOptions | PopulateOptions[] | string
+    options?: QueryOptions<T>
   ): Observable<T[]>;
   findAllByIds$(
     ids: string[],
@@ -112,12 +112,12 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   findAll$(
     conditions?: RootFilterQuery<T>,
     projection?: ProjectionType<T> | null,
-    join?: PopulateOptions | PopulateOptions[] | string
+    options?: QueryOptions<T>
   ): Observable<T[]> {
     // const queryOptions: QueryOptions<T> & { lean: true } = options
     //   ? { ...options, lean: true as const }
     //   : { lean: true as const };
-    return from(this.documentDao.findAll(conditions, projection, join));
+    return from(this.documentDao.findAll(conditions, projection, options));
   }
   findAllByIds$(
     ids: string[],

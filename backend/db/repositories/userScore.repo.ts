@@ -60,25 +60,25 @@ export class UserScoreRepositoryImpl
     const {
       closeMatchScorePoints,
       correctMatchOutcomePoints,
+      correctTeamScorePoints,
       exactGoalDifferencePoints,
       exactMatchScorePoints,
-      exactTeamScorePoints,
     } = predictionPoints;
     const { hasJoker, matchId, predictionId } = rest;
     const basePoints =
       correctMatchOutcomePoints +
       exactGoalDifferencePoints +
       closeMatchScorePoints +
-      exactTeamScorePoints +
+      correctTeamScorePoints +
       exactMatchScorePoints;
 
     const score: UserScore = {
       basePoints,
       closeMatchScorePoints,
       correctMatchOutcomePoints,
+      correctTeamScorePoints,
       exactGoalDifferencePoints,
       exactMatchScorePoints,
-      exactTeamScorePoints,
       leaderboard: leaderboardId,
       points: basePoints,
       user: userId,
@@ -109,7 +109,7 @@ export class UserScoreRepositoryImpl
           userScore.correctMatchOutcomePoints += correctMatchOutcomePoints;
           userScore.exactGoalDifferencePoints += exactGoalDifferencePoints;
           userScore.closeMatchScorePoints += closeMatchScorePoints;
-          userScore.exactTeamScorePoints += exactTeamScorePoints;
+          userScore.correctTeamScorePoints += correctTeamScorePoints;
           userScore.exactMatchScorePoints += exactMatchScorePoints;
 
           userScore.basePoints += basePoints;
@@ -129,11 +129,11 @@ export class UserScoreRepositoryImpl
               closeMatchScores: userScore.closeMatchScores,
               correctMatchOutcomePoints: userScore.correctMatchOutcomePoints,
               correctMatchOutcomes: userScore.correctMatchOutcomes,
+              correctTeamScorePoints: userScore.correctTeamScorePoints,
               exactGoalDifferencePoints: userScore.exactGoalDifferencePoints,
               exactGoalDiffs: userScore.exactGoalDiffs,
               exactMatchScorePoints: userScore.exactMatchScorePoints,
               exactMatchScores: userScore.exactMatchScores,
-              exactTeamScorePoints: userScore.exactTeamScorePoints,
               points: userScore.points,
             },
           }).pipe(

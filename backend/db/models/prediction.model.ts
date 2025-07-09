@@ -32,7 +32,7 @@ const predictionSchema = schema({
     correctMatchOutcomePoints: { type: Number },
     exactGoalDifferencePoints: { type: Number },
     exactMatchScorePoints: { type: Number },
-    exactTeamScorePoints: { type: Number },
+    correctTeamScorePoints: { type: Number },
   },
   season: { index: true, ref: 'Season', required: true, type: ObjectId },
   user: { index: true, ref: 'User', required: true, type: ObjectId },

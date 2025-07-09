@@ -141,16 +141,16 @@ export class DocumentDao<T extends Entity> {
   findAll(
     conditions: RootFilterQuery<T> = {},
     projection?: ProjectionType<T> | null,
-    join?: PopulateOptions | PopulateOptions[] | string
+    options?: QueryOptions<T>
   ): Promise<T[]> {
     const repository = this.Model.find(conditions, projection);
 
-    if (join) {
+    if (options?.populate) {
       // Ensure join is never a plain string for populate
-      if (typeof join === 'string') {
-        repository.populate([join]);
+      if (typeof options.populate === 'string') {
+        repository.populate([options.populate]);
       } else {
-        repository.populate(join);
+        repository.populate(options.populate);
       }
       // Somehow we can't use lean-transform with populate; no worries we'll use toObject
       return repository.exec() as Promise<T[]>;

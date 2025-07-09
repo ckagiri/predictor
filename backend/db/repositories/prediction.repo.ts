@@ -4,7 +4,7 @@ import { from, iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeMap, toArray } from 'rxjs/operators';
 
 import { Score } from '../../common/score.js';
-import { VosePredictor } from '../helpers/vose-predictor.js';
+import { VosePredictorImpl } from '../helpers/vosePredictor.js';
 import { Match, MatchStatus } from '../models/match.model.js';
 import PredictionModel, { Prediction } from '../models/prediction.model.js';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
@@ -42,11 +42,8 @@ export class PredictionRepositoryImpl
   extends BaseRepositoryImpl<Prediction>
   implements PredictionRepository
 {
-  readonly defaultVosePredictor: VosePredictor;
-
   constructor() {
     super(PredictionModel);
-    this.defaultVosePredictor = new VosePredictor();
   }
 
   static getInstance() {
@@ -114,7 +111,7 @@ export class PredictionRepositoryImpl
                 return this.findByIdAndUpdate$(jokerPred.id!, jokerPred);
               } else {
                 const { season, slug } = jokerMatch;
-                const randomScore = this.defaultVosePredictor.predict();
+                const randomScore = VosePredictorImpl.getDefault().predict();
 
                 const newJokerPred: Prediction = {
                   choice: this.getPredictionScore(randomScore),
@@ -164,7 +161,7 @@ export class PredictionRepositoryImpl
             const predictionMatch = roundMatches.find(
               m => m.id === prediction.match.toString()
             );
-            const randomScore = new VosePredictor(
+            const randomScore = VosePredictorImpl.getInstance(
               predictionMatch?.odds
             ).predict();
             const isComputerGenerated = false;
@@ -227,9 +224,10 @@ export class PredictionRepositoryImpl
           return of(predictions);
         }
 
+        const defaultVosePredictor = VosePredictorImpl.getDefault();
         const newPredictions = newPredictionMatches.map(match => {
           const { id: matchId, season, slug: matchSlug } = match;
-          const score = this.defaultVosePredictor.predict();
+          const score = defaultVosePredictor.predict();
           const prediction: Prediction = {
             choice: this.getPredictionScore(score),
             match: matchId!,

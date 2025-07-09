@@ -13,7 +13,7 @@ export interface Score {
 export interface ScorePoints {
   closeMatchScorePoints: number;
   correctMatchOutcomePoints: number;
+  correctTeamScorePoints: number;
   exactGoalDifferencePoints: number;
   exactMatchScorePoints: number;
-  exactTeamScorePoints: number;
 }
