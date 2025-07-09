@@ -3,16 +3,29 @@ import fs from 'fs';
 import { flatMap, matches } from 'lodash';
 import mongoose from 'mongoose';
 import path from 'path';
-import { from, lastValueFrom, map, mergeMap, of, tap, toArray } from 'rxjs';
+import {
+  count,
+  filter,
+  from,
+  lastValueFrom,
+  map,
+  mergeMap,
+  of,
+  tap,
+  toArray,
+} from 'rxjs';
 
+import { VosePredictorImpl } from '../../../db/helpers/vosePredictor.js';
 import {
   Competition,
   GameRound,
   Match,
+  Prediction,
   Season,
   Team,
   User,
 } from '../../../db/models/index.js';
+import { MatchStatus } from '../../../db/models/match.model.js';
 import {
   CompetitionRepositoryImpl,
   GameRoundRepositoryImpl,
@@ -23,6 +36,7 @@ import {
   UserRepositoryImpl,
 } from '../../../db/repositories/index.js';
 import { PasswordHasherImpl } from '../../api/auth/providers/passwordHasher.js';
+import PredictionCalculator from '../../schedulers/prediction.calculator.js';
 
 const SEED_COMPETITION_SLUG = 'what-premier-league';
 const TESTER_1 = 'tester1';
@@ -40,8 +54,6 @@ export class Seeder {
   private predictionRepo = PredictionRepositoryImpl.getInstance();
 
   static getInstance(connectionUrl: string) {
-    const competitionRepo = CompetitionRepositoryImpl.getInstance();
-
     return new Seeder(connectionUrl);
   }
 
@@ -94,10 +106,11 @@ export class Seeder {
     await this.seedPredictions();
     console.info('Seeded predictions successfully.');
 
-    // update matches
-    // await this.updateMatches();
+    await this.updateMatches();
     console.info('Updated matches successfully.');
-    // process predictions
+
+    await this.processPredictions();
+    console.info('Processed predictions successfully.');
   }
 
   private ensureConnected(): void {
@@ -352,6 +365,114 @@ export class Seeder {
         }),
         mergeMap(({ roundMatches, userId }) => {
           return this.predictionRepo.findOrCreatePicks$(userId, roundMatches);
+        })
+      )
+    );
+  }
+
+  private async updateMatches() {
+    const defaultVosePredictor = VosePredictorImpl.getInstance();
+    const matches = await this.getSeededMatches();
+
+    await lastValueFrom(
+      from(matches).pipe(
+        map(match => {
+          const randomScore = defaultVosePredictor.predict();
+          const teamScores = randomScore.split('-');
+          const goalsHomeTeam = Number(teamScores[0]);
+          const goalsAwayTeam = Number(teamScores[1]);
+
+          const update: Match = {
+            ...match,
+            result: {
+              goalsAwayTeam,
+              goalsHomeTeam,
+            },
+            status: MatchStatus.FINISHED,
+          };
+          return update;
+        }),
+        toArray(),
+        mergeMap(matches => {
+          return this.matchRepo.updateMany$(matches);
+        })
+      )
+    );
+  }
+
+  private async processPredictions() {
+    const seasons = await this.getSeededSeasons();
+    const predictionCalculator = PredictionCalculator.getInstance();
+    await lastValueFrom(
+      from(seasons).pipe(
+        mergeMap(season => {
+          return this.predictionRepo
+            .distinct$('user', { season: season.id })
+            .pipe(
+              mergeMap(userIds => {
+                return this.matchRepo
+                  .findAllFinishedForSeason$(season.id!)
+                  .pipe(map(matches => ({ matches, userIds })));
+              }),
+              mergeMap(({ matches, userIds }) => {
+                return from(matches).pipe(
+                  mergeMap(match => {
+                    return from(userIds).pipe(
+                      map(userId => ({ match, userId }))
+                    );
+                  }),
+                  mergeMap(({ match, userId }) => {
+                    return this.predictionRepo
+                      .findOneByUserAndMatch$(userId, match.id!)
+                      .pipe(
+                        filter(prediction => prediction != null),
+                        map(prediction => ({ match, prediction }))
+                      );
+                  }),
+                  map(({ match, prediction }) => {
+                    const scorePoints = predictionCalculator.calculateScore(
+                      match.result!,
+                      prediction.choice
+                    );
+                    const update: Prediction = {
+                      ...prediction,
+                      scorePoints,
+                    };
+                    return update;
+                  }),
+                  toArray(),
+                  mergeMap(predictions => {
+                    return this.predictionRepo.updateMany$(predictions).pipe(
+                      map(() => ({
+                        matches,
+                        nbPredictions: predictions.length,
+                        nbUsers: userIds.length,
+                      }))
+                    );
+                  })
+                );
+              }),
+              mergeMap(({ matches, nbPredictions, nbUsers }) => {
+                const matches_ = matches.map(match => ({
+                  ...match,
+                  allPredictionPointsCalculated: true,
+                }));
+                return this.matchRepo.updateMany$(matches_).pipe(
+                  map(() => ({
+                    nbMatches: matches.length,
+                    nbPredictions,
+                    nbUsers,
+                  }))
+                );
+              }),
+              tap(({ nbMatches, nbPredictions, nbUsers }) => {
+                console.log(
+                  `Season ${String(season.competition?.slug)} ${String(season.slug)}: ` +
+                    `All prediction points calculated for ${String(nbUsers)} users, ` +
+                    `${String(nbMatches)} matches and ${String(nbPredictions)} predictions`
+                );
+              })
+            );
         })
       )
     );

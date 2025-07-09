@@ -58,25 +58,26 @@ export class VosePredictor {
 
   protected getDrawPredictionScore() {
     const scoreToWeight = {
-      '0-0': 22,
-      '1-1': 42,
-      '2-2': 20,
-      '3-3': 4,
+      '0-0': 16,
+      '1-1': 45,
+      '2-2': 31,
+      '3-3': 1,
     };
     return this.getScore(scoreToWeight);
   }
 
   protected getHomePredictionScore() {
     const scoreToWeight = {
-      '1-0': 37,
-      '2-0': 28,
-      '2-1': 25,
-      '3-0': 18,
-      '3-1': 18,
-      '3-2': 10,
+      '1-0': 29,
+      '2-0': 21,
+      '2-1': 33,
+      '3-0': 11,
+      '3-1': 17,
+      '3-2': 11,
       '4-0': 7,
-      '4-1': 6,
-      '4-2': 2,
+      '4-1': 10,
+      '4-2': 6,
+      '4-3': 3,
     };
     return this.getScore(scoreToWeight);
   }
