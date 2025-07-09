@@ -1,10 +1,11 @@
 import { generateSchedule } from 'db/scheduleGenerator/index.js';
 import fs from 'fs';
-import { flatMap, matches } from 'lodash';
+import { flatMap, matches, round } from 'lodash';
 import mongoose from 'mongoose';
 import path from 'path';
 import {
   count,
+  EMPTY,
   filter,
   from,
   lastValueFrom,
@@ -12,6 +13,8 @@ import {
   mergeMap,
   of,
   tap,
+  throwError,
+  throwIfEmpty,
   toArray,
 } from 'rxjs';
 
@@ -198,7 +201,7 @@ export class Seeder {
     };
     const season2: Team = {
       ...baseSeason,
-      currentMatchday: 37,
+      currentMatchday: 36,
       name: '2024-2025',
       seasonEnd: new Date('2025-05-25T00:00:00+0200'),
       seasonStart: new Date('2024-05-16T00:00:00+0200'),
@@ -372,25 +375,55 @@ export class Seeder {
 
   private async updateMatches() {
     const defaultVosePredictor = VosePredictorImpl.getInstance();
-    const matches = await this.getSeededMatches();
+    const seasons = await this.getSeededSeasons();
 
     await lastValueFrom(
-      from(matches).pipe(
+      from(seasons).pipe(
+        mergeMap(season => {
+          return this.gameRoundRepo.findById$(season.currentGameRound!).pipe(
+            mergeMap(r => (r ? of(r) : EMPTY)),
+            throwIfEmpty(
+              () =>
+                new Error(
+                  `No current game round for season ${String(season.slug)}`
+                )
+            ),
+            map(currentRound => ({ currentRound, season }))
+          );
+        }),
+        mergeMap(({ currentRound, season }) => {
+          return this.matchRepo
+            .findAll$(
+              {
+                season: season.id,
+              },
+              null,
+              {
+                populate: 'gameRound',
+              }
+            )
+            .pipe(
+              mergeMap(matches => {
+                const filteredMatches = matches.filter(match => {
+                  const matchRound = match.gameRound as unknown as GameRound;
+                  return matchRound.position! <= currentRound.position!;
+                });
+                return from(filteredMatches);
+              })
+            );
+        }),
         map(match => {
           const randomScore = defaultVosePredictor.predict();
           const teamScores = randomScore.split('-');
           const goalsHomeTeam = Number(teamScores[0]);
           const goalsAwayTeam = Number(teamScores[1]);
 
-          const update: Match = {
-            ...match,
-            result: {
-              goalsAwayTeam,
-              goalsHomeTeam,
-            },
-            status: MatchStatus.FINISHED,
+          match.result = {
+            goalsAwayTeam,
+            goalsHomeTeam,
           };
-          return update;
+          match.status = MatchStatus.FINISHED;
+          return match;
         }),
         toArray(),
         mergeMap(matches => {
@@ -571,19 +604,5 @@ export class Seeder {
       throw new Error('No seeded users found');
     }
     return users;
-  }
-
-  private async getSeededMatches(): Promise<Match[]> {
-    const seasons = await this.getSeededSeasons();
-
-    const matches = await lastValueFrom(
-      this.matchRepo.findAll$({
-        season: { $in: seasons.map(s => s.id) },
-      })
-    );
-    if (matches.length === 0) {
-      throw new Error('No seeded matches found');
-    }
-    return matches;
   }
 }
