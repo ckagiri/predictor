@@ -8,11 +8,11 @@ export interface UserScore extends Entity {
   closeMatchScores?: number;
   correctMatchOutcomePoints: number;
   correctMatchOutcomes?: number;
+  correctTeamScorePoints: number;
   exactGoalDifferencePoints: number;
   exactGoalDiffs?: number;
   exactMatchScorePoints: number;
   exactMatchScores?: number;
-  exactTeamScorePoints: number;
   leaderboard: string;
   matches?: string[];
   matchesPredicted?: number;
@@ -32,11 +32,11 @@ const userScoreSchema = schema({
   closeMatchScores: { type: Number },
   correctMatchOutcomePoints: { type: Number },
   correctMatchOutcomes: { type: Number },
+  correctTeamScorePoints: { type: Number },
   exactGoalDifferencePoints: { type: Number },
   exactGoalDiffs: { type: Number },
   exactMatchScorePoints: { type: Number },
   exactMatchScores: { type: Number },
-  exactTeamScorePoints: { type: Number },
   leaderboard: {
     index: true,
     ref: 'Leaderboard',

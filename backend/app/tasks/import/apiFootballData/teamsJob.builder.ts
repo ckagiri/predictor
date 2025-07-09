@@ -1,5 +1,5 @@
-import { TeamRepository } from '../../db/repositories/team.repo.js';
-import { FootballApiClient } from '../../thirdParty/footballApi/apiClient.js';
+import { TeamRepository } from '../../../../db/repositories/team.repo.js';
+import { FootballApiClient } from '../../../../thirdParty/footballApi/apiClient.js';
 import { TeamsJob } from './teams.job.js';
 
 export default class Builder {

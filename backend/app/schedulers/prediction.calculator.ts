@@ -9,9 +9,9 @@ export class PredictionCalculator {
     const points: ScorePoints = {
       closeMatchScorePoints: 0,
       correctMatchOutcomePoints: 0,
+      correctTeamScorePoints: 0,
       exactGoalDifferencePoints: 0,
       exactMatchScorePoints: 0,
-      exactTeamScorePoints: 0,
     };
 
     const choiceOutcome = outcome(choice.goalsHomeTeam, choice.goalsAwayTeam);
@@ -20,11 +20,17 @@ export class PredictionCalculator {
     const drawPrediction = choice.goalsHomeTeam === choice.goalsAwayTeam;
     const correctDrawOutcome = correctMatchOutcome && drawPrediction;
     const correctWinnerOutcome = correctMatchOutcome && !drawPrediction;
+    const exactScore =
+      choice.goalsHomeTeam === result.goalsHomeTeam &&
+      choice.goalsAwayTeam === result.goalsAwayTeam;
     const exactGoalDiff = goalDiff(choice) === goalDiff(result);
     const oneGoalOffOverall = goalsOff(choice, result) === 1;
     const oneGoalOffBothTeams =
       goalsOffHomeTeam(choice, result) === 1 &&
       goalsOffAwayTeam(choice, result) === 1;
+    const correctThreeOrMoreGoalDiff =
+      (goalDiff(choice) >= 3 && goalDiff(result) >= 3) ||
+      (goalDiff(choice) <= -3 && goalDiff(result) <= -3);
 
     if (correctMatchOutcome) {
       points.correctMatchOutcomePoints = 7;
@@ -49,17 +55,18 @@ export class PredictionCalculator {
     }
 
     if (choice.goalsHomeTeam === result.goalsHomeTeam) {
-      points.exactTeamScorePoints += 1;
+      points.correctTeamScorePoints += 1;
     }
 
     if (choice.goalsAwayTeam === result.goalsAwayTeam) {
-      points.exactTeamScorePoints += 1;
+      points.correctTeamScorePoints += 1;
     }
 
-    if (
-      choice.goalsHomeTeam === result.goalsHomeTeam &&
-      choice.goalsAwayTeam === result.goalsAwayTeam
-    ) {
+    if (correctThreeOrMoreGoalDiff && !oneGoalOffOverall && !exactScore) {
+      points.correctTeamScorePoints += 1;
+    }
+
+    if (exactScore) {
       points.exactMatchScorePoints = 10;
     }
 

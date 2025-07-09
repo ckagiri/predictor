@@ -1,9 +1,8 @@
-import { from, lastValueFrom, Observable } from 'rxjs';
+import { from, lastValueFrom } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 
-import { Team } from '../../db/models/team.model.js';
-import { TeamRepository } from '../../db/repositories/team.repo.js';
-import { FootballApiClient } from '../../thirdParty/footballApi/apiClient.js';
+import { TeamRepository } from '../../../../db/repositories/team.repo.js';
+import { FootballApiClient } from '../../../../thirdParty/footballApi/apiClient.js';
 import { Job } from '../jobs/job.js';
 import { Queue } from '../queue.js';
 import Builder from './teamsJob.builder.js';

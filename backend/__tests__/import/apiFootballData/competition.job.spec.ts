@@ -6,9 +6,9 @@ chai.use(sinonChai);
 const expect = chai.expect;
 import { of } from 'rxjs';
 
-import { CompetitionJob } from '../../../import/apiFootballData/competition.job';
-import { MatchesJob } from '../../../import/apiFootballData/matches.job';
-import { TeamsJob } from '../../../import/apiFootballData/teams.job';
+import { CompetitionJob } from '../../../app/tasks/import/apiFootballData/competition.job';
+import { MatchesJob } from '../../../app/tasks/import/apiFootballData/matches.job';
+import { TeamsJob } from '../../../app/tasks/import/apiFootballData/teams.job';
 import teams from '../../fixtures/requests/apiFootballData.epl2018Teams.json';
 import competition from '../../fixtures/requests/apiFootballData.eplCompetitions.json';
 

@@ -1,20 +1,16 @@
-import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
+import { FootballApiProvider as ApiProvider } from '../../../../common/footballApiProvider.js';
 import {
   MatchRepository,
   MatchRepositoryImpl,
-} from '../../db/repositories/match.repo.js';
-import {
   SeasonRepository,
   SeasonRepositoryImpl,
-} from '../../db/repositories/season.repo.js';
-import {
   TeamRepository,
   TeamRepositoryImpl,
-} from '../../db/repositories/team.repo.js';
+} from '../../../../db/repositories/index.js';
 import {
   FootballApiClient,
   FootballApiClientImpl,
-} from '../../thirdParty/footballApi/apiClient.js';
+} from '../../../../thirdParty/footballApi/apiClient.js';
 import { Job } from '../jobs/job.js';
 import { Queue } from '../queue.js';
 import { CompetitionJob } from './competition.job.js';

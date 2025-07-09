@@ -5,8 +5,8 @@ import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 const expect = chai.expect;
 
-import { CompetitionJob } from '../../../import/apiFootballData/competition.job';
-import { MainJob } from '../../../import/apiFootballData/main.job';
+import { CompetitionJob } from '../../../app/tasks/import/apiFootballData/competition.job';
+import { MainJob } from '../../../app/tasks/import/apiFootballData/main.job';
 import data from '../../fixtures/requests/apiFootballData.competitions2018.json';
 
 const queueStub: any = {

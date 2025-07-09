@@ -6,7 +6,7 @@ chai.use(sinonChai);
 const expect = chai.expect;
 import { of } from 'rxjs';
 
-import { MatchesJob } from '../../../import/apiFootballData/matches.job';
+import { MatchesJob } from '../../../app/tasks/import/apiFootballData/matches.job';
 import data from '../../fixtures/requests/apiFootballData.epl2018Matches.json';
 const clientStub: any = {
   getCompetitionMatches: () => {
