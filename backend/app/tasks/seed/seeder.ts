@@ -1,19 +1,21 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import { generateSchedule } from 'db/scheduleGenerator/index.js';
 import fs from 'fs';
-import { flatMap, matches, round } from 'lodash';
+import { flatMap, isNil } from 'lodash';
 import mongoose from 'mongoose';
 import path from 'path';
 import {
-  count,
+  concatMap,
   EMPTY,
   filter,
+  forkJoin,
   from,
   lastValueFrom,
   map,
   mergeMap,
   of,
+  takeLast,
   tap,
-  throwError,
   throwIfEmpty,
   toArray,
 } from 'rxjs';
@@ -32,11 +34,13 @@ import { MatchStatus } from '../../../db/models/match.model.js';
 import {
   CompetitionRepositoryImpl,
   GameRoundRepositoryImpl,
+  LeaderboardRepositoryImpl,
   MatchRepositoryImpl,
   PredictionRepositoryImpl,
   SeasonRepositoryImpl,
   TeamRepositoryImpl,
   UserRepositoryImpl,
+  UserScoreRepositoryImpl,
 } from '../../../db/repositories/index.js';
 import { PasswordHasherImpl } from '../../api/auth/providers/passwordHasher.js';
 import PredictionCalculator from '../../schedulers/prediction.calculator.js';
@@ -55,6 +59,8 @@ export class Seeder {
   private userRepo = UserRepositoryImpl.getInstance();
   private passwordHasher = PasswordHasherImpl.getInstance();
   private predictionRepo = PredictionRepositoryImpl.getInstance();
+  private leaderboardRepo = LeaderboardRepositoryImpl.getInstance();
+  private userScoreRepo = UserScoreRepositoryImpl.getInstance();
 
   static getInstance(connectionUrl: string) {
     return new Seeder(connectionUrl);
@@ -109,11 +115,14 @@ export class Seeder {
     await this.seedPredictions();
     console.info('Seeded predictions successfully.');
 
-    await this.updateMatches();
+    await this.finishMatchesUptoCurrentRound();
     console.info('Updated matches successfully.');
 
     await this.processPredictions();
     console.info('Processed predictions successfully.');
+
+    await this.updateUserScores();
+    console.info('Updated user scores successfully.');
   }
 
   private ensureConnected(): void {
@@ -129,23 +138,20 @@ export class Seeder {
 
   private async clearCollections() {
     await this.clearCompetitions([SEED_COMPETITION_SLUG]);
-    const seasons = await lastValueFrom(
-      this.seasonRepo.findAll$(
-        {
-          'competition.slug': SEED_COMPETITION_SLUG,
-        },
-        null,
-        {
-          populate: 'teams',
-        }
-      )
-    );
+
+    const seasons = await this.getSeededSeasons();
     await this.clearSeasons(seasons.map(s => s.slug!));
     await this.clearGameRounds(seasons.map(s => s.id!));
     await this.clearMatches(seasons.map(s => s.id!));
-    await this.clearTeams();
-    await this.clearUsers();
+    await this.clearTeams(
+      seasons.flatMap(s => s.teams as Team[]).map(t => t.slug!)
+    );
     await this.clearPredictions(seasons.map(s => s.id!));
+    await this.clearLeaderboards(seasons.map(s => s.id!));
+
+    const users = await this.getSeededUsers();
+    await this.clearUserScores(users.map(u => u.id!));
+    await this.clearUsers(users.map(u => u.username!));
   }
 
   private async seedCompetitions() {
@@ -373,7 +379,7 @@ export class Seeder {
     );
   }
 
-  private async updateMatches() {
+  private async finishMatchesUptoCurrentRound() {
     const defaultVosePredictor = VosePredictorImpl.getInstance();
     const seasons = await this.getSeededSeasons();
 
@@ -418,12 +424,16 @@ export class Seeder {
           const goalsHomeTeam = Number(teamScores[0]);
           const goalsAwayTeam = Number(teamScores[1]);
 
-          match.result = {
-            goalsAwayTeam,
-            goalsHomeTeam,
+          const update: Match = {
+            ...match,
+            result: {
+              goalsAwayTeam,
+              goalsHomeTeam,
+            },
+            status: MatchStatus.FINISHED,
           };
-          match.status = MatchStatus.FINISHED;
-          return match;
+
+          return update;
         }),
         toArray(),
         mergeMap(matches => {
@@ -435,74 +445,186 @@ export class Seeder {
 
   private async processPredictions() {
     const seasons = await this.getSeededSeasons();
+    const users = await this.getSeededUsers();
+    const userIds = users.map(u => u.id!);
     const predictionCalculator = PredictionCalculator.getInstance();
+
     await lastValueFrom(
       from(seasons).pipe(
         mergeMap(season => {
-          return this.predictionRepo
-            .distinct$('user', { season: season.id })
+          return this.matchRepo.findAllFinishedForSeason$(season.id!).pipe(
+            mergeMap(matches => {
+              return from(matches).pipe(
+                mergeMap(match => {
+                  return from(userIds).pipe(map(userId => ({ match, userId })));
+                }),
+                mergeMap(({ match, userId }) => {
+                  return this.predictionRepo
+                    .findOneByUserAndMatch$(userId, match.id!)
+                    .pipe(
+                      filter(prediction => prediction != null),
+                      map(prediction => ({ match, prediction }))
+                    );
+                }),
+                map(({ match, prediction }) => {
+                  const scorePoints = predictionCalculator.calculateScore(
+                    match.result!,
+                    prediction.choice
+                  );
+                  const update: Prediction = {
+                    ...prediction,
+                    scorePoints,
+                  };
+                  return update;
+                }),
+                toArray(),
+                mergeMap(predictions => {
+                  return this.predictionRepo.updateMany$(predictions).pipe(
+                    map(() => ({
+                      matches,
+                      nbPredictions: predictions.length,
+                      nbUsers: userIds.length,
+                    }))
+                  );
+                })
+              );
+            }),
+            mergeMap(({ matches, nbPredictions, nbUsers }) => {
+              const matches_ = matches.map(match => ({
+                ...match,
+                allPredictionPointsCalculated: true,
+              }));
+              return this.matchRepo.updateMany$(matches_).pipe(
+                map(() => ({
+                  nbMatches: matches.length,
+                  nbPredictions,
+                  nbUsers,
+                }))
+              );
+            }),
+            tap(({ nbMatches, nbPredictions, nbUsers }) => {
+              console.log(
+                `Season ${String(season.competition?.slug)} ${String(season.slug)}: ` +
+                  `All prediction points calculated for ${String(nbUsers)} users, ` +
+                  `${String(nbMatches)} matches and ${String(nbPredictions)} predictions`
+              );
+            })
+          );
+        })
+      )
+    );
+  }
+
+  private async updateUserScores() {
+    const seasons = await this.getSeededSeasons();
+    const users = await this.getSeededUsers();
+    const userIds = users.map(u => u.id!);
+
+    await lastValueFrom(
+      from(seasons).pipe(
+        mergeMap(season => {
+          return this.gameRoundRepo
+            .findAll$(
+              {
+                season: season.id,
+              },
+              null,
+              { sort: { position: 1 } }
+            )
             .pipe(
-              mergeMap(userIds => {
+              mergeMap(rounds => from(rounds)),
+              mergeMap(round => {
                 return this.matchRepo
-                  .findAllFinishedForSeason$(season.id!)
-                  .pipe(map(matches => ({ matches, userIds })));
+                  .findAll$({ gameRound: round.id })
+                  .pipe(map(matches => ({ round, roundMatches: matches })));
               }),
-              mergeMap(({ matches, userIds }) => {
-                return from(matches).pipe(
-                  mergeMap(match => {
+              concatMap(({ round, roundMatches }) => {
+                const seasonLeaderboard$ =
+                  this.leaderboardRepo.findOrCreateSeasonLeaderboard$(
+                    season.id!
+                  );
+                const roundLeaderboard$ =
+                  this.leaderboardRepo.findOrCreateRoundLeaderboard$(
+                    season.id!,
+                    round.id!
+                  );
+                return forkJoin([seasonLeaderboard$, roundLeaderboard$]).pipe(
+                  mergeMap(leaderboards => from(leaderboards)),
+                  map(leaderboard => ({ leaderboard, roundMatches }))
+                );
+              }),
+              concatMap(({ leaderboard, roundMatches }) => {
+                return from(roundMatches).pipe(
+                  mergeMap(roundMatch => {
                     return from(userIds).pipe(
-                      map(userId => ({ match, userId }))
+                      map(userId => ({ leaderboard, roundMatch, userId }))
                     );
                   }),
-                  mergeMap(({ match, userId }) => {
+                  mergeMap(({ leaderboard, roundMatch, userId }) => {
                     return this.predictionRepo
-                      .findOneByUserAndMatch$(userId, match.id!)
+                      .findOneByUserAndMatch$(userId, roundMatch.id!)
                       .pipe(
-                        filter(prediction => prediction != null),
-                        map(prediction => ({ match, prediction }))
+                        filter(prediction => !isNil(prediction)),
+                        filter(prediction => !isNil(prediction.scorePoints)),
+                        map(prediction => ({
+                          leaderboard,
+                          prediction,
+                          roundMatch,
+                          userId,
+                        }))
                       );
                   }),
-                  map(({ match, prediction }) => {
-                    const scorePoints = predictionCalculator.calculateScore(
-                      match.result!,
-                      prediction.choice
-                    );
-                    const update: Prediction = {
-                      ...prediction,
-                      scorePoints,
-                    };
-                    return update;
-                  }),
-                  toArray(),
-                  mergeMap(predictions => {
-                    return this.predictionRepo.updateMany$(predictions).pipe(
-                      map(() => ({
-                        matches,
-                        nbPredictions: predictions.length,
-                        nbUsers: userIds.length,
-                      }))
+                  concatMap(
+                    ({ leaderboard, prediction, roundMatch, userId }) => {
+                      const { hasJoker, scorePoints: points } = prediction;
+                      return this.userScoreRepo.findScoreAndUpsert$(
+                        { leaderboardId: leaderboard.id!, userId },
+                        points!,
+                        {
+                          hasJoker: hasJoker!,
+                          matchId: roundMatch.id!,
+                          predictionId: prediction.id!,
+                        }
+                      );
+                    }
+                  ),
+                  takeLast(1),
+                  mergeMap(() => {
+                    const matchIds = roundMatches.map(m => m.id!);
+                    return this.leaderboardRepo.findByIdAndUpdateMatches$(
+                      leaderboard.id!,
+                      matchIds
                     );
                   })
                 );
               }),
-              mergeMap(({ matches, nbPredictions, nbUsers }) => {
-                const matches_ = matches.map(match => ({
-                  ...match,
-                  allPredictionPointsCalculated: true,
-                }));
-                return this.matchRepo.updateMany$(matches_).pipe(
-                  map(() => ({
-                    nbMatches: matches.length,
-                    nbPredictions,
-                    nbUsers,
-                  }))
-                );
+              mergeMap(leaderboard => {
+                return this.userScoreRepo
+                  .findByLeaderboardIdOrderByPoints$(leaderboard.id!)
+                  .pipe(
+                    mergeMap(userScores => from(userScores)),
+                    concatMap((userScore, index) => {
+                      const previousPosition = userScore.positionNew ?? 0;
+                      const positionOld = previousPosition;
+                      const positionNew = index + 1;
+                      if (positionNew === positionOld) {
+                        return of(userScore);
+                      }
+                      return this.userScoreRepo.findByIdAndUpdate$(
+                        userScore.id!,
+                        {
+                          positionNew,
+                          positionOld,
+                        }
+                      );
+                    })
+                  );
               }),
-              tap(({ nbMatches, nbPredictions, nbUsers }) => {
+              takeLast(1),
+              tap(() => {
                 console.log(
                   `Season ${String(season.competition?.slug)} ${String(season.slug)}: ` +
-                    `All prediction points calculated for ${String(nbUsers)} users, ` +
-                    `${String(nbMatches)} matches and ${String(nbPredictions)} predictions`
+                    'All user scores updated successfully'
                 );
               })
             );
@@ -519,8 +641,7 @@ export class Seeder {
     );
   }
 
-  private async clearTeams() {
-    const teamSlugs = this.getTeamsToSeed().map(t => t.slug);
+  private async clearTeams(teamSlugs: string[]) {
     await lastValueFrom(
       this.teamRepo.deleteMany$({
         slug: { $in: teamSlugs },
@@ -552,10 +673,10 @@ export class Seeder {
     );
   }
 
-  private async clearUsers() {
+  private async clearUsers(usernames: string[]) {
     await lastValueFrom(
       this.userRepo.deleteMany$({
-        username: { $in: [TESTER_1, TESTER_2] },
+        username: { $in: usernames },
       })
     );
   }
@@ -564,6 +685,22 @@ export class Seeder {
     await lastValueFrom(
       this.predictionRepo.deleteMany$({
         season: { $in: seasonIds },
+      })
+    );
+  }
+
+  private async clearLeaderboards(seasonIds: string[]) {
+    await lastValueFrom(
+      this.leaderboardRepo.deleteMany$({
+        season: { $in: seasonIds },
+      })
+    );
+  }
+
+  private async clearUserScores(userIds: string[]) {
+    await lastValueFrom(
+      this.userScoreRepo.deleteMany$({
+        user: { $in: userIds },
       })
     );
   }
@@ -588,9 +725,6 @@ export class Seeder {
         }
       )
     );
-    if (seasons.length === 0) {
-      throw new Error(`No seasons found for ${SEED_COMPETITION_SLUG}`);
-    }
     return seasons;
   }
 
@@ -600,9 +734,6 @@ export class Seeder {
         username: { $in: [TESTER_1, TESTER_2] },
       })
     );
-    if (users.length === 0) {
-      throw new Error('No seeded users found');
-    }
     return users;
   }
 }

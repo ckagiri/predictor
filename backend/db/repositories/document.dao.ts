@@ -152,8 +152,7 @@ export class DocumentDao<T extends Entity> {
       } else {
         repository.populate(options.populate);
       }
-      // Somehow we can't use lean-transform with populate; no worries we'll use toObject
-      return repository.exec() as Promise<T[]>;
+      return repository.exec().then(docs => docs.map(m => m.toObject()) as T[]);
     }
 
     return repository.lean({ transform }).exec() as Promise<T[]>;
@@ -254,14 +253,14 @@ export class DocumentDao<T extends Entity> {
 
   insertMany(objs: Entity[]): Promise<T[]> {
     return this.Model.insertMany(objs).then(
-      models => models.map(m => m.toObject()) as T[]
+      docs => docs.map(m => m.toObject()) as T[]
     );
   }
 
   createMany(objs: Entity[]): Promise<T[]> {
     // create is a convenience method that automatically calls new Model() and save() for you
     return this.Model.create(objs).then(
-      models => models.map(m => m.toObject()) as T[]
+      docs => docs.map(m => m.toObject()) as T[]
     );
   }
 
