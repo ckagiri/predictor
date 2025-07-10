@@ -46,7 +46,7 @@ export class PredictionRepositoryImpl
     super(PredictionModel);
   }
 
-  static getInstance() {
+  static getInstance(): PredictionRepository {
     return new PredictionRepositoryImpl();
   }
 

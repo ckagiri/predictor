@@ -12,6 +12,8 @@ import {
   CompetitionRepositoryImpl,
   GameRoundRepository,
   GameRoundRepositoryImpl,
+  LeaderboardRepository,
+  LeaderboardRepositoryImpl,
   MatchRepository,
   MatchRepositoryImpl,
   PredictionRepository,
@@ -20,6 +22,8 @@ import {
   SeasonRepositoryImpl,
   UserRepository,
   UserRepositoryImpl,
+  UserScoreRepository,
+  UserScoreRepositoryImpl,
 } from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
@@ -42,12 +46,14 @@ export default class GetRoundMatchesUseCase {
 
   constructor(
     protected responder: Responder,
-    protected competitionRepo: CompetitionRepository,
-    protected seasonRepo: SeasonRepository,
-    protected roundRepo: GameRoundRepository,
-    protected matchRepo: MatchRepository,
-    protected userRepo: UserRepository,
-    protected predictionRepo: PredictionRepository
+    protected competitionRepo = CompetitionRepositoryImpl.getInstance(),
+    protected seasonRepo = SeasonRepositoryImpl.getInstance(),
+    protected roundRepo = GameRoundRepositoryImpl.getInstance(),
+    protected matchRepo = MatchRepositoryImpl.getInstance(),
+    protected userRepo = UserRepositoryImpl.getInstance(),
+    protected predictionRepo = PredictionRepositoryImpl.getInstance(),
+    protected leaderboardRepo = LeaderboardRepositoryImpl.getInstance(),
+    protected userScoreRepo = UserScoreRepositoryImpl.getInstance()
   ) {
     this.validator = makeGetRoundMatchesValidator(
       this.competitionRepo,
@@ -58,12 +64,14 @@ export default class GetRoundMatchesUseCase {
 
   static getInstance(
     responder: Responder,
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    roundRepo = GameRoundRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    userRepo = UserRepositoryImpl.getInstance(),
-    predictionRepo = PredictionRepositoryImpl.getInstance()
+    competitionRepo?: CompetitionRepository,
+    seasonRepo?: SeasonRepository,
+    roundRepo?: GameRoundRepository,
+    matchRepo?: MatchRepository,
+    userRepo?: UserRepository,
+    predictionRepo?: PredictionRepository,
+    leaderboardRepo?: LeaderboardRepository,
+    userScoreRepo?: UserScoreRepository
   ) {
     return new GetRoundMatchesUseCase(
       responder,
@@ -72,7 +80,9 @@ export default class GetRoundMatchesUseCase {
       roundRepo,
       matchRepo,
       userRepo,
-      predictionRepo
+      predictionRepo,
+      leaderboardRepo,
+      userScoreRepo
     );
   }
 
@@ -98,6 +108,8 @@ export default class GetRoundMatchesUseCase {
         matches as Match[],
         userId
       );
+      const score = await this.getUserScore(foundSeason, foundRound, userId);
+
       this.responder.respond({
         competition: foundCompetition.slug,
         season: foundSeason.slug,
@@ -269,5 +281,39 @@ export default class GetRoundMatchesUseCase {
         prediction,
       };
     });
+  }
+
+  protected async getUserScore(
+    season: Season,
+    round: GameRound,
+    userId: string | undefined
+  ) {
+    if (!userId) {
+      return null;
+    }
+
+    const leaderboard = await lastValueFrom(
+      this.leaderboardRepo.findOne$({
+        season: season.id,
+        gameRound: round.id,
+        user: userId,
+      })
+    );
+
+    if (!leaderboard) {
+      return null;
+    }
+
+    const userScore = await lastValueFrom(
+      this.userScoreRepo.findOne$(
+        {
+          leaderboard: leaderboard.id,
+          user: userId,
+        },
+        '-createdAt -user -leaderboard -matches'
+      )
+    );
+
+    return userScore;
   }
 }

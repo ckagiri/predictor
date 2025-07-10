@@ -2,14 +2,6 @@ import { lastValueFrom } from 'rxjs';
 
 import { Score } from '../../../../../common/score.js';
 import { Match, Prediction } from '../../../../../db/models/index.js';
-import {
-  CompetitionRepositoryImpl,
-  GameRoundRepositoryImpl,
-  MatchRepositoryImpl,
-  PredictionRepositoryImpl,
-  SeasonRepositoryImpl,
-  UserRepositoryImpl,
-} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
@@ -23,26 +15,11 @@ export interface RequestModel {
   season?: string;
 }
 
-export default class PickScore extends GetRoundMatchesUseCase {
-  static getInstance(
-    responder: Responder,
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    roundRepo = GameRoundRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    userRepo = UserRepositoryImpl.getInstance(),
-    predictionRepo = PredictionRepositoryImpl.getInstance()
-  ) {
-    return new PickScore(
-      responder,
-      competitionRepo,
-      seasonRepo,
-      roundRepo,
-      matchRepo,
-      userRepo,
-      predictionRepo
-    );
+export default class PickScoreUseCase extends GetRoundMatchesUseCase {
+  static getInstance(responder: Responder) {
+    return new PickScoreUseCase(responder);
   }
+
   async execute({
     competition,
     loggedInUserId,

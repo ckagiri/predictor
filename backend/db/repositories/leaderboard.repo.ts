@@ -40,7 +40,7 @@ export class LeaderboardRepositoryImpl
     super(LeaderboardModel);
   }
 
-  static getInstance() {
+  static getInstance(): LeaderboardRepository {
     return new LeaderboardRepositoryImpl();
   }
 

@@ -3,14 +3,6 @@ import { Competition } from 'db/models/competition.model.js';
 import { lastValueFrom } from 'rxjs';
 
 import { Match } from '../../../../../db/models/index.js';
-import {
-  CompetitionRepositoryImpl,
-  GameRoundRepositoryImpl,
-  MatchRepositoryImpl,
-  PredictionRepositoryImpl,
-  SeasonRepositoryImpl,
-  UserRepositoryImpl,
-} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
@@ -21,24 +13,8 @@ export interface RequestModel {
 }
 
 export default class GetContestsUseCase extends GetRoundMatchesUseCase {
-  static getInstance(
-    responder: Responder,
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    matchRepo = GameRoundRepositoryImpl.getInstance(),
-    teamRepo = MatchRepositoryImpl.getInstance(),
-    roundRepo = UserRepositoryImpl.getInstance(),
-    predictionRepo = PredictionRepositoryImpl.getInstance()
-  ) {
-    return new GetContestsUseCase(
-      responder,
-      competitionRepo,
-      seasonRepo,
-      matchRepo,
-      teamRepo,
-      roundRepo,
-      predictionRepo
-    );
+  static getInstance(responder: Responder) {
+    return new GetContestsUseCase(responder);
   }
 
   async execute({ loggedInUserId }: RequestModel): Promise<void> {

@@ -1,14 +1,6 @@
 import { lastValueFrom } from 'rxjs';
 
 import { Match } from '../../../../../db/models/match.model.js';
-import {
-  CompetitionRepositoryImpl,
-  GameRoundRepositoryImpl,
-  MatchRepositoryImpl,
-  PredictionRepositoryImpl,
-  SeasonRepositoryImpl,
-  UserRepositoryImpl,
-} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
@@ -22,24 +14,8 @@ export interface RequestModel {
 }
 
 export default class GetMatchUseCase extends GetRoundMatchesUseCase {
-  static getInstance(
-    responder: Responder,
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    roundRepo = GameRoundRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    userRepo = UserRepositoryImpl.getInstance(),
-    predictionRepo = PredictionRepositoryImpl.getInstance()
-  ) {
-    return new GetMatchUseCase(
-      responder,
-      competitionRepo,
-      seasonRepo,
-      roundRepo,
-      matchRepo,
-      userRepo,
-      predictionRepo
-    );
+  static getInstance(responder: Responder) {
+    return new GetMatchUseCase(responder);
   }
 
   async execute({
