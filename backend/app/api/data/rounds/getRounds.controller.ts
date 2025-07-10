@@ -12,15 +12,15 @@ import GetRoundsUseCase, {
 
 class GetRoundsController {
   constructor(
-    private readonly getRoundsUseCase: GetRoundsUseCase,
+    private readonly useCase: GetRoundsUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getRoundsUseCase: GetRoundsUseCase,
+    useCase: GetRoundsUseCase,
     validation = getRoundsValidator
   ) {
-    return new GetRoundsController(getRoundsUseCase, validation);
+    return new GetRoundsController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -34,12 +34,12 @@ class GetRoundsController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getRoundsUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeGetRoundsController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getRoundsUseCase = GetRoundsUseCase.getInstance(okResponder);
-  return GetRoundsController.getInstance(getRoundsUseCase);
+  const useCase = GetRoundsUseCase.getInstance(okResponder);
+  return GetRoundsController.getInstance(useCase);
 };

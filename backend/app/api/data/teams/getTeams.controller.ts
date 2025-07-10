@@ -5,19 +5,19 @@ import OkResponder from '../../common/responders/ok.responder.js';
 import GetTeamsUseCase from './useCases/getTeams.useCase.js';
 
 class GetTeamsController {
-  constructor(private readonly getTeamsUseCase: GetTeamsUseCase) {}
+  constructor(private readonly useCase: GetTeamsUseCase) {}
 
-  static getInstance(getTeamsUseCase: GetTeamsUseCase) {
-    return new GetTeamsController(getTeamsUseCase);
+  static getInstance(useCase: GetTeamsUseCase) {
+    return new GetTeamsController(useCase);
   }
 
   async processRequest(_request: HttpRequestModel): Promise<void> {
-    await this.getTeamsUseCase.execute();
+    await this.useCase.execute();
   }
 }
 
 export const makeGetTeamsController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getTeamsUseCase = GetTeamsUseCase.getInstance(okResponder);
-  return GetTeamsController.getInstance(getTeamsUseCase);
+  const useCase = GetTeamsUseCase.getInstance(okResponder);
+  return GetTeamsController.getInstance(useCase);
 };

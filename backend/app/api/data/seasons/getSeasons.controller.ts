@@ -10,15 +10,15 @@ import GetSeasonsUseCase from './useCases/getSeasons.useCase.js';
 
 class GetSeasonsController {
   constructor(
-    private readonly getSeasonsUseCase: GetSeasonsUseCase,
+    private readonly useCase: GetSeasonsUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getSeasonsUseCase: GetSeasonsUseCase,
+    useCase: GetSeasonsUseCase,
     validation = getSeasonsValidator
   ) {
-    return new GetSeasonsController(getSeasonsUseCase, validation);
+    return new GetSeasonsController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -33,12 +33,12 @@ class GetSeasonsController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getSeasonsUseCase.execute(requestModel.competition);
+    await this.useCase.execute(requestModel.competition);
   }
 }
 
 export const makeGetSeasonsController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getSeasonsUseCase = GetSeasonsUseCase.getInstance(okResponder);
-  return GetSeasonsController.getInstance(getSeasonsUseCase);
+  const useCase = GetSeasonsUseCase.getInstance(okResponder);
+  return GetSeasonsController.getInstance(useCase);
 };

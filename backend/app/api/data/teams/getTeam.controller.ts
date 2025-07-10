@@ -11,15 +11,12 @@ import GetTeamUseCase from './useCases/getTeam.useCase.js';
 
 class GetTeamController implements Controller {
   constructor(
-    private readonly getTeamUseCase: GetTeamUseCase,
+    private readonly useCase: GetTeamUseCase,
     private readonly validation: Validator
   ) {}
 
-  static getInstance(
-    getTeamUseCase: GetTeamUseCase,
-    validation = getTeamValidator
-  ) {
-    return new GetTeamController(getTeamUseCase, validation);
+  static getInstance(useCase: GetTeamUseCase, validation = getTeamValidator) {
+    return new GetTeamController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -32,12 +29,12 @@ class GetTeamController implements Controller {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getTeamUseCase.execute(requestModel.slug);
+    await this.useCase.execute(requestModel.slug);
   }
 }
 
 export const makeGetTeamController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getTeamUseCase = GetTeamUseCase.getInstance(okResponder);
-  return GetTeamController.getInstance(getTeamUseCase);
+  const useCase = GetTeamUseCase.getInstance(okResponder);
+  return GetTeamController.getInstance(useCase);
 };

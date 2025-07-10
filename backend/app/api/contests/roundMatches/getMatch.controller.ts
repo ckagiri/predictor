@@ -11,15 +11,12 @@ import GetMatchUseCase, { RequestModel } from './useCases/getMatch.useCase.js';
 
 class GetMatchController implements Controller {
   constructor(
-    private readonly getMatchUseCase: GetMatchUseCase,
+    private readonly useCase: GetMatchUseCase,
     private readonly validation: Validator
   ) {}
 
-  static getInstance(
-    getMatchUseCase: GetMatchUseCase,
-    validation = getMatchValidator
-  ) {
-    return new GetMatchController(getMatchUseCase, validation);
+  static getInstance(useCase: GetMatchUseCase, validation = getMatchValidator) {
+    return new GetMatchController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -35,12 +32,12 @@ class GetMatchController implements Controller {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getMatchUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeGetMatchController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchUseCase = GetMatchUseCase.getInstance(okResponder);
-  return GetMatchController.getInstance(getMatchUseCase);
+  const useCase = GetMatchUseCase.getInstance(okResponder);
+  return GetMatchController.getInstance(useCase);
 };

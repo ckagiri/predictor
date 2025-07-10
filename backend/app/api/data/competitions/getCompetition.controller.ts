@@ -11,15 +11,15 @@ import GetCompetitionUseCase from './useCases/getCompetition.useCase.js';
 
 class GetCompetitionController implements Controller {
   constructor(
-    private readonly getCompetitionUseCase: GetCompetitionUseCase,
+    private readonly useCase: GetCompetitionUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getCompetitionUseCase: GetCompetitionUseCase,
+    useCase: GetCompetitionUseCase,
     validation = getCompetitionValidator
   ) {
-    return new GetCompetitionController(getCompetitionUseCase, validation);
+    return new GetCompetitionController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -32,12 +32,12 @@ class GetCompetitionController implements Controller {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getCompetitionUseCase.execute(requestModel.slug);
+    await this.useCase.execute(requestModel.slug);
   }
 }
 
 export const makeGetCompetitionController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getCompetitionUseCase = GetCompetitionUseCase.getInstance(okResponder);
-  return GetCompetitionController.getInstance(getCompetitionUseCase);
+  const useCase = GetCompetitionUseCase.getInstance(okResponder);
+  return GetCompetitionController.getInstance(useCase);
 };

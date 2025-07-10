@@ -12,15 +12,15 @@ import GetSeasonUseCase, {
 
 class GetSeasonController {
   constructor(
-    private readonly getSeasonUseCase: GetSeasonUseCase,
+    private readonly useCase: GetSeasonUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getSeasonUseCase: GetSeasonUseCase,
+    useCase: GetSeasonUseCase,
     validation = getSeasonValidator
   ) {
-    return new GetSeasonController(getSeasonUseCase, validation);
+    return new GetSeasonController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -34,12 +34,12 @@ class GetSeasonController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getSeasonUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeGetSeasonController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getSeasonUseCase = GetSeasonUseCase.getInstance(okResponder);
-  return GetSeasonController.getInstance(getSeasonUseCase);
+  const useCase = GetSeasonUseCase.getInstance(okResponder);
+  return GetSeasonController.getInstance(useCase);
 };

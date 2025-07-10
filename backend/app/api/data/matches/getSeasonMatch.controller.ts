@@ -3,7 +3,7 @@ import { Response } from 'express';
 import AppError from '../../common/AppError.js';
 import HttpRequestModel from '../../common/interfaces/HttpRequestModel.js';
 import OkResponder from '../../common/responders/ok.responder.js';
-import Result, { FailureResult } from '../../common/result/index.js';
+import { FailureResult } from '../../common/result/index.js';
 import Validator from '../../common/validation/validator.js';
 import { getSeasonMatchValidator as getMatchValidator } from './matches.validator.js';
 import GetSeasonMatchUseCase, {
@@ -12,15 +12,15 @@ import GetSeasonMatchUseCase, {
 
 class GetSeasonMatchController {
   constructor(
-    private readonly getMatchUseCase: GetSeasonMatchUseCase,
+    private readonly useCase: GetSeasonMatchUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getMatchUseCase: GetSeasonMatchUseCase,
+    useCase: GetSeasonMatchUseCase,
     validation = getMatchValidator
   ) {
-    return new GetSeasonMatchController(getMatchUseCase, validation);
+    return new GetSeasonMatchController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -36,12 +36,12 @@ class GetSeasonMatchController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getMatchUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeGetSeasonMatchController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchUseCase = GetSeasonMatchUseCase.getInstance(okResponder);
-  return GetSeasonMatchController.getInstance(getMatchUseCase);
+  const useCase = GetSeasonMatchUseCase.getInstance(okResponder);
+  return GetSeasonMatchController.getInstance(useCase);
 };
