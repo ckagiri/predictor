@@ -35,7 +35,7 @@ export class UserScoreRepositoryImpl
     super(UserScoreModel);
   }
 
-  static getInstance() {
+  static getInstance(): UserScoreRepository {
     return new UserScoreRepositoryImpl();
   }
 

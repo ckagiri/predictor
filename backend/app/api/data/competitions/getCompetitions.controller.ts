@@ -5,22 +5,19 @@ import OkResponder from '../../common/responders/ok.responder.js';
 import GetCompetitionsUseCase from './useCases/getCompetitions.useCase.js';
 
 class GetCompetitionsController {
-  constructor(
-    private readonly getCompetitionsUseCase: GetCompetitionsUseCase
-  ) {}
+  constructor(private readonly useCase: GetCompetitionsUseCase) {}
 
-  static getInstance(getCompetitionsUseCase: GetCompetitionsUseCase) {
-    return new GetCompetitionsController(getCompetitionsUseCase);
+  static getInstance(useCase: GetCompetitionsUseCase) {
+    return new GetCompetitionsController(useCase);
   }
 
   async processRequest(_request: HttpRequestModel): Promise<void> {
-    await this.getCompetitionsUseCase.execute();
+    await this.useCase.execute();
   }
 }
 
 export const makeGetCompetitionsController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getCompetitionsUseCase =
-    GetCompetitionsUseCase.getInstance(okResponder);
-  return GetCompetitionsController.getInstance(getCompetitionsUseCase);
+  const useCase = GetCompetitionsUseCase.getInstance(okResponder);
+  return GetCompetitionsController.getInstance(useCase);
 };

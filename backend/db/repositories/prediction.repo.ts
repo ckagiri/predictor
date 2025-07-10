@@ -10,10 +10,15 @@ import PredictionModel, { Prediction } from '../models/prediction.model.js';
 import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
+  findJokers$(userId: string, roundMatches: Match[]): Observable<Prediction[]>;
   findOneByUserAndMatch$(
     userId: string,
     matchId: string,
     projection?: ProjectionType<Prediction> | null
+  ): Observable<null | Prediction>;
+  findOrCreateJoker$(
+    userId: string,
+    roundMatches: Match[]
   ): Observable<null | Prediction>;
   findOrCreatePicks$(
     userId: string,
@@ -46,7 +51,7 @@ export class PredictionRepositoryImpl
     super(PredictionModel);
   }
 
-  static getInstance() {
+  static getInstance(): PredictionRepository {
     return new PredictionRepositoryImpl();
   }
 

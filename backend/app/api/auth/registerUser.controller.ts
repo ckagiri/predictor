@@ -14,15 +14,15 @@ import {
 
 class RegisterUserController implements Controller {
   constructor(
-    private readonly registerUserUseCase: RegisterUserUseCase,
+    private readonly useCase: RegisterUserUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    registerUserUseCase: RegisterUserUseCase,
+    useCase: RegisterUserUseCase,
     validation = userAuthValidator
   ) {
-    return new RegisterUserController(registerUserUseCase, validation);
+    return new RegisterUserController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -37,12 +37,12 @@ class RegisterUserController implements Controller {
     }
 
     const requestModel = requestValidated.value!;
-    await this.registerUserUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeRegisterUserController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const registerUserUseCase = RegisterUserUseCase.getInstance(okResponder);
-  return RegisterUserController.getInstance(registerUserUseCase);
+  const useCase = RegisterUserUseCase.getInstance(okResponder);
+  return RegisterUserController.getInstance(useCase);
 };

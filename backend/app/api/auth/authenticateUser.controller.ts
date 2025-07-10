@@ -14,15 +14,15 @@ import {
 
 class AuthenticateUserController implements Controller {
   constructor(
-    private readonly AuthenticateUserUseCase: AuthenticateUserUseCase,
+    private readonly useCase: AuthenticateUserUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    AuthenticateUserUseCase: AuthenticateUserUseCase,
+    useCase: AuthenticateUserUseCase,
     validation = userAuthValidator
   ) {
-    return new AuthenticateUserController(AuthenticateUserUseCase, validation);
+    return new AuthenticateUserController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -37,7 +37,7 @@ class AuthenticateUserController implements Controller {
     }
 
     const requestModel = requestValidated.value!;
-    await this.AuthenticateUserUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 

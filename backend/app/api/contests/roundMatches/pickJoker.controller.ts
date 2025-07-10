@@ -12,15 +12,15 @@ import PickJokerUseCase, {
 
 class PickJokerController {
   constructor(
-    private readonly pickJokerUseCase: PickJokerUseCase,
+    private readonly useCase: PickJokerUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    pickJokerUseCase: PickJokerUseCase,
+    useCase: PickJokerUseCase,
     validation = pickJokerValidator
   ) {
-    return new PickJokerController(pickJokerUseCase, validation);
+    return new PickJokerController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -30,11 +30,11 @@ class PickJokerController {
     }
 
     const { competition, round, season } = request.params;
-    const matchSlug = request.body as string | undefined;
+    const match = request.body as string | undefined;
     const requestValidated = await this.validation.validate<RequestModel>({
       competition,
       loggedInUserId,
-      matchSlug,
+      match,
       round,
       season,
     });
@@ -43,12 +43,12 @@ class PickJokerController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.pickJokerUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makePickJokerController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const pickJokerUseCase = PickJokerUseCase.getInstance(okResponder);
-  return PickJokerController.getInstance(pickJokerUseCase);
+  const useCase = PickJokerUseCase.getInstance(okResponder);
+  return PickJokerController.getInstance(useCase);
 };

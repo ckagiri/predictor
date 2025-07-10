@@ -1,51 +1,28 @@
 import { lastValueFrom } from 'rxjs';
 
 import { Match } from '../../../../../db/models/index.js';
-import {
-  CompetitionRepositoryImpl,
-  GameRoundRepositoryImpl,
-  MatchRepositoryImpl,
-  PredictionRepositoryImpl,
-  SeasonRepositoryImpl,
-  UserRepositoryImpl,
-} from '../../../../../db/repositories/index.js';
 import AppError from '../../../common/AppError';
-import Responder from '../../../common/responders/Responder';
+import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result';
 import GetRoundMatchesUseCase from './getRoundMatches.useCase';
 
 export interface RequestModel {
   competition: string;
   loggedInUserId: string;
-  matchSlug: string;
+  match: string;
   round: string;
   season: string;
 }
 
 export default class PickJokerUseCase extends GetRoundMatchesUseCase {
-  static getInstance(
-    responder: Responder,
-    competitionRepo = CompetitionRepositoryImpl.getInstance(),
-    seasonRepo = SeasonRepositoryImpl.getInstance(),
-    roundRepo = GameRoundRepositoryImpl.getInstance(),
-    matchRepo = MatchRepositoryImpl.getInstance(),
-    userRepo = UserRepositoryImpl.getInstance(),
-    predictionRepo = PredictionRepositoryImpl.getInstance()
-  ) {
-    return new PickJokerUseCase(
-      responder,
-      competitionRepo,
-      seasonRepo,
-      roundRepo,
-      matchRepo,
-      userRepo,
-      predictionRepo
-    );
+  static getInstance(responder: Responder) {
+    return new PickJokerUseCase(responder);
   }
+
   async execute({
     competition,
     loggedInUserId,
-    matchSlug,
+    match,
     round,
     season,
   }: RequestModel): Promise<void> {
@@ -61,7 +38,7 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
         foundSeason,
         round,
         roundMatches,
-        matchSlug
+        match
       );
 
       const jokerPredictions = await this.pickJoker(

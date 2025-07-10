@@ -12,15 +12,15 @@ import GetRoundMatchUseCase, {
 
 class GetRoundMatchController {
   constructor(
-    private readonly getMatchUseCase: GetRoundMatchUseCase,
+    private readonly useCase: GetRoundMatchUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    getMatchUseCase: GetRoundMatchUseCase,
+    useCase: GetRoundMatchUseCase,
     validation = getMatchValidator
   ) {
-    return new GetRoundMatchController(getMatchUseCase, validation);
+    return new GetRoundMatchController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -37,12 +37,12 @@ class GetRoundMatchController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getMatchUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeGetRoundMatchController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getMatchUseCase = GetRoundMatchUseCase.getInstance(okResponder);
-  return GetRoundMatchController.getInstance(getMatchUseCase);
+  const useCase = GetRoundMatchUseCase.getInstance(okResponder);
+  return GetRoundMatchController.getInstance(useCase);
 };

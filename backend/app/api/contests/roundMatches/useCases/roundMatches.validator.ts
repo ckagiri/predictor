@@ -1,19 +1,17 @@
-import { ObjectId } from 'mongoose';
 import { lastValueFrom } from 'rxjs';
 
 import {
   Competition,
   GameRound,
-  Match,
   Season,
-} from '../../../../db/models/index.js';
-import { CompetitionRepository } from '../../../../db/repositories/competition.repo.js';
-import { GameRoundRepository } from '../../../../db/repositories/gameRound.repo.js';
-import { SeasonRepository } from '../../../../db/repositories/season.repo';
-import Result from '../../../api/common/result/index.js';
-import AppError from '../../common/AppError.js';
+} from '../../../../../db/models/index.js';
+import { CompetitionRepository } from '../../../../../db/repositories/competition.repo.js';
+import { GameRoundRepository } from '../../../../../db/repositories/gameRound.repo.js';
+import { SeasonRepository } from '../../../../../db/repositories/season.repo.js';
+import AppError from '../../../common/AppError.js';
+import Result from '../../../common/result/index.js';
 
-export interface GetRoundMatchesValidator {
+export interface RoundMatchesValidator {
   validateCompetition: (competition: string) => Promise<Competition>;
   validateCurrentRound: (
     competitionSeason: string,
@@ -31,11 +29,11 @@ export interface GetRoundMatchesValidator {
   validateSeason: (competition: string, season: string) => Promise<Season>;
 }
 
-export const makeGetRoundMatchesValidator = (
+export const makeRoundMatchesValidator = (
   competitionRepo: CompetitionRepository,
   seasonRepo: SeasonRepository,
   roundRepo: GameRoundRepository
-): GetRoundMatchesValidator => {
+): RoundMatchesValidator => {
   return {
     validateCompetition: async (competition: string) => {
       const foundCompetition = await lastValueFrom(

@@ -10,7 +10,10 @@ const GetCompetitionSchema = Joi.object({
 export const getCompetitionValidator = new JoiValidator(GetCompetitionSchema);
 
 const GetMatchSchema = Joi.object({
+  competition: slugStringSchema.required(),
+  loggedInUserId: Joi.string().optional(),
   match: Joi.string().min(9).max(9).required(), // Match slug
+  season: Joi.string().min(4).max(9).required(),
 });
 
 export const getMatchValidator = new JoiValidator(GetMatchSchema);
@@ -38,7 +41,7 @@ export const pickScoreValidator = new JoiValidator(PickScoreSchema);
 const PickJokerSchema = Joi.object({
   competition: slugStringSchema.required(),
   loggedInUserId: Joi.string().required(),
-  matchSlug: Joi.string().min(9).max(9).required(),
+  match: Joi.string().min(9).max(9).required(),
   round: Joi.string().max(20).required(),
   season: Joi.string().min(4).max(9).required(),
 });

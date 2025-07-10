@@ -12,15 +12,15 @@ import PickScoreUseCase, {
 
 class PickScoreController {
   constructor(
-    private readonly pickScoreUseCase: PickScoreUseCase,
+    private readonly useCase: PickScoreUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    pickScoreUseCase: PickScoreUseCase,
+    useCase: PickScoreUseCase,
     validation = pickScoreValidator
   ) {
-    return new PickScoreController(pickScoreUseCase, validation);
+    return new PickScoreController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -43,12 +43,12 @@ class PickScoreController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.pickScoreUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makePickScoreController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const pickScoreUseCase = PickScoreUseCase.getInstance(okResponder);
-  return PickScoreController.getInstance(pickScoreUseCase);
+  const useCase = PickScoreUseCase.getInstance(okResponder);
+  return PickScoreController.getInstance(useCase);
 };

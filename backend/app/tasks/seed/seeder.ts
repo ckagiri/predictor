@@ -335,7 +335,7 @@ export class Seeder {
       this.passwordHasher
     );
     const testUser1: User = {
-      password: await hashPassword(`!0_Az${TESTER_1}`), // must have at least these letters be valid
+      password: await hashPassword(`!0_Az${TESTER_1}`),
       username: TESTER_1,
     };
 

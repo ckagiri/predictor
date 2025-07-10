@@ -10,15 +10,12 @@ import GetRoundUseCase, { RequestModel } from './useCases/getRound.useCase.js';
 
 class GetRoundController {
   constructor(
-    private readonly getRoundUseCase: GetRoundUseCase,
+    private readonly useCase: GetRoundUseCase,
     private readonly validation: Validator
   ) {}
 
-  static getInstance(
-    getRoundUseCase: GetRoundUseCase,
-    validation = getRoundValidator
-  ) {
-    return new GetRoundController(getRoundUseCase, validation);
+  static getInstance(useCase: GetRoundUseCase, validation = getRoundValidator) {
+    return new GetRoundController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -33,12 +30,12 @@ class GetRoundController {
     }
 
     const requestModel = requestValidated.value!;
-    await this.getRoundUseCase.execute(requestModel);
+    await this.useCase.execute(requestModel);
   }
 }
 
 export const makeGetRoundController = (res: Response) => {
   const okResponder = new OkResponder(res);
-  const getRoundUseCase = GetRoundUseCase.getInstance(okResponder);
-  return GetRoundController.getInstance(getRoundUseCase);
+  const useCase = GetRoundUseCase.getInstance(okResponder);
+  return GetRoundController.getInstance(useCase);
 };
