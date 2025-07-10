@@ -2,6 +2,7 @@
 import { lastValueFrom } from 'rxjs';
 
 import {
+  BOARD_TYPE,
   Competition,
   GameRound,
   Match,
@@ -29,9 +30,9 @@ import AppError from '../../../common/AppError.js';
 import Responder from '../../../common/responders/Responder.js';
 import Result from '../../../common/result/index.js';
 import {
-  GetRoundMatchesValidator,
-  makeGetRoundMatchesValidator,
-} from '../getRoundMatches.validator.js';
+  makeRoundMatchesValidator,
+  RoundMatchesValidator,
+} from './roundMatches.validator.js';
 
 export interface RequestModel {
   competition: string;
@@ -42,7 +43,7 @@ export interface RequestModel {
 }
 
 export default class GetRoundMatchesUseCase {
-  private readonly validator: GetRoundMatchesValidator;
+  private readonly validator: RoundMatchesValidator;
 
   constructor(
     protected responder: Responder,
@@ -55,7 +56,7 @@ export default class GetRoundMatchesUseCase {
     protected leaderboardRepo = LeaderboardRepositoryImpl.getInstance(),
     protected userScoreRepo = UserScoreRepositoryImpl.getInstance()
   ) {
-    this.validator = makeGetRoundMatchesValidator(
+    this.validator = makeRoundMatchesValidator(
       this.competitionRepo,
       this.seasonRepo,
       this.roundRepo
@@ -105,19 +106,24 @@ export default class GetRoundMatchesUseCase {
         predictorUsername
       );
       const matchesWithPredictions = await this.getMatchesWithPredictions(
-        matches as Match[],
+        matches,
         userId
       );
       const score = await this.getUserScore(foundSeason, foundRound, userId);
 
-      this.responder.respond({
+      const response = {
         competition: foundCompetition.slug,
         season: foundSeason.slug,
         round: foundRound.slug,
         rounds: rounds,
         teams: foundSeason.teams ?? [],
         matches: matchesWithPredictions,
-      });
+      } as Record<string, any>;
+
+      if (score) {
+        response.score = score;
+      }
+      this.responder.respond(response);
     } catch (err: any) {
       if (err.isFailure) {
         throw err;
@@ -213,23 +219,33 @@ export default class GetRoundMatchesUseCase {
     );
     return matches
       .sort((a, b) => getTime(a.utcDate) - getTime(b.utcDate))
-      .map(match => {
-        return {
-          ...match,
-          awayTeam: match.awayTeam?.id,
-          homeTeam: match.homeTeam?.id,
-        };
-      });
+      .map(
+        match =>
+          ({
+            ...match,
+            homeTeam: {
+              id: match.homeTeam?.id,
+              name: match.homeTeam?.name,
+            },
+            awayTeam: {
+              id: match.awayTeam?.id,
+              name: match.awayTeam?.name,
+            },
+          }) as Match
+      );
   }
 
   protected async findMatch(season: Season, match: string) {
     const competitionSlug = String(season.competition?.slug);
     const seasonSlug = String(season.slug);
     const foundMatch = await lastValueFrom(
-      this.matchRepo.findOne$({
-        season: season,
-        slug: match,
-      })
+      this.matchRepo.findOne$(
+        {
+          season: season.id,
+          slug: match,
+        },
+        '-createdAt -allPredictionPointsCalculated -externalReference -odds'
+      )
     );
     if (!foundMatch) {
       throw Result.fail(
@@ -296,14 +312,13 @@ export default class GetRoundMatchesUseCase {
       this.leaderboardRepo.findOne$({
         season: season.id,
         gameRound: round.id,
-        user: userId,
+        boardType: BOARD_TYPE.GLOBAL_ROUND,
       })
     );
 
     if (!leaderboard) {
       return null;
     }
-
     const userScore = await lastValueFrom(
       this.userScoreRepo.findOne$(
         {

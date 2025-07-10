@@ -30,11 +30,11 @@ class PickJokerController {
     }
 
     const { competition, round, season } = request.params;
-    const matchSlug = request.body as string | undefined;
+    const match = request.body as string | undefined;
     const requestValidated = await this.validation.validate<RequestModel>({
       competition,
       loggedInUserId,
-      matchSlug,
+      match,
       round,
       season,
     });

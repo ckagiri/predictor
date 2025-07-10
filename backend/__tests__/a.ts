@@ -199,7 +199,6 @@ class MatchBuilder implements Builder<Match> {
       slug: homeTeamSlug,
     } = this.homeTeam;
     this.data.homeTeam = {
-      crestUrl: homeTeamCrestUrl!,
       id: homeTeamId!,
       name: homeTeamName!,
       slug: homeTeamSlug!,
@@ -212,7 +211,6 @@ class MatchBuilder implements Builder<Match> {
       slug: awayTeamSlug,
     } = this.awayTeam;
     this.data.awayTeam = {
-      crestUrl: awayTeamCrestUrl!,
       id: awayTeamId!,
       name: awayTeamName!,
       slug: awayTeamSlug!,

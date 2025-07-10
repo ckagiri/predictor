@@ -9,7 +9,7 @@ import GetRoundMatchesUseCase from './getRoundMatches.useCase';
 export interface RequestModel {
   competition: string;
   loggedInUserId: string;
-  matchSlug: string;
+  match: string;
   round: string;
   season: string;
 }
@@ -22,7 +22,7 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
   async execute({
     competition,
     loggedInUserId,
-    matchSlug,
+    match,
     round,
     season,
   }: RequestModel): Promise<void> {
@@ -38,7 +38,7 @@ export default class PickJokerUseCase extends GetRoundMatchesUseCase {
         foundSeason,
         round,
         roundMatches,
-        matchSlug
+        match
       );
 
       const jokerPredictions = await this.pickJoker(

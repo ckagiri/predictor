@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 
 export interface PasswordHasher {
   comparePasswords(password: string, hashedPassword: string): Promise<boolean>;
@@ -26,6 +26,6 @@ export class PasswordHasherImpl implements PasswordHasher {
     password: string,
     hashedPassword: string
   ): Promise<boolean> {
-    return bcrypt.compare(password, hashedPassword);
+    return await bcrypt.compare(password, hashedPassword);
   }
 }

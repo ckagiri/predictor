@@ -59,7 +59,6 @@ export class AfdMatchConverter implements MatchConverter {
         }
         return {
           awayTeam: {
-            crestUrl: awayTeam.crestUrl!,
             id: awayTeam.id!,
             name: awayTeam.name,
             slug: awayTeam.slug!,
@@ -71,7 +70,6 @@ export class AfdMatchConverter implements MatchConverter {
           },
           gameRound: gameRound.id!,
           homeTeam: {
-            crestUrl: homeTeam.crestUrl!,
             id: homeTeam.id!,
             name: homeTeam.name,
             slug: homeTeam.slug!,

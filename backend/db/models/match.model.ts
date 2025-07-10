@@ -50,7 +50,6 @@ export interface Match extends Entity {
 }
 
 export interface TeamPartial {
-  crestUrl?: string;
   id: string;
   name: string;
   slug: string;
@@ -61,7 +60,6 @@ const { Mixed, ObjectId } = Schema.Types;
 export const matchSchema = schema({
   allPredictionPointsCalculated: { default: false, type: Boolean },
   awayTeam: {
-    crestUrl: { type: String },
     id: { index: true, ref: 'Team', required: true, type: ObjectId },
     name: { required: true, type: String },
     slug: { required: true, type: String },
@@ -69,7 +67,6 @@ export const matchSchema = schema({
   externalReference: { type: Mixed },
   gameRound: { index: true, ref: 'GameRound', required: true, type: ObjectId },
   homeTeam: {
-    crestUrl: { type: String },
     id: { index: true, ref: 'Team', required: true, type: ObjectId },
     name: { required: true, type: String },
     slug: { required: true, type: String },

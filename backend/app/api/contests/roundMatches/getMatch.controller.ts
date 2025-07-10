@@ -21,10 +21,12 @@ class GetMatchController implements Controller {
 
   async processRequest(request: HttpRequestModel): Promise<void> {
     const loggedInUserId = request.auth?.id;
-    const match = request.params.match;
+    const { competition, match, season } = request.params;
     const requestValidated = await this.validation.validate<RequestModel>({
+      competition,
       loggedInUserId,
       match,
+      season,
     });
 
     if (requestValidated.isFailure) {
