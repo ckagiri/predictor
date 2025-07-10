@@ -12,7 +12,11 @@ import { makePickScoreController } from './roundMatches/pickScore.controller.js'
 
 const router = Router();
 
-router.get('/', handleRequest(makeGetContestsController));
+router.get(
+  '/',
+  authMiddleware({ credentialsRequired: false }),
+  handleRequest(makeGetContestsController)
+);
 
 router.get('/:competition', handleRequest(makeGetCompetitionController));
 router.get(
