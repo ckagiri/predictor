@@ -28,10 +28,16 @@ export default class GetContestsUseCase extends GetRoundMatchesUseCase {
       const matches = await this.getRoundMatches(defaultRound.id!);
 
       const matchesWithPredictions = await this.getMatchesWithPredictions(
-        matches as Match[],
+        matches,
         loggedInUserId
       );
-      this.responder.respond({
+      const userScore = await this.getUserScore(
+        defaultSeason,
+        defaultRound,
+        loggedInUserId
+      );
+
+      const response = {
         competitions,
         defaults: {
           competition: defaultCompetition.slug,
@@ -41,7 +47,12 @@ export default class GetContestsUseCase extends GetRoundMatchesUseCase {
           teams: defaultSeason.teams ?? [],
           matches: matchesWithPredictions,
         },
-      });
+      } as Record<string, any>;
+
+      if (userScore) {
+        response.score = userScore;
+      }
+      this.responder.respond(response);
     } catch (err: any) {
       if (err.isFailure) {
         throw err;
@@ -58,11 +69,13 @@ export default class GetContestsUseCase extends GetRoundMatchesUseCase {
     const defaultCompetition = competitions.find(
       competition => competition.slug === 'premier-league'
     );
-    if (!defaultCompetition) {
+
+    if (competitions.length === 0) {
       throw Result.fail(
         AppError.resourceNotFound('Default competition not found')
       );
     }
-    return defaultCompetition;
+
+    return defaultCompetition ?? competitions[0];
   }
 }

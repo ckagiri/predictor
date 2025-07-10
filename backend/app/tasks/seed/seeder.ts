@@ -100,10 +100,11 @@ export class Seeder {
     console.info('Seeded teams successfully.');
 
     await this.seedSeasons(seasonTeams);
+    await this.updateCompetitionWithCurrentSeason();
     console.info('Seeded seasons successfully.');
 
     await this.seedGameRounds();
-    await this.updateCurrentRound();
+    await this.updateSeasonWithCurrentRound();
     console.info('Seeded game-rounds successfully.');
 
     await this.seedMatches();
@@ -218,6 +219,37 @@ export class Seeder {
     await lastValueFrom(this.seasonRepo.createMany$([season1, season2]));
   }
 
+  private async updateCompetitionWithCurrentSeason() {
+    const competition = await lastValueFrom(
+      this.competitionRepo.findOne$({
+        slug: SEED_COMPETITION_SLUG,
+      })
+    );
+
+    if (!competition) {
+      throw new Error(
+        `No competition found with slug ${SEED_COMPETITION_SLUG}`
+      );
+    }
+
+    const currentSeason = await lastValueFrom(
+      this.seasonRepo.findOne$({
+        'competition.id': competition.id,
+        slug: '2023-24',
+      })
+    );
+
+    if (!currentSeason) {
+      throw new Error('Current season not found');
+    }
+
+    await lastValueFrom(
+      this.competitionRepo.findByIdAndUpdate$(competition.id!, {
+        currentSeason: currentSeason.id,
+      })
+    );
+  }
+
   private async seedGameRounds() {
     const seasons = await this.getSeededSeasons();
     const gameRounds = flatMap(
@@ -239,7 +271,7 @@ export class Seeder {
     await lastValueFrom(this.gameRoundRepo.createMany$(gameRounds));
   }
 
-  private async updateCurrentRound() {
+  private async updateSeasonWithCurrentRound() {
     const seasons = await this.getSeededSeasons();
     for (const season of seasons) {
       const currentMatchday = season.currentMatchday;
