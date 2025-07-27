@@ -1,9 +1,9 @@
 import { Observable } from 'rxjs';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
-import { LigiCompetitionConverter } from './ligi/competition.converter.js';
 import { Competition } from '../models/competition.model.js';
 import { Converter } from './converter.js';
+import { LigiCompetitionConverter } from './ligi/competition.converter.js';
 
 export interface CompetitionConverter extends Converter {
   from(data: any): Observable<Competition>;

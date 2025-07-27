@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
-import { AfdSeasonConverter } from './apiFootballData/season.converter.js';
-import { LigiSeasonConverter } from './ligi/season.converter.js';
 import { Season } from '../models/season.model.js';
+import { AfdSeasonConverter } from './apiFootballData/season.converter.js';
 import { Converter } from './converter.js';
+import { LigiSeasonConverter } from './ligi/season.converter.js';
 
 export interface SeasonConverter extends Converter {
   from(data: any): Observable<Season>;

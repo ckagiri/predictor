@@ -32,9 +32,7 @@ export default class PickScoreUseCase extends GetRoundMatchesUseCase {
       const foundSeason = await this.findSeason(foundCompetition, season);
       const [foundRound] = await this.findRound(foundSeason, round);
 
-      const roundMatches = (await this.getRoundMatches(
-        foundRound.id!
-      )) as Match[];
+      const roundMatches = await this.getRoundMatches(foundRound.id!);
       const picks = await this.pickScores(
         loggedInUserId,
         roundMatches,

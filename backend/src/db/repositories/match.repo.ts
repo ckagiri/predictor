@@ -3,12 +3,12 @@ import { forkJoin, from, Observable } from 'rxjs';
 import { map, mergeMap, toArray } from 'rxjs/operators';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
-import { Season } from '../models/season.model.js';
 import {
   MatchConverter,
   MatchConverterImpl,
 } from '../converters/match.converter.js';
 import MatchModel, { Match, MatchStatus } from '../models/match.model.js';
+import { Season } from '../models/season.model.js';
 import {
   BaseFootballApiRepository,
   BaseFootballApiRepositoryImpl,

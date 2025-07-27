@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
-import { AfdTeamConverter } from './apiFootballData/team.converter.js';
-import { LigiTeamConverter } from './ligi/team.converter.js';
 import { Team } from '../models/team.model.js';
+import { AfdTeamConverter } from './apiFootballData/team.converter.js';
 import { Converter } from './converter.js';
+import { LigiTeamConverter } from './ligi/team.converter.js';
 
 export interface TeamConverter extends Converter {
   from(data: any): Observable<Team>;

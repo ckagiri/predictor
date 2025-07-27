@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
-import { AfdMatchConverter } from './apiFootballData/match.converter.js';
-import { LigiMatchConverter } from './ligi/match.converter.js';
 import { Match } from '../models/match.model.js';
+import { AfdMatchConverter } from './apiFootballData/match.converter.js';
 import { Converter } from './converter.js';
+import { LigiMatchConverter } from './ligi/match.converter.js';
 
 export interface MatchConverter extends Converter {
   from(data: any): Observable<Match>;

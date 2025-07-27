@@ -1,9 +1,9 @@
 import { Observable } from 'rxjs';
 
 import { FootballApiProvider as ApiProvider } from '../../common/footballApiProvider.js';
-import { LigiGameRoundConverter } from './ligi/gameRound.converter.js';
 import { GameRound } from '../models/gameRound.model.js';
 import { Converter } from './converter.js';
+import { LigiGameRoundConverter } from './ligi/gameRound.converter.js';
 
 export interface GameRoundConverter extends Converter {
   from(data: any): Observable<GameRound>;

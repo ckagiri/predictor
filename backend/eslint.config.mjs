@@ -14,6 +14,8 @@ export default tseslint.config(
       tseslint.configs.stylisticTypeChecked,
       perfectionist.configs['recommended-natural'],
     ],
+    files: ['src/**/*.ts'],
+    ignores: ['src/__tests__/'],
     languageOptions: {
       parserOptions: {
         projectService: {
@@ -41,7 +43,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.spec.ts'],
+    files: ['src/__tests__/**/*.spec.ts'],
     plugins: { 'chai-friendly': pluginChaiFriendly },
     rules: {
       '@typescript-eslint/no-unused-expressions': 0, // disable TypeScript ESLint version

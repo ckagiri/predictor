@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-import { generateSchedule } from 'src/db/scheduleGenerator/index.js';
 import fs from 'fs';
 import { flatMap, isNil } from 'lodash';
 import mongoose from 'mongoose';
@@ -19,6 +17,7 @@ import {
   throwIfEmpty,
   toArray,
 } from 'rxjs';
+import { generateSchedule } from 'src/db/scheduleGenerator/index.js';
 
 import { VosePredictorImpl } from '../../../db/helpers/vosePredictor.js';
 import {
