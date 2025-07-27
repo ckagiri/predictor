@@ -1,20 +1,15 @@
-
-FROM node:16 AS builder
-WORKDIR /app
-COPY backend/package*.json ./
-RUN npm install --silent
-COPY backend ./
-RUN npm run build
-
-FROM node:16-alpine
-RUN mkdir -p /home/node/src/node_modules && chown -R node:node /home/node/src
-USER node
-WORKDIR /home/node/src
-COPY --chown=node:node --from=builder /app/node_modules ./node_modules
-COPY --chown=node:node --from=builder /app/build .
-
-COPY config/server/dev/server.env ./.env
-COPY --chmod=755 config/server/start-command ./start-command
-
+FROM node:22-slim AS base
+ENV NODE_ENV=production
 EXPOSE 3110
-CMD ["./start-command"]
+USER node
+WORKDIR /app
+COPY --chown=node:node backend/package*.json ./
+COPY --chown=node:node config/server/dev/server.env ./.env
+RUN npm ci --omit=dev && npm cache clean --force
+ENV PATH=/app/node_modules/.bin:$PATH
+
+# dev stage
+FROM base AS dev
+ENV NODE_ENV=development
+RUN npm install
+CMD ["dotenvx", "run", "--", "tsx", "src/app/index.ts"]

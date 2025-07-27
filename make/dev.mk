@@ -53,6 +53,11 @@ server-dev-sh:
 		-it ligi-server-dev-image \
 		sh
 
+server-dev-sh1:
+	docker run --rm --name ligi-server-dev \
+		-it ligi-server-dev-image \
+		sh
+
 server-dev-run:
 	docker run \
 		--rm \
