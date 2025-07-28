@@ -17,7 +17,6 @@ import {
   throwIfEmpty,
   toArray,
 } from 'rxjs';
-import { generateSchedule } from 'src/db/scheduleGenerator/index.js';
 
 import { VosePredictorImpl } from '../../../db/helpers/vosePredictor.js';
 import {
@@ -41,6 +40,7 @@ import {
   UserRepositoryImpl,
   UserScoreRepositoryImpl,
 } from '../../../db/repositories/index.js';
+import { generateSchedule } from '../../../db/scheduleGenerator/index.js';
 import { PasswordHasherImpl } from '../../api/auth/providers/passwordHasher.js';
 import PredictionCalculator from '../../schedulers/prediction.calculator.js';
 

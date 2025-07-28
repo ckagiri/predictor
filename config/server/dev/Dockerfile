@@ -13,3 +13,10 @@ FROM base AS dev
 ENV NODE_ENV=development
 RUN npm install
 CMD ["dotenvx", "run", "--", "tsx", "src/app/index.ts"]
+
+# seeder
+FROM base AS seeder
+ENV NODE_ENV=development
+COPY --chown=node:node backend/src ./src
+COPY --chown=node:node config/server/dev/seeder-healthcheck.js .
+CMD ["dotenvx", "run", "--", "tsx", "src/app/tasks/seed/index.ts"]

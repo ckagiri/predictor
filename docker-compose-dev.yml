@@ -1,26 +1,50 @@
 services:
-  api:
-    image: ligi-api-dev
+  # api:
+  #   image: ligi-api-dev
+  #   build:
+  #     dockerfile: ./config/server/dev/Dockerfile
+  #     context: .
+  #     target: dev
+  #   depends_on:
+  #     seeder:
+  #       condition: service_completed_successfully
+  #   volumes:
+  #     - ./backend/src:/app/src
+  #   networks:
+  #     - app-network
+  db:
+    image: mongo:7.0.22-jammy
+    restart: unless-stopped
+    ports:
+      - "27070:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - dbdata:/data/db
+    networks:
+      - app-network
+  seeder:
     build:
       dockerfile: ./config/server/dev/Dockerfile
       context: .
-    volumes:
-      - ./backend/src:/app/src
-    networks:
-      - app-network
-  db:
-    image: mongo:7.0.22-jammy
-    container_name: db
-    restart: unless-stopped
+      target: seeder
+    depends_on:
+      db:
+        condition: service_healthy
     env_file: ./config/server/dev/server.env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USERNAME
-      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+      - MONGO_HOSTNAME=db
     healthcheck:
-      # test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-      test: echo 'db.runCommand("ping").ok'
-    volumes:
-      - dbdata:/data/db
+      test: ["CMD", "node", "seeder-healthcheck.js"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     networks:
       - app-network
 
