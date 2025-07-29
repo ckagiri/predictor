@@ -7,6 +7,7 @@ services:
       context: .
       target: dev
     environment:
+      EXECUTION_ENGINE: tsx
       MONGO_HOSTNAME: db
     ports:
       - "3110:3110"
@@ -53,36 +54,36 @@ services:
     networks:
       - app-network
 
-  web:
-    image: ligi-client-dev
-    depends_on:
-      - api
-    environment:
-      VITE_API_URL: http://localhost:3110/api # Example for local backend
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend
-          target: /app
-          # exclude patterns within ./src
-          ignore:
-            - "**/*.test.ts" # Example: don't sync test files
-        - action: rebuild
-          path: package.json
-        - action: rebuild
-          path: package-lock.json
-    stdin_open: true
-    tty: true
-    build:
-      dockerfile: ./config/client/dev/Dockerfile
-      context: .
-    ports:
-      - "8040:8040"
-    volumes:
-      - /app/node_modules # anon vol to keep node_modules inside container
-      - ./frontend:/app
-    networks:
-      - app-network
+  # web:
+  #   image: ligi-client-dev
+  #   depends_on:
+  #     - api
+  #   environment:
+  #     VITE_API_URL: http://localhost:3110/api # Example for local backend
+  #   develop:
+  #     watch:
+  #       - action: sync
+  #         path: ./frontend
+  #         target: /app
+  #         # exclude patterns within ./src
+  #         ignore:
+  #           - "**/*.test.ts" # Example: don't sync test files
+  #       - action: rebuild
+  #         path: package.json
+  #       - action: rebuild
+  #         path: package-lock.json
+  #   stdin_open: true
+  #   tty: true
+  #   build:
+  #     dockerfile: ./config/client/dev/Dockerfile
+  #     context: .
+  #   ports:
+  #     - "8040:8040"
+  #   volumes:
+  #     - /app/node_modules # anon vol to keep node_modules inside container
+  #     - ./frontend:/app
+  #   networks:
+  #     - app-network
 
 #   nginx:
 #     image: ligi-nginx-dev

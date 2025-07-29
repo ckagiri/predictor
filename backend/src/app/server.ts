@@ -35,8 +35,8 @@ export async function startWebServer({
   // be freed up to keep processing to a minimum on its servicing threads.
   let node2: cp.ChildProcess;
   const isTsx =
-    typeof process.env._ === 'string' && process.env._.includes('tsx');
-  console.log('isTsx', isTsx);
+    (typeof process.env._ === 'string' && process.env._.includes('tsx')) ||
+    process.env.EXECUTION_ENGINE === 'tsx';
   if (process.env.NODE_ENV !== 'test') {
     const fromSrcDir = fromBase('src');
     if (isDocker()) {
