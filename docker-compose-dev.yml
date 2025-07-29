@@ -1,3 +1,4 @@
+name: ligi-dev
 services:
   # api:
   #   image: ligi-api-dev
