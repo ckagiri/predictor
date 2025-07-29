@@ -1,18 +1,15 @@
-FROM node:16-alpine AS builder
-
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+FROM node:22-slim AS base
+ENV NODE_ENV=production
+USER node
 WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm install --silent
+COPY --chown=node:node frontend/package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+ENV PATH=/app/node_modules/.bin:$PATH
 
-FROM node:16-alpine
-WORKDIR /app
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-
-COPY frontend ./
-COPY config/client/dev/client.env ./.env
-
+# dev stage
+FROM base AS dev
+ENV NODE_ENV=development
+COPY --chown=node:node config/client/dev/client.env ./.env
+RUN npm install
 EXPOSE 8040
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]

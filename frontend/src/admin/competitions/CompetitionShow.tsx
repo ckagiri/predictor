@@ -20,18 +20,12 @@ const CompetitionShowView = () => {
       <Card>
         <Stack spacing={1}>
           <div>
-            <Typography variant="caption">
-              Name
-            </Typography>
+            <Typography variant="caption">Name</Typography>
             <Typography variant="body2">{data.name}</Typography>
           </div>
           <div>
-            <Typography variant="caption">
-              TLA
-            </Typography>
-            <Typography variant="body2">
-              {data.code}
-            </Typography>
+            <Typography variant="caption">TLA</Typography>
+            <Typography variant="body2">{data.code}</Typography>
           </div>
         </Stack>
       </Card>
