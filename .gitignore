@@ -77,15 +77,8 @@ typings/
 
 # dotenv environment variables file
 .env
+*.env
 .env.*
-
-config/server/dev/server.env
-config/server/prod/server.env
-config/server/devprod/server.env
-
-config/client/dev/client.env
-config/client/prod/client.env
-config/client/devprod/client.env
 
 ### VisualStudioCode ###
 .vscode/*

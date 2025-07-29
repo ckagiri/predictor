@@ -4,13 +4,13 @@ EXPOSE 3110
 USER node
 WORKDIR /app
 COPY --chown=node:node backend/package*.json ./
-COPY --chown=node:node config/server/dev/server.env ./.env
 RUN npm ci --omit=dev && npm cache clean --force
 ENV PATH=/app/node_modules/.bin:$PATH
 
 # dev stage
 FROM base AS dev
 ENV NODE_ENV=development
+COPY --chown=node:node config/dev.env ./.env
 RUN npm install
 CMD ["dotenvx", "run", "--", "tsx", "src/app/index.ts"]
 

@@ -66,15 +66,10 @@ export async function startWebServer({
   app.use('/api', router);
   app.use(errorMiddleware);
 
-  if (!process.env.MONGO_URI) {
-    console.error('MONGO_URI ENV variable missing');
-    process.exit(1);
-  }
-  const dbUri = process.env.MONGO_URI;
-
   await connectWithRetry();
 
   async function connectWithRetry() {
+    const dbUri = getDbUri();
     try {
       if (
         mongoose.connection.readyState === mongoose.ConnectionStates.connected
@@ -116,3 +111,40 @@ export const stopWebServer = async () => {
     resolve();
   });
 };
+
+function getDbUri() {
+  const {
+    DATA_OPTION,
+    MONGO_DB,
+    MONGO_HOSTNAME,
+    MONGO_PASSWORD,
+    MONGO_PORT,
+    MONGO_URI,
+    MONGO_USERNAME,
+  } = process.env;
+  if (DATA_OPTION === 'local_mongo') {
+    if (
+      !MONGO_DB ||
+      !MONGO_HOSTNAME ||
+      !MONGO_PASSWORD ||
+      !MONGO_PORT ||
+      !MONGO_USERNAME
+    ) {
+      console.error(
+        'Missing one or more required MONGO_DB environment variables.'
+      );
+      process.exit(1);
+    }
+    return `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_HOSTNAME}:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
+  } else if (DATA_OPTION === 'cloud_mongo') {
+    if (!MONGO_URI) {
+      console.error('MONGO_URI ENV variable missing');
+      process.exit(1);
+    }
+
+    return MONGO_URI;
+  } else {
+    console.error('DATA_OPTION ENV variable missing');
+    process.exit(1);
+  }
+}

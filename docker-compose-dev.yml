@@ -1,18 +1,22 @@
 name: ligi-dev
 services:
-  # api:
-  #   image: ligi-api-dev
-  #   build:
-  #     dockerfile: ./config/server/dev/Dockerfile
-  #     context: .
-  #     target: dev
-  #   depends_on:
-  #     seeder:
-  #       condition: service_completed_successfully
-  #   volumes:
-  #     - ./backend/src:/app/src
-  #   networks:
-  #     - app-network
+  api:
+    image: ligi-server-dev
+    build:
+      dockerfile: ./config/server/Dockerfile
+      context: .
+      target: dev
+    environment:
+      MONGO_HOSTNAME: db
+    ports:
+      - "3110:3110"
+    depends_on:
+      seeder:
+        condition: service_completed_successfully
+    volumes:
+      - ./backend/src:/app/src
+    networks:
+      - app-network
   db:
     image: mongo:7.0.22-jammy
     restart: unless-stopped
@@ -23,8 +27,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 5
     volumes:
       - dbdata:/data/db
@@ -38,9 +42,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file: ./config/server/dev/server.env
+    env_file: ./config/dev.env
     environment:
-      - MONGO_HOSTNAME=db
+      MONGO_HOSTNAME: db
     healthcheck:
       test: ["CMD", "node", "seeder-healthcheck.js"]
       interval: 5s
@@ -49,20 +53,36 @@ services:
     networks:
       - app-network
 
-#   client:
-#     image: ligi-client-dev
-#     depends_on:
-#       - api
-#     stdin_open: true
-#     build:
-#       dockerfile: ./config/client/dev/Dockerfile
-#       context: .
-#     ports:
-#       - "8040:8040"
-#     volumes:
-#       - ./frontend/src:/app/src
-#     networks:
-#       - app-network
+  web:
+    image: ligi-client-dev
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:3110/api # Example for local backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          # exclude patterns within ./src
+          ignore:
+            - "**/*.test.ts" # Example: don't sync test files
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: package-lock.json
+    stdin_open: true
+    tty: true
+    build:
+      dockerfile: ./config/client/dev/Dockerfile
+      context: .
+    ports:
+      - "8040:8040"
+    volumes:
+      - /app/node_modules # anon vol to keep node_modules inside container
+      - ./frontend:/app
+    networks:
+      - app-network
 
 #   nginx:
 #     image: ligi-nginx-dev
