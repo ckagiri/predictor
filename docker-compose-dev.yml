@@ -85,19 +85,19 @@ services:
     networks:
       - app-network
 
-  # nginx:
-  #   image: ligi-nginx-dev
-  #   depends_on:
-  #     - api
-  #     - web
-  #   restart: always
-  #   build:
-  #     dockerfile: ./config/nginx/Dockerfile
-  #     context: .
-  #   ports:
-  #     - "8100:8100"
-  #   networks:
-  #     - app-network
+  nginx:
+    image: ligi-nginx-dev
+    depends_on:
+      - api
+      - web
+    restart: always
+    build:
+      dockerfile: ./config/nginx/Dockerfile
+      context: .
+    ports:
+      - "8100:8100"
+    networks:
+      - app-network
 
 volumes:
   dbdata:

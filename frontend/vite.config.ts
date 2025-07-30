@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    allowedHosts: ['web'],
     host: true, // crucial for container accessibility
     port: 8040,
   },
