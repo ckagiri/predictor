@@ -11,6 +11,11 @@ compose-dev-up:
 		--env-file ./config/dev.env \
 		up --watch
 
+compose-dev-up_b:
+	docker compose -f ./docker-compose-dev.yml \
+		--env-file ./config/dev.env \
+		up --build --watch
+
 compose-dev-down:
 	docker compose -f ./docker-compose-dev.yml \
 		--env-file ./config/dev.env \
