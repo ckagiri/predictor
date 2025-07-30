@@ -1,7 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOSTNAME, MONGO_PORT, MONGO_DB } =
-  process.env;
+const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_PORT, MONGO_DB } = process.env;
 
 const uri = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@db:${MONGO_PORT}/${MONGO_DB}?authSource=admin`;
 MongoClient.connect(uri, { useUnifiedTopology: true })

@@ -48,8 +48,8 @@ services:
       MONGO_HOSTNAME: db
     healthcheck:
       test: ["CMD", "node", "seeder-healthcheck.js"]
-      interval: 5s
-      timeout: 3s
+      interval: 15s
+      timeout: 5s
       retries: 5
     networks:
       - app-network
