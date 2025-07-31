@@ -26,7 +26,8 @@ compose-dev-down_v:
 		--env-file ./config/dev.env \
 		down -v
 
-compose-dev-clean: compose-dev-down
+compose-dev-clean:
+	compose-dev-down
 	docker rm -f ligi-dev
 
 	docker rmi -f ligi-client-dev

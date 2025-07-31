@@ -1,13 +1,10 @@
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 
+import getDbUri from '../getDbUri.js';
 import { AppSchedule } from './appSchedule.js';
 
 const appSchedule = AppSchedule.getInstance();
-const dbUri = process.env.MONGO_URI!;
-if (!dbUri) {
-  console.error('MONGO_URI ENV variable missing');
-  process.exit(1);
-}
+const dbUri = getDbUri();
 
 (async () => {
   await connectWithRetry();

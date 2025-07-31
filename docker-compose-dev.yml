@@ -72,8 +72,6 @@ services:
           path: package.json
         - action: rebuild
           path: package-lock.json
-    stdin_open: true
-    tty: true
     build:
       dockerfile: ./config/client/Dockerfile
       context: .
