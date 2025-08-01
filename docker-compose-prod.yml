@@ -12,7 +12,7 @@ services:
       - client
     restart: always
     ports:
-      - '8100:8100'
+      - "8100:8100"
     environment:
       - VIRTUAL_HOST=${HOST_DOMAIN}
       - VIRTUAL_PORT=${HOME_PORT}

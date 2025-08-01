@@ -17,7 +17,6 @@ import {
   throwIfEmpty,
   toArray,
 } from 'rxjs';
-import { generateSchedule } from 'src/db/scheduleGenerator/index.js';
 
 import { VosePredictorImpl } from '../../../db/helpers/vosePredictor.js';
 import {
@@ -41,6 +40,7 @@ import {
   UserRepositoryImpl,
   UserScoreRepositoryImpl,
 } from '../../../db/repositories/index.js';
+import { generateSchedule } from '../../../db/scheduleGenerator/index.js';
 import { PasswordHasherImpl } from '../../api/auth/providers/passwordHasher.js';
 import PredictionCalculator from '../../schedulers/prediction.calculator.js';
 
@@ -88,6 +88,12 @@ export class Seeder {
 
   async seed() {
     this.ensureConnected();
+
+    const seededComp = await this.getSeededCompetition();
+    if (seededComp) {
+      console.warn('✅ Seed data already exists. Skipping seeding.');
+      return;
+    }
 
     console.log('seeding db..');
     await this.clearCollections();
@@ -741,6 +747,15 @@ export class Seeder {
     const teams = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as Team[];
 
     return teams;
+  }
+
+  private async getSeededCompetition(): Promise<Competition | null> {
+    const competition = await lastValueFrom(
+      this.competitionRepo.findOne$({
+        slug: SEED_COMPETITION_SLUG,
+      })
+    );
+    return competition;
   }
 
   private async getSeededSeasons(): Promise<Season[]> {

@@ -2,10 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "scripts": {
-    "build": "npm run compile && npm run copyfiles",
+    "build": "npm run compile",
     "compile": "tsc --project tsconfig.json",
     "compile:test": "tsc --project tsconfig.test.json",
-    "copyfiles": "copyfiles wait-for.sh build",
     "start": "NODE_ENV=production dotenvx run -f .env.production -- node build/app/index.js",
     "serve": "NODE_ENV=development dotenvx run -- build/app/index.js",
     "serve:tsx": "NODE_ENV=development dotenvx run -- npx tsx src/app/index.ts",

@@ -8,6 +8,7 @@ import { AddressInfo } from 'net';
 
 import errorMiddleware from './api/auth/error.middleware.js';
 import router from './api/routes.js';
+import getDbUri from './getDbUri.js';
 import isDocker from './isDocker.js';
 import { fromBase } from './util.js';
 
@@ -35,8 +36,8 @@ export async function startWebServer({
   // be freed up to keep processing to a minimum on its servicing threads.
   let node2: cp.ChildProcess;
   const isTsx =
-    typeof process.env._ === 'string' && process.env._.includes('tsx');
-  console.log('isTsx', isTsx);
+    (typeof process.env._ === 'string' && process.env._.includes('tsx')) ||
+    process.env.EXECUTION_ENGINE === 'tsx';
   if (process.env.NODE_ENV !== 'test') {
     const fromSrcDir = fromBase('src');
     if (isDocker()) {
@@ -66,15 +67,10 @@ export async function startWebServer({
   app.use('/api', router);
   app.use(errorMiddleware);
 
-  if (!process.env.MONGO_URI) {
-    console.error('MONGO_URI ENV variable missing');
-    process.exit(1);
-  }
-  const dbUri = process.env.MONGO_URI;
-
   await connectWithRetry();
 
   async function connectWithRetry() {
+    const dbUri = getDbUri();
     try {
       if (
         mongoose.connection.readyState === mongoose.ConnectionStates.connected
