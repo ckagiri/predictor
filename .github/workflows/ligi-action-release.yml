@@ -14,14 +14,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Create client prod env file
+      - name: Create prod env file
         run: |
-          cat <<EOF > config/client/prod/client.env
-          REACT_APP_API=$REACT_APP_API
-          EOF
-      - name: Create server prod env file
-        run: |
-          cat <<EOF > config/server/prod/server.env
+          cat <<EOF > config/prod.env
           API_FOOTBALL_DATA_KEY=$API_FOOTBALL_DATA_KEY
           MONGO_URI=$MONGO_URI
           NODE_ENV=production
@@ -40,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./config/server/prod/Dockerfile
+          file: ./config/server/Dockerfile
           build-args: |
             APP_ENV=prod
           push: true
@@ -52,11 +47,11 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./config/client/prod/Dockerfile
+          file: ./config/client/Dockerfile
           build-args: |
-            APP_ENV=prod
+            VITE_API_URL_ARG=${{ secrets.VITE_API_URL }}
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/ligi:client
+          tags: ${{ secrets.DOCKER_USERNAME }}/ligi:web
           cache-from: type=gha
           cache-to: type=gha, mode=max
 
@@ -110,5 +105,15 @@ jobs:
           script: |
             echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
             cd ~/.deploy/${{ github.event.repository.name }}
+            echo "🔄 Pulling latest images..."
             docker compose -f ./docker-compose-prod.yml pull
+
+            echo "🛑 Stopping old containers..."
+            docker compose -f ./docker-compose-prod.yml down --remove-orphans
+
+            echo "🧼 Pruning unused resources..."
+            docker image prune -f
+            docker volume prune -f
+
+            echo "🚀 Starting fresh stack..."
             docker compose -f ./docker-compose-prod.yml up -d
