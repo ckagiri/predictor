@@ -1,14 +1,14 @@
 ---
 name: Continous Deployment
 on:
-  push:
-    branches:
-      - deploy2
+  pull_request:
+    types: [closed]
 env:
   API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
   MONGO_URI: ${{secrets.MONGO_URI}}
 jobs:
   push_to_registry:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
