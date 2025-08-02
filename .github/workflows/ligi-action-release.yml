@@ -1,18 +1,17 @@
 ---
 name: Continous Deployment
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types: [closed]
 env:
   API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
   MONGO_URI: ${{secrets.MONGO_URI}}
 jobs:
   push_to_registry:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - run: echo "🚀 Code was merged into main!"
       - name: Checkout
         uses: actions/checkout@v4
       - name: Create prod env file
