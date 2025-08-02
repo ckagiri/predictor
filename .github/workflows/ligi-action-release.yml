@@ -17,8 +17,8 @@ jobs:
         run: |
           cat <<EOF > config/prod.env
           API_FOOTBALL_DATA_KEY=$API_FOOTBALL_DATA_KEY
+          CLOUD_MONGO_URI=$MONGO_URI
           DATA_OPTION=cloud_mongo
-          MONGO_URI=$MONGO_URI
           NODE_ENV=production
           PORT=3110
           EOF
