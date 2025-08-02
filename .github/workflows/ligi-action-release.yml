@@ -37,6 +37,7 @@ jobs:
         with:
           context: .
           file: ./config/server/Dockerfile
+          target: prod
           build-args: |
             APP_ENV=prod
           push: true
@@ -49,7 +50,6 @@ jobs:
         with:
           context: .
           file: ./config/client/Dockerfile
-          target: prod
           build-args: |
             VITE_API_URL_ARG=${{ secrets.VITE_API_URL }}
           push: true
