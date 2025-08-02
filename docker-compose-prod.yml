@@ -2,14 +2,14 @@ services:
   api:
     image: ${DOCKER_USERNAME}/ligi:api
 
-  client:
-    image: ${DOCKER_USERNAME}/ligi:client
+  web:
+    image: ${DOCKER_USERNAME}/ligi:web
 
   nginx:
     image: ${DOCKER_USERNAME}/ligi:nginx
     depends_on:
       - api
-      - client
+      - web
     restart: always
     ports:
       - "8100:8100"

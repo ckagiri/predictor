@@ -1,11 +1,6 @@
 #
 # dev
 #
-
-all-devprod-build: client-devprod-build server-devprod-build nginx-devprod-build
-
-all-devprod-clean: all-devprod-images-clean all-devprod-containers-clean
-
 all-devprod-containers-clean:
 	docker rm -f ligi-client-devprod
 	docker rm -f ligi-server-devprod
@@ -19,12 +14,6 @@ all-devprod-images-clean:
 #
 # client
 #
-
-client-devprod-build:
-	docker build -f ./config/client/prod/Dockerfile \
-		-t ligi-client-devprod-image:latest \
-		.
-
 client-devprod-sh:
 	docker run --rm --name ligi-client-devprod \
 		-it \
@@ -45,12 +34,6 @@ client-devprod-clean:
 #
 # server
 #
-
-server-devprod-build:
-	docker build -f ./config/server/prod/Dockerfile \
-	-t ligi-server-devprod-image:latest \
-	.
-
 server-devprod-sh:
 	docker run --rm --name ligi-server-devprod \
 		-it ligi-server-devprod-image \
