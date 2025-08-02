@@ -2,6 +2,8 @@
 name: Continous Deployment
 on:
   pull_request:
+    branches:
+      - main
     types: [closed]
 env:
   API_FOOTBALL_DATA_KEY: ${{secrets.API_FOOTBALL_DATA_KEY}}
