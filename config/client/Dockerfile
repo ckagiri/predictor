@@ -14,11 +14,11 @@ COPY --chown=node:node frontend .
 EXPOSE 8040
 CMD [ "npm", "run", "dev" ]
 
-FROM dev AS builder
+FROM dev AS build
 ARG VITE_API_URL_ARG=http://localhost:8100/api
 ENV VITE_API_URL=$VITE_API_URL_ARG
 RUN npm run build
 
-FROM nginx
+FROM nginx AS prod
 COPY config/client/nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist /usr/share/nginx/html

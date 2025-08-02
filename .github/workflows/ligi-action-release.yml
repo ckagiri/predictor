@@ -44,11 +44,12 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha, mode=max
 
-      - name: Build and push ligi-client
+      - name: Build and push ligi-web
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./config/client/Dockerfile
+          target: prod
           build-args: |
             VITE_API_URL_ARG=${{ secrets.VITE_API_URL }}
           push: true
