@@ -7,7 +7,7 @@
     "compile:test": "tsc --project tsconfig.test.json",
     "start": "dotenvx run -- node build/app/index.js",
     "start:tsx": "dotenvx run -- npx tsx src/app/index.ts",
-    "start:dev:tsx": "dotenvx run -f .env.dev -- npx tsx src/app/index.ts",
+    "start:tsx:dev": "dotenvx run -f .env.dev -- npx tsx src/app/index.ts",
     "build:start": "npm run build && npm run start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

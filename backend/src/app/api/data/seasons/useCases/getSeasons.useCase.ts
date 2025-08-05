@@ -32,7 +32,9 @@ export default class GetSeasonsUseCase {
       await validator.validateCompetition(competition);
 
       const foundSeasons = await lastValueFrom(
-        this.seasonRepo.findAll$({ 'competition.slug': competition })
+        this.seasonRepo.findAll$({ 'competition.slug': competition }, null, {
+          sort: { year: -1 },
+        })
       );
 
       this.responder.respond(foundSeasons);

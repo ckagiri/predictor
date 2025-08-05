@@ -151,6 +151,9 @@ export class DocumentDao<T extends Entity> {
   ): Promise<T[]> {
     const repository = this.Model.find(conditions, projection);
 
+    if (options?.sort) {
+      repository.sort(options.sort);
+    }
     if (options?.populate) {
       // Ensure join is never a plain string for populate
       if (typeof options.populate === 'string') {

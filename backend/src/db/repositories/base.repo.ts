@@ -117,9 +117,6 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     projection?: ProjectionType<T> | null,
     options?: QueryOptions<T>
   ): Observable<T[]> {
-    // const queryOptions: QueryOptions<T> & { lean: true } = options
-    //   ? { ...options, lean: true as const }
-    //   : { lean: true as const };
     return from(this.documentDao.findAll(conditions, projection, options));
   }
   findAllByIds$(
