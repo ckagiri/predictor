@@ -11,8 +11,9 @@ export class LigiTeamConverter implements TeamConverter {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  setTeamRepo(repo: TeamRepository): void {
-    throw new Error('Method not implemented.');
+  // intentionally left blank as this converter does not use a TeamRepo.
+  setTeamRepo(_teamRepo: TeamRepository): void {
+    // no-op
   }
 
   static getInstance(): TeamConverter {
