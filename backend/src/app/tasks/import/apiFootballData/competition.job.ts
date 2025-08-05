@@ -70,8 +70,8 @@ export class CompetitionJob implements Job {
             .setCompetition(this._competitionId)
             .build();
 
+          queue.addJob(teamsJob);
           queue.addJob(matchesJob);
-          // queue.addJob(teamsJob);
         })
       )
     );

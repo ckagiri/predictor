@@ -25,6 +25,9 @@ export class TeamRepositoryImpl
 {
   constructor(converter: TeamConverter) {
     super(TeamModel, converter);
+    if (typeof converter.setTeamRepo === 'function') {
+      converter.setTeamRepo(this);
+    }
   }
 
   static getInstance(provider: ApiProvider = ApiProvider.LIGI): TeamRepository {
@@ -39,7 +42,12 @@ export class TeamRepositoryImpl
   }
 
   findByNameAndUpsert$(obj: any): Observable<Team> {
-    return (this.converter as TeamConverter).from(obj).pipe(
+    const apiMatchDto = {
+      crestUrl: obj.crest,
+      id: obj.id,
+      name: obj.shortName,
+    };
+    return (this.converter as TeamConverter).from(apiMatchDto).pipe(
       mergeMap(data => {
         const name = data.name;
         const query = {
@@ -51,7 +59,6 @@ export class TeamRepositoryImpl
         data = Object.fromEntries(
           Object.entries(data).filter(([_, v]) => v != null)
         );
-
         return this.findOneAndUpsert$(query, data).pipe(
           mergeMap((team: Team) => {
             merge(team, { externalReference });

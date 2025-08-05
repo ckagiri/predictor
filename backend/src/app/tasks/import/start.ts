@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 
 import getDbUri from '../../../common/getDbUri.js';
-import * as db from '../../../db/index.js';
 import { apiFootballDataImporter } from './apiFootballData/start.js';
 
 async function connect() {

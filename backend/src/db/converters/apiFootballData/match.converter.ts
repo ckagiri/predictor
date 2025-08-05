@@ -1,5 +1,5 @@
-import { Observable, zip } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of, throwError, zip } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider.js';
 import { getMatchStatus, Match } from '../../models/match.model.js';
@@ -50,41 +50,63 @@ export class AfdMatchConverter implements MatchConverter {
     return zip(
       this.seasonRepo.findByExternalId$(data.season.id),
       this.teamRepo.findByName$(data.homeTeam.shortName),
-      this.teamRepo.findByName$(data.awayTeam.shortName),
-      this.gameRoundRepo.findOne$({ position: data.matchday })
+      this.teamRepo.findByName$(data.awayTeam.shortName)
     ).pipe(
-      map(([season, homeTeam, awayTeam, gameRound]) => {
-        if (!season || !homeTeam || !awayTeam || !gameRound) {
-          throw new Error('One or more required entities not found');
+      map(([season, homeTeam, awayTeam]) => {
+        if (!season?.id || !homeTeam || !awayTeam) {
+          throw new Error('seasonId, homeTeam or awayTeam not found');
         }
         return {
           awayTeam: {
-            id: awayTeam.id!,
+            id: awayTeam.id,
             name: awayTeam.name,
-            slug: awayTeam.slug!,
+            slug: awayTeam.slug,
+            tla: awayTeam.tla!,
           },
-          externalReference: {
-            [this.footballApiProvider]: {
-              id: data.id,
-            },
-          },
-          gameRound: gameRound.id!,
           homeTeam: {
-            id: homeTeam.id!,
+            id: homeTeam.id,
             name: homeTeam.name,
-            slug: homeTeam.slug!,
+            slug: homeTeam.slug,
+            tla: homeTeam.tla!,
           },
-          matchday: data.matchday,
-          odds: data.odds,
-          result: {
-            goalsAwayTeam: data.score.fullTime.away,
-            goalsHomeTeam: data.score.fullTime.home,
-          },
-          season: season.id!,
-          slug: `${String(homeTeam.tla).toLowerCase()}-${String(awayTeam.tla).toLowerCase()}`,
-          status: getMatchStatus(data.status.toUpperCase()),
-          utcDate: data.utcDate,
-        } as Match;
+          season,
+        };
+      }),
+      mergeMap(({ awayTeam, homeTeam, season }) => {
+        return this.gameRoundRepo
+          .findOne$({ position: data.matchday, season: season.id })
+          .pipe(
+            mergeMap(gameRound => {
+              if (!gameRound) {
+                return throwError(
+                  () =>
+                    new Error(
+                      `Game round not found for matchday ${String(data.matchday)}`
+                    )
+                );
+              }
+              return of({
+                awayTeam,
+                externalReference: {
+                  [this.footballApiProvider]: {
+                    id: data.id,
+                  },
+                },
+                gameRound: gameRound.id,
+                homeTeam,
+                matchday: data.matchday,
+                odds: data.odds,
+                result: {
+                  goalsAwayTeam: data.score.fullTime.away,
+                  goalsHomeTeam: data.score.fullTime.home,
+                },
+                season: season.id,
+                slug: `${homeTeam.tla.toLowerCase()}-${awayTeam.tla.toLowerCase()}`,
+                status: getMatchStatus(data.status.toUpperCase()),
+                utcDate: data.utcDate,
+              } as Match);
+            })
+          );
       })
     );
   }
