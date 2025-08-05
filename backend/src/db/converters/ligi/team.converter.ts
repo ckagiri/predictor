@@ -2,19 +2,24 @@ import { Observable, of } from 'rxjs';
 
 import { FootballApiProvider as ApiProvider } from '../../../common/footballApiProvider.js';
 import { Team } from '../../models/team.model.js';
+import { TeamRepository } from '../../repositories/team.repo.js';
 import { TeamConverter } from '../team.converter.js';
 
 export class LigiTeamConverter implements TeamConverter {
-  public footballApiProvider: ApiProvider;
+  footballApiProvider: ApiProvider;
   constructor() {
     this.footballApiProvider = ApiProvider.API_FOOTBALL_DATA;
   }
 
-  public static getInstance(): TeamConverter {
+  setTeamRepo(repo: TeamRepository): void {
+    throw new Error('Method not implemented.');
+  }
+
+  static getInstance(): TeamConverter {
     return new LigiTeamConverter();
   }
 
-  public from(data: any): Observable<Team> {
+  from(data: any): Observable<Team> {
     return of({ ...data });
   }
 }
