@@ -11,6 +11,8 @@ export class VosePredictor {
   protected vose: Vose;
   protected OUTCOMES: string[] = ['HOME', 'DRAW', 'AWAY'];
 
+  // based on weights from recent season
+  // https://fcstats.com/statistics,premier-league-england,1,5,3374.php
   constructor(odds?: Odds) {
     odds ??= { awayWin: 2.88, draw: 4.08, homeWin: 2.45 };
     const { awayWin, draw, homeWin } = odds;
@@ -38,8 +40,6 @@ export class VosePredictor {
     return score;
   }
 
-  // based on weights from recent season
-  // https://fcstats.com/statistics,premier-league-england,1,5,3374.php
   protected getAwayPredictionScore() {
     const scoreToWeight = {
       '0-1': 26,
@@ -93,9 +93,9 @@ export class VosePredictor {
 export class DefaultVosePredictor extends VosePredictor {
   static getInstance() {
     return new DefaultVosePredictor({
-      awayWin: 2.88,
-      draw: 4.08,
-      homeWin: 2.45,
+      awayWin: 3,
+      draw: 3,
+      homeWin: 3,
     });
   }
   // based on first 125 yrs of top-flight english football
