@@ -6,9 +6,9 @@ import { Server } from 'http';
 import mongoose from 'mongoose';
 import { AddressInfo } from 'net';
 
+import getDbUri from '../common/getDbUri.js';
 import errorMiddleware from './api/auth/error.middleware.js';
 import router from './api/routes.js';
-import getDbUri from './getDbUri.js';
 import isDocker from './isDocker.js';
 import { fromBase } from './util.js';
 
