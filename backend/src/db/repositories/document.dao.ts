@@ -44,6 +44,12 @@ export class DocumentDao<T extends Entity> {
     >;
   }
 
+  exists(conditions: RootFilterQuery<T> = {}): Promise<boolean> {
+    return this.Model.exists(conditions)
+      .exec()
+      .then(exists => !!exists);
+  }
+
   find(
     query: FindQuery,
     options?: DatabaseOptions

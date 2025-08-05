@@ -27,6 +27,7 @@ export interface BaseRepository<T extends Entity> {
     field: string,
     conditions?: RootFilterQuery<T>
   ): Observable<string[]>;
+  exists$(conditions: RootFilterQuery<T>): Observable<boolean>;
   find$(
     query: FindQuery,
     options?: DatabaseOptions
@@ -90,7 +91,9 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
   createMany$(objs: Entity[]): Observable<T[]> {
     return from(this.documentDao.createMany(objs));
   }
-
+  exists$(conditions: RootFilterQuery<T>): Observable<boolean> {
+    return from(this.documentDao.exists(conditions));
+  }
   deleteMany$(
     conditions: RootFilterQuery<T>
   ): Observable<{ deletedCount?: number }> {
