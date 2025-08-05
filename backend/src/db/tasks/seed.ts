@@ -1,6 +1,10 @@
+import fs from 'fs';
 import mongooseSeeder from 'mais-mongoose-seeder';
 import mongoose from 'mongoose';
+import path from 'path';
+import { lastValueFrom } from 'rxjs';
 
+import getDbUri from '../../common/getDbUri.js';
 import CompetitionModel from '../models/competition.model.js';
 import GameRoundModel from '../models/gameRound.model.js';
 import LeaderboardModel from '../models/leaderboard.model.js';
@@ -10,7 +14,8 @@ import SeasonModel from '../models/season.model.js';
 import TeamModel from '../models/team.model.js';
 import UserModel from '../models/user.model.js';
 import UserScoreModel from '../models/userScore.model.js';
-import seedData from './seedData/seed-epl24.json';
+import { SeasonRepositoryImpl } from '../repositories/season.repo.js';
+import seedData from './seedData/seed-epl.json';
 
 export default {
   CompetitionModel,
@@ -24,9 +29,8 @@ export default {
   UserScoreModel,
 };
 
-async function connectWithRetry() {
-  const dbUri =
-    process.env.MONGO_URI ?? 'mongodb://localhost:27017/ligipredictor_test';
+async function connect() {
+  const dbUri = getDbUri();
   console.info(`Connecting to MongoDB at ${dbUri}`);
   try {
     if (
@@ -45,10 +49,30 @@ async function connectWithRetry() {
   }
 }
 
+async function defaultDataExists() {
+  const seasonRepo = SeasonRepositoryImpl.getInstance();
+  const dataPath = path.resolve(__dirname, './seedData/seed-epl.json');
+  const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8')) as Record<
+    string,
+    any
+  >;
+  const currentSeasonSlug = data.seasons?.current?.slug;
+  const seasonExists = await lastValueFrom(
+    seasonRepo.exists$({ slug: currentSeasonSlug })
+  );
+  return Promise.resolve(seasonExists);
+}
+
 async function main() {
-  await connectWithRetry();
-  const seeder = mongooseSeeder(mongoose);
-  console.log('seeding db..');
+  await connect();
+  const isSeeded = await defaultDataExists();
+  if (isSeeded) {
+    console.log('Default data already exists, skipping seeding.');
+    await mongoose.connection.close();
+    return;
+  }
+  console.log('seeding default-data ...');
+  const seeder = mongooseSeeder(mongoose.connection);
   await seeder.seed(seedData, { dropCollections: false, dropDatabase: false });
   console.log('seeding done');
   await mongoose.connection.close();
