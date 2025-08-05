@@ -57,6 +57,7 @@ export default class GetRoundMatchesUseCase {
       const foundSeason = await validator.validateSeason(competition, season);
       const foundRound = await validator.validateRound(foundSeason.id!, round);
 
+      console.log('foundRound', foundRound);
       const foundMatches = await lastValueFrom(
         this.matchRepo.findAll$(
           { gameRound: foundRound.id },
