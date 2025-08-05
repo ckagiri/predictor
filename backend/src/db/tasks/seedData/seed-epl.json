@@ -1,7 +1,11 @@
 {
+  "_dependencies": {
+    "mongoose": "mongoose"
+  },
   "competitions": {
     "_model": "Competition",
     "epl": {
+      "_id": "=new mongoose.Types.ObjectId('66bdb3693a35de7b8de3a1e8')",
       "name": "English Premier League",
       "code": "EPL",
       "slug": "premier-league",
@@ -220,7 +224,7 @@
         }
       },
       "competition": {
-        "id": "->competitions.epl",
+        "id": "=new mongoose.Types.ObjectId('66bdb3693a35de7b8de3a1e8')",
         "name": "->competitions.epl.name",
         "slug": "->competitions.epl.slug"
       },

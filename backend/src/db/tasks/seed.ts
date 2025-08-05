@@ -80,4 +80,5 @@ async function main() {
 
 main().catch((err: unknown) => {
   console.error(`ERROR SEEDING DB: ${String(err)}`);
+  process.exit(1);
 });
