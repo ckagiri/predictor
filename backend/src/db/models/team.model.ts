@@ -21,7 +21,7 @@ export const teamSchema = schema({
   externalReference: { type: Mixed },
   name: { required: true, trim: true, type: String },
   shortName: { trim: true, type: String },
-  slug: { required: true, trim: true, type: String },
+  slug: { required: true, trim: true, type: String, unique: true },
   tla: { type: String },
 });
 

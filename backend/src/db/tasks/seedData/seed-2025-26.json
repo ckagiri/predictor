@@ -1,0 +1,312 @@
+{
+  "_dependencies": {
+    "bson": "bson"
+  },
+  "teams": {
+    "_model": "Team",
+    "burnley": {
+      "_id": "=new bson.ObjectId('689238770d6d5893855856e6')",
+      "name": "Burnley",
+      "shortName": "Burnley",
+      "tla": "BUR",
+      "slug": "burnley",
+      "crestUrl": "https://crests.football-data.org/328.png",
+      "aliases": []
+    },
+    "leeds": {
+      "_id": "=new bson.ObjectId('689238770d6d5893855856e9')",
+      "name": "Leeds United",
+      "shortName": "Leeds United",
+      "tla": "LEE",
+      "slug": "leeds-united",
+      "crestUrl": "https://crests.football-data.org/341.png",
+      "aliases": []
+    },
+    "sunderland": {
+      "_id": "=new bson.ObjectId('689238770d6d5893855856eb')",
+      "name": "Sunderland",
+      "shortName": "Sunderland",
+      "tla": "SUN",
+      "slug": "sunderland",
+      "crestUrl": "https://crests.football-data.org/71.png",
+      "aliases": []
+    }
+  },
+  "seasons": {
+    "_model": "Season",
+    "current": {
+      "externalReference": {
+        "API_FOOTBALL_DATA": {
+          "id": 2403
+        }
+      },
+      "competition": {
+        "id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1e8')",
+        "name": "English Premier League",
+        "slug": "premier-league"
+      },
+      "name": "2025-2026",
+      "slug": "2025-26",
+      "year": "2025",
+      "teams": [
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1ec')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1ee')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f0')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f2')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f4')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fa')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fc')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fe')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a200')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20a')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20c')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20e')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a210')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a214')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a21e')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a224')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a226')",
+        "=new bson.ObjectId('689238770d6d5893855856e6')",
+        "=new bson.ObjectId('689238770d6d5893855856e9')",
+        "=new bson.ObjectId('689238770d6d5893855856eb')"
+      ],
+      "currentMatchday": 1,
+      "numberOfRounds": 38,
+      "numberOfTeams": 20,
+      "numberOfGames": 380,
+      "seasonStart": "=new Date('2025-08-15T00:00:00.000Z')",
+      "seasonEnd": "=new Date('2026-05-24T00:00:00.000Z')"
+    }
+  },
+  "gameRounds": {
+    "_model": "GameRound",
+    "gw1": {
+      "season": "->seasons.current",
+      "name": "Gameweek 1",
+      "slug": "gameweek-1",
+      "position": 1
+    },
+    "gw2": {
+      "season": "->seasons.current",
+      "name": "Gameweek 2",
+      "slug": "gameweek-2",
+      "position": 2
+    },
+    "gw3": {
+      "season": "->seasons.current",
+      "name": "Gameweek 3",
+      "slug": "gameweek-3",
+      "position": 3
+    },
+    "gw4": {
+      "season": "->seasons.current",
+      "name": "Gameweek 4",
+      "slug": "gameweek-4",
+      "position": 4
+    },
+    "gw5": {
+      "season": "->seasons.current",
+      "name": "Gameweek 5",
+      "slug": "gameweek-5",
+      "position": 5
+    },
+    "gw6": {
+      "season": "->seasons.current",
+      "name": "Gameweek 6",
+      "slug": "gameweek-6",
+      "position": 6
+    },
+    "gw7": {
+      "season": "->seasons.current",
+      "name": "Gameweek 7",
+      "slug": "gameweek-7",
+      "position": 7
+    },
+    "gw8": {
+      "season": "->seasons.current",
+      "name": "Gameweek 8",
+      "slug": "gameweek-8",
+      "position": 8
+    },
+    "gw9": {
+      "season": "->seasons.current",
+      "name": "Gameweek 9",
+      "slug": "gameweek-9",
+      "position": 9
+    },
+    "gw10": {
+      "season": "->seasons.current",
+      "name": "Gameweek 10",
+      "slug": "gameweek-10",
+      "position": 10
+    },
+    "gw11": {
+      "season": "->seasons.current",
+      "name": "Gameweek 11",
+      "slug": "gameweek-11",
+      "position": 11
+    },
+    "gw12": {
+      "season": "->seasons.current",
+      "name": "Gameweek 12",
+      "slug": "gameweek-12",
+      "position": 12
+    },
+    "gw13": {
+      "season": "->seasons.current",
+      "name": "Gameweek 13",
+      "slug": "gameweek-13",
+      "position": 13
+    },
+    "gw14": {
+      "season": "->seasons.current",
+      "name": "Gameweek 14",
+      "slug": "gameweek-14",
+      "position": 14
+    },
+    "gw15": {
+      "season": "->seasons.current",
+      "name": "Gameweek 15",
+      "slug": "gameweek-15",
+      "position": 15
+    },
+    "gw16": {
+      "season": "->seasons.current",
+      "name": "Gameweek 16",
+      "slug": "gameweek-16",
+      "position": 16
+    },
+    "gw17": {
+      "season": "->seasons.current",
+      "name": "Gameweek 17",
+      "slug": "gameweek-17",
+      "position": 17
+    },
+    "gw18": {
+      "season": "->seasons.current",
+      "name": "Gameweek 18",
+      "slug": "gameweek-18",
+      "position": 18
+    },
+    "gw19": {
+      "season": "->seasons.current",
+      "name": "Gameweek 19",
+      "slug": "gameweek-19",
+      "position": 19
+    },
+    "gw20": {
+      "season": "->seasons.current",
+      "name": "Gameweek 20",
+      "slug": "gameweek-20",
+      "position": 20
+    },
+    "gw21": {
+      "season": "->seasons.current",
+      "name": "Gameweek 21",
+      "slug": "gameweek-21",
+      "position": 21
+    },
+    "gw22": {
+      "season": "->seasons.current",
+      "name": "Gameweek 22",
+      "slug": "gameweek-22",
+      "position": 22
+    },
+    "gw23": {
+      "season": "->seasons.current",
+      "name": "Gameweek 23",
+      "slug": "gameweek-23",
+      "position": 23
+    },
+    "gw24": {
+      "season": "->seasons.current",
+      "name": "Gameweek 24",
+      "slug": "gameweek-24",
+      "position": 24
+    },
+    "gw25": {
+      "season": "->seasons.current",
+      "name": "Gameweek 25",
+      "slug": "gameweek-25",
+      "position": 25
+    },
+    "gw26": {
+      "season": "->seasons.current",
+      "name": "Gameweek 26",
+      "slug": "gameweek-26",
+      "position": 26
+    },
+    "gw27": {
+      "season": "->seasons.current",
+      "name": "Gameweek 27",
+      "slug": "gameweek-27",
+      "position": 27
+    },
+    "gw28": {
+      "season": "->seasons.current",
+      "name": "Gameweek 28",
+      "slug": "gameweek-28",
+      "position": 28
+    },
+    "gw29": {
+      "season": "->seasons.current",
+      "name": "Gameweek 29",
+      "slug": "gameweek-29",
+      "position": 29
+    },
+    "gw30": {
+      "season": "->seasons.current",
+      "name": "Gameweek 30",
+      "slug": "gameweek-30",
+      "position": 30
+    },
+    "gw31": {
+      "season": "->seasons.current",
+      "name": "Gameweek 31",
+      "slug": "gameweek-31",
+      "position": 31
+    },
+    "gw32": {
+      "season": "->seasons.current",
+      "name": "Gameweek 32",
+      "slug": "gameweek-32",
+      "position": 32
+    },
+    "gw33": {
+      "season": "->seasons.current",
+      "name": "Gameweek 33",
+      "slug": "gameweek-33",
+      "position": 33
+    },
+    "gw34": {
+      "season": "->seasons.current",
+      "name": "Gameweek 34",
+      "slug": "gameweek-34",
+      "position": 34
+    },
+    "gw35": {
+      "season": "->seasons.current",
+      "name": "Gameweek 35",
+      "slug": "gameweek-35",
+      "position": 35
+    },
+    "gw36": {
+      "season": "->seasons.current",
+      "name": "Gameweek 36",
+      "slug": "gameweek-36",
+      "position": 36
+    },
+    "gw37": {
+      "season": "->seasons.current",
+      "name": "Gameweek 37",
+      "slug": "gameweek-37",
+      "position": 37
+    },
+    "gw38": {
+      "season": "->seasons.current",
+      "name": "Gameweek 38",
+      "slug": "gameweek-38",
+      "position": 38
+    }
+  }
+}

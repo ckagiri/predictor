@@ -26,7 +26,7 @@ export class TeamsJob implements Job {
     this._teamRepo = teamRepo;
   }
 
-  public start(queue: Queue) {
+  public start(_queue: Queue) {
     console.log('** starting ApiFootballData Teams job');
     return lastValueFrom(
       from(this._apiClient.getTeams(this._competitionId)).pipe(

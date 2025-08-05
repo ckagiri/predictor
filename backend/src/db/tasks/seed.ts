@@ -1,6 +1,10 @@
+import bson, { ObjectId } from 'bson';
 import mongooseSeeder from 'mais-mongoose-seeder';
 import mongoose from 'mongoose';
+import { lastValueFrom } from 'rxjs';
+import vm from 'vm';
 
+import getDbUri from '../../common/getDbUri.js';
 import CompetitionModel from '../models/competition.model.js';
 import GameRoundModel from '../models/gameRound.model.js';
 import LeaderboardModel from '../models/leaderboard.model.js';
@@ -10,7 +14,9 @@ import SeasonModel from '../models/season.model.js';
 import TeamModel from '../models/team.model.js';
 import UserModel from '../models/user.model.js';
 import UserScoreModel from '../models/userScore.model.js';
-import seedData from './seedData/seed-epl24.json';
+import { SeasonRepositoryImpl } from '../repositories/season.repo.js';
+import seedData2425 from './seedData/seed-2024-25.json';
+import seedData2526 from './seedData/seed-2025-26.json';
 
 export default {
   CompetitionModel,
@@ -24,9 +30,19 @@ export default {
   UserScoreModel,
 };
 
-async function connectWithRetry() {
-  const dbUri =
-    process.env.MONGO_URI ?? 'mongodb://localhost:27017/ligipredictor_test';
+interface SeedDataPartial {
+  seasons: {
+    current: {
+      competition: {
+        id: string;
+      };
+      slug: string;
+    };
+  };
+}
+
+async function connect() {
+  const dbUri = getDbUri();
   console.info(`Connecting to MongoDB at ${dbUri}`);
   try {
     if (
@@ -45,15 +61,51 @@ async function connectWithRetry() {
   }
 }
 
+async function defaultDataExists(seedData: SeedDataPartial) {
+  const seasonRepo = SeasonRepositoryImpl.getInstance();
+
+  const competitionIdExpr = seedData.seasons.current.competition.id;
+  const context = { bson: bson };
+  vm.createContext(context);
+  const competitionId = vm.runInContext(
+    competitionIdExpr.substring(1),
+    context
+  ) as ObjectId;
+
+  const currentSeasonSlug = seedData.seasons.current.slug;
+  console.log(`Checking if season ${currentSeasonSlug} exists...`);
+  const seasonExists = await lastValueFrom(
+    seasonRepo.exists$({
+      'competition.id': competitionId,
+      slug: currentSeasonSlug,
+    })
+  );
+  return Promise.resolve(seasonExists);
+}
+
 async function main() {
-  await connectWithRetry();
-  const seeder = mongooseSeeder(mongoose);
-  console.log('seeding db..');
-  await seeder.seed(seedData, { dropCollections: false, dropDatabase: false });
+  await connect();
+  const seeder = mongooseSeeder(mongoose.connection);
+  for (const data of [seedData2425, seedData2526]) {
+    const isSeeded = await defaultDataExists(data);
+    if (isSeeded) {
+      console.log(
+        `Default data for ${data.seasons.current.slug} already exists, skipping seeding.`
+      );
+      continue;
+    }
+    console.log('seeding data for ', data.seasons.current.slug);
+    await seeder.seed(data, {
+      dropCollections: false,
+      dropDatabase: false,
+    });
+  }
+
   console.log('seeding done');
   await mongoose.connection.close();
 }
 
 main().catch((err: unknown) => {
   console.error(`ERROR SEEDING DB: ${String(err)}`);
+  process.exit(1);
 });

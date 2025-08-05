@@ -1,3 +1,4 @@
+/* eslint-disable perfectionist/sort-objects */
 import { EMPTY, Observable, of } from 'rxjs';
 import { mergeMap, throwIfEmpty } from 'rxjs/operators';
 
@@ -42,11 +43,11 @@ export class UserScoreRepositoryImpl
   findByLeaderboardIdOrderByPoints$(leaderboardId: string) {
     return this.findAll$({ leaderboard: leaderboardId }, null, {
       sort: {
-        closeMatchScorePoints: -1,
+        points: -1,
+        exactMatchScorePoints: -1,
         correctMatchOutcomePoints: -1,
         exactGoalDifferencePoints: -1,
-        exactMatchScorePoints: -1,
-        points: -1,
+        closeMatchScorePoints: -1,
       },
     });
   }
@@ -90,7 +91,7 @@ export class UserScoreRepositoryImpl
           score.matches = [matchId];
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
-          score.exactMatchScores = exactMatchScorePoints / 10;
+          score.exactMatchScores = exactMatchScorePoints / 20;
           score.exactGoalDiffs = exactGoalDifferencePoints;
           score.closeMatchScores = Math.ceil(closeMatchScorePoints / 2);
 
@@ -116,13 +117,13 @@ export class UserScoreRepositoryImpl
           userScore.points += hasJoker ? basePoints * 2 : basePoints;
 
           userScore.correctMatchOutcomes! += correctMatchOutcomePoints / 7;
-          userScore.exactMatchScores! += exactMatchScorePoints / 10;
+          userScore.exactMatchScores! += exactMatchScorePoints / 20;
           userScore.exactGoalDiffs! += exactGoalDifferencePoints;
           userScore.closeMatchScores! += Math.ceil(closeMatchScorePoints / 2);
 
           return this.findByIdAndUpdate$(userScore.id!, {
             $inc: { matchesPredicted: 1 },
-            $push: { matches: matchId, predictions: predictionId },
+            $push: { matches: matchId },
             $set: {
               basePoints: userScore.basePoints,
               closeMatchScorePoints: userScore.closeMatchScorePoints,
@@ -138,7 +139,7 @@ export class UserScoreRepositoryImpl
             },
           }).pipe(
             mergeMap(s => (s ? of(s) : EMPTY)),
-            throwIfEmpty(() => new Error(`userscore: ${String(userScore.id)}`))
+            throwIfEmpty(() => new Error('userscore: Something went wrong'))
           );
         }
       })

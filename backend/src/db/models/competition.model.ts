@@ -16,7 +16,7 @@ const competitionSchema = schema({
   currentSeason: { ref: 'Season', type: ObjectId },
   externalReference: { type: Mixed },
   name: { required: true, type: String },
-  slug: { required: true, trim: true, type: String },
+  slug: { required: true, trim: true, type: String, unique: true },
 });
 
 const CompetitionModel = model<Competition>('Competition', competitionSchema);

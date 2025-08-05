@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-import getDbUri from '../getDbUri.js';
+import getDbUri from '../../common/getDbUri.js';
 import { AppSchedule } from './appSchedule.js';
 
 const appSchedule = AppSchedule.getInstance();

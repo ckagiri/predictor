@@ -1,4 +1,4 @@
-import { EMPTY, mergeMap, Observable, of, throwIfEmpty, toArray } from 'rxjs';
+import { EMPTY, mergeMap, Observable, of, throwIfEmpty } from 'rxjs';
 
 import LeaderboardModel, {
   BOARD_TYPE,

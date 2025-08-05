@@ -320,7 +320,7 @@ export class PredictionRepositoryImpl
 
               jokers.push(currentJoker, newJoker);
             } else {
-              // TS: Handle the case where newJoker is null, if needed
+              // Rare: Handle the case where newJoker is null
               return throwError(
                 () => new Error('Could not find new joker prediction')
               );

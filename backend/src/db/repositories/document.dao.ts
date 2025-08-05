@@ -44,6 +44,12 @@ export class DocumentDao<T extends Entity> {
     >;
   }
 
+  exists(conditions: RootFilterQuery<T> = {}): Promise<boolean> {
+    return this.Model.exists(conditions)
+      .exec()
+      .then(exists => !!exists);
+  }
+
   find(
     query: FindQuery,
     options?: DatabaseOptions
@@ -145,6 +151,9 @@ export class DocumentDao<T extends Entity> {
   ): Promise<T[]> {
     const repository = this.Model.find(conditions, projection);
 
+    if (options?.sort) {
+      repository.sort(options.sort);
+    }
     if (options?.populate) {
       // Ensure join is never a plain string for populate
       if (typeof options.populate === 'string') {

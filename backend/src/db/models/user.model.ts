@@ -1,10 +1,8 @@
-import * as bcrypt from 'bcryptjs';
 import { model, Schema } from 'mongoose';
 
 import { Entity, schema } from './base.model.js';
 
 export interface User extends Entity {
-  comparePassword?: (candidatePassword: string, cb: any) => void;
   password?: string;
   role?: string;
   token?: string;

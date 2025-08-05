@@ -1,10 +1,15 @@
 {
+  "_dependencies": {
+    "bson": "bson"
+  },
   "competitions": {
     "_model": "Competition",
     "epl": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1e8')",
       "name": "English Premier League",
       "code": "EPL",
-      "slug": "english-premier-league",
+      "slug": "premier-league",
+      "crestUrl": "https://crests.football-data.org/PL.png",
       "aliases": [],
       "externalReference": {
         "API_FOOTBALL_DATA": {
@@ -16,256 +21,206 @@
   "teams": {
     "_model": "Team",
     "arsenal": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1ec')",
       "name": "Arsenal",
       "shortName": "Arsenal",
       "tla": "ARS",
       "slug": "arsenal",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
+      "crestUrl": "https://crests.football-data.org/57.png",
       "aliases": []
     },
     "aston_villa": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1ee')",
       "name": "Aston Villa",
       "shortName": "Aston Villa",
       "tla": "AVL",
       "slug": "aston-villa",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/de/9/9f/Aston_Villa_logo.svg",
+      "crestUrl": "https://crests.football-data.org/58.png",
       "aliases": []
     },
     "bournemouth": {
-      "name": "Bournemouth",
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1f0')",
+      "name": "AFC Bournemouth",
       "shortName": "Bournemouth",
       "tla": "BOU",
       "slug": "bournemouth",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/de/4/41/Afc_bournemouth.svg",
+      "crestUrl": "https://crests.football-data.org/bournemouth.png",
       "aliases": []
     },
     "brentford": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1f2')",
       "name": "Brentford",
       "shortName": "Brentford",
       "tla": "BRE",
       "slug": "brentford",
-      "crestUrl": "https://crests.football-data.org/402.svg",
+      "crestUrl": "https://crests.football-data.org/402.png",
       "aliases": []
     },
     "brighton": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1f4')",
       "name": "Brighton & Hove Albion",
-      "shortName": "Brighton Hove",
+      "shortName": "Brighton",
       "tla": "BHA",
-      "slug": "brighton-&-hove-albion",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/f/fd/Brighton_&_Hove_Albion_logo.svg",
-      "aliases": []
-    },
-    "burnley": {
-      "name": "Burnley",
-      "shortName": "Burnley",
-      "tla": "BUR",
-      "slug": "burnley",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/0/02/Burnley_FC_badge.png",
-      "aliases": []
-    },
-    "cardiff": {
-      "name": "Cardiff City",
-      "shortName": "Cardiff",
-      "tla": "CAR",
-      "slug": "cardiff-city",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/3/3c/Cardiff_City_crest.svg",
-      "aliases": []
+      "slug": "brighton",
+      "crestUrl": "https://crests.football-data.org/397.png",
+      "aliases": [
+        "Brighton Hove"
+      ]
     },
     "chelsea": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1fa')",
       "name": "Chelsea",
       "shortName": "Chelsea",
       "tla": "CHE",
       "slug": "chelsea",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/5/5c/Chelsea_crest.svg",
+      "crestUrl": "https://crests.football-data.org/61.png",
       "aliases": []
     },
     "crystal_palace": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1fc')",
       "name": "Crystal Palace",
       "shortName": "Crystal Palace",
       "tla": "CRY",
       "slug": "crystal-palace",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/b/bf/Crystal_Palace_F.C._logo_(2013).png",
+      "crestUrl": "https://crests.football-data.org/354.png",
       "aliases": []
     },
     "everton": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1fe')",
       "name": "Everton",
       "shortName": "Everton",
       "tla": "EVE",
       "slug": "everton",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/f/f9/Everton_FC.svg",
+      "crestUrl": "https://crests.football-data.org/62.png",
       "aliases": []
     },
     "fulham": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a200')",
       "name": "Fulham",
       "shortName": "Fulham",
       "tla": "FUL",
       "slug": "fulham",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/a/a8/Fulham_fc.svg",
-      "aliases": []
-    },
-    "huddersfield": {
-      "name": "Huddersfield Town AFC",
-      "shortName": "Huddersfield",
-      "tla": "HDD",
-      "slug": "huddersfield-town",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/5/5a/Huddersfield_Town_A.F.C._logo.svg",
+      "crestUrl": "https://crests.football-data.org/63.png",
       "aliases": []
     },
     "ipswich": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a204')",
       "name": "Ipswich Town",
-      "shortName": "Ipswich",
+      "shortName": "Ipswich Town",
       "tla": "IPS",
       "slug": "ipswich-town",
-      "crestUrl": "https://crests.football-data.org/66.svg",
-      "aliases": []
-    },
-    "leeds": {
-      "name": "Leeds United",
-      "shortName": "Leeds United",
-      "tla": "LEE",
-      "slug": "leeds-united",
-      "crestUrl": "https://crests.football-data.org/341.svg",
+      "crestUrl": "https://crests.football-data.org/349.png",
       "aliases": []
     },
     "leicester_city": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a208')",
       "name": "Leicester City",
-      "shortName": "Leicester",
+      "shortName": "Leicester City",
       "tla": "LEI",
       "slug": "leicester-city",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/en/6/63/Leicester02.png",
-      "aliases": []
+      "crestUrl": "https://crests.football-data.org/338.png",
+      "aliases": [
+        "Leicester"
+      ]
     },
     "liverpool": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a20a')",
       "name": "Liverpool",
       "shortName": "Liverpool",
       "tla": "LIV",
       "slug": "liverpool",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/0/0a/FC_Liverpool.svg",
+      "crestUrl": "https://crests.football-data.org/64.png",
       "aliases": []
     },
     "man_city": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a20c')",
       "name": "Manchester City",
       "shortName": "Man City",
       "tla": "MCI",
       "slug": "manchester-city",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
+      "crestUrl": "https://crests.football-data.org/65.png",
       "aliases": []
     },
     "man_utd": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a20e')",
       "name": "Manchester United",
-      "shortName": "Man Utd",
+      "shortName": "Man United",
       "tla": "MUN",
       "slug": "manchester-united",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/d/da/Manchester_United_FC.svg",
-      "aliases": ["Man United"]
+      "crestUrl": "https://crests.football-data.org/66.png",
+      "aliases": [
+        "Man Utd"
+      ]
     },
     "newcastle": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a210')",
       "name": "Newcastle United",
       "shortName": "Newcastle",
       "tla": "NEW",
       "slug": "newcastle-united",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/5/56/Newcastle_United_Logo.svg",
-      "aliases": []
-    },
-    "norwich": {
-      "name": "Norwich City",
-      "shortName": "Norwich",
-      "tla": "NOR",
-      "slug": "norwich-city",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/8/8c/Norwich_City.svg",
+      "crestUrl": "https://crests.football-data.org/67.png",
       "aliases": []
     },
     "nottingham": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a214')",
       "name": "Nottingham Forest",
-      "shortName": "Nott'm Forest",
+      "shortName": "Nottm Forest",
       "tla": "NFO",
       "slug": "nottingham-forest",
       "crestUrl": "https://crests.football-data.org/351.png",
-      "aliases": ["Nottingham"]
-    },
-    "sheffield_utd": {
-      "name": "Sheffield United",
-      "shortName": "Sheffield Utd",
-      "tla": "SHE",
-      "slug": "sheffield",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/9/9c/Sheffield_United_FC_logo.svg",
-      "aliases": []
+      "aliases": [
+        "Nottingham"
+      ]
     },
     "southampton": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a218')",
       "name": "Southampton",
       "shortName": "Southampton",
       "tla": "SOU",
       "slug": "southampton",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/c/c9/FC_Southampton.svg",
-      "aliases": []
-    },
-    "stoke_city": {
-      "name": "Stoke City",
-      "shortName": "Stoke",
-      "tla": "STK",
-      "slug": "stoke-city",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/a/a3/Stoke_City.svg",
-      "aliases": []
-    },
-    "swansea_city": {
-      "name": "Swansea City",
-      "shortName": "Swansea",
-      "tla": "SWA",
-      "slug": "swansea-city",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/a/ab/Swansea_City_Logo.svg",
+      "crestUrl": "https://crests.football-data.org/340.png",
       "aliases": []
     },
     "tottenham": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a21e')",
       "name": "Tottenham Hotspur",
       "shortName": "Tottenham",
       "tla": "TOT",
       "slug": "tottenham",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/b/b4/Tottenham_Hotspur.svg",
-      "aliases": []
-    },
-    "watford": {
-      "name": "Watford",
-      "shortName": "Watford",
-      "tla": "WAT",
-      "slug": "watford",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/e/e2/Watford.svg",
-      "aliases": []
-    },
-    "west_bromwich": {
-      "name": "West Bromwich Albion",
-      "shortName": "West Brom",
-      "tla": "WBA",
-      "slug": "west-bromwich",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/8/8b/West_Bromwich_Albion.svg",
+      "crestUrl": "https://crests.football-data.org/73.png",
       "aliases": []
     },
     "west_ham": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a224')",
       "name": "West Ham United",
       "shortName": "West Ham",
       "tla": "WHU",
       "slug": "west-ham",
-      "crestUrl": "http://upload.wikimedia.org/wikipedia/de/e/e0/West_Ham_United_FC.svg",
+      "crestUrl": "https://crests.football-data.org/563.png",
       "aliases": []
     },
     "wolves": {
+      "_id": "=new bson.ObjectId('66bdb3693a35de7b8de3a226')",
       "name": "Wolverhampton Wanderers",
       "shortName": "Wolves",
       "tla": "WOL",
       "slug": "wolves",
-      "crestUrl": "https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg",
-      "aliases": ["Wolverhampton"]
+      "crestUrl": "https://crests.football-data.org/76.png",
+      "aliases": [
+        "Wolverhampton"
+      ]
     }
   },
   "seasons": {
     "_model": "Season",
-    "epl_24": {
+    "current": {
       "externalReference": {
         "API_FOOTBALL_DATA": {
           "id": 2287
         }
       },
       "competition": {
-        "id": "->competitions.epl",
+        "id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1e8')",
         "name": "->competitions.epl.name",
         "slug": "->competitions.epl.slug"
       },
@@ -273,279 +228,264 @@
       "slug": "2024-25",
       "year": "2024",
       "teams": [
-        "->teams.arsenal",
-        "->teams.aston_villa",
-        "->teams.bournemouth",
-        "->teams.brentford",
-        "->teams.brighton",
-        "->teams.chelsea",
-        "->teams.crystal_palace",
-        "->teams.everton",
-        "->teams.fulham",
-        "->teams.ipswich",
-        "->teams.leicester_city",
-        "->teams.liverpool",
-        "->teams.man_city",
-        "->teams.man_utd",
-        "->teams.newcastle",
-        "->teams.nottingham",
-        "->teams.southampton",
-        "->teams.tottenham",
-        "->teams.west_ham",
-        "->teams.wolves"
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1ec')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1ee')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f0')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f2')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f4')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fa')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fc')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fe')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a200')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a204')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a208')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20a')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20c')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20e')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a210')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a214')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a218')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a21e')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a224')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a226')"
       ],
       "currentMatchday": 1,
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
-      "seasonStart": "=new Date('2024-08-16T00:00:00+0200')",
-      "seasonEnd": "=new Date('2025-05-25T00:00:00+0200')"
+      "seasonStart": "=new Date('2024-08-15T00:00:00.000Z')",
+      "seasonEnd": "=new Date('2025-05-23T00:00:00.000Z')"
     }
   },
   "gameRounds": {
     "_model": "GameRound",
     "gw1": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 1",
       "slug": "gameweek-1",
       "position": 1
     },
     "gw2": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 2",
       "slug": "gameweek-2",
       "position": 2
     },
     "gw3": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 3",
       "slug": "gameweek-3",
       "position": 3
     },
     "gw4": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 4",
       "slug": "gameweek-4",
       "position": 4
     },
     "gw5": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 5",
       "slug": "gameweek-5",
       "position": 5
     },
     "gw6": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 6",
       "slug": "gameweek-6",
       "position": 6
     },
     "gw7": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 7",
       "slug": "gameweek-7",
       "position": 7
     },
     "gw8": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 8",
       "slug": "gameweek-8",
       "position": 8
     },
     "gw9": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 9",
       "slug": "gameweek-9",
       "position": 9
     },
     "gw10": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 10",
       "slug": "gameweek-10",
       "position": 10
     },
     "gw11": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 11",
       "slug": "gameweek-11",
       "position": 11
     },
     "gw12": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 12",
       "slug": "gameweek-12",
       "position": 12
     },
     "gw13": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 13",
       "slug": "gameweek-13",
       "position": 13
     },
     "gw14": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 14",
       "slug": "gameweek-14",
       "position": 14
     },
     "gw15": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 15",
       "slug": "gameweek-15",
       "position": 15
     },
     "gw16": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 16",
       "slug": "gameweek-16",
       "position": 16
     },
     "gw17": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 17",
       "slug": "gameweek-17",
       "position": 17
     },
     "gw18": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 18",
       "slug": "gameweek-18",
       "position": 18
     },
     "gw19": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 19",
       "slug": "gameweek-19",
       "position": 19
     },
     "gw20": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 20",
       "slug": "gameweek-20",
       "position": 20
     },
     "gw21": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 21",
       "slug": "gameweek-21",
       "position": 21
     },
     "gw22": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 22",
       "slug": "gameweek-22",
       "position": 22
     },
     "gw23": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 23",
       "slug": "gameweek-23",
       "position": 23
     },
     "gw24": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 24",
       "slug": "gameweek-24",
       "position": 24
     },
     "gw25": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 25",
       "slug": "gameweek-25",
       "position": 25
     },
     "gw26": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 26",
       "slug": "gameweek-26",
       "position": 26
     },
     "gw27": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 27",
       "slug": "gameweek-27",
       "position": 27
     },
     "gw28": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 28",
       "slug": "gameweek-28",
       "position": 28
     },
     "gw29": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 29",
       "slug": "gameweek-29",
       "position": 29
     },
     "gw30": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 30",
       "slug": "gameweek-30",
       "position": 30
     },
     "gw31": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 31",
       "slug": "gameweek-31",
       "position": 31
     },
     "gw32": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 32",
       "slug": "gameweek-32",
       "position": 32
     },
     "gw33": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 33",
       "slug": "gameweek-33",
       "position": 33
     },
     "gw34": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 34",
       "slug": "gameweek-34",
       "position": 34
     },
     "gw35": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 35",
       "slug": "gameweek-35",
       "position": 35
     },
     "gw36": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 36",
       "slug": "gameweek-36",
       "position": 36
     },
     "gw37": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 37",
       "slug": "gameweek-37",
       "position": 37
     },
     "gw38": {
-      "season": "->seasons.epl_24",
+      "season": "->seasons.current",
       "name": "Gameweek 38",
       "slug": "gameweek-38",
       "position": 38
-    }
-  },
-  "users": {
-    "_model": "User",
-    "admin": {
-      "username": "admin",
-      "role": "admin",
-      "email": "charles@admin.com",
-      "password": "adm1n@123"
-    },
-    "user": {
-      "username": "user",
-      "role": "user",
-      "email": "charles@user.com",
-      "password": "us3r@123"
     }
   }
 }
