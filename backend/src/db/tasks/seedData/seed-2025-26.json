@@ -1,68 +1,11 @@
 {
   "_dependencies": {
-    "mongoose": "mongoose"
-  },
-  "competitions": {
-    "_model": "Competition",
-    "epl": {
-      "_id": "=new mongoose.Types.ObjectId('66bdb3693a35de7b8de3a1e8')",
-      "name": "English Premier League",
-      "code": "EPL",
-      "slug": "premier-league",
-      "crestUrl": "https://crests.football-data.org/PL.png",
-      "aliases": [],
-      "externalReference": {
-        "API_FOOTBALL_DATA": {
-          "id": 2021
-        }
-      }
-    }
+    "bson": "bson"
   },
   "teams": {
     "_model": "Team",
-    "arsenal": {
-      "name": "Arsenal",
-      "shortName": "Arsenal",
-      "tla": "ARS",
-      "slug": "arsenal",
-      "crestUrl": "https://crests.football-data.org/57.png",
-      "aliases": []
-    },
-    "aston_villa": {
-      "name": "Aston Villa",
-      "shortName": "Aston Villa",
-      "tla": "AVL",
-      "slug": "aston-villa",
-      "crestUrl": "https://crests.football-data.org/58.png",
-      "aliases": []
-    },
-    "bournemouth": {
-      "name": "AFC Bournemouth",
-      "shortName": "Bournemouth",
-      "tla": "BOU",
-      "slug": "bournemouth",
-      "crestUrl": "https://crests.football-data.org/bournemouth.png",
-      "aliases": []
-    },
-    "brentford": {
-      "name": "Brentford",
-      "shortName": "Brentford",
-      "tla": "BRE",
-      "slug": "brentford",
-      "crestUrl": "https://crests.football-data.org/402.png",
-      "aliases": []
-    },
-    "brighton": {
-      "name": "Brighton & Hove Albion",
-      "shortName": "Brighton",
-      "tla": "BHA",
-      "slug": "brighton",
-      "crestUrl": "https://crests.football-data.org/397.png",
-      "aliases": [
-        "Brighton Hove"
-      ]
-    },
     "burnley": {
+      "_id": "=new bson.ObjectId('689238770d6d5893855856e6')",
       "name": "Burnley",
       "shortName": "Burnley",
       "tla": "BUR",
@@ -70,47 +13,8 @@
       "crestUrl": "https://crests.football-data.org/328.png",
       "aliases": []
     },
-    "chelsea": {
-      "name": "Chelsea",
-      "shortName": "Chelsea",
-      "tla": "CHE",
-      "slug": "chelsea",
-      "crestUrl": "https://crests.football-data.org/61.png",
-      "aliases": []
-    },
-    "crystal_palace": {
-      "name": "Crystal Palace",
-      "shortName": "Crystal Palace",
-      "tla": "CRY",
-      "slug": "crystal-palace",
-      "crestUrl": "https://crests.football-data.org/354.png",
-      "aliases": []
-    },
-    "everton": {
-      "name": "Everton",
-      "shortName": "Everton",
-      "tla": "EVE",
-      "slug": "everton",
-      "crestUrl": "https://crests.football-data.org/62.png",
-      "aliases": []
-    },
-    "fulham": {
-      "name": "Fulham",
-      "shortName": "Fulham",
-      "tla": "FUL",
-      "slug": "fulham",
-      "crestUrl": "https://crests.football-data.org/63.png",
-      "aliases": []
-    },
-    "ipswich": {
-      "name": "Ipswich Town",
-      "shortName": "Ipswich Town",
-      "tla": "IPS",
-      "slug": "ipswich-town",
-      "crestUrl": "https://crests.football-data.org/349.png",
-      "aliases": []
-    },
     "leeds": {
+      "_id": "=new bson.ObjectId('689238770d6d5893855856e9')",
       "name": "Leeds United",
       "shortName": "Leeds United",
       "tla": "LEE",
@@ -118,101 +22,14 @@
       "crestUrl": "https://crests.football-data.org/341.png",
       "aliases": []
     },
-    "leicester_city": {
-      "name": "Leicester City",
-      "shortName": "Leicester City",
-      "tla": "LEI",
-      "slug": "leicester-city",
-      "crestUrl": "https://crests.football-data.org/338.png",
-      "aliases": [
-        "Leicester"
-      ]
-    },
-    "liverpool": {
-      "name": "Liverpool",
-      "shortName": "Liverpool",
-      "tla": "LIV",
-      "slug": "liverpool",
-      "crestUrl": "https://crests.football-data.org/64.png",
-      "aliases": []
-    },
-    "man_city": {
-      "name": "Manchester City",
-      "shortName": "Man City",
-      "tla": "MCI",
-      "slug": "manchester-city",
-      "crestUrl": "https://crests.football-data.org/65.png",
-      "aliases": []
-    },
-    "man_utd": {
-      "name": "Manchester United",
-      "shortName": "Man United",
-      "tla": "MUN",
-      "slug": "manchester-united",
-      "crestUrl": "https://crests.football-data.org/66.png",
-      "aliases": [
-        "Man Utd"
-      ]
-    },
-    "newcastle": {
-      "name": "Newcastle United",
-      "shortName": "Newcastle",
-      "tla": "NEW",
-      "slug": "newcastle-united",
-      "crestUrl": "https://crests.football-data.org/67.png",
-      "aliases": []
-    },
-    "nottingham": {
-      "name": "Nottingham Forest",
-      "shortName": "Nottm Forest",
-      "tla": "NFO",
-      "slug": "nottingham-forest",
-      "crestUrl": "https://crests.football-data.org/351.png",
-      "aliases": [
-        "Nottingham"
-      ]
-    },
-    "southampton": {
-      "name": "Southampton",
-      "shortName": "Southampton",
-      "tla": "SOU",
-      "slug": "southampton",
-      "crestUrl": "https://crests.football-data.org/340.png",
-      "aliases": []
-    },
     "sunderland": {
+      "_id": "=new bson.ObjectId('689238770d6d5893855856eb')",
       "name": "Sunderland",
       "shortName": "Sunderland",
       "tla": "SUN",
       "slug": "sunderland",
       "crestUrl": "https://crests.football-data.org/71.png",
       "aliases": []
-    },
-    "tottenham": {
-      "name": "Tottenham Hotspur",
-      "shortName": "Tottenham",
-      "tla": "TOT",
-      "slug": "tottenham",
-      "crestUrl": "https://crests.football-data.org/73.png",
-      "aliases": []
-    },
-    "west_ham": {
-      "name": "West Ham United",
-      "shortName": "West Ham",
-      "tla": "WHU",
-      "slug": "west-ham",
-      "crestUrl": "https://crests.football-data.org/563.png",
-      "aliases": []
-    },
-    "wolves": {
-      "name": "Wolverhampton Wanderers",
-      "shortName": "Wolves",
-      "tla": "WOL",
-      "slug": "wolves",
-      "crestUrl": "https://crests.football-data.org/76.png",
-      "aliases": [
-        "Wolverhampton"
-      ]
     }
   },
   "seasons": {
@@ -224,34 +41,34 @@
         }
       },
       "competition": {
-        "id": "=new mongoose.Types.ObjectId('66bdb3693a35de7b8de3a1e8')",
-        "name": "->competitions.epl.name",
-        "slug": "->competitions.epl.slug"
+        "id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1e8')",
+        "name": "English Premier League",
+        "slug": "premier-league"
       },
       "name": "2025-2026",
       "slug": "2025-26",
       "year": "2025",
       "teams": [
-        "->teams.arsenal",
-        "->teams.aston_villa",
-        "->teams.bournemouth",
-        "->teams.brentford",
-        "->teams.brighton",
-        "->teams.chelsea",
-        "->teams.crystal_palace",
-        "->teams.everton",
-        "->teams.fulham",
-        "->teams.ipswich",
-        "->teams.leicester_city",
-        "->teams.liverpool",
-        "->teams.man_city",
-        "->teams.man_utd",
-        "->teams.newcastle",
-        "->teams.nottingham",
-        "->teams.southampton",
-        "->teams.tottenham",
-        "->teams.west_ham",
-        "->teams.wolves"
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1ec')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1ee')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f0')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f2')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1f4')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fa')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fc')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a1fe')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a200')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20a')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20c')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a20e')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a210')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a214')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a21e')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a224')",
+        "=new bson.ObjectId('66bdb3693a35de7b8de3a226')",
+        "=new bson.ObjectId('689238770d6d5893855856e6')",
+        "=new bson.ObjectId('689238770d6d5893855856e9')",
+        "=new bson.ObjectId('689238770d6d5893855856eb')"
       ],
       "currentMatchday": 1,
       "numberOfRounds": 38,
