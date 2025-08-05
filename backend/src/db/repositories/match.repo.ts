@@ -1,4 +1,4 @@
-import { get, merge, omit } from 'lodash';
+import { merge } from 'lodash';
 import { forkJoin, from, Observable } from 'rxjs';
 import { map, mergeMap, toArray } from 'rxjs/operators';
 
@@ -15,11 +15,6 @@ import {
 } from './baseFootballApi.repo.js';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
-  find$(
-    query: any,
-    projection?: any,
-    options?: any
-  ): Observable<{ count: number; result: Match[] }>;
   findAllFinishedByCurrentRound$(
     seasons: Season[]
   ): Observable<[string, Match[]][]>;
