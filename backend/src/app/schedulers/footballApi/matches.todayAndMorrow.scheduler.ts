@@ -134,23 +134,24 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
     const apiMatches = await this.todayAndMorrowService.syncMatches(period);
     if (this.liveMatches.length > 0 && this.liveMatchHasFinished) {
-      console.log(
-        `${this.job.name} publish footballApiLiveMatchUpdatesCompleted`
-      );
+      console.log(`${this.job.name} publish footballApi_liveUpdateCompleted`);
       this.eventMediator.publish(
-        'footballApiLiveMatchUpdatesCompleted',
+        'footballApi_liveUpdateCompleted',
         this.finishedLiveMatches
       );
     } else if (this.liveMatches.length === 0 && this.liveMatchHasFinished) {
-      console.log(`${this.job.name} publish footballApiMatchUpdatesCompleted`);
+      console.log(
+        `${this.job.name} publish footballApi_lastLiveUpdateCompleted`
+      );
       this.eventMediator.publish(
-        'footballApiMatchUpdatesCompleted',
+        'footballApi_lastLiveUpdateCompleted',
         this.finishedLiveMatches
       );
     }
 
     if (this.liveMatchHasFinished) {
       this.liveMatchHasFinished = false;
+      this.finishedLiveMatches = [];
     }
     return apiMatches;
   }
