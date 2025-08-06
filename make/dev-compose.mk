@@ -25,11 +25,3 @@ compose-dev-down_v:
 	docker compose -f ./docker-compose-dev.yml \
 		--env-file ./config/dev.env \
 		down -v
-
-compose-dev-clean:
-	compose-dev-down
-	docker rm -f ligi-dev
-
-	docker rmi -f ligi-client-dev
-	docker rmi -f ligi-api-dev
-	docker rmi -f ligi-nginx-dev

@@ -6,6 +6,7 @@
     "compile": "tsc --project tsconfig.json",
     "compile:test": "tsc --project tsconfig.test.json",
     "start": "dotenvx run -- node build/app/index.js",
+    "start:dev": "dotenvx run -f .env.dev -- node build/app/index.js",
     "start:tsx": "dotenvx run -- npx tsx src/app/index.ts",
     "start:tsx:dev": "dotenvx run -f .env.dev -- npx tsx src/app/index.ts",
     "build:start": "npm run build && npm run start",

@@ -17,7 +17,7 @@ import {
   UiThemeOptions,
 } from '../ui-materialui';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api'; //"https://nialine.com/api";
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3110/api'; //"https://nialine.com/api";
 const dataProvider = simpleRestProvider(API_URL);
 
 const queryClient = new QueryClient({

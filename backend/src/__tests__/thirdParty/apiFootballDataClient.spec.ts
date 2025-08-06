@@ -18,7 +18,7 @@ describe('apifootballDataClient', () => {
     expect(metadata).to.be.an('object');
   }).timeout(TIMEOUT);
 
-  it.only('should get teams by competition', async () => {
+  it('should get teams by competition', async () => {
     const { data, metadata } = await apiClient.getTeams(PL.id);
     expect(data).to.be.an('object');
     expect(metadata).to.be.an('object');

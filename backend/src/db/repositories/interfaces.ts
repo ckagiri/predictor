@@ -20,4 +20,4 @@ export interface FindQuery {
   sort?: Sort;
 }
 export type Range = [number, number] | [number];
-export type Sort = string | [string, 'asc' | 'desc'];
+export type Sort = string | [string, 'ASC' | 'DESC'];

@@ -20,5 +20,3 @@ compose-devprod-down:
 	docker compose -f ./docker-compose-devprod.yml \
 		--env-file ./config/devprod.env \
 		down
-
-compose-devprod-clean:
