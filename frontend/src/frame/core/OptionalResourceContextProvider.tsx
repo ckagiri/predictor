@@ -1,6 +1,6 @@
-import { ReactNode } from "react";
-import { ResourceContextValue } from "./ResourceContext";
-import { ResourceContextProvider } from "./ResourceContextProvider";
+import { ReactNode } from 'react';
+import { ResourceContextValue } from './ResourceContext';
+import { ResourceContextProvider } from './ResourceContextProvider';
 
 export const OptionalResourceContextProvider = ({
   value,
@@ -10,9 +10,7 @@ export const OptionalResourceContextProvider = ({
   children: ReactNode;
 }) =>
   value && value.name ? (
-    <ResourceContextProvider value={value}>
-      {children}
-    </ResourceContextProvider>
+    <ResourceContextProvider value={value}>{children}</ResourceContextProvider>
   ) : (
     children
   );

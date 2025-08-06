@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
-import { ResourceContext, ResourceContextValue } from "./ResourceContext";
+import { ReactNode } from 'react';
+import { ResourceContext, ResourceContextValue } from './ResourceContext';
 
 export const ResourceContextProvider = ({
   children,

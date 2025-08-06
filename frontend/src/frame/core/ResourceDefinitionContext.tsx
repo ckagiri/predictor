@@ -27,7 +27,8 @@ export const ResourceDefinitionContextProvider = ({
   definitions?: ResourceDefinitions;
   children: FrameChildren;
 }) => {
-  const [definitions, setState] = useState<ResourceDefinitions>(defaultDefinitions);
+  const [definitions, setState] =
+    useState<ResourceDefinitions>(defaultDefinitions);
 
   const register = useCallback((config: ResourceDefinition) => {
     setState(prev =>
@@ -37,7 +38,7 @@ export const ResourceDefinitionContextProvider = ({
             ...prev,
             [config.name]: config,
           }
-      );
+    );
   }, []);
 
   const unregister = useCallback((config: ResourceDefinition) => {
@@ -47,15 +48,15 @@ export const ResourceDefinitionContextProvider = ({
     });
   }, []);
 
-    const contextValue = useMemo(
-      () => ({ definitions, register, unregister }),
-      [definitions] // eslint-disable-line react-hooks/exhaustive-deps
-    );
+  const contextValue = useMemo(
+    () => ({ definitions, register, unregister }),
+    [definitions] // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
-    return (
-      <ResourceDefinitionContext.Provider value={contextValue}>
-        {/* Had to cast here because Provider only accepts ReactNode but we might have a render function */}
-        {children as React.ReactNode}
-      </ResourceDefinitionContext.Provider>
-    );
+  return (
+    <ResourceDefinitionContext.Provider value={contextValue}>
+      {/* Had to cast here because Provider only accepts ReactNode but we might have a render function */}
+      {children as React.ReactNode}
+    </ResourceDefinitionContext.Provider>
+  );
 };

@@ -1,11 +1,11 @@
-import { Link as RouterLink, To } from "react-router-dom";
-import { Link, styled, SxProps, Typography } from "@mui/material";
+import { Link as RouterLink, To } from 'react-router-dom';
+import { Link, styled, SxProps, Typography } from '@mui/material';
 import {
   BreadcrumbItemContextProvider,
   useAppLocationMatcher,
   useBreadcrumbItemPath,
-} from "../../frame";
-import { HTMLAttributes } from "react";
+} from '../../frame';
+import { HTMLAttributes } from 'react';
 
 export type GetLabelFunction = (
   context: Record<string, unknown>
@@ -28,7 +28,7 @@ export interface BreadcrumbItemProps
 }
 
 const resolveOrReturn = (valueOrFunction: any, context: any): any =>
-  typeof valueOrFunction === "function"
+  typeof valueOrFunction === 'function'
     ? valueOrFunction(context)
     : valueOrFunction;
 
@@ -38,7 +38,7 @@ export const BreadcrumbItem = (props: BreadcrumbItemProps) => {
   const { to, name, label, children, ...rest } = props;
   const path = useBreadcrumbItemPath(props);
 
-  const currentPath = `${path ? `${path}.` : ""}${name}`;
+  const currentPath = `${path ? `${path}.` : ''}${name}`;
 
   const location = locationMatcher(currentPath);
   if (!location) {
@@ -51,7 +51,7 @@ export const BreadcrumbItem = (props: BreadcrumbItemProps) => {
     label,
     location.values
   );
-  const labelIsString = typeof resolvedLabel === "string";
+  const labelIsString = typeof resolvedLabel === 'string';
   const resolvedTo: string | To = resolveOrReturn(to, location.values);
 
   return (
@@ -82,6 +82,6 @@ export const BreadcrumbItem = (props: BreadcrumbItemProps) => {
 };
 
 const Root = styled('li', {
-    name: 'UiBreadcrumbItem',
-    overridesResolver: (props, styles) => styles.root,
+  name: 'UiBreadcrumbItem',
+  overridesResolver: (props, styles) => styles.root,
 })({});

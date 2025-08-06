@@ -1,6 +1,6 @@
 import { Card, Stack, Typography } from '@mui/material';
 import { ShowBase, useShowContext } from '../../frame';
-import { BackButton, ListButton } from '../../ui-materialui';
+import { BackButton } from '../../ui-materialui';
 
 const CompetitionShow = () => (
   <ShowBase>

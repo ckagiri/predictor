@@ -19,9 +19,7 @@ const TeamListView = () => {
   return (
     <ul>
       {data?.map(({ id, name }) => (
-        <li key={ id}>
-          {name}
-        </li>
+        <li key={id}>{name}</li>
       ))}
     </ul>
   );

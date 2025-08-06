@@ -1,17 +1,15 @@
 import { ReactNode } from 'react';
 import {
-    useInRouterContext,
-    createHashRouter,
-    RouterProvider,
+  useInRouterContext,
+  createHashRouter,
+  RouterProvider,
 } from 'react-router-dom';
 
 export const FrameRouter = ({ basename = '', children }: FrameRouterProps) => {
   const isInRouter = useInRouterContext();
   const Router = isInRouter ? DummyRouter : InternalRouter;
 
-  return (
-    <Router basename={basename}>{children}</Router>
-  );
+  return <Router basename={basename}>{children}</Router>;
 };
 
 export interface FrameRouterProps {

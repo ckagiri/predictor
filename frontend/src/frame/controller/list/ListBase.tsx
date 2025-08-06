@@ -1,8 +1,8 @@
-import { ReactNode } from "react";
-import { UiRecord } from "../../types";
-import { OptionalResourceContextProvider } from "../../core";
-import { ListContextProvider } from "./ListContextProvider";
-import { ListControllerProps, useListController } from "./useListController";
+import { ReactNode } from 'react';
+import { UiRecord } from '../../types';
+import { OptionalResourceContextProvider } from '../../core';
+import { ListContextProvider } from './ListContextProvider';
+import { ListControllerProps, useListController } from './useListController';
 
 export const ListBase = <RecordType extends UiRecord = any>({
   children,
@@ -14,9 +14,9 @@ export const ListBase = <RecordType extends UiRecord = any>({
   return (
     // We pass props.resource here as we don't need to create a new ResourceContext if the props is not provided
     <OptionalResourceContextProvider value={props.resource}>
-        <ListContextProvider value={controllerProps}>
-            {children}
-        </ListContextProvider>
+      <ListContextProvider value={controllerProps}>
+        {children}
+      </ListContextProvider>
     </OptionalResourceContextProvider>
   );
 };

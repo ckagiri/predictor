@@ -1,18 +1,15 @@
-import { AppFrame } from "./AppFrame";
-import { Admin, AppRoutes, Resource } from "../frame";
-import { Navigate, Route } from "react-router-dom";
-import competitions from "../admin/competitions";
-import seasons from "../admin/seasons";
-import teams from "../admin/teams";
-import rounds from "../admin/rounds";
-import matches from "../admin/matches";
-import AdminLayout from "../admin/layout/Layout";
-
+import { AppFrame } from './AppFrame';
+import { Admin, AppRoutes, Resource } from '../frame';
+import { Navigate, Route } from 'react-router-dom';
+import competitions from '../admin/competitions';
+import seasons from '../admin/seasons';
+import teams from '../admin/teams';
+import rounds from '../admin/rounds';
+import matches from '../admin/matches';
+import AdminLayout from '../admin/layout/Layout';
 
 const Ligi = () => (
-  <AppFrame
-    adminLayout={AdminLayout}
-  >
+  <AppFrame adminLayout={AdminLayout}>
     <AppRoutes>
       <Route path="/" element={<Navigate to="/admin" replace />} />
     </AppRoutes>
