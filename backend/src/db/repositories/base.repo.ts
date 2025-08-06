@@ -3,11 +3,11 @@ import type { BulkWriteResult } from 'mongoose/node_modules/mongodb';
 
 import {
   Model,
-  ObjectId,
   PopulateOptions,
   ProjectionType,
   QueryOptions,
   RootFilterQuery,
+  Types,
   UpdateQuery,
 } from 'mongoose';
 import { from, Observable } from 'rxjs';
@@ -42,12 +42,12 @@ export interface BaseRepository<T extends Entity> {
     projection?: ProjectionType<T> | null
   ): Observable<T[]>;
   findById$(
-    id: string | ObjectId,
+    id: string | Types.ObjectId,
     projection?: ProjectionType<T> | null,
     join?: PopulateOptions | PopulateOptions[]
   ): Observable<T | null>;
   findByIdAndUpdate$(
-    id: string | ObjectId,
+    id: string | Types.ObjectId,
     patch: UpdateQuery<T>,
     projection?: ProjectionType<T> | null
   ): Observable<T | null>;
@@ -126,7 +126,7 @@ export class BaseRepositoryImpl<T extends Entity> implements BaseRepository<T> {
     return from(this.documentDao.findAllByIds(ids, projection));
   }
   findById$(
-    id: string | ObjectId,
+    id: string | Types.ObjectId,
     projection?: ProjectionType<T> | null,
     join?: PopulateOptions | PopulateOptions[]
   ): Observable<T | null> {
