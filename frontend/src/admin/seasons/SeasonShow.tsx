@@ -20,18 +20,12 @@ const SeasonShowView = () => {
       <Card>
         <Stack spacing={1}>
           <div>
-            <Typography variant="caption">
-              Name
-            </Typography>
+            <Typography variant="caption">Name</Typography>
             <Typography variant="body2">{data.name}</Typography>
           </div>
           <div>
-            <Typography variant="caption">
-              Current Matchday
-            </Typography>
-            <Typography variant="body2">
-              {data.currentMatchday}
-            </Typography>
+            <Typography variant="caption">Current Matchday</Typography>
+            <Typography variant="body2">{data.currentMatchday}</Typography>
           </div>
         </Stack>
       </Card>

@@ -1,5 +1,5 @@
-import { useCallback, useContext } from "react";
-import { AppLocation, LocationContext } from "./AppLocationContext";
+import { useCallback, useContext } from 'react';
+import { AppLocation, LocationContext } from './AppLocationContext';
 
 export type AppLocationState = [AppLocation, SetAppLocation];
 export type SetAppLocation = (path: string | null, values?: any) => void;
@@ -17,7 +17,7 @@ export const useAppLocationState = (): AppLocationState => {
   }
 
   const [location, setLocation] = locationContext;
-  if (typeof setLocation !== "function") {
+  if (typeof setLocation !== 'function') {
     throw new Error(
       `
         You've tried to access app location outside <AppLocationContext />.

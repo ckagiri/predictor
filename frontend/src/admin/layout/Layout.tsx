@@ -1,9 +1,9 @@
-import { Container, CssBaseline } from "@mui/material";
-import { ReactNode } from "react";
-import { AppLocationContext } from "../../frame/navigation";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { ResourceBreadcrumbItems } from "./navigation/ResourceBreadcrumbItems";
-import { Breadcrumb } from "../../ui-materialui";
+import { Container, CssBaseline } from '@mui/material';
+import { ReactNode } from 'react';
+import { AppLocationContext } from '../../frame/navigation';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ResourceBreadcrumbItems } from './navigation/ResourceBreadcrumbItems';
+import { Breadcrumb } from '../../ui-materialui';
 
 const Layout = ({ children }: { children: ReactNode }) => (
   <AppLocationContext>
@@ -16,7 +16,7 @@ const Layout = ({ children }: { children: ReactNode }) => (
   </AppLocationContext>
 );
 
-export default ({ children }: { children: ReactNode }) => (
+const AdminLayout = ({ children }: { children: ReactNode }) => (
   <>
     <Layout>
       <Breadcrumb>
@@ -27,3 +27,5 @@ export default ({ children }: { children: ReactNode }) => (
     <ReactQueryDevtools initialIsOpen={false} />
   </>
 );
+
+export default AdminLayout;

@@ -1,6 +1,11 @@
-import { Link } from "react-router-dom";
-import { ListBase, RecordContextProvider, useCreatePath, useListContext } from "../../frame";
-import { ShowButton } from "../../ui-materialui";
+import { Link } from 'react-router-dom';
+import {
+  ListBase,
+  RecordContextProvider,
+  useCreatePath,
+  useListContext,
+} from '../../frame';
+import { ShowButton } from '../../ui-materialui';
 
 const CompetitionList = () => {
   return (
@@ -34,13 +39,13 @@ const CompetitionListView = () => {
 
 type SeasonsLinkProps = {
   competitionPath: string;
-}
+};
 
 const SeasonsLink = ({ competitionPath }: SeasonsLinkProps) => {
   const createPath = useCreatePath();
   return (
     <Link
-      to={createPath({ type: "list", resource: `${competitionPath}/seasons` })}
+      to={createPath({ type: 'list', resource: `${competitionPath}/seasons` })}
     >
       Seasons
     </Link>

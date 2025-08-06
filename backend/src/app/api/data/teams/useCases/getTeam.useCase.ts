@@ -24,8 +24,6 @@ export default class GetTeamUseCase {
   async execute(slug: string): Promise<void> {
     try {
       const foundTeam = await lastValueFrom(this.teamRepo.findOne$({ slug }));
-
-      console.log('foundTeam', foundTeam);
       if (!foundTeam) {
         throw Result.fail(
           AppError.resourceNotFound(`Could not find team with slug ${slug}`)

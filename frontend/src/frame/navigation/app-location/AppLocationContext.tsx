@@ -1,5 +1,5 @@
-import { createContext, ReactElement, ReactNode, useState } from "react";
-import { useResourceAppLocation } from "./useResourceAppLocation";
+import { createContext, ReactElement, ReactNode, useState } from 'react';
+import { useResourceAppLocation } from './useResourceAppLocation';
 
 export type LocationState = [AppLocation, SetLocation];
 type SetLocation = (path: AppLocation | null) => void;

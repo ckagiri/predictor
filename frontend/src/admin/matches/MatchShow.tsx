@@ -20,21 +20,17 @@ const MatchShowView = () => {
       <Card>
         <Stack spacing={1}>
           <div>
-            <Typography variant="caption">
-              Fixture
+            <Typography variant="caption">Fixture</Typography>
+            <Typography variant="body2">
+              {data.homeTeam.name} vs {data.awayTeam.name}
             </Typography>
-            <Typography variant="body2">{data.homeTeam.name} vs {data.awayTeam.name}</Typography>
           </div>
           <div>
-            <Typography variant="caption">
-              Status
-            </Typography>
+            <Typography variant="caption">Status</Typography>
             <Typography variant="body2">{data.status}</Typography>
           </div>
           <div>
-            <Typography variant="caption">
-              Score
-            </Typography>
+            <Typography variant="caption">Score</Typography>
             <Typography variant="body2">
               {data.result.goalsHomeTeam} - {data.result.goalsAwayTeam}
             </Typography>

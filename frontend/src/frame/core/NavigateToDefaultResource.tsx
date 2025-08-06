@@ -1,6 +1,6 @@
-import { Navigate } from "react-router-dom";
-import { useCreatePath } from "../routing/useCreatePath";
-import { useResourceDefinitions } from "./useResourceDefinitions";
+import { Navigate } from 'react-router-dom';
+import { useCreatePath } from '../routing/useCreatePath';
+import { useResourceDefinitions } from './useResourceDefinitions';
 
 export const NavigateToDefaultResource = () => {
   const resourceConfig = useResourceDefinitions();

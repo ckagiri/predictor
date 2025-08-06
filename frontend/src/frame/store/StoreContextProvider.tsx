@@ -1,24 +1,24 @@
-import { useEffect } from "react";
-import { StoreContext } from "./StoreContext";
-import { Store } from "./types";
+import { useEffect } from 'react';
+import { StoreContext } from './StoreContext';
+import { Store } from './types';
 
 export const StoreContextProvider = ({
-    value: Store,
-    children,
+  value: Store,
+  children,
 }: StoreContextProviderProps) => {
-    useEffect(() => {
-        Store.setup();
-        return () => {
-            Store.teardown();
-        };
-    }, [Store]);
+  useEffect(() => {
+    Store.setup();
+    return () => {
+      Store.teardown();
+    };
+  }, [Store]);
 
-    return (
-        <StoreContext.Provider value={Store}>{children}</StoreContext.Provider>
-    );
+  return (
+    <StoreContext.Provider value={Store}>{children}</StoreContext.Provider>
+  );
 };
 
 export interface StoreContextProviderProps {
-    value: Store;
-    children: React.ReactNode;
+  value: Store;
+  children: React.ReactNode;
 }

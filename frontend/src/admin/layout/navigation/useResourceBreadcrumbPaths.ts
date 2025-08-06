@@ -1,7 +1,5 @@
-import { generatePath, useParams } from 'react-router';
 import { ResourceItem, useBasename, useCreatePath } from '../../../frame';
 import { BreadcrumbPath } from '../../../ui-materialui';
-import { matches } from 'lodash';
 
 export type BreadcrumbPathMap = Record<string, BreadcrumbPath>;
 export type ResourceBreadcrumbPathMap = Record<string, BreadcrumbPathMap>;

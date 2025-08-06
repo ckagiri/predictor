@@ -1,25 +1,23 @@
-import { Route, Routes } from "react-router-dom";
-import { useScrollToTop } from "../routing";
-import { CatchAllComponent, FrameChildren, LayoutComponent, LoadingComponent } from "../types";
-import { Children } from "react";
-import { useConfigureFrameRouterFromChildren } from "./useConfigureFrameRouterFromChildren";
-import { BasenameContextProvider } from "../routing/BasenameContextProvider";
-import { NavigateToDefaultResource } from "./NavigateToDefaultResource";
+import { Route, Routes } from 'react-router-dom';
+import { useScrollToTop } from '../routing';
+import {
+  CatchAllComponent,
+  FrameChildren,
+  LayoutComponent,
+  LoadingComponent,
+} from '../types';
+import { Children } from 'react';
+import { useConfigureFrameRouterFromChildren } from './useConfigureFrameRouterFromChildren';
+import { BasenameContextProvider } from '../routing/BasenameContextProvider';
+import { NavigateToDefaultResource } from './NavigateToDefaultResource';
 
 export const CoreFrameRoutes = (props: CoreFrameRoutesProps) => {
   useScrollToTop();
 
-  const {
-    appRoutes,
-    adminCustomRoutes,
-    shellRoutes,
-    resources,
-  } = useConfigureFrameRouterFromChildren(props.children);
+  const { appRoutes, adminCustomRoutes, shellRoutes, resources } =
+    useConfigureFrameRouterFromChildren(props.children);
 
-  const {
-    catchAll: CatchAll,
-    adminLayout: AdminLayout,
-  } = props;
+  const { catchAll: CatchAll, adminLayout: AdminLayout } = props;
 
   return (
     <Routes>
@@ -43,10 +41,7 @@ export const CoreFrameRoutes = (props: CoreFrameRoutesProps) => {
                           element={resource}
                         />
                       ))}
-                      <Route
-                        path="/"
-                        element={<NavigateToDefaultResource />}
-                      />
+                      <Route path="/" element={<NavigateToDefaultResource />} />
                       <Route path="*" element={<CatchAll />} />
                     </Routes>
                   </AdminLayout>
@@ -57,7 +52,7 @@ export const CoreFrameRoutes = (props: CoreFrameRoutesProps) => {
         }
       />
     </Routes>
-  )
+  );
 };
 
 export interface CoreFrameRoutesProps {
@@ -65,4 +60,4 @@ export interface CoreFrameRoutesProps {
   children?: FrameChildren;
   adminLayout: LayoutComponent;
   loading?: LoadingComponent;
-};
+}

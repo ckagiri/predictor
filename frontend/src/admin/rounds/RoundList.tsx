@@ -1,5 +1,10 @@
 import React from 'react';
-import { ListBase, RecordContext, useCreatePath, useListContext } from '../../frame';
+import {
+  ListBase,
+  RecordContext,
+  useCreatePath,
+  useListContext,
+} from '../../frame';
 import { Link } from 'react-router-dom';
 import { ShowButton } from '../../ui-materialui';
 
@@ -13,17 +18,15 @@ const RoundList = () => {
 
 type MatchesLinkProps = {
   roundPath: string;
-}
+};
 const MatchesLink = ({ roundPath }: MatchesLinkProps) => {
   const createPath = useCreatePath();
   return (
-    <Link
-      to={createPath({ type: 'list', resource: `${roundPath}/matches` })}
-    >
+    <Link to={createPath({ type: 'list', resource: `${roundPath}/matches` })}>
       Matches
     </Link>
-  )
-}
+  );
+};
 
 const RoundListView = () => {
   const { data, isLoading, resource } = useListContext();

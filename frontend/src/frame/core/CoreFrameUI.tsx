@@ -1,7 +1,11 @@
-import { CatchAllComponent, FrameChildren, LayoutComponent, LoadingComponent } from "../types";
-import { Route, Routes } from "react-router-dom";
-import { CoreFrameRoutes } from "./CoreFrameRoutes";
-
+import {
+  CatchAllComponent,
+  FrameChildren,
+  LayoutComponent,
+  LoadingComponent,
+} from '../types';
+import { Route, Routes } from 'react-router-dom';
+import { CoreFrameRoutes } from './CoreFrameRoutes';
 
 export interface CoreFrameUIProps {
   catchAll?: CatchAllComponent;
@@ -38,6 +42,6 @@ export const CoreFrameUI = (props: CoreFrameUIProps) => {
       />
     </Routes>
   );
-}
+};
 
 const Noop = () => null;
