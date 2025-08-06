@@ -90,7 +90,7 @@ export class PredictionServiceImpl {
         this.seasonRepo.findAllByIds$(currentSeasonIds)
       );
       const result = await lastValueFrom(
-        this.matchRepo.findAllFinishedByCurrentRound$(currentSeasons)
+        this.matchRepo.findAllByCurrentRound$(currentSeasons)
       );
 
       for (const [seasonId, currentRoundMatches] of result) {

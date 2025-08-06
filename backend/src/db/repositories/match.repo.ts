@@ -15,9 +15,7 @@ import {
 } from './baseFootballApi.repo.js';
 
 export interface MatchRepository extends BaseFootballApiRepository<Match> {
-  findAllFinishedByCurrentRound$(
-    seasons: Season[]
-  ): Observable<[string, Match[]][]>;
+  findAllByCurrentRound$(seasons: Season[]): Observable<[string, Match[]][]>;
   findAllFinishedBySeason$(
     seasons: string[],
     filter?: any
@@ -41,9 +39,7 @@ export class MatchRepositoryImpl
     return new MatchRepositoryImpl(MatchConverterImpl.getInstance(provider));
   }
 
-  findAllFinishedByCurrentRound$(
-    seasons: Season[]
-  ): Observable<[string, Match[]][]> {
+  findAllByCurrentRound$(seasons: Season[]): Observable<[string, Match[]][]> {
     type SeasonToMatches = [string, Match[]];
     return from(seasons).pipe(
       mergeMap(season => {
