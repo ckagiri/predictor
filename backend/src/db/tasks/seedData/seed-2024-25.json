@@ -221,8 +221,8 @@
       },
       "competition": {
         "id": "=new bson.ObjectId('66bdb3693a35de7b8de3a1e8')",
-        "name": "->competitions.epl.name",
-        "slug": "->competitions.epl.slug"
+        "name": "English Premier League",
+        "slug": "premier-league"
       },
       "name": "2024-2025",
       "slug": "2024-25",
@@ -253,8 +253,8 @@
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
-      "seasonStart": "=new Date('2024-08-15T00:00:00.000Z')",
-      "seasonEnd": "=new Date('2025-05-23T00:00:00.000Z')"
+      "seasonStart": "=new Date('2024-08-15').toISOString()",
+      "seasonEnd": "=new Date('2025-05-23').toISOString()"
     }
   },
   "gameRounds": {
