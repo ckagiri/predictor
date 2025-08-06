@@ -22,9 +22,11 @@ export class LeaderboardScheduler extends BaseScheduler {
   ) {
     super('LeaderboardJob');
     this.eventMediator.addListener(
-      'footballApiMatchUpdatesCompleted',
+      'lastLiveUpdate_predictionPointsCalculated',
       async () => {
-        console.log(`${this.job.name} handle footballApiMatchUpdatesCompleted`);
+        console.log(
+          `${this.job.name} handle lastLiveUpdate_predictionPointsCalculated`
+        );
         await this.runJob();
       }
     );
