@@ -74,8 +74,8 @@
       "numberOfRounds": 38,
       "numberOfTeams": 20,
       "numberOfGames": 380,
-      "seasonStart": "=new Date('2025-08-15T00:00:00.000Z')",
-      "seasonEnd": "=new Date('2026-05-24T00:00:00.000Z')"
+      "seasonStart": "=new Date('2025-08-15').toISOString()",
+      "seasonEnd": "=new Date('2026-05-24').toISOString()"
     }
   },
   "gameRounds": {

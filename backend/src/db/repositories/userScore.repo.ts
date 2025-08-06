@@ -91,7 +91,7 @@ export class UserScoreRepositoryImpl
           score.matches = [matchId];
           score.matchesPredicted = 1;
           score.correctMatchOutcomes = correctMatchOutcomePoints / 7;
-          score.exactMatchScores = exactMatchScorePoints / 20;
+          score.exactMatchScores = exactMatchScorePoints / 10;
           score.exactGoalDiffs = exactGoalDifferencePoints;
           score.closeMatchScores = Math.ceil(closeMatchScorePoints / 2);
 
@@ -117,7 +117,7 @@ export class UserScoreRepositoryImpl
           userScore.points += hasJoker ? basePoints * 2 : basePoints;
 
           userScore.correctMatchOutcomes! += correctMatchOutcomePoints / 7;
-          userScore.exactMatchScores! += exactMatchScorePoints / 20;
+          userScore.exactMatchScores! += exactMatchScorePoints / 10;
           userScore.exactGoalDiffs! += exactGoalDifferencePoints;
           userScore.closeMatchScores! += Math.ceil(closeMatchScorePoints / 2);
 

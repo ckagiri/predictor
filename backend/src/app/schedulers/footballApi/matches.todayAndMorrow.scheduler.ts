@@ -1,4 +1,10 @@
-import moment from 'moment';
+import {
+  addHours,
+  addMinutes,
+  differenceInMilliseconds,
+  isBefore,
+  parseISO,
+} from 'date-fns';
 
 import {
   EventMediator,
@@ -13,11 +19,17 @@ import {
 } from './matches.todayAndMorrow.service.js';
 
 const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
+interface ApiMatch {
+  id: string | number;
+  status: string;
+  utcDate: string;
+}
 
 export class TodayAndMorrowScheduler extends BaseScheduler {
   private liveMatchHasFinished = false;
-  private liveMatchId: string | number | null = null;
-  private nextPoll?: moment.Moment; // ideally what is supposed to be the next poll
+  private finishedLiveMatches: (string | number)[] = [];
+  private liveMatches: (string | number)[] = [];
+  private nextPoll: Date = addHours(new Date(), 8);
   private scheduleDate?: Date;
 
   constructor(
@@ -25,86 +37,77 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
     private eventMediator: EventMediator
   ) {
     super('TodayAndMorrowSchedulerJob');
-    this.job.on('scheduled', (scheduleDate: any) => {
+    this.job.on('scheduled', (scheduleDate: Date) => {
       if (this.scheduleDate == undefined) {
         this.scheduleDate = scheduleDate;
         return;
       }
-      console.log(
-        `${this.job.name} onScheduled ${moment(scheduleDate).format()}`
-      );
+      console.log(`${this.job.name} onScheduled ${scheduleDate.toISOString()}`);
     });
   }
 
-  public static getInstance(
+  static getInstance(
     todayAndMorrowService = TodayAndMorrowServiceImpl.getInstance(),
     eventMediator = EventMediatorImpl.getInstance()
   ) {
     return new TodayAndMorrowScheduler(todayAndMorrowService, eventMediator);
   }
 
-  calculateNextInterval(result: any = []): number {
-    const apiMatches: any[] = result;
-    let liveMatch: any = apiMatches.find(
-      (match: any) => match.id === this.liveMatchId
+  calculateNextInterval(apiMatches: ApiMatch[] = []): number {
+    const liveMatches = apiMatches
+      .filter(match => getMatchStatus(match.status) === MatchStatus.LIVE)
+      .map(match => match.id);
+
+    const finishedLiveMatches = this.liveMatches.filter(
+      matchId => !liveMatches.some(id => id === matchId)
     );
+    const startedLiveMatches = liveMatches.filter(
+      matchId => !this.liveMatches.some(id => id === matchId)
+    );
+    const finishedOrStartedLiveMatches = [
+      ...finishedLiveMatches,
+      ...startedLiveMatches,
+    ];
 
-    let nextPoll = moment().add(12, 'hours');
-    if (!liveMatch) {
-      for (const match of apiMatches) {
-        const matchStatus = getMatchStatus(match.status);
-        const matchStart = moment(match.utcDate);
-
-        if (matchStatus === MatchStatus.LIVE) {
-          if (!liveMatch) {
-            liveMatch = match;
-          } else if (matchStart.isBefore(moment(liveMatch.utcDate))) {
-            liveMatch = match;
-          }
-        } else if (matchStatus === MatchStatus.SCHEDULED) {
-          if (matchStart.isBefore(nextPoll)) {
-            nextPoll = matchStart.add(1, 'minutes');
-          }
-        }
-      }
-    }
-
-    const liveMatchId = liveMatch?.id;
-    if (
-      this.liveMatchId == null &&
-      liveMatchId !== undefined &&
-      liveMatchId !== null
-    ) {
-      this.liveMatchId = liveMatchId;
-    } else if (
-      this.liveMatchId != null &&
-      liveMatchId !== undefined &&
-      liveMatchId !== null
-    ) {
-      if (this.liveMatchId !== liveMatchId) {
-        this.liveMatchId = liveMatchId;
+    if (liveMatches.length > 0 && this.liveMatches.length === 0) {
+      this.liveMatches = liveMatches;
+    } else if (liveMatches.length > 0 && this.liveMatches.length > 0) {
+      if (finishedLiveMatches.length > 0) {
+        this.finishedLiveMatches = finishedLiveMatches;
         this.liveMatchHasFinished = true;
       }
-    } else if (
-      this.liveMatchId != null &&
-      (liveMatchId === undefined || liveMatchId === null)
-    ) {
-      this.liveMatchId = null;
+      if (finishedOrStartedLiveMatches.length > 0) {
+        this.liveMatches = liveMatches;
+      }
+    } else if (liveMatches.length === 0 && this.liveMatches.length > 0) {
+      this.finishedLiveMatches = this.liveMatches;
+      this.liveMatches = [];
       this.liveMatchHasFinished = true;
     }
 
-    // precautionary handle nextPoll being behind
-    const diff = nextPoll.diff(moment(), 'minutes');
-    nextPoll = diff <= 0 ? moment().add(1, 'minutes') : nextPoll;
+    const now = new Date();
+    let nextPoll = addHours(now, 12); // dummy value
+    if (liveMatches.length === 0) {
+      for (const match of apiMatches) {
+        const matchStatus = getMatchStatus(match.status);
+        const matchStart = parseISO(match.utcDate);
 
-    if (this.liveMatchId || this.liveMatchHasFinished) {
-      nextPoll = moment().add(1, 'minutes');
+        if (
+          matchStatus === MatchStatus.SCHEDULED &&
+          isBefore(matchStart, nextPoll) &&
+          !isBefore(matchStart, now)
+        ) {
+          nextPoll = addMinutes(matchStart, 1);
+        }
+      }
+    } else if (liveMatches.length > 0 || this.liveMatchHasFinished) {
+      nextPoll = addMinutes(now, 1);
     }
-    this.nextPoll = nextPoll;
 
+    this.nextPoll = nextPoll;
     const nextIntervalInMs = Math.min(
       this.getDefaultIntervalMs(),
-      this.nextPoll.diff(moment())
+      differenceInMilliseconds(this.nextPoll, new Date())
     );
     const nextIntervalInUTC = new Date(
       Date.now() + nextIntervalInMs
@@ -116,27 +119,34 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
   async task() {
     let period = PERIOD.TODAY;
-    const nextPollInHours =
-      this.nextPoll == undefined
-        ? undefined
-        : Math.round(moment.duration(this.nextPoll.diff(moment())).asHours());
-    if (nextPollInHours == undefined || nextPollInHours === 6) {
+
+    const diffMs = differenceInMilliseconds(this.nextPoll, new Date());
+    const diffHours = diffMs / (1000 * 60 * 60);
+    const nextPollInHours = Math.round(diffHours);
+
+    if (nextPollInHours >= 6) {
       period = PERIOD.TODAY_AND_MORROW;
     } else if (this.liveMatchHasFinished) {
       period = PERIOD.TODAY;
-    } else if (this.liveMatchId) {
+    } else if (this.liveMatches.length > 0) {
       period = PERIOD.LIVE;
     }
 
     const apiMatches = await this.todayAndMorrowService.syncMatches(period);
-    if (this.liveMatchId && this.liveMatchHasFinished) {
+    if (this.liveMatches.length > 0 && this.liveMatchHasFinished) {
       console.log(
         `${this.job.name} publish footballApiLiveMatchUpdatesCompleted`
       );
-      this.eventMediator.publish('footballApiLiveMatchUpdatesCompleted');
-    } else if (!this.liveMatchId && this.liveMatchHasFinished) {
+      this.eventMediator.publish(
+        'footballApiLiveMatchUpdatesCompleted',
+        this.finishedLiveMatches
+      );
+    } else if (this.liveMatches.length === 0 && this.liveMatchHasFinished) {
       console.log(`${this.job.name} publish footballApiMatchUpdatesCompleted`);
-      this.eventMediator.publish('footballApiMatchUpdatesCompleted');
+      this.eventMediator.publish(
+        'footballApiMatchUpdatesCompleted',
+        this.finishedLiveMatches
+      );
     }
 
     if (this.liveMatchHasFinished) {

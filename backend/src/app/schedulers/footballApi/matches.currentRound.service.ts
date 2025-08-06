@@ -58,7 +58,7 @@ export class CurrentRoundMatchesServiceImpl {
         this.seasonRepo.findAllByIds$(currentSeasonIds)
       );
       const result = await lastValueFrom(
-        this.matchRepo.findAllFinishedByCurrentRound$(currentSeasons)
+        this.matchRepo.findAllByCurrentRound$(currentSeasons)
       );
       for (const [_seasonId, dbMatches] of result) {
         const externalIds: string[] = dbMatches

@@ -5,7 +5,6 @@ import { merge } from 'lodash';
 import {
   FilterQuery,
   Model,
-  ObjectId,
   PopulateOptions,
   ProjectionType,
   QueryOptions,
@@ -182,7 +181,7 @@ export class DocumentDao<T extends Entity> {
   }
 
   findById(
-    id: string | ObjectId,
+    id: string | Types.ObjectId,
     projection?: ProjectionType<T> | null,
     join?: PopulateOptions | PopulateOptions[]
   ): Promise<T | null> {

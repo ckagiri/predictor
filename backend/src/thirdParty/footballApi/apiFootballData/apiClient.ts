@@ -1,6 +1,6 @@
-import moment from 'moment';
-import request from 'request-promise';
+import axios from 'axios';
 
+import DateUtil from '../../../common/dateUtil.js';
 import { FootballApiClient } from '../apiClient.js';
 
 const BASE_URL = 'http://api.football-data.org/v4';
@@ -8,23 +8,22 @@ const BASE_URL = 'http://api.football-data.org/v4';
 class ApiFootballDataClient implements FootballApiClient {
   constructor(private apiKey: string) {}
 
-  public _getOptions(apiKey: string, resource: string, queryParams?: any) {
-    queryParams = queryParams ?? {};
+  private options(queryParams?: any) {
     return {
       headers: {
-        'X-Auth-Token': apiKey,
+        'X-Auth-Token': this.apiKey,
         'X-Response-Control': 'minified',
       },
-      qs: queryParams,
-      resolveWithFullResponse: true,
-      // method: 'GET',
-      uri: BASE_URL + resource,
+      params: queryParams,
     };
   }
 
-  public _mergeResponse(response: any) {
+  private mergeResponse(response: any) {
     return {
-      data: JSON.parse(response.body),
+      data: {
+        ...response.data,
+        count: response.data.count ?? response.data.resultSet?.count,
+      },
       metadata: {
         requestCount: response.headers['x-requests-available'],
         requestCountReset: response.headers['x-requestcounter-reset'],
@@ -32,84 +31,88 @@ class ApiFootballDataClient implements FootballApiClient {
     };
   }
 
-  public getCompetition(competitionId: number | string) {
-    const apiResource = `/competitions/${competitionId}`;
-
-    return request(this._getOptions(this.apiKey, apiResource)).then(response =>
-      this._mergeResponse(response)
-    );
+  async getCompetitions(year?: number): Promise<any> {
+    year = year ?? new Date().getFullYear();
+    const url = `${BASE_URL}/competitions`;
+    const response = await axios.get(url, this.options({ year }));
+    return this.mergeResponse(response);
   }
 
-  getCompetitionMatches(competitionId: number | string) {
-    const apiResource = `/competitions/${competitionId}/matches`;
-
-    return request(this._getOptions(this.apiKey, apiResource)).then(response =>
-      this._mergeResponse(response)
-    );
+  async getCompetition(competitionId: number | string = 'PL'): Promise<any> {
+    const url = `${BASE_URL}/competitions/${String(competitionId)}`;
+    const response = await axios.get(url, this.options());
+    return this.mergeResponse(response);
   }
 
-  public getCompetitions(year: number) {
-    const queryParams = year ? { year } : undefined;
-    const apiResource = '/competitions';
-
-    return request(
-      this._getOptions(this.apiKey, apiResource, queryParams)
-    ).then(response => this._mergeResponse(response));
+  async getCompetitionMatches(competitionId: number | string): Promise<any> {
+    const url = `${BASE_URL}/competitions/${String(competitionId)}/matches`;
+    const response = await axios.get(url, this.options());
+    return this.mergeResponse(response);
   }
 
-  getLiveMatches(): Promise<any> {
-    const apiResource = `/matches`;
-    return request(
-      this._getOptions(this.apiKey, apiResource, {
-        competitions: 'PL',
+  async getLiveMatches(
+    competitions: string[] | number[] = ['PL']
+  ): Promise<any> {
+    const url = `${BASE_URL}/competitions/${competitions.join(',')}/matches`;
+    const response = await axios.get(
+      url,
+      this.options({
+        competitions: competitions,
         status: 'LIVE',
       })
-    ).then(response => this._mergeResponse(response));
-  }
-
-  getMatches(matchIds?: string[]) {
-    const apiResource = `/matches`;
-
-    return request(
-      this._getOptions(this.apiKey, apiResource, { ids: matchIds?.join(',') })
-    ).then(response => this._mergeResponse(response));
-  }
-
-  public getTeams(competitionId: number | string) {
-    const apiResource = `/competitions/${competitionId}/teams`;
-
-    return request(this._getOptions(this.apiKey, apiResource)).then(response =>
-      this._mergeResponse(response)
     );
+    return this.mergeResponse(response);
   }
 
-  getTodaysAndMorrowsMatches(): Promise<any> {
-    const apiResource = `/matches`;
-    const dateFrom = moment().format('YYYY-MM-DD');
-    const dateTo = moment().add(2, 'days').format('YYYY-MM-DD');
-    return request(
-      this._getOptions(this.apiKey, apiResource, {
-        competitions: 'PL',
-        dateFrom,
-        dateTo,
+  async getMatches(matchIds: number[] | string[]): Promise<any> {
+    const url = `${BASE_URL}/matches`;
+    const response = await axios.get(
+      url,
+      this.options({ ids: matchIds.join(',') })
+    );
+    return this.mergeResponse(response);
+  }
+
+  async getTeams(competitionId: number | string = 'PL'): Promise<any> {
+    const url = `${BASE_URL}/competitions/${String(competitionId)}/teams`;
+    const response = await axios.get(url, this.options());
+    return this.mergeResponse(response);
+  }
+
+  async getTodaysAndMorrowsMatches(
+    competitions: string[] | number[] = ['PL']
+  ): Promise<any> {
+    const url = `${BASE_URL}/matches`;
+    const today = DateUtil.getFormattedDate(new Date());
+    const future = DateUtil.getFormattedDate(DateUtil.addDays(new Date(), 2));
+    const response = await axios.get(
+      url,
+      this.options({
+        competitions: competitions.join(','),
+        dateFrom: today,
+        dateTo: future,
       })
-    ).then(response => this._mergeResponse(response));
+    );
+    return this.mergeResponse(response);
   }
 
-  getTodaysMatches(): Promise<any> {
-    const apiResource = `/matches`;
-    return request(
-      this._getOptions(this.apiKey, apiResource, {
-        competitions: 'PL',
+  async getTodaysMatches(
+    competitions: string[] | number[] = ['PL']
+  ): Promise<any> {
+    const url = `${BASE_URL}/matches`;
+    const response = await axios.get(
+      url,
+      this.options({
+        competitions: competitions.join(','),
         date: 'TODAY',
       })
-    ).then(response => this._mergeResponse(response));
+    );
+    return this.mergeResponse(response);
   }
 }
 
-export const getInstance = () =>
-  new ApiFootballDataClient(process.env.API_FOOTBALL_DATA_KEY!);
-
 export default {
-  getInstance,
+  getInstance: () => {
+    return new ApiFootballDataClient(process.env.API_FOOTBALL_DATA_KEY!);
+  },
 };
