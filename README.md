@@ -73,15 +73,15 @@ tla: MUN
 - Represents a ranked listing of users in a competition.
 - From a leaderboard the user can see where they stand in comparison to other players.
 - _[note]_ Currently all Leaderboards are Global and one of two types - Global-Round or Global-Season
-- Global refers to the total set of users competiting in particular season tournament. All Global-\* boards are public by default and can be viewed by anyone.
-- For each active season or round there is one corresponding Global-Season or Global-Round Leaderboard
+- Global refers to the total set of users competiting in a particular season tournament. All Global-\* boards are public by default and can be viewed by anyone.
+- For each active season or round there is one corresponding Global-Season or Global-Round Leaderboard respectively.
 
 ### UserScore
 
 - Represents the cumulative total scores of a predictor's **GameRound** or **Season** predictions in RankedOrder.
 - Each UserScore belongs to one and only one **Leaderboard**.
 - Alternatively, it represents the position of a predictor within a Leaderboard. It holds a new and previous position of the predictor, based on the scores.
-- It orders the scores by
+- The scores are ordered by
   - i) total points (highest first) then by
   - ii) most correct outcomes
   - iii) most correct scores
@@ -112,8 +112,8 @@ tla: MUN
 - Close Score +1
   - correct winner & 1 goal from both teams to actual score
   - wrong outcome but 1 goal from actual score
-- Correct-Goals bonus \* correct winner, correct 3 or more goal difference, not actual score, not 1 goal to actual score
-  Predictor
+- Correct-Goals bonus
+  - correct winner, correct 3 or more goal difference, not actual score, not 1 goal to actual score
 
 ### Fun facts
 
