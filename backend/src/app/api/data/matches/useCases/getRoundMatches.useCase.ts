@@ -60,7 +60,8 @@ export default class GetRoundMatchesUseCase {
       const foundMatches = await lastValueFrom(
         this.matchRepo.findAll$(
           { gameRound: foundRound.id },
-          '-createdAt -odds'
+          '-createdAt -odds',
+          { sort: { utcDate: 1 } }
         )
       );
       this.responder.respond(foundMatches);

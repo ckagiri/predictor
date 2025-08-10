@@ -214,7 +214,8 @@ export default class GetRoundMatchesUseCase {
     const matches = await lastValueFrom(
       this.matchRepo.findAll$(
         { gameRound: roundId },
-        '-allGlobalLeaderboardScoresProcessed -allPredictionPointsCalculated -createdAt -externalReference -odds -updatedAt'
+        '-allGlobalLeaderboardScoresProcessed -allPredictionPointsCalculated -createdAt -externalReference -odds -updatedAt',
+        { sort: { utcDate: 1 } }
       )
     );
     return matches
