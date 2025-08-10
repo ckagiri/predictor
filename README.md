@@ -256,7 +256,7 @@ LigiPredictor/
 ### [for configuration] /api/competitions
 
 | Path                                                                    | Resource            |
-| ----------------------------------------------------------------------- | ------------------- |
+| ----------------------------------------------------------------------- | ------------------- | --- |
 | /api/competitions                                                       | Competitions        |
 | /api/competitions/{competition}                                         | Competition         |
 | /api/competitions/{competition}/seasons                                 | Competition-Seasons |
@@ -264,11 +264,11 @@ LigiPredictor/
 | /api/competitions/{competition}/seasons/{season}/teams                  | Season-Teams        |
 | /api/competitions/{competition}/seasons/{season}/rounds                 | Season-Rounds       |
 | /api/competitions/{competition}/seasons/{season}/rounds/{round}         | Season-Round        |
-| /api/competitions/{competition}/seasons/{season}/rounds/{round}/matches | Round-Matches       |P
+| /api/competitions/{competition}/seasons/{season}/rounds/{round}/matches | Round-Matches       | P   |
 | /api/competitions/{competition}/seasons/{season}/matches                | Season-Matches      |
 | /api/competitions/{competition}/seasons/{season}/matches/{match}        | Season-Match        |
 
-***Eg (Get Match):** /api/competitions/premier-league/seasons/2025-26/rounds/gameweek-1/liv-bou*
+**_Eg (Get Round Matches):_** _/api/contests/premier-league/2025-26/gameweek-1/matches_
 
 ### [for gameplay] /api/Contests
 
@@ -284,13 +284,14 @@ LigiPredictor/
 | /api/contests/{competition}/{season}/{round}/pick-score | Update Round-Match Prediction(s) with score                   |
 | /api/contests/{competition}/{season}/{round}/pick-joker | Update Round with Joker selection                             |
 
-***Eg (Get Round Matches):** /api/contests/premier-league/2025-26/gameweek-1/matches*
+**_Eg (Get Round Matches):_** _/api/contests/premier-league/2025-26/gameweek-1/matches_
 
 ## Scheduled Jobs
 
 ### TodayAndMorrowMatches
 
-**Event** -- Loop -- after min 90s and max 6H
+**Event** -- Loop -- after min 90s (for live matches) and max 6H
+
 **Description** -- Queries an external API call to retrieve and update the latest match data for today and tomorrow. It also identifies and updates matches that are currently in progress. This process ensures all match information, such as rescheduled times, is kept up to date.
 
 ### CurrentSeasonCurrentRound
@@ -298,7 +299,8 @@ LigiPredictor/
 **Event**
 
 - Cron -- minute 0 every 2H
-  **Description** -- Checks for updates to the current matchday. If a new matchday is detected, it updates the application's current game round accordingly.
+
+**Description** -- Checks for updates to the current matchday. If a new matchday is detected, it updates the application's current game round accordingly.
 
 ### MakePredictions
 
@@ -327,7 +329,7 @@ LigiPredictor/
 
 **Description** -- Updates the leaderboards by first calculating and updating user scores, and then re-ranks the leaderboard based on these new scores.
 
-### Deployment Process
+## Deployment Process
 
 The deployment process is a continuous integration and continuous delivery (**CI/CD**) pipeline, orchestrated by **GitHub Actions**, and involving **Docker** and a remote **Linux server**.
 
