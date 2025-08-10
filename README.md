@@ -256,7 +256,7 @@ LigiPredictor/
 ### [for configuration] /api/competitions
 
 | Path                                                                    | Resource            |
-| ----------------------------------------------------------------------- | ------------------- | --- |
+| ----------------------------------------------------------------------- | ------------------- |
 | /api/competitions                                                       | Competitions        |
 | /api/competitions/{competition}                                         | Competition         |
 | /api/competitions/{competition}/seasons                                 | Competition-Seasons |
@@ -264,7 +264,7 @@ LigiPredictor/
 | /api/competitions/{competition}/seasons/{season}/teams                  | Season-Teams        |
 | /api/competitions/{competition}/seasons/{season}/rounds                 | Season-Rounds       |
 | /api/competitions/{competition}/seasons/{season}/rounds/{round}         | Season-Round        |
-| /api/competitions/{competition}/seasons/{season}/rounds/{round}/matches | Round-Matches       | P   |
+| /api/competitions/{competition}/seasons/{season}/rounds/{round}/matches | Round-Matches       |
 | /api/competitions/{competition}/seasons/{season}/matches                | Season-Matches      |
 | /api/competitions/{competition}/seasons/{season}/matches/{match}        | Season-Match        |
 
@@ -290,44 +290,44 @@ LigiPredictor/
 
 ### TodayAndMorrowMatches
 
-**Event** -- Loop -- after min 90s (for live matches) and max 6H
+**Event**
 
-**Description** -- Queries an external API call to retrieve and update the latest match data for today and tomorrow. It also identifies and updates matches that are currently in progress. This process ensures all match information, such as rescheduled times, is kept up to date.
+- Loop: between min 90s (for live matches) and max 6H
+
+**Description:** Queries an external API call to retrieve and update the latest match data for today and tomorrow. It also identifies and updates matches that are currently in progress. This process ensures all match information, such as rescheduled times, is kept up to date.
 
 ### CurrentSeasonCurrentRound
 
 **Event**
 
-- Cron -- minute 0 every 2H
+- Cron: minute 0 every 2H
 
-**Description** -- Checks for updates to the current matchday. If a new matchday is detected, it updates the application's current game round accordingly.
+**Description**: Checks for updates to the current matchday. If a new matchday is detected, it updates the application's current game round accordingly.
 
 ### MakePredictions
 
 **Event**
 
-- Loop -- after 3H
+- Loop: after 3H
 - currentSeasonCurrentRoundUpdated
 
-**Description** -- Iterates through all active predictors for the current season. For any predictor without a submission, it automatically generates a random prediction. These placeholder predictions are not visible to the user and are overwritten as soon as a user's manual prediction is entered.
+**Description:** Iterates through all active predictors for the current season. For any predictor without a submission, it automatically generates a random prediction. These placeholder predictions are not visible to the user and are overwritten as soon as a user's manual prediction is entered.
 
 ### PredictionPoints
 
 **Event**
 
-- Loop -- minute 15 every H
+- Cron: minute 15 every H
 - liveMatchUpdateFinished, lastliveMatchUpdateFinished
 
-**Description** -- Checks for the completion of matches and then calculates and awards the points for each corresponding prediction.
+**Description:** Checks for the completion of matches and then calculates and awards the points for each corresponding prediction.
 
 ### Leaderboards
 
 **Event**
 
-- Loop after 6H
+- Loop: after 6H
 - lastLiveMatchUpdate_predictionPointsCalculated
-
-**Description** -- Updates the leaderboards by first calculating and updating user scores, and then re-ranks the leaderboard based on these new scores.
 
 ## Deployment Process
 
