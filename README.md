@@ -329,6 +329,8 @@ LigiPredictor/
 - Loop: after 6H
 - lastLiveMatchUpdate_predictionPointsCalculated
 
+**Description:** Updates the leaderboards by first calculating and updating user scores, and then re-ranks the leaderboard based on these new scores.
+
 ## Deployment Process
 
 The deployment process is a continuous integration and continuous delivery (**CI/CD**) pipeline, orchestrated by **GitHub Actions**, and involving **Docker** and a remote **Linux server**.
