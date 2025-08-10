@@ -23,9 +23,7 @@
     "test:api": "dotenvx run -f .env.test -- mocha --import=tsx 'src/__tests__/api/**/*.spec.ts'",
     "test:integration": "npm run test:api && npm run test:external",
     "seed-testdata": "dotenvx run -f .env.dev -- npx tsx src/app/tasks/seed/index.ts",
-    "seed-defaults": "dotenvx run -- npx tsx src/db/tasks/seed.ts",
     "seed-defaults:dev": "dotenvx run -f .env.dev -- npx tsx src/db/tasks/seed.ts",
-    "import": "dotenvx run -- npx tsx src/app/tasks/import/start.ts",
     "import:dev": "dotenvx run -f .env.dev -- npx tsx src/app/tasks/import/start.ts",
     "drop:dev": "dotenvx run -f .env.dev -- npx tsx src/db/tasks/drop.ts",
     "drop:seed:import:dev": "npm run drop:dev && npm run seed-defaults:dev && npm run import:dev"

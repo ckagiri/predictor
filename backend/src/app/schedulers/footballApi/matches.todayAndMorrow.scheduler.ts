@@ -59,10 +59,10 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       .map(match => match.id);
 
     const finishedLiveMatches = this.liveMatches.filter(
-      matchId => !liveMatches.some(id => id === matchId)
+      matchId => !liveMatches.includes(matchId)
     );
     const startedLiveMatches = liveMatches.filter(
-      matchId => !this.liveMatches.some(id => id === matchId)
+      matchId => !this.liveMatches.includes(matchId)
     );
     const finishedOrStartedLiveMatches = [
       ...finishedLiveMatches,
@@ -134,17 +134,15 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
     const apiMatches = await this.todayAndMorrowService.syncMatches(period);
     if (this.liveMatches.length > 0 && this.liveMatchHasFinished) {
-      console.log(`${this.job.name} publish footballApi_liveUpdateCompleted`);
+      console.log(`${this.job.name} publish liveMatchUpdateFinished`);
       this.eventMediator.publish(
-        'footballApi_liveUpdateCompleted',
+        'liveMatchUpdateFinished',
         this.finishedLiveMatches
       );
     } else if (this.liveMatches.length === 0 && this.liveMatchHasFinished) {
-      console.log(
-        `${this.job.name} publish footballApi_lastLiveUpdateCompleted`
-      );
+      console.log(`${this.job.name} publish lastliveMatchUpdateFinished`);
       this.eventMediator.publish(
-        'footballApi_lastLiveUpdateCompleted',
+        'lastliveMatchUpdateFinished',
         this.finishedLiveMatches
       );
     }

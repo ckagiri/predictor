@@ -14,23 +14,17 @@ export class PredictionPointsScheduler extends BaseScheduler {
     private eventMediator: EventMediator
   ) {
     super('PredictionPointsJob');
-    this.eventMediator.addListener(
-      'footballApi_liveUpdateCompleted',
-      async () => {
-        console.log(`${this.job.name} handle footballApi_liveUpdateCompleted`);
-        await this.runJob();
-      }
-    );
-    this.eventMediator.addListener(
-      'footballApi_lastLiveUpdateCompleted',
-      async () => {
-        console.log(
-          `${this.job.name} handle footballApi_lastLiveUpdateCompleted`
-        );
-        await this.runJob();
-        this.eventMediator.publish('lastLiveUpdate_predictionPointsCalculated');
-      }
-    );
+    this.eventMediator.addListener('liveMatchUpdateFinished', async () => {
+      console.log(`${this.job.name} handle liveMatchUpdateFinished`);
+      await this.runJob();
+    });
+    this.eventMediator.addListener('lastliveMatchUpdateFinished', async () => {
+      console.log(`${this.job.name} handle lastliveMatchUpdateFinished`);
+      await this.runJob();
+      this.eventMediator.publish(
+        'lastLiveMatchUpdate_predictionPointsCalculated'
+      );
+    });
   }
 
   public static getInstance(
