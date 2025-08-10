@@ -26,6 +26,12 @@ const MatchShowView = () => {
             </Typography>
           </div>
           <div>
+            <Typography variant="caption">Kick-off</Typography>
+            <Typography variant="body2">
+              {new Date(data.utcDate).toLocaleString()}
+            </Typography>
+          </div>
+          <div>
             <Typography variant="caption">Status</Typography>
             <Typography variant="body2">{data.status}</Typography>
           </div>

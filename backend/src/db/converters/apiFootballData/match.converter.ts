@@ -59,13 +59,13 @@ export class AfdMatchConverter implements MatchConverter {
         return {
           awayTeam: {
             id: awayTeam.id,
-            name: awayTeam.name,
+            name: awayTeam.shortName,
             slug: awayTeam.slug,
             tla: awayTeam.tla!,
           },
           homeTeam: {
             id: homeTeam.id,
-            name: homeTeam.name,
+            name: homeTeam.shortName,
             slug: homeTeam.slug,
             tla: homeTeam.tla!,
           },

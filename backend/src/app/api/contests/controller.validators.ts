@@ -12,7 +12,7 @@ export const getCompetitionValidator = new JoiValidator(GetCompetitionSchema);
 const GetMatchSchema = Joi.object({
   competition: slugStringSchema.required(),
   loggedInUserId: Joi.string().optional(),
-  match: Joi.string().min(9).max(9).required(), // Match slug
+  match: Joi.string().min(7).max(9).required(), // Match slug
   season: Joi.string().min(4).max(9).required(),
 });
 
