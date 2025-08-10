@@ -264,11 +264,11 @@ LigiPredictor/
 | /api/competitions/{competition}/seasons/{season}/teams                  | Season-Teams        |
 | /api/competitions/{competition}/seasons/{season}/rounds                 | Season-Rounds       |
 | /api/competitions/{competition}/seasons/{season}/rounds/{round}         | Season-Round        |
-| /api/competitions/{competition}/seasons/{season}/rounds/{round}/matches | Round-Matches       |
+| /api/competitions/{competition}/seasons/{season}/rounds/{round}/matches | Round-Matches       |P
 | /api/competitions/{competition}/seasons/{season}/matches                | Season-Matches      |
 | /api/competitions/{competition}/seasons/{season}/matches/{match}        | Season-Match        |
 
-**\*Eg (Get Match):** /api/competitions/premier-league/seasons/2025-26/rounds/gameweek-1/liv-bou\*
+***Eg (Get Match):** /api/competitions/premier-league/seasons/2025-26/rounds/gameweek-1/liv-bou*
 
 ### [for gameplay] /api/Contests
 
@@ -284,7 +284,7 @@ LigiPredictor/
 | /api/contests/{competition}/{season}/{round}/pick-score | Update Round-Match Prediction(s) with score                   |
 | /api/contests/{competition}/{season}/{round}/pick-joker | Update Round with Joker selection                             |
 
-**\*Eg (Get Round Matches):** /api/contests/premier-league/2025-26/gameweek-1/matches\*
+***Eg (Get Round Matches):** /api/contests/premier-league/2025-26/gameweek-1/matches*
 
 ## Scheduled Jobs
 
