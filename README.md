@@ -180,8 +180,8 @@ npm run import:dev
 ```bash
 npm run typecheck           # Run typechecking
 npm run tests               # Run all unit tests
-npm run test:integration   # Run internal & external api tests
-npm run seed-testdata      # Run dummy data - it includes predictions & leaderboards
+npm run test:integration    # Run internal & external api tests
+npm run seed-testdata       # Run dummy data - it includes predictions & leaderboards
 npm run lint                # Run ESLint
 npm run format              # Run Prettier
 ```
