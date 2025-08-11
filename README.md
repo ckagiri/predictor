@@ -23,11 +23,11 @@ For more on how to play and earn points jump to [Domain Knowledge](#domain-knowl
 
 ### Backend
 
-**RESTful API** built using **Express.js** and structured with a **Clean Architecture** pattern. Business logic is encapsulated in **Interactors**. **Batch processing** is managed using **node-schedule** for timed jobs and event triggers for immediate tasks. **Workflow and data orchestration** are handled with **RxJS** to manage complex, asynchronous data flows."
+**RESTful API** built using **Express.js** and structured with a **Clean Architecture** pattern. Business logic is encapsulated in **Interactors**. **Batch processing** is managed using **node-schedule** for timed jobs and event triggers for immediate tasks. **Workflow and data orchestration** are handled with **RxJS** to manage complex, asynchronous data flows.
 
 ### Frontend
 
-**React** app built on a **headless architecture**, where business logic is decoupled from the UI using **hooks, components, and providers**. While the current implementation uses **Material-UI**, the architecture ensures a seamless transition to other CSS frameworks like **Tailwind CSS** or **Shadcn UI**.
+**React** app built on a **headless architecture**, where business logic is decoupled from the UI using **hooks, components, and providers**. The current implementation uses **Material-UI** but the architecture allows for a seamless transition to other CSS frameworks like **Tailwind CSS** or **Shadcn UI**.
 
 ## Tech Stack
 
@@ -45,6 +45,7 @@ For more on how to play and earn points jump to [Domain Knowledge](#domain-knowl
 - **Authentication**: JWT
 - **Workflow**: Reactive Extensions
 - **API**: RESTful API with Express.js
+- **Web Server**: Nginx + LetsEncrypt
 
 ### DevOps & Tools
 
@@ -179,8 +180,8 @@ npm run import:dev
 ```bash
 npm run typecheck           # Run typechecking
 npm run tests               # Run all unit tests
-npm run test:integration.   # Run internal & external api tests
-npm run seed-testdata.      # Run dummy data - it includes predictions & leaderboards
+npm run test:integration    # Run internal & external api tests
+npm run seed-testdata       # Run dummy data - it includes predictions & leaderboards
 npm run lint                # Run ESLint
 npm run format              # Run Prettier
 ```
@@ -268,7 +269,7 @@ LigiPredictor/
 | /api/competitions/{competition}/seasons/{season}/matches                | Season-Matches      |
 | /api/competitions/{competition}/seasons/{season}/matches/{match}        | Season-Match        |
 
-**_Eg (Get Round Matches):_** _/api/contests/premier-league/2025-26/gameweek-1/matches_
+**_Eg (Get Round Matches):_** _/api/competitions/premier-league/seasons/2025-26/rounds/gameweek-1/matches_
 
 ### [for gameplay] /api/Contests
 
