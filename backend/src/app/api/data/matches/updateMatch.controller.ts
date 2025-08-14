@@ -1,8 +1,9 @@
 import { Response } from 'express';
 
 import AppError from '../../common/AppError';
+import { BackgroundWorkerImpl } from '../../common/BackgroundWorker';
 import HttpRequestModel from '../../common/interfaces/HttpRequestModel';
-import CreatedResponder from '../../common/responders/created.responder';
+import OkResponder from '../../common/responders/ok.responder';
 import { FailureResult } from '../../common/result';
 import Validator from '../../common/validation/validator';
 import { updateMatchValidator } from './matches.validator';
@@ -38,14 +39,15 @@ export default class UpdateMatchController {
 
     const requestModel = requestValidated.value!;
     if (request.node2) {
-      this.useCase.setBackgroundWorker(request.node2);
+      const worker = BackgroundWorkerImpl.getInstance(request.node2);
+      this.useCase.setBackgroundWorker(worker);
     }
     await this.useCase.execute(requestModel);
   }
 
   makeUpdateMatchController = (res: Response, req: Request) => {
-    const createdResponder = new CreatedResponder(res);
-    const useCase = UpdateMatchUseCase.getInstance(createdResponder);
+    const okResponder = new OkResponder(res);
+    const useCase = UpdateMatchUseCase.getInstance(okResponder);
     return UpdateMatchController.getInstance(useCase);
   };
 }

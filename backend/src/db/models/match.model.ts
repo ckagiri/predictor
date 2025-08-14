@@ -48,7 +48,11 @@ export const isValidStatusTransition = (
       MatchStatus.CANCELED,
     ],
     [MatchStatus.POSTPONED]: [MatchStatus.SCHEDULED, MatchStatus.CANCELED],
-    [MatchStatus.SCHEDULED]: [MatchStatus.LIVE, MatchStatus.FINISHED],
+    [MatchStatus.SCHEDULED]: [
+      MatchStatus.LIVE,
+      MatchStatus.FINISHED,
+      MatchStatus.POSTPONED,
+    ],
     [MatchStatus.SUSPENDED]: [MatchStatus.LIVE, MatchStatus.POSTPONED],
   };
 

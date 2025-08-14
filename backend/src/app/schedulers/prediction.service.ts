@@ -25,7 +25,7 @@ import {
 export interface PredictionService {
   calculatePredictionPoints(): Promise<void>;
   createIfNotExistsCurrentRoundPredictions(): Promise<void>;
-  repickJokerIfMatch(matchId: string, roundId: string): Promise<void>;
+  repickJokerIfMatch(matchId: string, roundId: string): Promise<number>;
 }
 
 export class PredictionServiceImpl implements PredictionService {
@@ -113,19 +113,21 @@ export class PredictionServiceImpl implements PredictionService {
     }
   }
 
-  async repickJokerIfMatch(matchId: string, roundId: string): Promise<void> {
+  async repickJokerIfMatch(matchId: string, roundId: string): Promise<number> {
     try {
       const roundMatches = await lastValueFrom(
         this.matchRepo.findAll$({ gameRound: roundId })
       );
-      const predsNb = await lastValueFrom(
+      const nbPreds = await lastValueFrom(
         this.predictionRepo.repickJokerIfMatch(matchId, roundMatches)
       );
       console.log(
-        `repickJokerIfMatch: ${String(predsNb)} predictions updated.`
+        `repickJokerIfMatch: ${String(nbPreds)} predictions updated.`
       );
+      return nbPreds;
     } catch (err: any) {
       console.log(err.message);
+      return 0;
     }
   }
 }

@@ -1,4 +1,3 @@
-import { ChildProcess } from 'child_process';
 import { lastValueFrom } from 'rxjs';
 
 import AppError, {
@@ -20,6 +19,7 @@ import {
   SeasonRepositoryImpl,
 } from '../../../../../db/repositories/index.js';
 import Responder from '../../../../api/common/responders/Responder.js';
+import { BackgroundWorker } from '../../../common/BackgroundWorker.js';
 import { makeGetMatchesValidator } from '../../useCase.validators.js';
 
 export interface RequestModel {
@@ -38,8 +38,12 @@ interface MatchDetails {
   venue?: string;
 }
 
+interface MatchPartial {
+  roundId: string;
+  status: MatchStatus;
+}
 export default class UpdateMatchUseCase {
-  private backgroundWorker: ChildProcess | null = null;
+  private backgroundWorker: BackgroundWorker | null = null;
 
   constructor(
     private readonly responder: Responder,
@@ -62,7 +66,7 @@ export default class UpdateMatchUseCase {
     );
   }
 
-  setBackgroundWorker(worker: ChildProcess) {
+  setBackgroundWorker(worker: BackgroundWorker) {
     this.backgroundWorker = worker;
   }
 
@@ -128,10 +132,21 @@ export default class UpdateMatchUseCase {
   }
 
   repickJokerIfMatch(foundMatch: Match, updatedMatch: Match | null) {
-    if (
-      foundMatch.gameRound.toString() !== updatedMatch?.gameRound.toString() ||
-      foundMatch.status !== updatedMatch.status
-    ) {
+    if (!updatedMatch) {
+      return;
+    }
+    const shouldRepickJoker = repickJoker({
+      original: {
+        roundId: foundMatch.gameRound.toString(),
+        status: foundMatch.status!,
+      },
+      updated: {
+        roundId: updatedMatch.gameRound.toString(),
+        status: updatedMatch.status!,
+      },
+    });
+
+    if (shouldRepickJoker) {
       this.backgroundWorker?.send({
         data: {
           matchId: foundMatch.id!,
@@ -193,4 +208,25 @@ export default class UpdateMatchUseCase {
 
     return errors;
   }
+}
+
+function repickJoker({
+  original,
+  updated,
+}: {
+  original: MatchPartial;
+  updated: MatchPartial;
+}): boolean {
+  if (
+    original.status === MatchStatus.SCHEDULED &&
+    [MatchStatus.CANCELED, MatchStatus.POSTPONED].includes(updated.status)
+  ) {
+    return true;
+  }
+
+  if (original.roundId !== updated.roundId) {
+    return false;
+  }
+
+  return false;
 }

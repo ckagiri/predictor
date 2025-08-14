@@ -1,4 +1,4 @@
-import { compact, head, isEmpty, uniq } from 'lodash';
+import { compact, flatMap, head, isEmpty, uniq } from 'lodash';
 import { ProjectionType } from 'mongoose';
 import { from, iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeAll, mergeMap, toArray } from 'rxjs/operators';
@@ -397,6 +397,7 @@ export class PredictionRepositoryImpl
   ): Observable<number> {
     return this.findJokersByMatch$(matchId).pipe(
       mergeMap(jokers => {
+        console.log('jokers length:', jokers.length);
         if (jokers.length === 0) {
           return of(0);
         }
@@ -405,6 +406,8 @@ export class PredictionRepositoryImpl
         );
         return from(jokers).pipe(
           map(joker => {
+            joker.hasJoker = false;
+            joker.jokerAutoPicked = false;
             if (scheduledMatches.length === 0) {
               return { newJoker: null, prevJoker: joker };
             }
@@ -423,20 +426,19 @@ export class PredictionRepositoryImpl
               season,
               user: joker.user,
             };
-            return {
+            const js = {
               newJoker: newJokerPred,
               prevJoker: joker,
             };
+            return js;
           }),
           map(({ newJoker, prevJoker }) => {
-            prevJoker.hasJoker = false;
-            prevJoker.jokerAutoPicked = false;
             return compact([newJoker, prevJoker]);
           }),
           toArray(),
-          mergeAll(),
-          mergeMap(preds => {
-            return this.updateMany$(preds).pipe(
+          mergeMap(preds_ => {
+            const preds = preds_.flatMap(x => x);
+            return this.upsertMany$(preds).pipe(
               map(() => Math.round(preds.length / 2))
             );
           })
