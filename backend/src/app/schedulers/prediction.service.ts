@@ -25,9 +25,10 @@ import {
 export interface PredictionService {
   calculatePredictionPoints(): Promise<void>;
   createIfNotExistsCurrentRoundPredictions(): Promise<void>;
+  repickJokerIfMatch(matchId: string, roundId: string): Promise<void>;
 }
 
-export class PredictionServiceImpl {
+export class PredictionServiceImpl implements PredictionService {
   constructor(
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
@@ -107,6 +108,22 @@ export class PredictionServiceImpl {
           );
         }
       }
+    } catch (err: any) {
+      console.log(err.message);
+    }
+  }
+
+  async repickJokerIfMatch(matchId: string, roundId: string): Promise<void> {
+    try {
+      const roundMatches = await lastValueFrom(
+        this.matchRepo.findAll$({ gameRound: roundId })
+      );
+      const predsNb = await lastValueFrom(
+        this.predictionRepo.repickJokerIfMatch(matchId, roundMatches)
+      );
+      console.log(
+        `repickJokerIfMatch: ${String(predsNb)} predictions updated.`
+      );
     } catch (err: any) {
       console.log(err.message);
     }

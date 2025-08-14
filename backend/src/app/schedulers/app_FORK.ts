@@ -62,6 +62,14 @@ process.on('uncaughtException', function (err: unknown) {
 });
 
 process.on('message', function (m: any) {
-  console.log('Message from master:', m);
-  appSchedule.publish(m.message);
+  if (m?.msg) {
+    if (m.msg === 'REPICK_JOKER_IF_MATCH') {
+      void (async () => {
+        await appSchedule.handle(m.msg, m.data);
+        console.log(
+          `Received message to repick joker for match ${m.data.matchId} and round ${m.data.roundId}`
+        );
+      })();
+    }
+  }
 });

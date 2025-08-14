@@ -10,6 +10,7 @@ export enum MatchStatus {
   LIVE = 'LIVE',
   POSTPONED = 'POSTPONED',
   SCHEDULED = 'SCHEDULED',
+  SUSPENDED = 'SUSPENDED',
 }
 
 const MATCH_STATUS: Record<string, MatchStatus> = {
@@ -20,13 +21,38 @@ const MATCH_STATUS: Record<string, MatchStatus> = {
   PAUSED: MatchStatus.LIVE,
   POSTPONED: MatchStatus.POSTPONED,
   SCHEDULED: MatchStatus.SCHEDULED,
-  SUSPENDED: MatchStatus.CANCELED,
+  SUSPENDED: MatchStatus.SUSPENDED,
   TIMED: MatchStatus.SCHEDULED,
 };
+
 export const getMatchStatus = (status: string) => {
   return Object.prototype.hasOwnProperty.call(MATCH_STATUS, status)
     ? MATCH_STATUS[status]
     : MatchStatus.SCHEDULED;
+};
+
+export const isValidStatusTransition = (
+  currentStatus: MatchStatus,
+  newStatus: MatchStatus
+): boolean => {
+  if (currentStatus === newStatus) {
+    return true;
+  }
+
+  const validTransitions: Record<MatchStatus, MatchStatus[]> = {
+    [MatchStatus.CANCELED]: [MatchStatus.POSTPONED, MatchStatus.FINISHED],
+    [MatchStatus.FINISHED]: [],
+    [MatchStatus.LIVE]: [
+      MatchStatus.FINISHED,
+      MatchStatus.SUSPENDED,
+      MatchStatus.CANCELED,
+    ],
+    [MatchStatus.POSTPONED]: [MatchStatus.SCHEDULED, MatchStatus.CANCELED],
+    [MatchStatus.SCHEDULED]: [MatchStatus.LIVE, MatchStatus.FINISHED],
+    [MatchStatus.SUSPENDED]: [MatchStatus.LIVE, MatchStatus.POSTPONED],
+  };
+
+  return validTransitions[currentStatus].includes(newStatus);
 };
 
 export interface Match extends Entity {
@@ -84,7 +110,14 @@ export const matchSchema = schema({
   season: { index: true, ref: 'Season', required: true, type: ObjectId },
   slug: { required: true, trim: true, type: String },
   status: {
-    enum: ['SCHEDULED', 'LIVE', 'CANCELED', 'POSTPONED', 'FINISHED'],
+    enum: [
+      'SCHEDULED',
+      'LIVE',
+      'CANCELED',
+      'SUSPENDED',
+      'POSTPONED',
+      'FINISHED',
+    ],
     required: true,
     type: String,
   },

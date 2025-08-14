@@ -1,7 +1,7 @@
-import { head, isEmpty, uniq } from 'lodash';
+import { compact, head, isEmpty, uniq } from 'lodash';
 import { ProjectionType } from 'mongoose';
 import { from, iif, Observable, of, throwError } from 'rxjs';
-import { filter, map, mergeMap, toArray } from 'rxjs/operators';
+import { filter, map, mergeAll, mergeMap, toArray } from 'rxjs/operators';
 
 import { Score } from '../../common/score.js';
 import { VosePredictorImpl } from '../helpers/vosePredictor.js';
@@ -11,6 +11,7 @@ import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findJokers$(userId: string, roundMatches: Match[]): Observable<Prediction[]>;
+  findJokersByMatch$(matchId: string): Observable<Prediction[]>;
   findOneByUserAndMatch$(
     userId: string,
     matchId: string,
@@ -41,6 +42,10 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     roundMatches: Match[],
     choice: Score
   ): Observable<Prediction | null>;
+  repickJokerIfMatch(
+    matchId: string,
+    roundMatches: Match[]
+  ): Observable<number>;
 }
 
 export class PredictionRepositoryImpl
@@ -60,6 +65,13 @@ export class PredictionRepositoryImpl
       hasJoker: true,
       match: { $in: roundMatches.map(m => m.id) },
       user: userId,
+    });
+  }
+
+  findJokersByMatch$(matchId: string): Observable<Prediction[]> {
+    return this.findAll$({
+      hasJoker: true,
+      match: matchId,
     });
   }
 
@@ -375,6 +387,60 @@ export class PredictionRepositoryImpl
         return this.findByIdAndUpdate$(prediction.id!, {
           choice: { ...choice, isComputerGenerated: false },
         });
+      })
+    );
+  }
+
+  repickJokerIfMatch(
+    matchId: string,
+    roundMatches: Match[]
+  ): Observable<number> {
+    return this.findJokersByMatch$(matchId).pipe(
+      mergeMap(jokers => {
+        if (jokers.length === 0) {
+          return of(0);
+        }
+        const scheduledMatches: Match[] = roundMatches.filter(
+          m => m.status === MatchStatus.SCHEDULED
+        );
+        return from(jokers).pipe(
+          map(joker => {
+            if (scheduledMatches.length === 0) {
+              return { newJoker: null, prevJoker: joker };
+            }
+            const newJokerMatch =
+              scheduledMatches[
+                Math.floor(Math.random() * scheduledMatches.length)
+              ];
+            const { id: matchId, season, slug } = newJokerMatch;
+            const randomScore = VosePredictorImpl.getDefault().predict();
+            const newJokerPred: Prediction = {
+              choice: this.getPredictionScore(randomScore),
+              hasJoker: true,
+              jokerAutoPicked: true,
+              match: matchId!,
+              matchSlug: slug,
+              season,
+              user: joker.user,
+            };
+            return {
+              newJoker: newJokerPred,
+              prevJoker: joker,
+            };
+          }),
+          map(({ newJoker, prevJoker }) => {
+            prevJoker.hasJoker = false;
+            prevJoker.jokerAutoPicked = false;
+            return compact([newJoker, prevJoker]);
+          }),
+          toArray(),
+          mergeAll(),
+          mergeMap(preds => {
+            return this.updateMany$(preds).pipe(
+              map(() => Math.round(preds.length / 2))
+            );
+          })
+        );
       })
     );
   }

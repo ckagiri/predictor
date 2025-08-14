@@ -27,11 +27,14 @@ export class PredictionPointsScheduler extends BaseScheduler {
     });
   }
 
-  public static getInstance(
-    predictionsService = PredictionServiceImpl.getInstance(),
-    eventMediator = EventMediatorImpl.getInstance()
-  ) {
-    return new PredictionPointsScheduler(predictionsService, eventMediator);
+  static getInstance(
+    predictionService?: PredictionService,
+    eventMediator?: EventMediator
+  ): PredictionPointsScheduler {
+    return new PredictionPointsScheduler(
+      predictionService ?? PredictionServiceImpl.getInstance(),
+      eventMediator ?? EventMediatorImpl.getInstance()
+    );
   }
 
   async task() {
