@@ -5,6 +5,7 @@ import { makeGetRoundMatchController } from './getRoundMatch.controller.js';
 import { makeGetRoundMatchesController } from './getRoundMatches.controller.js';
 import { makeGetSeasonMatchController } from './getSeasonMatch.controller.js';
 import { makeGetSeasonMatchesController } from './getSeasonMatches.controller.js';
+import { makeUpdateSeasonMatchController } from './updateSeasonMatch.controller.js';
 
 export default {
   use: (competitionsRouter: Router) => {
@@ -15,6 +16,14 @@ export default {
     competitionsRouter.get(
       '/:competition/seasons/:season/matches/:slug',
       handleRequest(makeGetSeasonMatchController)
+    );
+    competitionsRouter.patch(
+      '/:competition/seasons/:season/matches/:slug',
+      handleRequest(makeUpdateSeasonMatchController)
+    );
+    competitionsRouter.put(
+      '/:competition/seasons/:season/matches/:slug',
+      handleRequest(makeUpdateSeasonMatchController)
     );
     competitionsRouter.get(
       '/:competition/seasons/:season/rounds/:round/matches',

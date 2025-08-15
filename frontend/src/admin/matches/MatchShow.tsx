@@ -38,7 +38,7 @@ const MatchShowView = () => {
           <div>
             <Typography variant="caption">Score</Typography>
             <Typography variant="body2">
-              {data.result.goalsHomeTeam} - {data.result.goalsAwayTeam}
+              {data.result?.goalsHomeTeam} - {data.result?.goalsAwayTeam}
             </Typography>
           </div>
         </Stack>

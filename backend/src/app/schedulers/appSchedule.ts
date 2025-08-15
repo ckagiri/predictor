@@ -1,6 +1,10 @@
 import schedule from 'node-schedule';
 
 import {
+  EventMediator,
+  EventMediatorImpl,
+} from '../../common/eventMediator.js';
+import {
   CurrentRoundMatchesService,
   CurrentRoundMatchesServiceImpl,
 } from './footballApi/matches.currentRound.service.js';
@@ -17,8 +21,10 @@ export class AppSchedule {
   private readonly predictionPointsScheduler: PredictionPointsScheduler;
   private readonly seasonNextRoundScheduler: SeasonNextRoundScheduler;
   private readonly todayAndMorrowScheduler: TodayAndMorrowScheduler;
+  private readonly eventMediator: EventMediator;
 
   constructor() {
+    this.eventMediator = EventMediatorImpl.getInstance();
     this.currentRoundMatchesService =
       CurrentRoundMatchesServiceImpl.getInstance();
     this.todayAndMorrowScheduler = TodayAndMorrowScheduler.getInstance();
@@ -32,8 +38,8 @@ export class AppSchedule {
     return new AppSchedule();
   }
 
-  publish(message: string) {
-    console.log(`Publish: ${message}`);
+  handle(message: string, data: any) {
+    this.eventMediator.publish(message, data);
   }
 
   async shutdown() {

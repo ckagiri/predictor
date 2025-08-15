@@ -5,28 +5,62 @@ import { Entity, schema } from './base.model.js';
 import { Prediction } from './prediction.model.js';
 
 export enum MatchStatus {
-  CANCELED = 'CANCELED',
+  CANCELLED = 'CANCELLED',
   FINISHED = 'FINISHED',
   LIVE = 'LIVE',
   POSTPONED = 'POSTPONED',
   SCHEDULED = 'SCHEDULED',
+  SUSPENDED = 'SUSPENDED',
 }
 
 const MATCH_STATUS: Record<string, MatchStatus> = {
   AWARDED: MatchStatus.FINISHED,
-  CANCELLED: MatchStatus.CANCELED,
+  CANCELLED: MatchStatus.CANCELLED,
   FINISHED: MatchStatus.FINISHED,
   IN_PLAY: MatchStatus.LIVE,
   PAUSED: MatchStatus.LIVE,
   POSTPONED: MatchStatus.POSTPONED,
   SCHEDULED: MatchStatus.SCHEDULED,
-  SUSPENDED: MatchStatus.CANCELED,
+  SUSPENDED: MatchStatus.SUSPENDED,
   TIMED: MatchStatus.SCHEDULED,
 };
+
 export const getMatchStatus = (status: string) => {
   return Object.prototype.hasOwnProperty.call(MATCH_STATUS, status)
     ? MATCH_STATUS[status]
     : MatchStatus.SCHEDULED;
+};
+
+export const isValidStatusTransition = (
+  currentStatus: MatchStatus,
+  newStatus: MatchStatus
+): boolean => {
+  if (currentStatus === newStatus) {
+    return true;
+  }
+
+  const validTransitions: Record<MatchStatus, MatchStatus[]> = {
+    [MatchStatus.CANCELLED]: [
+      MatchStatus.SCHEDULED,
+      MatchStatus.FINISHED,
+      MatchStatus.POSTPONED,
+    ],
+    [MatchStatus.FINISHED]: [],
+    [MatchStatus.LIVE]: [
+      MatchStatus.FINISHED,
+      MatchStatus.SUSPENDED,
+      MatchStatus.CANCELLED,
+    ],
+    [MatchStatus.POSTPONED]: [MatchStatus.SCHEDULED, MatchStatus.CANCELLED],
+    [MatchStatus.SCHEDULED]: [
+      MatchStatus.LIVE,
+      MatchStatus.FINISHED,
+      MatchStatus.CANCELLED,
+    ],
+    [MatchStatus.SUSPENDED]: [MatchStatus.LIVE, MatchStatus.POSTPONED],
+  };
+
+  return validTransitions[currentStatus].includes(newStatus);
 };
 
 export interface Match extends Entity {
@@ -84,7 +118,14 @@ export const matchSchema = schema({
   season: { index: true, ref: 'Season', required: true, type: ObjectId },
   slug: { required: true, trim: true, type: String },
   status: {
-    enum: ['SCHEDULED', 'LIVE', 'CANCELED', 'POSTPONED', 'FINISHED'],
+    enum: [
+      'SCHEDULED',
+      'LIVE',
+      'CANCELLED',
+      'SUSPENDED',
+      'POSTPONED',
+      'FINISHED',
+    ],
     required: true,
     type: String,
   },

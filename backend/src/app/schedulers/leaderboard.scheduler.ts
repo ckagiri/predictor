@@ -16,9 +16,9 @@ const DEFAULT_INTERVAL_MILLISECONDS = 6 * 60 * 60 * 1000; // 6H
 
 export class LeaderboardScheduler extends BaseScheduler {
   constructor(
+    private eventMediator: EventMediator,
     private leaderboardService: LeaderboardService,
-    private predictionService: PredictionService,
-    private eventMediator: EventMediator
+    private predictionService: PredictionService
   ) {
     super('LeaderboardJob');
     this.eventMediator.addListener(
@@ -33,14 +33,14 @@ export class LeaderboardScheduler extends BaseScheduler {
   }
 
   public static getInstance(
+    eventMediator = EventMediatorImpl.getInstance(),
     leaderboardService = LeaderboardServiceImpl.getInstance(),
-    predictionService = PredictionServiceImpl.getInstance(),
-    eventMediator = EventMediatorImpl.getInstance()
+    predictionService = PredictionServiceImpl.getInstance()
   ) {
     return new LeaderboardScheduler(
+      eventMediator,
       leaderboardService,
-      predictionService,
-      eventMediator
+      predictionService
     );
   }
 

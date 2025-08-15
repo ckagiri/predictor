@@ -10,8 +10,8 @@ import {
 
 export class PredictionPointsScheduler extends BaseScheduler {
   constructor(
-    private predictionService: PredictionService,
-    private eventMediator: EventMediator
+    private eventMediator: EventMediator,
+    private predictionService: PredictionService
   ) {
     super('PredictionPointsJob');
     this.eventMediator.addListener('liveMatchUpdateFinished', async () => {
@@ -25,13 +25,28 @@ export class PredictionPointsScheduler extends BaseScheduler {
         'lastLiveMatchUpdate_predictionPointsCalculated'
       );
     });
+    this.eventMediator.addListener(
+      'REPICK_JOKER_IF_MATCH',
+      async ({ matchId, roundId }: { matchId: string; roundId: string }) => {
+        console.log(
+          `Received message to repick joker for match ${matchId} and round ${roundId}`
+        );
+        const nbUpdates = await this.predictionService.repickJokerIfMatch({
+          matchId,
+          roundId,
+        });
+        console.log(
+          `Repicked joker for ${String(nbUpdates)} prediction(s) for match ${matchId} and round ${roundId}`
+        );
+      }
+    );
   }
 
-  public static getInstance(
-    predictionsService = PredictionServiceImpl.getInstance(),
-    eventMediator = EventMediatorImpl.getInstance()
-  ) {
-    return new PredictionPointsScheduler(predictionsService, eventMediator);
+  static getInstance(
+    eventMediator = EventMediatorImpl.getInstance(),
+    predictionService = PredictionServiceImpl.getInstance()
+  ): PredictionPointsScheduler {
+    return new PredictionPointsScheduler(eventMediator, predictionService);
   }
 
   async task() {

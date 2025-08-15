@@ -5,6 +5,7 @@ export default interface HttpRequestModel {
   auth?: JwtPayload; // Optional user object, can be used for authenticated requests
   body: any;
   headers: IncomingHttpHeaders;
+  node2?: any; // Optional, used for inter-service communication
   params: ParamsDictionary;
   query: ParsedQs;
 }

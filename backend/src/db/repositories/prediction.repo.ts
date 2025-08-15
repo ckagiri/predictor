@@ -1,4 +1,4 @@
-import { head, isEmpty, uniq } from 'lodash';
+import { compact, head, isEmpty, uniq } from 'lodash';
 import { ProjectionType } from 'mongoose';
 import { from, iif, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeMap, toArray } from 'rxjs/operators';
@@ -11,6 +11,7 @@ import { BaseRepository, BaseRepositoryImpl } from './base.repo.js';
 
 export interface PredictionRepository extends BaseRepository<Prediction> {
   findJokers$(userId: string, roundMatches: Match[]): Observable<Prediction[]>;
+  findJokersByMatch$(matchId: string): Observable<Prediction[]>;
   findOneByUserAndMatch$(
     userId: string,
     matchId: string,
@@ -41,6 +42,10 @@ export interface PredictionRepository extends BaseRepository<Prediction> {
     roundMatches: Match[],
     choice: Score
   ): Observable<Prediction | null>;
+  repickJokerIfMatch(
+    matchId: string,
+    roundMatches: Match[]
+  ): Observable<number>;
 }
 
 export class PredictionRepositoryImpl
@@ -60,6 +65,13 @@ export class PredictionRepositoryImpl
       hasJoker: true,
       match: { $in: roundMatches.map(m => m.id) },
       user: userId,
+    });
+  }
+
+  findJokersByMatch$(matchId: string): Observable<Prediction[]> {
+    return this.findAll$({
+      hasJoker: true,
+      match: matchId,
     });
   }
 
@@ -375,6 +387,58 @@ export class PredictionRepositoryImpl
         return this.findByIdAndUpdate$(prediction.id!, {
           choice: { ...choice, isComputerGenerated: false },
         });
+      })
+    );
+  }
+
+  repickJokerIfMatch(
+    matchId: string,
+    roundMatches: Match[]
+  ): Observable<number> {
+    return this.findJokersByMatch$(matchId).pipe(
+      mergeMap(jokers => {
+        if (jokers.length === 0) {
+          return of(0);
+        }
+        const scheduledMatches: Match[] = roundMatches.filter(
+          m => m.status === MatchStatus.SCHEDULED
+        );
+        return from(jokers).pipe(
+          mergeMap(prevJoker => {
+            prevJoker.hasJoker = false;
+            prevJoker.jokerAutoPicked = false;
+            if (scheduledMatches.length === 0) {
+              return of({ newJoker: null, prevJoker });
+            }
+            const newJokerMatch =
+              scheduledMatches[
+                Math.floor(Math.random() * scheduledMatches.length)
+              ];
+            return this.findOneByUserAndMatch$(
+              prevJoker.user,
+              newJokerMatch.id!
+            ).pipe(
+              map(newJoker => {
+                if (newJoker) {
+                  newJoker.hasJoker = true;
+                  newJoker.jokerAutoPicked = true;
+                  return { newJoker, prevJoker };
+                }
+                return { newJoker: null, prevJoker: null }; // ensure we return something
+              })
+            );
+          }),
+          map(({ newJoker, prevJoker }) => {
+            return compact([newJoker, prevJoker]);
+          }),
+          toArray(),
+          mergeMap(preds_ => {
+            const preds = preds_.flatMap(x => x);
+            return this.updateMany$(preds).pipe(
+              map(() => Math.round(preds.length / 2))
+            );
+          })
+        );
       })
     );
   }

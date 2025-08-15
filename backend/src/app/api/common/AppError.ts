@@ -1,6 +1,6 @@
 import * as constants from './constants.js';
 
-export interface ValidationMessage {
+export interface ValidationError {
   field?: string;
   msg: string;
   param?: string;
@@ -8,7 +8,7 @@ export interface ValidationMessage {
 
 class AppError extends Error {
   code?: string;
-  validationErrors?: ValidationMessage[];
+  validationErrors?: ValidationError[];
 
   constructor({
     cause,
@@ -21,7 +21,7 @@ class AppError extends Error {
     code?: string;
     message?: string;
     name: string;
-    validationErrors?: ValidationMessage[];
+    validationErrors?: ValidationError[];
   }) {
     super(message, { cause });
     this.name = name || 'internal-server-error';
@@ -50,8 +50,8 @@ class AppError extends Error {
   }
 
   static validationFailed(
-    message: string | ValidationMessage[],
-    validationErrors?: ValidationMessage[]
+    message: string | ValidationError[],
+    validationErrors?: ValidationError[]
   ) {
     return new AppError({
       code: constants.ERR_VALIDATION,

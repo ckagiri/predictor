@@ -62,6 +62,15 @@ process.on('uncaughtException', function (err: unknown) {
 });
 
 process.on('message', function (m: any) {
-  console.log('Message from master:', m);
-  appSchedule.publish(m.message);
+  if (m?.msg) {
+    if (m.msg === 'REPICK_JOKER_IF_MATCH') {
+      // With setImmediate(), callbacks run after I/O.
+      // FYI: process.nextTick() queues up callbacks that run in the event loop before I/O.
+      setImmediate(() => {
+        appSchedule.handle(m.msg, m.data);
+      });
+    } else {
+      console.log('Received message from main: ', m);
+    }
+  }
 });
