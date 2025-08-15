@@ -38,7 +38,6 @@ jobs:
         with:
           context: .
           file: ./config/server/Dockerfile
-          target: prod
           build-args: |
             APP_ENV=prod
           push: true
