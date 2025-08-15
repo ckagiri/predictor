@@ -38,10 +38,13 @@ jobs:
         with:
           context: .
           file: ./config/server/Dockerfile
+          target: prod
           build-args: |
             APP_ENV=prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/ligi:api
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
 
       - name: Build and push ligi-web
         uses: docker/build-push-action@v6
