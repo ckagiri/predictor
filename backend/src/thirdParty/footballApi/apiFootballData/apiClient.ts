@@ -3,7 +3,7 @@ import axios from 'axios';
 import DateUtil from '../../../common/dateUtil.js';
 import { FootballApiClient } from '../apiClient.js';
 
-const BASE_URL = 'http://api.football-data.org/v4';
+const BASE_URL = 'https://api.football-data.org/v4';
 
 class ApiFootballDataClient implements FootballApiClient {
   constructor(private apiKey: string) {}
@@ -53,11 +53,11 @@ class ApiFootballDataClient implements FootballApiClient {
   async getLiveMatches(
     competitions: string[] | number[] = ['PL']
   ): Promise<any> {
-    const url = `${BASE_URL}/competitions/${competitions.join(',')}/matches`;
+    const url = `${BASE_URL}/matches`;
     const response = await axios.get(
       url,
       this.options({
-        competitions: competitions,
+        competitions: competitions.join(','),
         status: 'LIVE',
       })
     );
