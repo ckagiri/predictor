@@ -109,7 +109,8 @@ const team7Vteam8 = a.match
   .setHomeScore(4)
   .setAwayScore(1);
 
-describe.only('RepickJokerIfMatch', function () {
+// Todo: Finish this test
+describe('RepickJokerIfMatch', function () {
   before(async () => {
     await memoryDb.connect();
   });
@@ -137,25 +138,20 @@ describe.only('RepickJokerIfMatch', function () {
   });
 
   it('should repickJokerIfMatch', async () => {
-    const nbPreds = await predictionService.repickJokerIfMatch(
-      team1Vteam2.id,
-      gw1.id
-    );
-    // expect(nbPreds).to.equal(2);
+    const nbPreds = await predictionService.repickJokerIfMatch({
+      matchId: team1Vteam2.id,
+      roundId: gw1.id,
+    });
+    expect(nbPreds).to.equal(0);
     const jokerPreds = await lastValueFrom(
       predictionRepo.findAll$({
         hasJoker: true,
       })
     );
-    console.log('jokerPreds length:', jokerPreds.length);
     const matches = await lastValueFrom(
       matchRepo.findAll$({
         _id: { $in: jokerPreds.map(p => p.match) },
       })
-    );
-    console.log(
-      'matches',
-      matches.map(m => m.slug.toString())
     );
   });
 });

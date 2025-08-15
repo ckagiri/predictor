@@ -5,8 +5,7 @@ import { of } from 'rxjs';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import { FailureResult } from '../../../../../app/api/common/result';
-import UpdateMatchUseCase from '../../../../../app/api/data/matches/useCases/updateMatch.useCase';
+import UpdateMatchUseCase from '../../../../../app/api/data/matches/useCases/updateSeasonMatch.useCase';
 import { MatchStatus } from '../../../../../db/models/match.model';
 import {
   CompetitionRepository,
@@ -64,7 +63,7 @@ describe('UpdateMatch Use Case', () => {
       matchDetails: {
         gameRound: '',
         matchday: 0,
-        status: MatchStatus.CANCELED,
+        status: MatchStatus.CANCELLED,
       },
       season: 'test-season',
       slug: 'test-match',
@@ -72,15 +71,4 @@ describe('UpdateMatch Use Case', () => {
 
     expect(workerDouble.send).to.have.been.calledOnce;
   });
-
-  // it('should throw an error if team not found', async () => {
-  //   matchRepo.findOne$ = sinon.stub().returns(of(null));
-
-  //   const useCase = UpdateMatchUseCase.getInstance(responder, matchRepo);
-  //   await expect(useCase.execute('fooBar')).to.be.rejectedWith(
-  //     FailureResult,
-  //     'Could not find team with slug fooBar'
-  //   );
-  //   expect(respondSpy).to.not.have.been.called;
-  // });
 });

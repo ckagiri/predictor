@@ -6,22 +6,22 @@ import HttpRequestModel from '../../common/interfaces/HttpRequestModel';
 import OkResponder from '../../common/responders/ok.responder';
 import { FailureResult } from '../../common/result';
 import Validator from '../../common/validation/validator';
-import { updateMatchValidator } from './matches.validator';
-import UpdateMatchUseCase, {
+import { updateSeasonMatchValidator } from './matches.validator';
+import UpdateSeasonMatchUseCase, {
   RequestModel,
-} from './useCases/updateMatch.useCase';
+} from './useCases/updateSeasonMatch.useCase';
 
-export default class UpdateMatchController {
+export default class UpdateSeasonMatchController {
   constructor(
-    private readonly useCase: UpdateMatchUseCase,
+    private readonly useCase: UpdateSeasonMatchUseCase,
     private readonly validation: Validator
   ) {}
 
   static getInstance(
-    useCase: UpdateMatchUseCase,
-    validation = updateMatchValidator
+    useCase: UpdateSeasonMatchUseCase,
+    validation = updateSeasonMatchValidator
   ) {
-    return new UpdateMatchController(useCase, validation);
+    return new UpdateSeasonMatchController(useCase, validation);
   }
 
   async processRequest(request: HttpRequestModel): Promise<void> {
@@ -44,10 +44,10 @@ export default class UpdateMatchController {
     }
     await this.useCase.execute(requestModel);
   }
-
-  makeUpdateMatchController = (res: Response, req: Request) => {
-    const okResponder = new OkResponder(res);
-    const useCase = UpdateMatchUseCase.getInstance(okResponder);
-    return UpdateMatchController.getInstance(useCase);
-  };
 }
+
+export const makeUpdateSeasonMatchController = (res: Response) => {
+  const okResponder = new OkResponder(res);
+  const useCase = UpdateSeasonMatchUseCase.getInstance(okResponder);
+  return UpdateSeasonMatchController.getInstance(useCase);
+};

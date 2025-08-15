@@ -352,7 +352,7 @@ export class Seeder {
                 slug: homeTeam.slug,
               },
               season: seasonId,
-              slug: `${String(homeTeam.tla).toLowerCase()}-v-${String(awayTeam.tla).toLowerCase()}`,
+              slug: `${String(homeTeam.tla).toLowerCase()}-${String(awayTeam.tla).toLowerCase()}`,
               status: 'SCHEDULED',
               utcDate: new Date().toUTCString(), // TODO: set better kickoff
             };

@@ -25,6 +25,21 @@ export class PredictionPointsScheduler extends BaseScheduler {
         'lastLiveMatchUpdate_predictionPointsCalculated'
       );
     });
+    this.eventMediator.addListener(
+      'REPICK_JOKER_IF_MATCH',
+      async ({ matchId, roundId }: { matchId: string; roundId: string }) => {
+        console.log(
+          `Received message to repick joker for match ${matchId} and round ${roundId}`
+        );
+        const nbUpdates = await this.predictionService.repickJokerIfMatch({
+          matchId,
+          roundId,
+        });
+        console.log(
+          `Repicked joker for ${String(nbUpdates)} prediction(s) for match ${matchId} and round ${roundId}`
+        );
+      }
+    );
   }
 
   static getInstance(

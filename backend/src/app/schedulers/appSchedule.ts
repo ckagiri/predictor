@@ -39,13 +39,7 @@ export class AppSchedule {
   }
 
   handle(message: string, data: any) {
-    if (message === 'REPICK_JOKER_IF_MATCH') {
-      const { matchId, roundId } = data as { matchId: string; roundId: string };
-      this.eventMediator.publish('RE_PICK_JOKER_IF_MATCH', {
-        matchId,
-        roundId,
-      });
-    }
+    this.eventMediator.publish(message, data);
   }
 
   async shutdown() {

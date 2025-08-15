@@ -1,15 +1,11 @@
 import { lastValueFrom } from 'rxjs';
 
-import AppError, {
-  ValidationError,
-} from '../../../../../app/api/common/AppError.js';
-import Result from '../../../../../app/api/common/result/index.js';
-import { Odds, Score } from '../../../../../common/score';
+import { Odds, Score } from '../../../../../common/score.js';
 import {
   isValidStatusTransition,
   Match,
   MatchStatus,
-} from '../../../../../db/models/match.model';
+} from '../../../../../db/models/match.model.js';
 import {
   CompetitionRepository,
   CompetitionRepositoryImpl,
@@ -18,8 +14,10 @@ import {
   SeasonRepository,
   SeasonRepositoryImpl,
 } from '../../../../../db/repositories/index.js';
-import Responder from '../../../../api/common/responders/Responder.js';
+import AppError, { ValidationError } from '../../../common/AppError.js';
 import { BackgroundWorker } from '../../../common/BackgroundWorker.js';
+import Responder from '../../../common/responders/Responder.js';
+import Result from '../../../common/result/index.js';
 import { makeGetMatchesValidator } from '../../useCase.validators.js';
 
 export interface RequestModel {
@@ -33,7 +31,7 @@ interface MatchDetails {
   matchday?: number;
   odds?: Odds;
   score?: Score;
-  status: MatchStatus;
+  status?: MatchStatus;
   utcDate?: Date;
   venue?: string;
 }
@@ -42,7 +40,7 @@ interface MatchPartial {
   roundId: string;
   status: MatchStatus;
 }
-export default class UpdateMatchUseCase {
+export default class UpdateSeasonMatchUseCase {
   private backgroundWorker: BackgroundWorker | null = null;
 
   constructor(
@@ -58,7 +56,7 @@ export default class UpdateMatchUseCase {
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance()
   ) {
-    return new UpdateMatchUseCase(
+    return new UpdateSeasonMatchUseCase(
       responder,
       competitionRepo,
       seasonRepo,
@@ -100,7 +98,7 @@ export default class UpdateMatchUseCase {
 
       if (validationErrors.length > 0) {
         throw Result.fail(
-          AppError.validationFailed('Bad data', validationErrors)
+          AppError.validationFailed('Bad Data', validationErrors)
         );
       }
 
@@ -202,9 +200,12 @@ export default class UpdateMatchUseCase {
       });
     }
 
-    if (!isValidStatusTransition(foundMatch.status!, matchDetails.status)) {
+    if (
+      matchDetails.status &&
+      !isValidStatusTransition(foundMatch.status!, matchDetails.status)
+    ) {
       errors.push({
-        msg: `Cannot update match ${foundMatch.slug} from status ${foundMatch.status} to ${matchDetails.status}`,
+        msg: `Cannot update match ${foundMatch.slug} from status ${foundMatch.status!} to ${matchDetails.status}`,
         param: 'status',
       });
     }
@@ -222,7 +223,7 @@ function shouldRepickJoker({
 }): boolean {
   if (
     original.status === MatchStatus.SCHEDULED &&
-    [MatchStatus.CANCELED, MatchStatus.POSTPONED].includes(updated.status)
+    [MatchStatus.CANCELLED, MatchStatus.POSTPONED].includes(updated.status)
   ) {
     return true;
   }

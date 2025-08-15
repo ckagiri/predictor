@@ -67,9 +67,6 @@ process.on('message', function (m: any) {
       // With setImmediate(), callbacks run after I/O.
       // FYI: process.nextTick() queues up callbacks that run in the event loop before I/O.
       setImmediate(() => {
-        console.log(
-          `Received message to repick joker for match ${m.data.matchId} and round ${m.data.roundId}`
-        );
         appSchedule.handle(m.msg, m.data);
       });
     } else {

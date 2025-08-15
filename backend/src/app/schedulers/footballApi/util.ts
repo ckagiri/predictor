@@ -42,7 +42,7 @@ export const repickJoker = (apiMatch: any, dbMatch: Match) => {
   const apiMatchStatus = getMatchStatus(apiMatch.status);
   if (
     dbMatch.status === MatchStatus.SCHEDULED &&
-    [MatchStatus.CANCELED, MatchStatus.POSTPONED].includes(apiMatchStatus)
+    [MatchStatus.CANCELLED, MatchStatus.POSTPONED].includes(apiMatchStatus)
   ) {
     return true;
   }

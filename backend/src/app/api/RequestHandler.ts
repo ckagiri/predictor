@@ -40,6 +40,7 @@ export default class RequestHandler {
       auth: req.auth, // Optional user object for authenticated requests
       body: req.body,
       headers: req.headers,
+      node2: (req as any).node2, // Optional, used for inter-service communication
       params: req.params,
       query: req.query,
     };

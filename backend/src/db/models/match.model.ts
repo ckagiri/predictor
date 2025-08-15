@@ -5,7 +5,7 @@ import { Entity, schema } from './base.model.js';
 import { Prediction } from './prediction.model.js';
 
 export enum MatchStatus {
-  CANCELED = 'CANCELED',
+  CANCELLED = 'CANCELLED',
   FINISHED = 'FINISHED',
   LIVE = 'LIVE',
   POSTPONED = 'POSTPONED',
@@ -15,7 +15,7 @@ export enum MatchStatus {
 
 const MATCH_STATUS: Record<string, MatchStatus> = {
   AWARDED: MatchStatus.FINISHED,
-  CANCELLED: MatchStatus.CANCELED,
+  CANCELLED: MatchStatus.CANCELLED,
   FINISHED: MatchStatus.FINISHED,
   IN_PLAY: MatchStatus.LIVE,
   PAUSED: MatchStatus.LIVE,
@@ -40,18 +40,22 @@ export const isValidStatusTransition = (
   }
 
   const validTransitions: Record<MatchStatus, MatchStatus[]> = {
-    [MatchStatus.CANCELED]: [MatchStatus.POSTPONED, MatchStatus.FINISHED],
+    [MatchStatus.CANCELLED]: [
+      MatchStatus.SCHEDULED,
+      MatchStatus.FINISHED,
+      MatchStatus.POSTPONED,
+    ],
     [MatchStatus.FINISHED]: [],
     [MatchStatus.LIVE]: [
       MatchStatus.FINISHED,
       MatchStatus.SUSPENDED,
-      MatchStatus.CANCELED,
+      MatchStatus.CANCELLED,
     ],
-    [MatchStatus.POSTPONED]: [MatchStatus.SCHEDULED, MatchStatus.CANCELED],
+    [MatchStatus.POSTPONED]: [MatchStatus.SCHEDULED, MatchStatus.CANCELLED],
     [MatchStatus.SCHEDULED]: [
       MatchStatus.LIVE,
       MatchStatus.FINISHED,
-      MatchStatus.POSTPONED,
+      MatchStatus.CANCELLED,
     ],
     [MatchStatus.SUSPENDED]: [MatchStatus.LIVE, MatchStatus.POSTPONED],
   };
@@ -117,7 +121,7 @@ export const matchSchema = schema({
     enum: [
       'SCHEDULED',
       'LIVE',
-      'CANCELED',
+      'CANCELLED',
       'SUSPENDED',
       'POSTPONED',
       'FINISHED',

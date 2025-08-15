@@ -10,31 +10,31 @@ export interface EventMediator {
 
 export class EventMediatorImpl implements EventMediator {
   private static classInstance: EventMediatorImpl | null = null;
-  public emitter: EventEmitter;
+  emitter: EventEmitter;
 
   constructor() {
     this.emitter = new EventEmitter();
   }
 
-  public static getInstance(): EventMediator {
+  static getInstance(): EventMediator {
     EventMediatorImpl.classInstance ??= new EventMediatorImpl();
     return EventMediatorImpl.classInstance;
   }
 
-  public addListener(event: string, listener: any) {
+  addListener(event: string, listener: any) {
     this.emitter.addListener(event, listener);
     return this;
   }
 
-  public eventNames() {
+  eventNames() {
     return this.emitter.eventNames();
   }
 
-  public publish(event: string, ...args: any[]) {
+  publish(event: string, ...args: any[]) {
     return this.emitter.emit(event, ...args);
   }
 
-  public removeAllListeners(event?: string) {
+  removeAllListeners(event?: string) {
     if (event) {
       this.emitter.removeAllListeners(event);
     } else {
@@ -43,7 +43,7 @@ export class EventMediatorImpl implements EventMediator {
     return this;
   }
 
-  public removeListener(event: string, listener: any) {
+  removeListener(event: string, listener: any) {
     this.emitter.removeListener(event, listener);
     return this;
   }

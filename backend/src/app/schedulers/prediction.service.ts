@@ -1,6 +1,5 @@
 import { compact, isEmpty } from 'lodash';
 import { lastValueFrom } from 'rxjs';
-import { EventMediator, EventMediatorImpl } from 'src/common/eventMediator.js';
 
 import {
   CompetitionRepository,
@@ -37,23 +36,14 @@ export interface PredictionService {
 
 export class PredictionServiceImpl implements PredictionService {
   constructor(
-    private eventMediator: EventMediator,
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
     private matchRepo: MatchRepository,
     private predictionRepo: PredictionRepository,
     private predictionProcessor: PredictionProcessor
-  ) {
-    this.eventMediator.addListener(
-      'RE_PICK_JOKER_IF_MATCH',
-      async ({ matchId, roundId }: { matchId: string; roundId: string }) => {
-        await this.repickJokerIfMatch({ matchId, roundId });
-      }
-    );
-  }
+  ) {}
 
   public static getInstance(
-    eventMediator = EventMediatorImpl.getInstance(),
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance(),
@@ -61,7 +51,6 @@ export class PredictionServiceImpl implements PredictionService {
     predictionProcessor = PredictionProcessorImpl.getInstance(predictionRepo)
   ): PredictionService {
     return new PredictionServiceImpl(
-      eventMediator,
       competitionRepo,
       seasonRepo,
       matchRepo,
@@ -143,9 +132,6 @@ export class PredictionServiceImpl implements PredictionService {
       );
       const nbPreds = await lastValueFrom(
         this.predictionRepo.repickJokerIfMatch(matchId, roundMatches)
-      );
-      console.log(
-        `repickJokerIfMatch: ${String(nbPreds)} predictions updated.`
       );
       return nbPreds;
     } catch (err: any) {
