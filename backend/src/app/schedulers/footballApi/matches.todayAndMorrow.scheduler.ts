@@ -33,8 +33,8 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
   private scheduleDate?: Date;
 
   constructor(
-    private todayAndMorrowService: TodayAndMorrowService,
-    private eventMediator: EventMediator
+    private eventMediator: EventMediator,
+    private todayAndMorrowService: TodayAndMorrowService
   ) {
     super('TodayAndMorrowSchedulerJob');
     this.job.on('scheduled', (scheduleDate: Date) => {
@@ -42,15 +42,17 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         this.scheduleDate = scheduleDate;
         return;
       }
-      console.log(`${this.job.name} onScheduled ${scheduleDate.toISOString()}`);
+      console.log(
+        `${this.job.name} Scheduled on ${scheduleDate.toISOString()}`
+      );
     });
   }
 
   static getInstance(
-    todayAndMorrowService = TodayAndMorrowServiceImpl.getInstance(),
-    eventMediator = EventMediatorImpl.getInstance()
+    eventMediator = EventMediatorImpl.getInstance(),
+    todayAndMorrowService = TodayAndMorrowServiceImpl.getInstance()
   ) {
-    return new TodayAndMorrowScheduler(todayAndMorrowService, eventMediator);
+    return new TodayAndMorrowScheduler(eventMediator, todayAndMorrowService);
   }
 
   calculateNextInterval(apiMatches: ApiMatch[] = []): number {

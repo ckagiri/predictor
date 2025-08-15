@@ -64,12 +64,16 @@ process.on('uncaughtException', function (err: unknown) {
 process.on('message', function (m: any) {
   if (m?.msg) {
     if (m.msg === 'REPICK_JOKER_IF_MATCH') {
-      void (async () => {
-        await appSchedule.handle(m.msg, m.data);
+      // With setImmediate(), callbacks run after I/O.
+      // FYI: process.nextTick() queues up callbacks that run in the event loop before I/O.
+      setImmediate(() => {
         console.log(
           `Received message to repick joker for match ${m.data.matchId} and round ${m.data.roundId}`
         );
-      })();
+        appSchedule.handle(m.msg, m.data);
+      });
+    } else {
+      console.log('Received message from main: ', m);
     }
   }
 });

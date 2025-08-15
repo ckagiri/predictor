@@ -10,17 +10,17 @@ import {
 
 export class SeasonNextRoundScheduler extends BaseScheduler {
   constructor(
-    private seasonNextRoundService: SeasonNextRoundService,
-    private eventMediator: EventMediator
+    private eventMediator: EventMediator,
+    private seasonNextRoundService: SeasonNextRoundService
   ) {
     super('SeasonNextRoundJob');
   }
 
   public static getInstance(
-    seasonNextRoundService = SeasonNextRoundServiceImpl.getInstance(),
-    eventMediator = EventMediatorImpl.getInstance()
+    eventMediator = EventMediatorImpl.getInstance(),
+    seasonNextRoundService = SeasonNextRoundServiceImpl.getInstance()
   ) {
-    return new SeasonNextRoundScheduler(seasonNextRoundService, eventMediator);
+    return new SeasonNextRoundScheduler(eventMediator, seasonNextRoundService);
   }
 
   async task() {

@@ -10,8 +10,8 @@ import {
 
 export class PredictionPointsScheduler extends BaseScheduler {
   constructor(
-    private predictionService: PredictionService,
-    private eventMediator: EventMediator
+    private eventMediator: EventMediator,
+    private predictionService: PredictionService
   ) {
     super('PredictionPointsJob');
     this.eventMediator.addListener('liveMatchUpdateFinished', async () => {
@@ -28,13 +28,10 @@ export class PredictionPointsScheduler extends BaseScheduler {
   }
 
   static getInstance(
-    predictionService?: PredictionService,
-    eventMediator?: EventMediator
+    eventMediator = EventMediatorImpl.getInstance(),
+    predictionService = PredictionServiceImpl.getInstance()
   ): PredictionPointsScheduler {
-    return new PredictionPointsScheduler(
-      predictionService ?? PredictionServiceImpl.getInstance(),
-      eventMediator ?? EventMediatorImpl.getInstance()
-    );
+    return new PredictionPointsScheduler(eventMediator, predictionService);
   }
 
   async task() {

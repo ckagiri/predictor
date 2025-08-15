@@ -20,12 +20,12 @@ export const getMatchValidator = new JoiValidator(GetMatchSchema);
 
 const predictionSlipSchema = Joi.object()
   .pattern(
-    Joi.string().min(9).max(9), // key type
+    Joi.string().min(7).max(9), // key type
     Joi.string().min(3).max(3) // value type
   )
   .min(1)
   .message(
-    'Prediction(s) must have correct match-slug and score format, e.g., "abc-v-foo": "3-2"'
+    'Prediction(s) must have correct match-slug and score format, e.g., "abc-foo": "3-2"'
   );
 
 const PickScoreSchema = Joi.object({

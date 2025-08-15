@@ -1,6 +1,7 @@
 /* eslint-disable perfectionist/sort-objects */
 import Joi from 'joi';
 
+import { MatchStatus } from '../../../../db/models/match.model.js';
 import { slugStringSchema } from '../../common/validation/schemas.js';
 import { JoiValidator } from '../../common/validation/validatorWrapper.js';
 
@@ -37,22 +38,15 @@ const UpdateMatchSchema = Joi.object({
   slug: slugStringSchema.required(),
   matchDetails: Joi.object({
     gameRound: Joi.string().max(20).required(),
-    matchday: Joi.number().integer().min(1).max(50).required(),
+    matchday: Joi.number().integer().min(1).max(50).optional(),
     odds: oddsSchema.optional(),
     score: scoreSchema.optional(),
     status: Joi.string()
-      .valid(
-        'SCHEDULED',
-        'LIVE',
-        'CANCELED',
-        'SUSPENDED',
-        'POSTPONED',
-        'FINISHED'
-      )
-      .required(),
+      .valid(...Object.values(MatchStatus))
+      .optional(),
     utcDate: Joi.date().optional(),
     venue: Joi.string().max(100).optional(),
-  }),
+  }).min(1),
 });
 
 export const updateMatchValidator = new JoiValidator(UpdateMatchSchema);

@@ -1,6 +1,10 @@
 import { get, isEmpty } from 'lodash';
 import { lastValueFrom } from 'rxjs';
 
+import {
+  EventMediator,
+  EventMediatorImpl,
+} from '../../../common/eventMediator.js';
 import { FootballApiProvider } from '../../../common/footballApiProvider.js';
 import {
   MatchRepository,
@@ -10,7 +14,7 @@ import {
   FootballApiClient,
   FootballApiClientImpl,
 } from '../../../thirdParty/footballApi/apiClient.js';
-import { makeMatchUpdate, matchChanged } from './util.js';
+import { makeMatchUpdate, matchChanged, repickJoker } from './util.js';
 
 export const enum PERIOD {
   LIVE = 'LIVE',
@@ -24,11 +28,13 @@ export interface TodayAndMorrowService {
 
 export class TodayAndMorrowServiceImpl implements TodayAndMorrowService {
   constructor(
+    private eventMediator: EventMediator,
     private matchRepo: MatchRepository,
     private footballApiClient: FootballApiClient
   ) {}
 
   public static getInstance(
+    eventMediator = EventMediatorImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance(
       FootballApiProvider.API_FOOTBALL_DATA
     ),
@@ -36,7 +42,11 @@ export class TodayAndMorrowServiceImpl implements TodayAndMorrowService {
       FootballApiProvider.API_FOOTBALL_DATA
     )
   ) {
-    return new TodayAndMorrowServiceImpl(matchRepo, footballApiClient);
+    return new TodayAndMorrowServiceImpl(
+      eventMediator,
+      matchRepo,
+      footballApiClient
+    );
   }
 
   async syncMatches(period: PERIOD): Promise<any[]> {
@@ -82,6 +92,12 @@ export class TodayAndMorrowServiceImpl implements TodayAndMorrowService {
           await lastValueFrom(
             this.matchRepo.findByIdAndUpdate$(matchId, update)
           );
+          if (repickJoker(apiMatch, dbMatch)) {
+            this.eventMediator.publish('REPICK_JOKER_IF_MATCH', {
+              matchId: dbMatch.id!,
+              roundId: dbMatch.gameRound.toString(),
+            });
+          }
         }
       }
     } catch (err: any) {

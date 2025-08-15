@@ -1,6 +1,10 @@
 import schedule from 'node-schedule';
 
 import {
+  EventMediator,
+  EventMediatorImpl,
+} from '../../common/eventMediator.js';
+import {
   CurrentRoundMatchesService,
   CurrentRoundMatchesServiceImpl,
 } from './footballApi/matches.currentRound.service.js';
@@ -8,10 +12,6 @@ import { TodayAndMorrowScheduler } from './footballApi/matches.todayAndMorrow.sc
 import { SeasonNextRoundScheduler } from './footballApi/season.nextRound.scheduler.js';
 import { LeaderboardScheduler } from './leaderboard.scheduler.js';
 import { MakePredictionsScheduler } from './makePredictions.scheduler.js';
-import {
-  PredictionService,
-  PredictionServiceImpl,
-} from './prediction.service.js';
 import { PredictionPointsScheduler } from './predictionPoints.scheduler.js';
 
 export class AppSchedule {
@@ -21,17 +21,15 @@ export class AppSchedule {
   private readonly predictionPointsScheduler: PredictionPointsScheduler;
   private readonly seasonNextRoundScheduler: SeasonNextRoundScheduler;
   private readonly todayAndMorrowScheduler: TodayAndMorrowScheduler;
-  private readonly predictionService: PredictionService;
+  private readonly eventMediator: EventMediator;
 
   constructor() {
+    this.eventMediator = EventMediatorImpl.getInstance();
     this.currentRoundMatchesService =
       CurrentRoundMatchesServiceImpl.getInstance();
     this.todayAndMorrowScheduler = TodayAndMorrowScheduler.getInstance();
     this.seasonNextRoundScheduler = SeasonNextRoundScheduler.getInstance();
-    this.predictionService = PredictionServiceImpl.getInstance();
-    this.predictionPointsScheduler = PredictionPointsScheduler.getInstance(
-      this.predictionService
-    );
+    this.predictionPointsScheduler = PredictionPointsScheduler.getInstance();
     this.leaderboardScheduler = LeaderboardScheduler.getInstance();
     this.makePredictionsScheduler = MakePredictionsScheduler.getInstance();
   }
@@ -40,10 +38,13 @@ export class AppSchedule {
     return new AppSchedule();
   }
 
-  async handle(message: string, data: any): Promise<void> {
+  handle(message: string, data: any) {
     if (message === 'REPICK_JOKER_IF_MATCH') {
       const { matchId, roundId } = data as { matchId: string; roundId: string };
-      await this.predictionService.repickJokerIfMatch(matchId, roundId);
+      this.eventMediator.publish('RE_PICK_JOKER_IF_MATCH', {
+        matchId,
+        roundId,
+      });
     }
   }
 

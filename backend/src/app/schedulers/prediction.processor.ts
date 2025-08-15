@@ -33,7 +33,7 @@ export class PredictionProcessorImpl implements PredictionProcessor {
   public static getInstance(
     predictionRepo = PredictionRepositoryImpl.getInstance(),
     predictionCalculator = PredictionCalculator.getInstance()
-  ) {
+  ): PredictionProcessor {
     return new PredictionProcessorImpl(predictionRepo, predictionCalculator);
   }
 

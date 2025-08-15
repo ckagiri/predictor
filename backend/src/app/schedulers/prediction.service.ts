@@ -1,5 +1,6 @@
 import { compact, isEmpty } from 'lodash';
 import { lastValueFrom } from 'rxjs';
+import { EventMediator, EventMediatorImpl } from 'src/common/eventMediator.js';
 
 import {
   CompetitionRepository,
@@ -25,26 +26,42 @@ import {
 export interface PredictionService {
   calculatePredictionPoints(): Promise<void>;
   createIfNotExistsCurrentRoundPredictions(): Promise<void>;
-  repickJokerIfMatch(matchId: string, roundId: string): Promise<number>;
+  repickJokerIfMatch({
+    matchId,
+    roundId,
+  }: {
+    matchId: string;
+    roundId: string;
+  }): Promise<number>;
 }
 
 export class PredictionServiceImpl implements PredictionService {
   constructor(
+    private eventMediator: EventMediator,
     private competitionRepo: CompetitionRepository,
     private seasonRepo: SeasonRepository,
     private matchRepo: MatchRepository,
     private predictionRepo: PredictionRepository,
     private predictionProcessor: PredictionProcessor
-  ) {}
+  ) {
+    this.eventMediator.addListener(
+      'RE_PICK_JOKER_IF_MATCH',
+      async ({ matchId, roundId }: { matchId: string; roundId: string }) => {
+        await this.repickJokerIfMatch({ matchId, roundId });
+      }
+    );
+  }
 
   public static getInstance(
+    eventMediator = EventMediatorImpl.getInstance(),
     competitionRepo = CompetitionRepositoryImpl.getInstance(),
     seasonRepo = SeasonRepositoryImpl.getInstance(),
     matchRepo = MatchRepositoryImpl.getInstance(),
     predictionRepo = PredictionRepositoryImpl.getInstance(),
     predictionProcessor = PredictionProcessorImpl.getInstance(predictionRepo)
-  ) {
+  ): PredictionService {
     return new PredictionServiceImpl(
+      eventMediator,
       competitionRepo,
       seasonRepo,
       matchRepo,
@@ -113,7 +130,13 @@ export class PredictionServiceImpl implements PredictionService {
     }
   }
 
-  async repickJokerIfMatch(matchId: string, roundId: string): Promise<number> {
+  async repickJokerIfMatch({
+    matchId,
+    roundId,
+  }: {
+    matchId: string;
+    roundId: string;
+  }): Promise<number> {
     try {
       const roundMatches = await lastValueFrom(
         this.matchRepo.findAll$({ gameRound: roundId })

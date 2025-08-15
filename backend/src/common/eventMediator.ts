@@ -16,7 +16,7 @@ export class EventMediatorImpl implements EventMediator {
     this.emitter = new EventEmitter();
   }
 
-  public static getInstance() {
+  public static getInstance(): EventMediator {
     EventMediatorImpl.classInstance ??= new EventMediatorImpl();
     return EventMediatorImpl.classInstance;
   }

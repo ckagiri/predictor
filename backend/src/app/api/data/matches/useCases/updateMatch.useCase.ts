@@ -29,8 +29,8 @@ export interface RequestModel {
   slug: string;
 }
 interface MatchDetails {
-  gameRound: string;
-  matchday: number;
+  gameRound?: string;
+  matchday?: number;
   odds?: Odds;
   score?: Score;
   status: MatchStatus;
@@ -119,7 +119,7 @@ export default class UpdateMatchUseCase {
 
       this.responder.respond(updatedMatch);
 
-      this.repickJokerIfMatch(foundMatch, updatedMatch);
+      this.repickJokerIfApplicable(foundMatch, updatedMatch);
     } catch (error: any) {
       if (error.isFailure) {
         throw error;
@@ -131,11 +131,11 @@ export default class UpdateMatchUseCase {
     }
   }
 
-  repickJokerIfMatch(foundMatch: Match, updatedMatch: Match | null) {
+  repickJokerIfApplicable(foundMatch: Match, updatedMatch: Match | null) {
     if (!updatedMatch) {
       return;
     }
-    const shouldRepickJoker = repickJoker({
+    const repickJoker = shouldRepickJoker({
       original: {
         roundId: foundMatch.gameRound.toString(),
         status: foundMatch.status!,
@@ -146,7 +146,7 @@ export default class UpdateMatchUseCase {
       },
     });
 
-    if (shouldRepickJoker) {
+    if (repickJoker) {
       this.backgroundWorker?.send({
         data: {
           matchId: foundMatch.id!,
@@ -163,7 +163,10 @@ export default class UpdateMatchUseCase {
   ): Promise<ValidationError[]> {
     const errors = [] as ValidationError[];
     let newMatchRound = null;
-    if (foundMatch.gameRound.toString() !== matchDetails.gameRound) {
+    if (
+      matchDetails.gameRound &&
+      foundMatch.gameRound.toString() !== matchDetails.gameRound
+    ) {
       newMatchRound = await lastValueFrom(
         this.matchRepo.findById$(matchDetails.gameRound)
       );
@@ -210,7 +213,7 @@ export default class UpdateMatchUseCase {
   }
 }
 
-function repickJoker({
+function shouldRepickJoker({
   original,
   updated,
 }: {
@@ -225,7 +228,7 @@ function repickJoker({
   }
 
   if (original.roundId !== updated.roundId) {
-    return false;
+    return true;
   }
 
   return false;

@@ -1,4 +1,8 @@
-import { getMatchStatus, Match } from '../../../db/models/match.model.js';
+import {
+  getMatchStatus,
+  Match,
+  MatchStatus,
+} from '../../../db/models/match.model.js';
 
 export const matchChanged = (apiMatch: any, dbMatch: Match) => {
   const apiMatchStatus = getMatchStatus(apiMatch.status);
@@ -32,4 +36,15 @@ export const makeMatchUpdate = (apiMatch: any) => {
   };
   const matchStatus = getMatchStatus(status);
   return { odds, result, status: matchStatus };
+};
+
+export const repickJoker = (apiMatch: any, dbMatch: Match) => {
+  const apiMatchStatus = getMatchStatus(apiMatch.status);
+  if (
+    dbMatch.status === MatchStatus.SCHEDULED &&
+    [MatchStatus.CANCELED, MatchStatus.POSTPONED].includes(apiMatchStatus)
+  ) {
+    return true;
+  }
+  return false;
 };
