@@ -31,7 +31,7 @@ const predictionSlipSchema = Joi.object()
 const PickScoreSchema = Joi.object({
   competition: slugStringSchema.required(),
   loggedInUserId: Joi.string().required(),
-  predictionSlipSchema: predictionSlipSchema.required(),
+  predictionSlip: predictionSlipSchema.required(),
   round: Joi.string().max(20).required(),
   season: Joi.string().min(4).max(9).required(),
 });
@@ -41,7 +41,14 @@ export const pickScoreValidator = new JoiValidator(PickScoreSchema);
 const PickJokerSchema = Joi.object({
   competition: slugStringSchema.required(),
   loggedInUserId: Joi.string().required(),
-  match: Joi.string().min(9).max(9).required(),
+  match: Joi.object()
+    .pattern(
+      'slug',
+      Joi.string().min(7).max(9) // Match slug
+    )
+    .min(1)
+    .max(1)
+    .required(),
   round: Joi.string().max(20).required(),
   season: Joi.string().min(4).max(9).required(),
 });

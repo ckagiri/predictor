@@ -26,7 +26,8 @@
     "seed-defaults:dev": "dotenvx run -f .env.dev -- npx tsx src/db/tasks/seed.ts",
     "import:dev": "dotenvx run -f .env.dev -- npx tsx src/app/tasks/import/start.ts",
     "drop:dev": "dotenvx run -f .env.dev -- npx tsx src/db/tasks/drop.ts",
-    "drop:seed:import:dev": "npm run drop:dev && npm run seed-defaults:dev && npm run import:dev"
+    "drop:seed:import:dev": "npm run drop:dev && npm run seed-defaults:dev && npm run import:dev",
+    "drop:defaults:import:dev": "npm run drop:dev && npm run seed-defaults:dev && npm run import:dev"
   },
   "author": "",
   "license": "ISC",
