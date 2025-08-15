@@ -43,6 +43,7 @@ jobs:
             APP_ENV=prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/ligi:api
+          no-cache: true
           cache-from: type=gha
           cache-to: type=gha, mode=max
 
