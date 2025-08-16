@@ -43,7 +43,7 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
         return;
       }
       console.log(
-        `${this.job.name} Scheduled on ${scheduleDate.toISOString()}`
+        `${this.job.name} Scheduled on ${scheduleDate.toUTCString()}`
       );
     });
   }
@@ -89,7 +89,9 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
 
     const now = new Date();
     let nextPoll = addHours(now, 12); // dummy value
-    if (liveMatches.length === 0) {
+    if (liveMatches.length > 0 || this.liveMatchHasFinished) {
+      nextPoll = addMinutes(now, 1);
+    } else {
       for (const match of apiMatches) {
         const matchStatus = getMatchStatus(match.status);
         const matchStart = parseISO(match.utcDate);
@@ -102,8 +104,6 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
           nextPoll = addMinutes(matchStart, 1);
         }
       }
-    } else if (liveMatches.length > 0 || this.liveMatchHasFinished) {
-      nextPoll = addMinutes(now, 1);
     }
 
     this.nextPoll = nextPoll;
@@ -111,10 +111,6 @@ export class TodayAndMorrowScheduler extends BaseScheduler {
       this.getDefaultIntervalMs(),
       differenceInMilliseconds(this.nextPoll, new Date())
     );
-    const nextIntervalInUTC = new Date(
-      Date.now() + nextIntervalInMs
-    ).toUTCString();
-    console.log(`${this.job.name} scheduled ${nextIntervalInUTC}`);
 
     return nextIntervalInMs;
   }
