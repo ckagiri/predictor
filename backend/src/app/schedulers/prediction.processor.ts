@@ -79,7 +79,9 @@ export class PredictionProcessorImpl implements PredictionProcessor {
         }),
         count(),
         tap(count => {
-          console.log(`Updated ${count} predictions`);
+          console.log(
+            `calculateAndUpdatePredictionPoints: Updated ${String(count)} predictions`
+          );
         })
       )
     );
