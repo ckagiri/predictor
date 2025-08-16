@@ -185,9 +185,6 @@ export class LeaderboardProcessorImpl implements LeaderboardProcessor {
                 leaderboardId,
                 matchIds
               );
-              // .pipe(
-              //   tap(() => console.log(`Leaderboard ${leaderboardId} scores & matches updated`))
-              // )
             })
           );
         }),

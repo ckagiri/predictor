@@ -1,6 +1,6 @@
 import axios from 'axios';
+import { addDays, format } from 'date-fns';
 
-import DateUtil from '../../../common/dateUtil.js';
 import { FootballApiClient } from '../apiClient.js';
 
 const BASE_URL = 'https://api.football-data.org/v4';
@@ -83,8 +83,8 @@ class ApiFootballDataClient implements FootballApiClient {
     competitions: string[] | number[] = ['PL']
   ): Promise<any> {
     const url = `${BASE_URL}/matches`;
-    const today = DateUtil.getFormattedDate(new Date());
-    const future = DateUtil.getFormattedDate(DateUtil.addDays(new Date(), 2));
+    const today = format(new Date(), 'yyyy-MM-dd');
+    const future = format(addDays(new Date(), 2), 'yyyy-MM-dd');
     const response = await axios.get(
       url,
       this.options({
@@ -104,7 +104,7 @@ class ApiFootballDataClient implements FootballApiClient {
       url,
       this.options({
         competitions: competitions.join(','),
-        date: 'TODAY',
+        date: format(new Date(), 'yyyy-MM-dd'),
       })
     );
     return this.mergeResponse(response);
