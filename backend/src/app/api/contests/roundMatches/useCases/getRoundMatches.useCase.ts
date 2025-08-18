@@ -224,14 +224,8 @@ export default class GetRoundMatchesUseCase {
         match =>
           ({
             ...match,
-            homeTeam: {
-              id: match.homeTeam?.id,
-              name: match.homeTeam?.name,
-            },
-            awayTeam: {
-              id: match.awayTeam?.id,
-              name: match.awayTeam?.name,
-            },
+            homeTeam: match.homeTeam?.id,
+            awayTeam: match.awayTeam?.id,
           }) as Match
       );
   }
