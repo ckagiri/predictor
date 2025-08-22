@@ -83,7 +83,10 @@ export class SeasonNextRoundServiceImpl {
 
         if (parseInt(apiCurrentMatchday, 10) > (dbCurrentRoundPosition ?? 0)) {
           const nextGameRound = await lastValueFrom(
-            this.gameRoundRepo.findOne$({ position: apiCurrentMatchday })
+            this.gameRoundRepo.findOne$({
+              position: apiCurrentMatchday,
+              season: currentSeasonId,
+            })
           );
           if (!nextGameRound) continue;
 
